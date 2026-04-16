@@ -115,6 +115,16 @@ MVP auth flow currently uses custom `/api/auth/login` and `/api/auth/logout`
 endpoints layered on top of Auth.js database sessions and shared server-side
 auth helpers.
 
+### Issue #4 login page
+
+Issue #4 adds a minimal `/login` page that validates email and password with
+Zod, posts credentials to `/api/auth/login`, shows concise failure states, and
+redirects successful sign-ins to `/dashboard`.
+
+The `/dashboard` route is intentionally only a very small temporary landing page
+for the redirect flow. Protected dashboard behavior and signed-out route gating
+remain deferred to Issue `#5`.
+
 ### Clinic membership contract for MVP
 
 Clinic context remains database-derived through `ClinicMembership` rather than
