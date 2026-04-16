@@ -1,17 +1,46 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Database Workflow
+
+This project uses Postgres with Prisma for application data.
+
+### Local Postgres
+
+If you have Docker available, start the local database with:
+
+```bash
+docker compose up -d
+```
+
+Stop it with:
+
+```bash
+docker compose down
+```
+
+The expected local connection string for this repo is:
+
+```bash
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/care_guide?schema=public"
+```
+
+1. Copy `.env.example` to `.env`.
+2. Start Postgres with `docker compose up -d`.
+3. Prisma CLI commands read the connection string from `prisma.config.ts`, which loads `.env` via `dotenv`.
+4. Generate the Prisma client with `pnpm db:generate`.
+5. Validate or format the schema with `pnpm db:validate` and `pnpm db:format`.
+6. Create local migrations with `pnpm db:migrate:dev` once the database is healthy.
+7. Open Prisma Studio with `pnpm db:studio`.
+8. Run the seed stub with `pnpm db:seed`.
+
+Issue #1 only adds the Prisma foundation. The current schema contains a placeholder bootstrap model so later issues can introduce the real clinic, staff, session, and product models cleanly.
+
 ## Getting Started
 
 First, run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
