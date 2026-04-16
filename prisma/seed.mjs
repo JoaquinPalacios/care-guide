@@ -33,6 +33,18 @@ const DEMO_USERS = {
   },
 };
 
+const DEMO_ROOM = {
+  id: "room_demo_rivers_1",
+  name: "Room 1",
+  slug: "room-1",
+};
+
+const DEMO_DOCTOR = {
+  id: "doctor_demo_rivers_default",
+  name: "Dr. Demo",
+  slug: "dr-demo",
+};
+
 const DEMO_PROCEDURE_TEMPLATE = {
   id: "proc_tmpl_demo_starter",
   name: "Starter Procedure Walkthrough",
@@ -172,6 +184,36 @@ async function main() {
     },
   });
 
+  const room = await prisma.room.upsert({
+    where: { id: DEMO_ROOM.id },
+    update: {
+      clinicId: clinic.id,
+      name: DEMO_ROOM.name,
+      slug: DEMO_ROOM.slug,
+    },
+    create: {
+      id: DEMO_ROOM.id,
+      clinicId: clinic.id,
+      name: DEMO_ROOM.name,
+      slug: DEMO_ROOM.slug,
+    },
+  });
+
+  const doctor = await prisma.doctor.upsert({
+    where: { id: DEMO_DOCTOR.id },
+    update: {
+      clinicId: clinic.id,
+      name: DEMO_DOCTOR.name,
+      slug: DEMO_DOCTOR.slug,
+    },
+    create: {
+      id: DEMO_DOCTOR.id,
+      clinicId: clinic.id,
+      name: DEMO_DOCTOR.name,
+      slug: DEMO_DOCTOR.slug,
+    },
+  });
+
   const procedureTemplate = await prisma.procedureTemplate.upsert({
     where: { id: DEMO_PROCEDURE_TEMPLATE.id },
     update: {
@@ -244,6 +286,8 @@ async function main() {
   console.info(
     `- Procedure template: ${procedureTemplate.name} (${procedureTemplate.id}) with ${DEMO_PROCEDURE_TEMPLATE.stages.length} stages and ${DEMO_PROCEDURE_TEMPLATE.selectedAreaOptions.length} selected-area options`
   );
+  console.info(`- Room: ${room.name} (${room.id})`);
+  console.info(`- Doctor: ${doctor.name} (${doctor.id})`);
 }
 
 main()

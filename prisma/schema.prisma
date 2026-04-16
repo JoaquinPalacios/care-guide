@@ -11,11 +11,30 @@ enum ClinicMembershipRole {
   STAFF
 }
 
+enum ProcedureSessionStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+}
+
+/// Display mode for the patient-facing view of a live session.
+/// CALM     -> ProcedureStageTemplate.calmCopy
+/// STANDARD -> ProcedureStageTemplate.patientCopy
+/// DETAILED -> ProcedureStageTemplate.detailedCopy
+enum PatientDisplayMode {
+  CALM
+  STANDARD
+  DETAILED
+}
+
 model Clinic {
   id                 String              @id @default(cuid())
   name               String
   memberships        ClinicMembership[]
   procedureTemplates ProcedureTemplate[]
+  rooms              Room[]
+  doctors            Doctor[]
+  procedureSessions  ProcedureSession[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 }
@@ -98,6 +117,7 @@ model ProcedureTemplate {
   clinic              Clinic                                @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   stageTemplates      ProcedureStageTemplate[]
   selectedAreaOptions ProcedureTemplateSelectedAreaOption[]
+  sessions            ProcedureSession[]
   createdAt           DateTime                              @default(now())
   updatedAt           DateTime                              @updatedAt
 
@@ -106,35 +126,141 @@ model ProcedureTemplate {
 }
 
 model ProcedureStageTemplate {
-  id                  String            @id @default(cuid())
-  procedureTemplateId String
-  stageOrder          Int
-  title               String
-  calmCopy            String
-  patientCopy         String
-  detailedCopy        String
-  illustrationUrl     String?
-  defaultDurationHint String?
-  procedureTemplate   ProcedureTemplate @relation(fields: [procedureTemplateId], references: [id], onDelete: Cascade)
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  id                     String                          @id @default(cuid())
+  procedureTemplateId    String
+  stageOrder             Int
+  title                  String
+  calmCopy               String
+  patientCopy            String
+  detailedCopy           String
+  illustrationUrl        String?
+  defaultDurationHint    String?
+  procedureTemplate      ProcedureTemplate               @relation(fields: [procedureTemplateId], references: [id], onDelete: Cascade)
+  currentInSessionStates SessionStageState[]
+  sessionOverrides       ProcedureSessionStageOverride[]
+  createdAt              DateTime                        @default(now())
+  updatedAt              DateTime                        @updatedAt
 
   @@unique([procedureTemplateId, stageOrder])
   @@index([procedureTemplateId])
 }
 
 model ProcedureTemplateSelectedAreaOption {
-  id                  String            @id @default(cuid())
+  id                  String             @id @default(cuid())
   procedureTemplateId String
   key                 String
   label               String
   sortOrder           Int
-  isActive            Boolean           @default(true)
-  procedureTemplate   ProcedureTemplate @relation(fields: [procedureTemplateId], references: [id], onDelete: Cascade)
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  isActive            Boolean            @default(true)
+  procedureTemplate   ProcedureTemplate  @relation(fields: [procedureTemplateId], references: [id], onDelete: Cascade)
+  sessions            ProcedureSession[]
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
 
   @@unique([procedureTemplateId, key])
   @@unique([procedureTemplateId, sortOrder])
   @@index([procedureTemplateId, isActive])
+}
+
+model Room {
+  id        String             @id @default(cuid())
+  clinicId  String
+  name      String
+  slug      String
+  isActive  Boolean            @default(true)
+  clinic    Clinic             @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  sessions  ProcedureSession[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@unique([clinicId, slug])
+  @@index([clinicId, isActive])
+}
+
+model Doctor {
+  id        String             @id @default(cuid())
+  clinicId  String
+  name      String
+  slug      String
+  isActive  Boolean            @default(true)
+  clinic    Clinic             @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  sessions  ProcedureSession[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@unique([clinicId, slug])
+  @@index([clinicId, isActive])
+}
+
+model ProcedureSession {
+  id                   String                 @id @default(cuid())
+  clinicId             String
+  roomId               String
+  doctorId             String
+  procedureTemplateId  String
+  selectedAreaOptionId String?
+  status               ProcedureSessionStatus @default(DRAFT)
+  displayToken         String                 @unique
+  startedAt            DateTime?
+  completedAt          DateTime?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  clinic             Clinic                               @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  room               Room                                 @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  doctor             Doctor                               @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  procedureTemplate  ProcedureTemplate                    @relation(fields: [procedureTemplateId], references: [id], onDelete: Restrict)
+  selectedAreaOption ProcedureTemplateSelectedAreaOption? @relation(fields: [selectedAreaOptionId], references: [id], onDelete: SetNull)
+  stageState         SessionStageState?
+  displayPreferences PatientDisplayPreferences?
+  stageOverrides     ProcedureSessionStageOverride[]
+
+  @@index([clinicId, status])
+  @@index([roomId, status])
+  @@index([doctorId])
+  @@index([procedureTemplateId])
+  @@index([selectedAreaOptionId])
+}
+
+model SessionStageState {
+  id                     String    @id @default(cuid())
+  procedureSessionId     String    @unique
+  currentStageTemplateId String?
+  currentStageStartedAt  DateTime?
+  initializedAt          DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  procedureSession     ProcedureSession        @relation(fields: [procedureSessionId], references: [id], onDelete: Cascade)
+  currentStageTemplate ProcedureStageTemplate? @relation(fields: [currentStageTemplateId], references: [id], onDelete: SetNull)
+
+  @@index([currentStageTemplateId])
+}
+
+model PatientDisplayPreferences {
+  id                 String             @id @default(cuid())
+  procedureSessionId String             @unique
+  mode               PatientDisplayMode @default(STANDARD)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  procedureSession ProcedureSession @relation(fields: [procedureSessionId], references: [id], onDelete: Cascade)
+}
+
+model ProcedureSessionStageOverride {
+  id                       String   @id @default(cuid())
+  procedureSessionId       String
+  procedureStageTemplateId String
+  title                    String?
+  calmCopy                 String?
+  patientCopy              String?
+  detailedCopy             String?
+  durationHint             String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  procedureSession       ProcedureSession       @relation(fields: [procedureSessionId], references: [id], onDelete: Cascade)
+  procedureStageTemplate ProcedureStageTemplate @relation(fields: [procedureStageTemplateId], references: [id], onDelete: Cascade)
+
+  @@unique([procedureSessionId, procedureStageTemplateId])
+  @@index([procedureStageTemplateId])
 }
