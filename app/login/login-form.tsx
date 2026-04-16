@@ -77,6 +77,10 @@ export function LoginForm() {
             errorMessage = "Invalid email or password.";
           } else if (response.status === 400) {
             errorMessage = data.error || "Enter your email and password.";
+          } else if (response.status === 403 || response.status === 409) {
+            errorMessage =
+              data.error ||
+              "Your account cannot access the staff dashboard yet.";
           }
         } catch {
           if (response.status === 401) {

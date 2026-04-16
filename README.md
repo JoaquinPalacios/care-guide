@@ -125,6 +125,24 @@ The `/dashboard` route is intentionally only a very small temporary landing page
 for the redirect flow. Protected dashboard behavior and signed-out route gating
 remain deferred to Issue `#5`.
 
+### Issue #5 protected dashboard shell
+
+Issue #5 adds the first durable protected-route pattern for internal staff
+pages:
+
+- `app/dashboard/layout.tsx` is the protected shell for `/dashboard`
+- `lib/auth/require-staff-session.ts` is the intentionally tiny server-side
+  guard helper
+- only users with one effective clinic membership can establish a valid staff
+  session for the protected shell
+- signed-out visits to `/dashboard` redirect to `/login`
+- signed-in visits to `/login` redirect to `/dashboard`
+- the shell exposes only minimal signed-in chrome plus logout
+
+This guard should stay narrow for now. Later internal staff routes should reuse
+the same server-side shell and helper pattern rather than introducing a second
+auth abstraction or route-protection mechanism.
+
 ### Clinic membership contract for MVP
 
 Clinic context remains database-derived through `ClinicMembership` rather than
@@ -134,6 +152,8 @@ For MVP, the auth helper layer assumes one effective clinic membership per
 signed-in staff user. If multiple memberships exist for the same user, helper
 resolution fails explicitly instead of silently choosing one. Issue `#4` must
 respect this contract and should not introduce any implicit clinic selection.
+Issue `#6` and later internal work should continue building on the same
+membership-derived server-side guard pattern instead of redesigning auth.
 
 ## Getting Started
 

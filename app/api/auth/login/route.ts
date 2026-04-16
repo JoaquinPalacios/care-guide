@@ -53,6 +53,33 @@ export async function POST(request: Request) {
     );
   }
 
+  const memberships = await prisma.clinicMembership.findMany({
+    where: { userId: user.id },
+    select: {
+      clinicId: true,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  if (memberships.length === 0) {
+    return NextResponse.json(
+      { error: "Your account does not have staff access yet." },
+      { status: 403 }
+    );
+  }
+
+  if (memberships.length > 1) {
+    return NextResponse.json(
+      {
+        error:
+          "Your account has multiple clinic memberships and cannot sign in to this MVP yet.",
+      },
+      { status: 409 }
+    );
+  }
+
   const session = await createDatabaseSession(user.id);
   const response = NextResponse.json({
     user: {

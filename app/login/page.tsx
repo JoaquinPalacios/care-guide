@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { auth } from "@/auth";
 import { LoginForm } from "@/app/login/login-form";
+import { getAuthContext } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
   title: "Staff Sign In",
@@ -10,9 +10,12 @@ export const metadata: Metadata = {
 };
 
 export default async function LoginPage() {
-  const session = await auth();
+  const authContext = await getAuthContext().catch(() => ({
+    user: null,
+    clinicMembership: null,
+  }));
 
-  if (session?.user) {
+  if (authContext.user && authContext.clinicMembership) {
     redirect("/dashboard");
   }
 
