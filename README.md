@@ -173,6 +173,46 @@ Later issues should continue these conventions:
   a minimal `Starter Procedure Walkthrough` template so Issue #7 can build a
   read-only browser on top of real data.
 
+### Issue #7 procedure template browser
+
+Issue #7 adds a read-only, clinic-scoped inspection view on top of the Issue #6
+schema:
+
+- Route: `/dashboard/procedures`, nested inside the existing protected shell in
+  `app/dashboard/layout.tsx` so the same `requireStaffSession()` guard applies.
+- The page is intentionally read-only. It has no create/edit/delete/publish
+  controls, no session creation, and no patient-facing surface.
+- Clinic scoping is derived from the signed-in user's effective clinic
+  membership — never from URL params or session payload.
+- Default filters: only `ProcedureTemplate.isActive = true` templates are
+  listed, and only `ProcedureTemplateSelectedAreaOption.isActive = true`
+  options are rendered per template.
+- Ordering contract (explicit, never creation order):
+  - Stages render by `ProcedureStageTemplate.stageOrder` ascending.
+  - Selected-area options render by
+    `ProcedureTemplateSelectedAreaOption.sortOrder` ascending.
+- Query helper: [lib/procedures/list-clinic-templates.ts](lib/procedures/list-clinic-templates.ts)
+  exposes a single narrow read-model function,
+  `listActiveClinicProcedureTemplates(clinicId)`, with a typed return shape.
+  It is not a generalized template repository.
+- Dashboard discovery: a single inline link on `/dashboard` points to the new
+  route. No global navigation, sidebar, or breadcrumbs are introduced.
+
+Constraints Issue `#8` (and later work) should respect:
+
+- Do not repurpose `/dashboard/procedures` for session creation; session
+  lifecycle routes belong under `/sessions/*` per the plan.
+- Do not surface inactive or cross-clinic templates on this route. If admin
+  CRUD lands later, add a separate `/admin/*` surface with its own protected
+  shell rather than widening this view.
+- Continue deriving clinic context from `requireStaffSession()`; do not add
+  a `clinicId` URL param or stash it on the session payload.
+- Keep `lib/procedures/list-clinic-templates.ts` narrow. Session creation
+  pickers and admin CRUD should get their own sibling helpers (e.g. one
+  per call site) instead of extending this one into a multi-purpose API.
+- Do not re-implement auth redirect logic inside individual dashboard pages;
+  the layout-level guard is the single source of truth for protected access.
+
 ### Clinic membership contract for MVP
 
 Clinic context remains database-derived through `ClinicMembership` rather than

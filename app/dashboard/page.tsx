@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -21,6 +22,14 @@ export default function DashboardPage() {
           Internal staff pages can now reuse this server-side protection pattern
           instead of reimplementing auth checks per page.
         </div>
+        <p className="mt-6 text-sm leading-6 text-zinc-600">
+          <Link
+            className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-4 hover:decoration-zinc-900"
+            href="/dashboard/procedures"
+          >
+            View procedure templates (read-only)
+          </Link>
+        </p>
       </div>
     </section>
   );
