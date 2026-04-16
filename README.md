@@ -39,13 +39,13 @@ The expected local connection string for this repo is:
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/care_guide?schema=public"
 ```
 
-Auth.js also expects:
+The app runtime also expects:
 
 ```bash
 AUTH_SECRET="replace-with-a-long-random-string"
 ```
 
-1. Copy `.env.example` to `.env`.
+1. Copy `.env.example` to `.env`. Next.js loads `.env` for the app runtime, and Prisma CLI commands load it through `prisma.config.ts`.
 2. Start Postgres with `docker compose up -d`.
 3. Prisma CLI commands read the connection string from `prisma.config.ts`, which loads `.env` via `dotenv`.
 4. Generate the Prisma client with `pnpm db:generate`.
@@ -53,6 +53,8 @@ AUTH_SECRET="replace-with-a-long-random-string"
 6. Create local migrations with `pnpm db:migrate:dev` once the database is healthy.
 7. Open Prisma Studio with `pnpm db:studio`.
 8. Seed the demo clinic and staff accounts with `pnpm db:seed`.
+
+If `AUTH_SECRET` is missing, the app now fails fast with a clear startup error instead of surfacing repeated Auth.js `MissingSecret` errors later during requests.
 
 ### Seeded demo accounts
 

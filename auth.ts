@@ -7,9 +7,18 @@ import {
   authSessionCookieOptions,
 } from "@/lib/auth/session-cookie";
 
+const authSecret = process.env.AUTH_SECRET;
+
+if (!authSecret) {
+  throw new Error(
+    'Missing AUTH_SECRET. Copy ".env.example" to ".env" and set AUTH_SECRET before starting the app.'
+  );
+}
+
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   trustHost: true,
+  secret: authSecret,
   session: {
     strategy: "database",
   },
