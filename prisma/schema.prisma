@@ -12,11 +12,12 @@ enum ClinicMembershipRole {
 }
 
 model Clinic {
-  id          String             @id @default(cuid())
-  name        String
-  memberships ClinicMembership[]
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  id                 String              @id @default(cuid())
+  name               String
+  memberships        ClinicMembership[]
+  procedureTemplates ProcedureTemplate[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 }
 
 model User {
@@ -86,4 +87,54 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("auth_verification_tokens")
+}
+
+model ProcedureTemplate {
+  id                  String                                @id @default(cuid())
+  clinicId            String
+  name                String
+  slug                String
+  isActive            Boolean                               @default(true)
+  clinic              Clinic                                @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  stageTemplates      ProcedureStageTemplate[]
+  selectedAreaOptions ProcedureTemplateSelectedAreaOption[]
+  createdAt           DateTime                              @default(now())
+  updatedAt           DateTime                              @updatedAt
+
+  @@unique([clinicId, slug])
+  @@index([clinicId, isActive])
+}
+
+model ProcedureStageTemplate {
+  id                  String            @id @default(cuid())
+  procedureTemplateId String
+  stageOrder          Int
+  title               String
+  calmCopy            String
+  patientCopy         String
+  detailedCopy        String
+  illustrationUrl     String?
+  defaultDurationHint String?
+  procedureTemplate   ProcedureTemplate @relation(fields: [procedureTemplateId], references: [id], onDelete: Cascade)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@unique([procedureTemplateId, stageOrder])
+  @@index([procedureTemplateId])
+}
+
+model ProcedureTemplateSelectedAreaOption {
+  id                  String            @id @default(cuid())
+  procedureTemplateId String
+  key                 String
+  label               String
+  sortOrder           Int
+  isActive            Boolean           @default(true)
+  procedureTemplate   ProcedureTemplate @relation(fields: [procedureTemplateId], references: [id], onDelete: Cascade)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@unique([procedureTemplateId, key])
+  @@unique([procedureTemplateId, sortOrder])
+  @@index([procedureTemplateId, isActive])
 }

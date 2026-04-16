@@ -143,6 +143,36 @@ This guard should stay narrow for now. Later internal staff routes should reuse
 the same server-side shell and helper pattern rather than introducing a second
 auth abstraction or route-protection mechanism.
 
+### Issue #6 procedure template schema
+
+Issue #6 introduces clinic-owned procedure template content as durable Prisma
+models, without any UI surface:
+
+- `ProcedureTemplate` is owned by a `Clinic` via `clinicId`, has a `name`,
+  a clinic-unique `slug`, and an `isActive` flag.
+- `ProcedureStageTemplate` models linear stages via an explicit `stageOrder`
+  that is unique within a template. Stage content uses a durable `title`
+  plus three mode-specific copy fields: `calmCopy`, `patientCopy`, and
+  `detailedCopy`. Optional fields are `illustrationUrl` (string/URL only)
+  and `defaultDurationHint`.
+- `ProcedureTemplateSelectedAreaOption` models a constrained, template-owned
+  selected-area list via stable `key`, display `label`, and explicit
+  `sortOrder`. It replaces any free-text selected-area concept for v1.
+
+Later issues should continue these conventions:
+
+- Template queries must filter by the signed-in user's effective clinic
+  membership from `getAuthContext()` / `requireStaffSession()`.
+- Default selection surfaces should filter to `isActive = true`.
+- Read-only display must respect explicit `stageOrder` and selected-area
+  `sortOrder`, not creation order.
+- If shared starter templates are ever needed, add a separate
+  platform/global-template concept rather than making `ProcedureTemplate`
+  globally owned.
+- Seed data lives in [prisma/seed.mjs](prisma/seed.mjs); the demo clinic owns
+  a minimal `Starter Procedure Walkthrough` template so Issue #7 can build a
+  read-only browser on top of real data.
+
 ### Clinic membership contract for MVP
 
 Clinic context remains database-derived through `ClinicMembership` rather than
