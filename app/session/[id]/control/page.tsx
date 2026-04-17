@@ -1,7 +1,9 @@
+import { ProcedureSessionStatus } from "@prisma/client";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { CompleteSessionButton } from "@/app/session/[id]/control/complete-session-button";
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
 import { prisma } from "@/lib/prisma";
 
@@ -47,6 +49,15 @@ export default async function SessionControlPlaceholderPage({
           </span>
           . The real stage controls will be delivered in a later issue.
         </p>
+        {session.status !== ProcedureSessionStatus.COMPLETED ? (
+          <div className="mt-6">
+            <CompleteSessionButton sessionId={session.id} />
+            <p className="mt-2 text-xs leading-5 text-zinc-500">
+              Marks this session as completed and unblocks the room so a new
+              session can start.
+            </p>
+          </div>
+        ) : null}
         <p className="mt-6 text-sm leading-6 text-zinc-600">
           <Link
             className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-4 hover:decoration-zinc-900"

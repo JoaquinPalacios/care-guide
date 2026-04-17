@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
 import {
@@ -34,6 +35,14 @@ export default async function DashboardProceduresPage() {
           Read-only view of active procedure templates for your clinic. This
           page is for internal inspection only; editing, publishing, and session
           creation are not available here.
+        </p>
+        <p className="mt-3 text-sm leading-6 text-zinc-600">
+          <Link
+            className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-4 hover:decoration-zinc-900"
+            href="/dashboard"
+          >
+            Back to dashboard
+          </Link>
         </p>
       </header>
 

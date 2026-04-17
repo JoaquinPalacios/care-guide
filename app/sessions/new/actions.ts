@@ -4,7 +4,12 @@ import { redirect } from "next/navigation";
 
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
 import { createProcedureSession } from "@/lib/sessions/create-procedure-session";
-import { SessionCreationError } from "@/lib/sessions/errors";
+import {
+  InvalidSelectedAreaOptionError,
+  MissingSelectedAreaOptionError,
+  SessionCreationError,
+  UnexpectedSelectedAreaOptionError,
+} from "@/lib/sessions/errors";
 import { createSessionSchema } from "@/app/sessions/new/schema";
 import type { CreateSessionActionState } from "@/app/sessions/new/state";
 
@@ -57,6 +62,17 @@ export async function createSessionAction(
     });
     sessionId = result.sessionId;
   } catch (error) {
+    if (
+      error instanceof MissingSelectedAreaOptionError ||
+      error instanceof InvalidSelectedAreaOptionError ||
+      error instanceof UnexpectedSelectedAreaOptionError
+    ) {
+      return {
+        error: null,
+        fieldErrors: { selectedAreaOptionId: error.message },
+      };
+    }
+
     if (error instanceof SessionCreationError) {
       return {
         error: error.message,

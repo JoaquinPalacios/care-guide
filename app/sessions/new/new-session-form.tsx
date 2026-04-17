@@ -44,6 +44,7 @@ export function NewSessionForm({ options }: NewSessionFormProps) {
   >(createSessionAction, initialCreateSessionActionState);
 
   const [procedureTemplateId, setProcedureTemplateId] = useState<string>("");
+  const [selectedAreaOptionId, setSelectedAreaOptionId] = useState<string>("");
 
   const selectedTemplate = useMemo(
     () =>
@@ -116,7 +117,10 @@ export function NewSessionForm({ options }: NewSessionFormProps) {
           name="procedureTemplateId"
           required
           value={procedureTemplateId}
-          onChange={(event) => setProcedureTemplateId(event.target.value)}
+          onChange={(event) => {
+            setProcedureTemplateId(event.target.value);
+            setSelectedAreaOptionId("");
+          }}
           className={selectClassName}
         >
           <option value="" disabled>
@@ -140,10 +144,11 @@ export function NewSessionForm({ options }: NewSessionFormProps) {
           name="selectedAreaOptionId"
           required={selectedAreaRequired}
           disabled={!selectedAreaRequired}
-          defaultValue=""
+          value={selectedAreaOptionId}
+          onChange={(event) => setSelectedAreaOptionId(event.target.value)}
           className={`${selectClassName} disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-400`}
         >
-          <option value="">
+          <option value="" disabled={selectedAreaRequired}>
             {selectedAreaRequired ? "Select an area" : "No selection required"}
           </option>
           {selectedAreaOptions.map((option) => (

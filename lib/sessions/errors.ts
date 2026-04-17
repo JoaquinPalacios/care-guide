@@ -88,3 +88,11 @@ export class RoomOccupiedError extends SessionCreationError {
     );
   }
 }
+
+export class SessionNotFoundError extends SessionCreationError {
+  readonly code = "SESSION_NOT_FOUND";
+
+  constructor() {
+    super("That session could not be found for your clinic.");
+  }
+}
