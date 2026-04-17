@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { DisplayLiveRefresh } from "@/app/display/[token]/display-live-refresh";
 import { loadPatientDisplay } from "@/lib/sessions/load-patient-display";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,7 @@ export default async function PatientDisplayPage({ params }: DisplayPageProps) {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-8 py-16">
+      <DisplayLiveRefresh token={token} />
       <article className="w-full max-w-3xl rounded-3xl border border-zinc-200 bg-white p-12 shadow-sm">
         <p className="text-sm font-medium uppercase tracking-[0.18em] text-zinc-500">
           {procedureName}

@@ -1,13 +1,26 @@
 import "server-only";
 
+import {
+  DISPLAY_NUDGE_EVENT_NAME,
+  displayChannelName,
+  type DisplayNudge,
+} from "@/lib/realtime/channel";
+
 /**
  * Minimal session-scoped realtime events surfaced by the stage-transition
- * service. Only `stage.changed` exists in Issue #11 and is intentionally a
- * "nudge" payload: the patient display must continue to treat the database
+ * service. Only `stage.changed` exists today and is intentionally a
+ * "nudge" signal: the patient display must continue to treat the database
  * as the source of truth and re-load from the display token when signalled.
  *
  * New event variants must be additive so future issues (e.g. mode changes,
  * completion) can extend the union without breaking existing subscribers.
+ *
+ * NOTE: this type describes the server-internal event that the publisher
+ * *receives*. It is deliberately richer than the payload that leaves the
+ * trust boundary. The transport layer scrubs everything down to
+ * `DisplayNudge` before broadcasting to patient clients so staff-only
+ * fields (`sessionId`, `currentStageTemplateId`, `direction`, and the
+ * `displayToken` itself) never leak into client subscription payloads.
  */
 export type SessionRealtimeEvent = {
   type: "stage.changed";
@@ -23,11 +36,11 @@ export interface SessionEventPublisher {
 }
 
 /**
- * Default publisher implementation for Issue #11. It performs no network
- * work — the real transport (Supabase Realtime) is wired by a later issue.
- * Keeping this as a deliberate no-op lets the stage-transition service ship
- * its publish-after-commit orchestration behind a narrow interface that can
- * be swapped for a live provider without touching business logic.
+ * No-op publisher. Used (a) in local dev and tests when Supabase env is
+ * not configured, and (b) as the default seam so stage transitions keep
+ * working even if realtime is intentionally disabled. Swallowing the
+ * event here is the correct behavior — the database remains the source
+ * of truth and refreshing the patient display still shows current state.
  */
 export function createNoopSessionEventPublisher(): SessionEventPublisher {
   return {
@@ -39,19 +52,112 @@ export function createNoopSessionEventPublisher(): SessionEventPublisher {
   };
 }
 
+export interface SupabasePublisherConfig {
+  url: string;
+  serviceRoleKey: string;
+  fetchImpl?: typeof fetch;
+}
+
+/**
+ * Supabase Realtime broadcast publisher. Uses the HTTP broadcast API
+ * (`POST /realtime/v1/api/broadcast`) rather than a websocket channel so
+ * a stateless server action can fire and forget without paying the
+ * WS handshake cost on every stage transition.
+ *
+ * The transport layer is the last place `SessionRealtimeEvent` exists in
+ * full: before the message leaves this function it is scrubbed down to
+ * the strictly nudge-shaped `DisplayNudge`. `sessionId`,
+ * `currentStageTemplateId`, `direction`, and the `displayToken` itself
+ * are never forwarded to the client — the patient client refreshes
+ * canonical server data via `loadPatientDisplay(token)` on receipt.
+ *
+ * Failures (network, non-2xx, serialization) are swallowed with a warn
+ * log. The DB write has already committed by the time we publish, and
+ * a missed nudge only means the patient display will not update live
+ * for that transition — refresh still reflects the persisted state.
+ */
+export function createSupabaseSessionEventPublisher(
+  config: SupabasePublisherConfig
+): SessionEventPublisher {
+  const fetchImpl = config.fetchImpl ?? fetch;
+  const endpoint = `${stripTrailingSlash(config.url)}/realtime/v1/api/broadcast`;
+
+  return {
+    async publish(event) {
+      const nudge: DisplayNudge = {
+        type: DISPLAY_NUDGE_EVENT_NAME,
+        occurredAt: event.occurredAt,
+      };
+
+      try {
+        const response = await fetchImpl(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: config.serviceRoleKey,
+            Authorization: `Bearer ${config.serviceRoleKey}`,
+          },
+          body: JSON.stringify({
+            messages: [
+              {
+                topic: displayChannelName(event.displayToken),
+                event: DISPLAY_NUDGE_EVENT_NAME,
+                payload: nudge,
+                private: false,
+              },
+            ],
+          }),
+        });
+
+        if (!response.ok) {
+          console.warn("[realtime:supabase] broadcast non-ok response", {
+            status: response.status,
+            statusText: response.statusText,
+          });
+        }
+      } catch (error) {
+        console.warn("[realtime:supabase] broadcast failed", { error });
+      }
+    },
+  };
+}
+
+function stripTrailingSlash(value: string): string {
+  return value.endsWith("/") ? value.slice(0, -1) : value;
+}
+
+function resolveSupabaseServerConfig(): SupabasePublisherConfig | null {
+  const url =
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL ?? null;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? null;
+
+  if (!url || !serviceRoleKey) {
+    return null;
+  }
+
+  return { url, serviceRoleKey };
+}
+
 const globalForPublisher = globalThis as typeof globalThis & {
   sessionEventPublisher?: SessionEventPublisher;
 };
 
 /**
  * Lazily-initialized process-wide publisher. The singleton keeps stage
- * transitions fast by avoiding per-call allocation and gives Issue #12/#13
- * a single seam to swap the no-op for a Supabase-backed implementation.
+ * transitions fast by avoiding per-call allocation and gives the service
+ * layer a single seam it knows about.
+ *
+ * When Supabase env is configured the Supabase transport is returned;
+ * otherwise the no-op is returned. This keeps local dev, CI, and any
+ * environment that intentionally omits realtime fully functional — the
+ * database is still the source of truth on refresh.
  */
 export function getSessionEventPublisher(): SessionEventPublisher {
   if (!globalForPublisher.sessionEventPublisher) {
-    globalForPublisher.sessionEventPublisher =
-      createNoopSessionEventPublisher();
+    const supabaseConfig = resolveSupabaseServerConfig();
+    globalForPublisher.sessionEventPublisher = supabaseConfig
+      ? createSupabaseSessionEventPublisher(supabaseConfig)
+      : createNoopSessionEventPublisher();
   }
   return globalForPublisher.sessionEventPublisher;
 }
