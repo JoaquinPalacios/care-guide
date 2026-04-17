@@ -30,6 +30,14 @@ export default function DashboardPage() {
             View procedure templates (read-only)
           </Link>
         </p>
+        <p className="mt-3 text-sm leading-6 text-zinc-600">
+          <Link
+            className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-4 hover:decoration-zinc-900"
+            href="/sessions/new"
+          >
+            Start a new session
+          </Link>
+        </p>
       </div>
     </section>
   );
