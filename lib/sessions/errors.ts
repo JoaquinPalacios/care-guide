@@ -96,3 +96,13 @@ export class SessionNotFoundError extends SessionCreationError {
     super("That session could not be found for your clinic.");
   }
 }
+
+export class SessionNotTransitionableError extends SessionCreationError {
+  readonly code = "SESSION_NOT_TRANSITIONABLE";
+
+  constructor() {
+    super(
+      "That session is no longer accepting stage changes because it has already been completed."
+    );
+  }
+}

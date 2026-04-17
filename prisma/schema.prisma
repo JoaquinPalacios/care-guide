@@ -27,6 +27,11 @@ enum PatientDisplayMode {
   DETAILED
 }
 
+enum ProcedureSessionStageTransitionDirection {
+  NEXT
+  PREVIOUS
+}
+
 model Clinic {
   id                 String              @id @default(cuid())
   name               String
@@ -214,6 +219,7 @@ model ProcedureSession {
   stageState         SessionStageState?
   displayPreferences PatientDisplayPreferences?
   stageOverrides     ProcedureSessionStageOverride[]
+  stageTransitions   ProcedureSessionStageTransition[]
 
   @@index([clinicId, status])
   @@index([roomId, status])
@@ -263,4 +269,18 @@ model ProcedureSessionStageOverride {
 
   @@unique([procedureSessionId, procedureStageTemplateId])
   @@index([procedureStageTemplateId])
+}
+
+model ProcedureSessionStageTransition {
+  id                  String                                   @id @default(cuid())
+  procedureSessionId  String
+  direction           ProcedureSessionStageTransitionDirection
+  fromStageTemplateId String?
+  toStageTemplateId   String
+  actorUserId         String?
+  occurredAt          DateTime                                 @default(now())
+
+  procedureSession ProcedureSession @relation(fields: [procedureSessionId], references: [id], onDelete: Cascade)
+
+  @@index([procedureSessionId, occurredAt])
 }

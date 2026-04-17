@@ -4,34 +4,56 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CompleteSessionButton } from "@/app/session/[id]/control/complete-session-button";
+import { StageControls } from "@/app/session/[id]/control/stage-controls";
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Session control",
   description:
-    "Placeholder landing page for the session control surface. Real controls ship in a later issue.",
+    "Minimal staff control surface for advancing a procedure session through its stages.",
 };
 
 interface ControlPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function SessionControlPlaceholderPage({
-  params,
-}: ControlPageProps) {
+export default async function SessionControlPage({ params }: ControlPageProps) {
   const { id } = await params;
   const { clinicMembership } = await requireStaffSession();
   const clinic = clinicMembership!.clinic;
 
   const session = await prisma.procedureSession.findFirst({
     where: { id, clinicId: clinic.id },
-    select: { id: true, status: true },
+    select: {
+      id: true,
+      status: true,
+      procedureTemplateId: true,
+      stageState: { select: { currentStageTemplateId: true } },
+    },
   });
 
   if (!session) {
     notFound();
   }
+
+  const stages = await prisma.procedureStageTemplate.findMany({
+    where: { procedureTemplateId: session.procedureTemplateId },
+    orderBy: { stageOrder: "asc" },
+    select: { id: true, title: true, stageOrder: true },
+  });
+
+  const currentStageTemplateId =
+    session.stageState?.currentStageTemplateId ?? null;
+  const currentIndex = currentStageTemplateId
+    ? stages.findIndex((stage) => stage.id === currentStageTemplateId)
+    : -1;
+  const currentStage = currentIndex >= 0 ? stages[currentIndex] : null;
+
+  const isCompleted = session.status === ProcedureSessionStatus.COMPLETED;
+  const canMovePrevious = !isCompleted && currentIndex > 0;
+  const canMoveNext =
+    !isCompleted && currentIndex >= 0 && currentIndex < stages.length - 1;
 
   return (
     <main className="flex flex-1 justify-center bg-zinc-50 px-6 py-12">
@@ -40,15 +62,36 @@ export default async function SessionControlPlaceholderPage({
           Session control
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-950">
-          Control UI coming soon
+          {currentStage
+            ? `Stage ${currentIndex + 1} of ${stages.length}`
+            : "Session control"}
         </h1>
+        {currentStage ? (
+          <p className="mt-2 text-lg font-medium text-zinc-900">
+            {currentStage.title}
+          </p>
+        ) : null}
         <p className="mt-3 text-sm leading-6 text-zinc-600">
-          This session was created successfully and is in status
+          Status:
           <span className="mx-1 rounded-sm bg-zinc-100 px-1.5 py-0.5 font-mono text-xs text-zinc-700">
             {session.status}
           </span>
-          . The real stage controls will be delivered in a later issue.
         </p>
+
+        {!isCompleted ? (
+          <div className="mt-6">
+            <StageControls
+              sessionId={session.id}
+              canMovePrevious={canMovePrevious}
+              canMoveNext={canMoveNext}
+            />
+            <p className="mt-2 text-xs leading-5 text-zinc-500">
+              Staff-only controls. The patient display updates from database
+              state; refreshing always shows the latest persisted stage.
+            </p>
+          </div>
+        ) : null}
+
         {session.status !== ProcedureSessionStatus.COMPLETED ? (
           <div className="mt-6">
             <CompleteSessionButton sessionId={session.id} />
@@ -58,6 +101,7 @@ export default async function SessionControlPlaceholderPage({
             </p>
           </div>
         ) : null}
+
         <p className="mt-6 text-sm leading-6 text-zinc-600">
           <Link
             className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-4 hover:decoration-zinc-900"
