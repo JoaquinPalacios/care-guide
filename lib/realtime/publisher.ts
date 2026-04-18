@@ -1,19 +1,17 @@
 import "server-only";
 
 import {
-  DISPLAY_NUDGE_EVENT_NAME,
+  DISPLAY_SESSION_COMPLETED_EVENT_NAME,
+  DISPLAY_STAGE_CHANGED_EVENT_NAME,
   displayChannelName,
   type DisplayNudge,
 } from "@/lib/realtime/channel";
 
 /**
- * Minimal session-scoped realtime events surfaced by the stage-transition
- * service. Only `stage.changed` exists today and is intentionally a
- * "nudge" signal: the patient display must continue to treat the database
- * as the source of truth and re-load from the display token when signalled.
- *
- * New event variants must be additive so future issues (e.g. mode changes,
- * completion) can extend the union without breaking existing subscribers.
+ * Minimal session-scoped realtime events surfaced by patient-visible
+ * services. These remain intentionally "nudge" signals: the patient display
+ * must continue to treat the database as the source of truth and re-load
+ * from the display token when signalled.
  *
  * NOTE: this type describes the server-internal event that the publisher
  * *receives*. It is deliberately richer than the payload that leaves the
@@ -22,14 +20,21 @@ import {
  * fields (`sessionId`, `currentStageTemplateId`, `direction`, and the
  * `displayToken` itself) never leak into client subscription payloads.
  */
-export type SessionRealtimeEvent = {
-  type: "stage.changed";
-  sessionId: string;
-  displayToken: string;
-  currentStageTemplateId: string;
-  direction: "NEXT" | "PREVIOUS";
-  occurredAt: string;
-};
+export type SessionRealtimeEvent =
+  | {
+      type: "stage.changed";
+      sessionId: string;
+      displayToken: string;
+      currentStageTemplateId: string;
+      direction: "NEXT" | "PREVIOUS";
+      occurredAt: string;
+    }
+  | {
+      type: "session.completed";
+      sessionId: string;
+      displayToken: string;
+      occurredAt: string;
+    };
 
 export interface SessionEventPublisher {
   publish(event: SessionRealtimeEvent): Promise<void>;
@@ -85,7 +90,10 @@ export function createSupabaseSessionEventPublisher(
   return {
     async publish(event) {
       const nudge: DisplayNudge = {
-        type: DISPLAY_NUDGE_EVENT_NAME,
+        type:
+          event.type === "session.completed"
+            ? DISPLAY_SESSION_COMPLETED_EVENT_NAME
+            : DISPLAY_STAGE_CHANGED_EVENT_NAME,
         occurredAt: event.occurredAt,
       };
 
@@ -101,7 +109,7 @@ export function createSupabaseSessionEventPublisher(
             messages: [
               {
                 topic: displayChannelName(event.displayToken),
-                event: DISPLAY_NUDGE_EVENT_NAME,
+                event: nudge.type,
                 payload: nudge,
                 private: false,
               },

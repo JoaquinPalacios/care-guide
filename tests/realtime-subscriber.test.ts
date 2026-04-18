@@ -77,19 +77,25 @@ describe("subscribeToDisplayChannel", () => {
     expect(client.channelSpy).toHaveBeenCalledWith(EXPECTED_CHANNEL);
   });
 
-  it("registers exactly one broadcast handler for the 'stage.changed' event", () => {
+  it("registers additive broadcast handlers for stage and completion nudges", () => {
     const client = createFakeClient();
 
     subscribeToDisplayChannel({
       displayToken: DISPLAY_TOKEN,
       onStageChanged: () => {},
+      onSessionCompleted: () => {},
       client,
     });
 
-    expect(client.onSpy).toHaveBeenCalledTimes(1);
-    const [type, filter] = client.onSpy.mock.calls[0];
-    expect(type).toBe("broadcast");
-    expect(filter).toEqual({ event: "stage.changed" });
+    expect(client.onSpy).toHaveBeenCalledTimes(2);
+    expect(client.onSpy.mock.calls[0]?.[0]).toBe("broadcast");
+    expect(client.onSpy.mock.calls[0]?.[1]).toEqual({
+      event: "stage.changed",
+    });
+    expect(client.onSpy.mock.calls[1]?.[0]).toBe("broadcast");
+    expect(client.onSpy.mock.calls[1]?.[1]).toEqual({
+      event: "session.completed",
+    });
     expect(client.subscribeSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -125,6 +131,21 @@ describe("subscribeToDisplayChannel", () => {
     client.emit("stage.started");
 
     expect(onStageChanged).not.toHaveBeenCalled();
+  });
+
+  it("invokes onSessionCompleted when the completion event fires", () => {
+    const client = createFakeClient();
+    const onSessionCompleted = vi.fn();
+
+    subscribeToDisplayChannel({
+      displayToken: DISPLAY_TOKEN,
+      onStageChanged: () => {},
+      onSessionCompleted,
+      client,
+    });
+
+    client.emit("session.completed");
+    expect(onSessionCompleted).toHaveBeenCalledTimes(1);
   });
 
   it("returns an unsubscribe that removes the channel", () => {

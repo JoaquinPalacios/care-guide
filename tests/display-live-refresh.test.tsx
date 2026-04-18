@@ -46,12 +46,24 @@ describe("DisplayLiveRefresh", () => {
     expect(mocks.subscribeToDisplayChannelMock).toHaveBeenCalledWith({
       displayToken: "display_token_42",
       onStageChanged: expect.any(Function),
+      onSessionCompleted: expect.any(Function),
     });
 
     const subscription = mocks.subscribeToDisplayChannelMock.mock
       .calls[0]?.[0] as { onStageChanged: () => void } | undefined;
 
     subscription?.onStageChanged();
+
+    expect(mocks.routerRefreshMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("requests a router refresh when a completion nudge arrives", () => {
+    DisplayLiveRefresh({ token: "display_token_42" });
+
+    const subscription = mocks.subscribeToDisplayChannelMock.mock
+      .calls[0]?.[0] as { onSessionCompleted: () => void } | undefined;
+
+    subscription?.onSessionCompleted();
 
     expect(mocks.routerRefreshMock).toHaveBeenCalledTimes(1);
   });

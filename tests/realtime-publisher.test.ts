@@ -7,13 +7,20 @@ import {
   type SessionRealtimeEvent,
 } from "@/lib/realtime/publisher";
 
-const SAMPLE_EVENT: SessionRealtimeEvent = {
+const SAMPLE_STAGE_EVENT: SessionRealtimeEvent = {
   type: "stage.changed",
   sessionId: "session_1",
   displayToken: "display_token_1",
   currentStageTemplateId: "stage_2",
   direction: "NEXT",
   occurredAt: "2026-04-17T10:00:00.000Z",
+};
+
+const SAMPLE_COMPLETION_EVENT: SessionRealtimeEvent = {
+  type: "session.completed",
+  sessionId: "session_1",
+  displayToken: "display_token_1",
+  occurredAt: "2026-04-18T11:30:00.000Z",
 };
 
 const SUPABASE_URL = "https://example.supabase.co";
@@ -34,7 +41,9 @@ describe("createNoopSessionEventPublisher", () => {
   it("resolves without error for a valid event", async () => {
     const publisher = createNoopSessionEventPublisher();
 
-    await expect(publisher.publish(SAMPLE_EVENT)).resolves.toBeUndefined();
+    await expect(
+      publisher.publish(SAMPLE_STAGE_EVENT)
+    ).resolves.toBeUndefined();
   });
 });
 
@@ -50,7 +59,7 @@ describe("createSupabaseSessionEventPublisher", () => {
       fetchImpl,
     });
 
-    await publisher.publish(SAMPLE_EVENT);
+    await publisher.publish(SAMPLE_STAGE_EVENT);
 
     expect(fetchImpl).toHaveBeenCalledTimes(1);
     const [url, init] = fetchImpl.mock.calls[0];
@@ -71,12 +80,12 @@ describe("createSupabaseSessionEventPublisher", () => {
     };
     expect(body.messages).toHaveLength(1);
     const [message] = body.messages;
-    expect(message.topic).toBe(`display:${SAMPLE_EVENT.displayToken}`);
+    expect(message.topic).toBe(`display:${SAMPLE_STAGE_EVENT.displayToken}`);
     expect(message.event).toBe("stage.changed");
     expect(message.private).toBe(false);
     expect(message.payload).toEqual({
       type: "stage.changed",
-      occurredAt: SAMPLE_EVENT.occurredAt,
+      occurredAt: SAMPLE_STAGE_EVENT.occurredAt,
     });
   });
 
@@ -91,7 +100,7 @@ describe("createSupabaseSessionEventPublisher", () => {
       fetchImpl,
     });
 
-    await publisher.publish(SAMPLE_EVENT);
+    await publisher.publish(SAMPLE_STAGE_EVENT);
 
     const [, init] = fetchImpl.mock.calls[0];
     const body = init?.body as string;
@@ -118,7 +127,7 @@ describe("createSupabaseSessionEventPublisher", () => {
       fetchImpl,
     });
 
-    await publisher.publish(SAMPLE_EVENT);
+    await publisher.publish(SAMPLE_STAGE_EVENT);
 
     const [url] = fetchImpl.mock.calls[0];
     expect(url).toBe(`${SUPABASE_URL}/realtime/v1/api/broadcast`);
@@ -134,7 +143,9 @@ describe("createSupabaseSessionEventPublisher", () => {
       fetchImpl,
     });
 
-    await expect(publisher.publish(SAMPLE_EVENT)).resolves.toBeUndefined();
+    await expect(
+      publisher.publish(SAMPLE_STAGE_EVENT)
+    ).resolves.toBeUndefined();
     expect(warn).toHaveBeenCalled();
   });
 
@@ -152,8 +163,44 @@ describe("createSupabaseSessionEventPublisher", () => {
       fetchImpl,
     });
 
-    await expect(publisher.publish(SAMPLE_EVENT)).resolves.toBeUndefined();
+    await expect(
+      publisher.publish(SAMPLE_STAGE_EVENT)
+    ).resolves.toBeUndefined();
     expect(warn).toHaveBeenCalled();
+  });
+
+  it("uses a distinct additive event name for completion nudges", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValue(new Response(null, { status: 202 }));
+
+    const publisher = createSupabaseSessionEventPublisher({
+      url: SUPABASE_URL,
+      serviceRoleKey: SUPABASE_KEY,
+      fetchImpl,
+    });
+
+    await publisher.publish(SAMPLE_COMPLETION_EVENT);
+
+    const [, init] = fetchImpl.mock.calls[0];
+    const body = JSON.parse(init?.body as string) as {
+      messages: Array<{
+        topic: string;
+        event: string;
+        payload: Record<string, unknown>;
+        private: boolean;
+      }>;
+    };
+
+    expect(body.messages[0]).toEqual({
+      topic: `display:${SAMPLE_COMPLETION_EVENT.displayToken}`,
+      event: "session.completed",
+      private: false,
+      payload: {
+        type: "session.completed",
+        occurredAt: SAMPLE_COMPLETION_EVENT.occurredAt,
+      },
+    });
   });
 });
 
@@ -174,7 +221,9 @@ describe("getSessionEventPublisher", () => {
   it("falls back to a no-op publisher when Supabase env is missing", async () => {
     const publisher = getSessionEventPublisher();
 
-    await expect(publisher.publish(SAMPLE_EVENT)).resolves.toBeUndefined();
+    await expect(
+      publisher.publish(SAMPLE_STAGE_EVENT)
+    ).resolves.toBeUndefined();
   });
 
   it("returns a Supabase-backed publisher when env is configured", async () => {
@@ -185,7 +234,7 @@ describe("getSessionEventPublisher", () => {
       .mockResolvedValue(new Response(null, { status: 202 }));
 
     const publisher = getSessionEventPublisher();
-    await publisher.publish(SAMPLE_EVENT);
+    await publisher.publish(SAMPLE_STAGE_EVENT);
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     expect(fetchSpy.mock.calls[0][0]).toBe(

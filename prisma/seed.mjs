@@ -50,6 +50,7 @@ const DEMO_PROCEDURE_TEMPLATE = {
   name: "Starter Procedure Walkthrough",
   slug: "starter-procedure-walkthrough",
   isActive: true,
+  aftercareUrl: "https://www.example.com/aftercare/starter-procedure",
   stages: [
     {
       id: "proc_stage_demo_welcome",
@@ -221,6 +222,7 @@ async function main() {
       name: DEMO_PROCEDURE_TEMPLATE.name,
       slug: DEMO_PROCEDURE_TEMPLATE.slug,
       isActive: DEMO_PROCEDURE_TEMPLATE.isActive,
+      aftercareUrl: DEMO_PROCEDURE_TEMPLATE.aftercareUrl,
     },
     create: {
       id: DEMO_PROCEDURE_TEMPLATE.id,
@@ -228,6 +230,7 @@ async function main() {
       name: DEMO_PROCEDURE_TEMPLATE.name,
       slug: DEMO_PROCEDURE_TEMPLATE.slug,
       isActive: DEMO_PROCEDURE_TEMPLATE.isActive,
+      aftercareUrl: DEMO_PROCEDURE_TEMPLATE.aftercareUrl,
     },
   });
 

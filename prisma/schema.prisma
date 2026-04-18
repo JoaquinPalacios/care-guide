@@ -119,6 +119,7 @@ model ProcedureTemplate {
   name                String
   slug                String
   isActive            Boolean                               @default(true)
+  aftercareUrl        String?
   clinic              Clinic                                @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   stageTemplates      ProcedureStageTemplate[]
   selectedAreaOptions ProcedureTemplateSelectedAreaOption[]

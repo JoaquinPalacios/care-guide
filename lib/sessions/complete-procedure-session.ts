@@ -3,6 +3,10 @@ import "server-only";
 import { ProcedureSessionStatus } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
+import {
+  getSessionEventPublisher,
+  type SessionEventPublisher,
+} from "@/lib/realtime/publisher";
 import { SessionNotFoundError } from "@/lib/sessions/errors";
 
 export interface CompleteProcedureSessionInput {
@@ -21,6 +25,10 @@ const COMPLETABLE_STATUSES: ProcedureSessionStatus[] = [
 
 type PrismaLike = Pick<typeof prisma, "procedureSession">;
 
+export interface CompleteProcedureSessionDeps {
+  publisher?: SessionEventPublisher;
+}
+
 /**
  * Mark a clinic's `ProcedureSession` as `COMPLETED`, unblocking its room for
  * a new session. The status guard inside `updateMany` makes the write
@@ -35,8 +43,11 @@ type PrismaLike = Pick<typeof prisma, "procedureSession">;
  */
 export async function completeProcedureSession(
   input: CompleteProcedureSessionInput,
-  client: PrismaLike = prisma
+  client: PrismaLike = prisma,
+  deps: CompleteProcedureSessionDeps = {}
 ): Promise<CompleteProcedureSessionResult> {
+  const publisher = deps.publisher ?? getSessionEventPublisher();
+
   const result = await client.procedureSession.updateMany({
     where: {
       id: input.sessionId,
@@ -50,6 +61,30 @@ export async function completeProcedureSession(
   });
 
   if (result.count > 0) {
+    const completedSession = await client.procedureSession.findFirst({
+      where: { id: input.sessionId, clinicId: input.clinicId },
+      select: { id: true, displayToken: true, completedAt: true },
+    });
+
+    if (!completedSession) {
+      throw new SessionNotFoundError();
+    }
+
+    try {
+      await publisher.publish({
+        type: "session.completed",
+        sessionId: completedSession.id,
+        displayToken: completedSession.displayToken,
+        occurredAt: (completedSession.completedAt ?? new Date()).toISOString(),
+      });
+    } catch (error) {
+      console.warn("[realtime] session.completed publish failed", {
+        type: "session.completed",
+        sessionId: completedSession.id,
+        error,
+      });
+    }
+
     return { kind: "completed" };
   }
 

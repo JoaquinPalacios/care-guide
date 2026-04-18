@@ -1,7 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
 import {
-  DISPLAY_NUDGE_EVENT_NAME,
+  DISPLAY_SESSION_COMPLETED_EVENT_NAME,
+  DISPLAY_STAGE_CHANGED_EVENT_NAME,
   displayChannelName,
 } from "@/lib/realtime/channel";
 
@@ -28,6 +29,7 @@ export interface DisplaySubscriptionClient {
 export interface SubscribeToDisplayChannelOptions {
   displayToken: string;
   onStageChanged: () => void;
+  onSessionCompleted?: () => void;
   /**
    * Optional client override. When omitted, the subscriber tries to
    * build a default Supabase browser client from the public env vars.
@@ -38,13 +40,12 @@ export interface SubscribeToDisplayChannelOptions {
 }
 
 /**
- * Subscribe to the patient display channel for `displayToken` and invoke
- * `onStageChanged` every time a `stage.changed` broadcast arrives.
+ * Subscribe to the patient display channel for `displayToken` and invoke the
+ * provided callbacks when patient-visible nudges arrive.
  *
- * By construction this only registers a handler for the single
- * `DISPLAY_NUDGE_EVENT_NAME` event on the display-scoped channel.
- * Broadcasts with any other event name, or broadcasts on any other
- * channel, cannot reach the callback.
+ * By construction this only registers handlers for the known display-channel
+ * nudge events on the display-scoped channel. Broadcasts with any other
+ * event name, or broadcasts on any other channel, cannot reach the callbacks.
  *
  * Returns an unsubscribe function that removes the channel. The
  * function is always safe to call, including in the fallback path where
@@ -53,7 +54,7 @@ export interface SubscribeToDisplayChannelOptions {
 export function subscribeToDisplayChannel(
   options: SubscribeToDisplayChannelOptions
 ): () => void {
-  const { displayToken, onStageChanged } = options;
+  const { displayToken, onStageChanged, onSessionCompleted } = options;
 
   if (typeof displayToken !== "string" || displayToken.length === 0) {
     return () => {};
@@ -67,8 +68,11 @@ export function subscribeToDisplayChannel(
 
   const channel = client
     .channel(displayChannelName(displayToken))
-    .on("broadcast", { event: DISPLAY_NUDGE_EVENT_NAME }, () => {
+    .on("broadcast", { event: DISPLAY_STAGE_CHANGED_EVENT_NAME }, () => {
       onStageChanged();
+    })
+    .on("broadcast", { event: DISPLAY_SESSION_COMPLETED_EVENT_NAME }, () => {
+      onSessionCompleted?.();
     })
     .subscribe();
 

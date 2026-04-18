@@ -12,7 +12,7 @@ interface DisplayLiveRefreshProps {
 /**
  * Patient-side live updater. Subscribes to the display-scoped realtime
  * channel and asks the App Router to refresh the current route whenever
- * a `stage.changed` nudge arrives. Intentionally renders nothing.
+ * a patient-visible nudge arrives. Intentionally renders nothing.
  *
  * Canonical server data is re-read by `loadPatientDisplay(token)` in
  * the page's Server Component on refresh — the broadcast payload is
@@ -26,6 +26,9 @@ export function DisplayLiveRefresh({ token }: DisplayLiveRefreshProps) {
     const unsubscribe = subscribeToDisplayChannel({
       displayToken: token,
       onStageChanged: () => {
+        router.refresh();
+      },
+      onSessionCompleted: () => {
         router.refresh();
       },
     });

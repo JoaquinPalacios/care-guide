@@ -92,6 +92,13 @@ export default async function SessionControlPage({ params }: ControlPageProps) {
           </div>
         ) : null}
 
+        {isCompleted ? (
+          <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900">
+            This session is finished. Stage controls stay locked, and the room
+            is now available for a new session.
+          </div>
+        ) : null}
+
         {session.status !== ProcedureSessionStatus.COMPLETED ? (
           <div className="mt-6">
             <CompleteSessionButton sessionId={session.id} />

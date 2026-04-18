@@ -12,12 +12,13 @@
 const DISPLAY_CHANNEL_PREFIX = "display:";
 
 /**
- * The only event name we broadcast on a display channel today. Future
- * patient-visible event types must extend this union additively and get
- * their own nudge shape in `DisplayNudge` rather than overloading this
- * name.
+ * Display-channel events must remain additive. Each patient-visible nudge
+ * gets its own event name so clients can opt into the smallest set they
+ * need without overloading `stage.changed`.
  */
-export const DISPLAY_NUDGE_EVENT_NAME = "stage.changed" as const;
+export const DISPLAY_STAGE_CHANGED_EVENT_NAME = "stage.changed" as const;
+export const DISPLAY_SESSION_COMPLETED_EVENT_NAME =
+  "session.completed" as const;
 
 /**
  * Strictly the two fields that may leave the server for the patient
@@ -25,7 +26,9 @@ export const DISPLAY_NUDGE_EVENT_NAME = "stage.changed" as const;
  * authoritative is re-read from the database.
  */
 export interface DisplayNudge {
-  type: typeof DISPLAY_NUDGE_EVENT_NAME;
+  type:
+    | typeof DISPLAY_STAGE_CHANGED_EVENT_NAME
+    | typeof DISPLAY_SESSION_COMPLETED_EVENT_NAME;
   occurredAt: string;
 }
 

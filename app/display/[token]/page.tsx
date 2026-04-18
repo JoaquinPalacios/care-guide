@@ -24,6 +24,15 @@ export default async function PatientDisplayPage({ params }: DisplayPageProps) {
     return <UnavailableScreen />;
   }
 
+  if (result.kind === "completed") {
+    return (
+      <CompletedScreen
+        procedureName={result.procedureName}
+        aftercareUrl={result.aftercareUrl}
+      />
+    );
+  }
+
   const {
     procedureName,
     selectedAreaLabel,
@@ -138,6 +147,48 @@ function UnavailableScreen() {
         <p className="mt-4 text-base leading-7 text-zinc-600 sm:text-lg">
           Please ask a member of the care team for help when you are ready.
         </p>
+      </section>
+    </main>
+  );
+}
+
+function CompletedScreen({
+  procedureName,
+  aftercareUrl,
+}: {
+  procedureName: string;
+  aftercareUrl: string | null;
+}) {
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-6 py-10 sm:px-8 sm:py-16">
+      <section className="w-full max-w-2xl rounded-4xl border border-emerald-200 bg-white p-10 shadow-sm sm:p-12">
+        <p className="text-sm font-medium uppercase tracking-[0.18em] text-zinc-500">
+          {procedureName}
+        </p>
+        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
+          Your session is complete.
+        </h1>
+        <p className="mt-4 text-base leading-7 text-zinc-600 sm:text-lg">
+          Your care team has finished this part of your visit. Please take your
+          time, and let them know if you need anything before you head out.
+        </p>
+
+        {aftercareUrl ? (
+          <div className="mt-8 rounded-[1.75rem] border border-emerald-100 bg-emerald-50/70 p-6">
+            <p className="text-sm font-medium uppercase tracking-[0.16em] text-emerald-700">
+              Aftercare
+            </p>
+            <p className="mt-3 text-base leading-7 text-zinc-700">
+              Review your aftercare guidance when you are ready.
+            </p>
+            <a
+              href={aftercareUrl}
+              className="mt-4 inline-flex h-11 items-center justify-center rounded-md bg-zinc-900 px-4 text-sm font-medium text-white transition hover:bg-zinc-700"
+            >
+              Open aftercare instructions
+            </a>
+          </div>
+        ) : null}
       </section>
     </main>
   );

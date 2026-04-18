@@ -7,11 +7,17 @@ import { prisma } from "@/lib/prisma";
 /**
  * Result of a patient-display load. The route renders the same generic
  * "unavailable" screen for `kind: "unavailable"` regardless of the underlying
- * cause (unknown token, draft, completed, or defensive shape mismatch) so the
- * patient surface never leaks staff-facing state.
+ * cause (unknown token, draft, or defensive shape mismatch) so the patient
+ * surface never leaks staff-facing state. `COMPLETED` is the single exception:
+ * it has its own calm terminal view with a minimal patient-safe payload.
  */
 export type LoadPatientDisplayResult =
   | { kind: "unavailable" }
+  | {
+      kind: "completed";
+      procedureName: string;
+      aftercareUrl: string | null;
+    }
   | {
       kind: "ok";
       mode: PatientDisplayMode;
@@ -63,6 +69,7 @@ export async function loadPatientDisplay(
       procedureTemplate: {
         select: {
           name: true,
+          aftercareUrl: true,
           stageTemplates: {
             orderBy: { stageOrder: "asc" },
             select: {
@@ -97,6 +104,14 @@ export async function loadPatientDisplay(
 
   if (!session) {
     return UNAVAILABLE;
+  }
+
+  if (session.status === ProcedureSessionStatus.COMPLETED) {
+    return {
+      kind: "completed",
+      procedureName: session.procedureTemplate.name,
+      aftercareUrl: session.procedureTemplate.aftercareUrl ?? null,
+    };
   }
 
   if (session.status !== ProcedureSessionStatus.ACTIVE) {

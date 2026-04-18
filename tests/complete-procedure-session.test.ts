@@ -29,6 +29,8 @@ import { SessionNotFoundError } from "@/lib/sessions/errors";
 
 const SESSION_ID = "session_1";
 const CLINIC_ID = "clinic_1";
+const DISPLAY_TOKEN = "display_token_1";
+const COMPLETED_AT = new Date("2026-04-18T11:30:00.000Z");
 
 function buildInput(
   overrides: Partial<Parameters<typeof completeProcedureSession>[0]> = {}
@@ -47,6 +49,11 @@ describe("completeProcedureSession", () => {
 
   it("transitions a DRAFT session to COMPLETED and reports completed", async () => {
     prismaMock.procedureSession.updateMany.mockResolvedValue({ count: 1 });
+    prismaMock.procedureSession.findFirst.mockResolvedValue({
+      id: SESSION_ID,
+      displayToken: DISPLAY_TOKEN,
+      completedAt: COMPLETED_AT,
+    });
 
     const result = await completeProcedureSession(buildInput());
 
@@ -64,11 +71,19 @@ describe("completeProcedureSession", () => {
         completedAt: expect.any(Date),
       }),
     });
-    expect(prismaMock.procedureSession.findFirst).not.toHaveBeenCalled();
+    expect(prismaMock.procedureSession.findFirst).toHaveBeenCalledWith({
+      where: { id: SESSION_ID, clinicId: CLINIC_ID },
+      select: { id: true, displayToken: true, completedAt: true },
+    });
   });
 
   it("transitions an ACTIVE session to COMPLETED via the same status guard", async () => {
     prismaMock.procedureSession.updateMany.mockResolvedValue({ count: 1 });
+    prismaMock.procedureSession.findFirst.mockResolvedValue({
+      id: SESSION_ID,
+      displayToken: DISPLAY_TOKEN,
+      completedAt: COMPLETED_AT,
+    });
 
     const result = await completeProcedureSession(buildInput());
 
@@ -84,6 +99,11 @@ describe("completeProcedureSession", () => {
 
   it("does not write `startedAt` when transitioning to COMPLETED", async () => {
     prismaMock.procedureSession.updateMany.mockResolvedValue({ count: 1 });
+    prismaMock.procedureSession.findFirst.mockResolvedValue({
+      id: SESSION_ID,
+      displayToken: DISPLAY_TOKEN,
+      completedAt: COMPLETED_AT,
+    });
 
     await completeProcedureSession(buildInput());
 
@@ -107,6 +127,46 @@ describe("completeProcedureSession", () => {
       where: { id: SESSION_ID, clinicId: CLINIC_ID },
       select: { status: true },
     });
+  });
+
+  it("publishes a completion nudge after a successful completion", async () => {
+    const publisher = { publish: vi.fn().mockResolvedValue(undefined) };
+    prismaMock.procedureSession.updateMany.mockResolvedValue({ count: 1 });
+    prismaMock.procedureSession.findFirst.mockResolvedValue({
+      id: SESSION_ID,
+      displayToken: DISPLAY_TOKEN,
+      completedAt: COMPLETED_AT,
+    });
+
+    const result = await completeProcedureSession(buildInput(), undefined, {
+      publisher,
+    });
+
+    expect(result).toEqual({ kind: "completed" });
+    expect(publisher.publish).toHaveBeenCalledWith({
+      type: "session.completed",
+      sessionId: SESSION_ID,
+      displayToken: DISPLAY_TOKEN,
+      occurredAt: COMPLETED_AT.toISOString(),
+    });
+  });
+
+  it("swallows completion nudge publish failures so completion stays safe", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const publisher = { publish: vi.fn().mockRejectedValue(new Error("boom")) };
+    prismaMock.procedureSession.updateMany.mockResolvedValue({ count: 1 });
+    prismaMock.procedureSession.findFirst.mockResolvedValue({
+      id: SESSION_ID,
+      displayToken: DISPLAY_TOKEN,
+      completedAt: COMPLETED_AT,
+    });
+
+    const result = await completeProcedureSession(buildInput(), undefined, {
+      publisher,
+    });
+
+    expect(result).toEqual({ kind: "completed" });
+    expect(warn).toHaveBeenCalled();
   });
 
   it("throws SessionNotFoundError when the session belongs to another clinic", async () => {

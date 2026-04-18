@@ -35,6 +35,7 @@ const OTHER_STAGE_ID = "stage_other";
 interface BuildSessionOverrides {
   status?: "DRAFT" | "ACTIVE" | "COMPLETED";
   mode?: "CALM" | "STANDARD" | "DETAILED";
+  aftercareUrl?: string | null;
   selectedAreaOption?: { label: string } | null;
   stageOverrides?: Array<{
     procedureStageTemplateId: string;
@@ -86,6 +87,10 @@ function buildSession(overrides: BuildSessionOverrides = {}) {
     status: overrides.status ?? "ACTIVE",
     procedureTemplate: {
       name: "Routine Cleaning",
+      aftercareUrl:
+        overrides.aftercareUrl === undefined
+          ? "https://example.test/aftercare"
+          : overrides.aftercareUrl,
       stageTemplates:
         overrides.currentStageInTemplatePresent === false
           ? stageTemplates.filter((stage) => stage.id !== STAGE_ID)
@@ -156,14 +161,32 @@ describe("loadPatientDisplay", () => {
     expect(result).toEqual({ kind: "unavailable" });
   });
 
-  it("returns unavailable for COMPLETED sessions", async () => {
+  it("returns a minimal completed payload for COMPLETED sessions", async () => {
     prismaMock.client.procedureSession.findUnique.mockResolvedValueOnce(
       buildSession({ status: "COMPLETED" })
     );
 
     const result = await loadPatientDisplay(TOKEN);
 
-    expect(result).toEqual({ kind: "unavailable" });
+    expect(result).toEqual({
+      kind: "completed",
+      procedureName: "Routine Cleaning",
+      aftercareUrl: "https://example.test/aftercare",
+    });
+  });
+
+  it("returns a completed payload without aftercare when no aftercareUrl is configured", async () => {
+    prismaMock.client.procedureSession.findUnique.mockResolvedValueOnce(
+      buildSession({ status: "COMPLETED", aftercareUrl: null })
+    );
+
+    const result = await loadPatientDisplay(TOKEN);
+
+    expect(result).toEqual({
+      kind: "completed",
+      procedureName: "Routine Cleaning",
+      aftercareUrl: null,
+    });
   });
 
   it("returns unavailable when stage state is missing", async () => {
@@ -509,6 +532,7 @@ describe("loadPatientDisplay", () => {
     });
     expect(call!.select.procedureTemplate.select).toEqual({
       name: true,
+      aftercareUrl: true,
       stageTemplates: {
         orderBy: { stageOrder: "asc" },
         select: {
@@ -521,5 +545,41 @@ describe("loadPatientDisplay", () => {
         },
       },
     });
+  });
+
+  it("returns only patient-safe top-level keys for completed results", async () => {
+    prismaMock.client.procedureSession.findUnique.mockResolvedValueOnce(
+      buildSession({ status: "COMPLETED" })
+    );
+
+    const result = await loadPatientDisplay(TOKEN);
+
+    expect(result.kind).toBe("completed");
+    if (result.kind !== "completed") return;
+
+    expect(Object.keys(result).sort()).toEqual(
+      ["kind", "procedureName", "aftercareUrl"].sort()
+    );
+
+    const flat = JSON.stringify(result);
+    for (const forbidden of [
+      "clinicId",
+      "doctor",
+      "room",
+      "displayToken",
+      "createdAt",
+      "updatedAt",
+      "startedAt",
+      "completedAt",
+      "id",
+      "internalNotes",
+      "selectedAreaLabel",
+      "currentStage",
+      "nextStage",
+      "progress",
+      "mode",
+    ]) {
+      expect(flat).not.toContain(forbidden);
+    }
   });
 });
