@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+const createClientMock = vi.hoisted(() => vi.fn());
+
+vi.mock("@supabase/supabase-js", () => ({
+  createClient: createClientMock,
+}));
+
 import type {
   DisplaySubscriptionChannel,
   DisplaySubscriptionClient,
@@ -11,6 +17,7 @@ const EXPECTED_CHANNEL = `display:${DISPLAY_TOKEN}`;
 
 afterEach(() => {
   delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+  delete process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   vi.restoreAllMocks();
 });
@@ -145,6 +152,26 @@ describe("subscribeToDisplayChannel", () => {
 
     expect(() => unsubscribe()).not.toThrow();
     expect(onStageChanged).not.toHaveBeenCalled();
+  });
+
+  it("falls back to the legacy anon key when no publishable key is present", () => {
+    const client = createFakeClient();
+    createClientMock.mockReturnValue(client);
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "legacy-anon-key";
+
+    const unsubscribe = subscribeToDisplayChannel({
+      displayToken: DISPLAY_TOKEN,
+      onStageChanged: () => {},
+    });
+
+    expect(createClientMock).toHaveBeenCalledWith(
+      "https://example.supabase.co",
+      "legacy-anon-key"
+    );
+
+    unsubscribe();
+    expect(client.removeChannelSpy).toHaveBeenCalledTimes(1);
   });
 
   it("returns a no-op unsubscribe when the display token is empty", () => {
