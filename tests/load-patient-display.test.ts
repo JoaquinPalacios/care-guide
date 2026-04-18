@@ -28,6 +28,8 @@ import { loadPatientDisplay } from "@/lib/sessions/load-patient-display";
 
 const TOKEN = "valid-token-abc";
 const STAGE_ID = "stage_1";
+const NEXT_STAGE_ID = "stage_2";
+const FINAL_STAGE_ID = "stage_3";
 const OTHER_STAGE_ID = "stage_other";
 
 interface BuildSessionOverrides {
@@ -43,14 +45,52 @@ interface BuildSessionOverrides {
   }>;
   illustrationUrl?: string | null;
   stageStatePresent?: boolean;
-  currentStageTemplatePresent?: boolean;
+  currentStageTemplateId?: string;
+  currentStageInTemplatePresent?: boolean;
   displayPreferencesPresent?: boolean;
 }
 
 function buildSession(overrides: BuildSessionOverrides = {}) {
+  const stageTemplates = [
+    {
+      id: STAGE_ID,
+      title: "Numbing the area",
+      calmCopy: "We are gently numbing the area.",
+      patientCopy: "Numbing the area now.",
+      detailedCopy: "Applying topical anesthetic followed by injection.",
+      illustrationUrl:
+        overrides.illustrationUrl === undefined
+          ? "https://example.test/numb.png"
+          : overrides.illustrationUrl,
+    },
+    {
+      id: NEXT_STAGE_ID,
+      title: "Checking the tooth",
+      calmCopy: "We are taking a close look.",
+      patientCopy: "Checking the tooth carefully.",
+      detailedCopy:
+        "Inspecting the tooth and confirming the next treatment step.",
+      illustrationUrl: null,
+    },
+    {
+      id: FINAL_STAGE_ID,
+      title: "Finishing this part",
+      calmCopy: "We are finishing this part.",
+      patientCopy: "Finishing this part now.",
+      detailedCopy: "Completing the final steps for this part of your visit.",
+      illustrationUrl: null,
+    },
+  ];
+
   return {
     status: overrides.status ?? "ACTIVE",
-    procedureTemplate: { name: "Routine Cleaning" },
+    procedureTemplate: {
+      name: "Routine Cleaning",
+      stageTemplates:
+        overrides.currentStageInTemplatePresent === false
+          ? stageTemplates.filter((stage) => stage.id !== STAGE_ID)
+          : stageTemplates,
+    },
     selectedAreaOption:
       overrides.selectedAreaOption === undefined
         ? { label: "Upper left molar" }
@@ -63,22 +103,8 @@ function buildSession(overrides: BuildSessionOverrides = {}) {
       overrides.stageStatePresent === false
         ? null
         : {
-            currentStageTemplateId: STAGE_ID,
-            currentStageTemplate:
-              overrides.currentStageTemplatePresent === false
-                ? null
-                : {
-                    id: STAGE_ID,
-                    title: "Numbing the area",
-                    calmCopy: "We are gently numbing the area.",
-                    patientCopy: "Numbing the area now.",
-                    detailedCopy:
-                      "Applying topical anesthetic followed by injection.",
-                    illustrationUrl:
-                      overrides.illustrationUrl === undefined
-                        ? "https://example.test/numb.png"
-                        : overrides.illustrationUrl,
-                  },
+            currentStageTemplateId:
+              overrides.currentStageTemplateId ?? STAGE_ID,
           },
     stageOverrides: overrides.stageOverrides ?? [],
   };
@@ -150,9 +176,9 @@ describe("loadPatientDisplay", () => {
     expect(result).toEqual({ kind: "unavailable" });
   });
 
-  it("returns unavailable when the current stage template is missing", async () => {
+  it("returns unavailable when the current stage template is missing from the ordered template", async () => {
     prismaMock.client.procedureSession.findUnique.mockResolvedValueOnce(
-      buildSession({ currentStageTemplatePresent: false })
+      buildSession({ currentStageInTemplatePresent: false })
     );
 
     const result = await loadPatientDisplay(TOKEN);
@@ -182,10 +208,19 @@ describe("loadPatientDisplay", () => {
       mode: "STANDARD",
       procedureName: "Routine Cleaning",
       selectedAreaLabel: "Upper left molar",
+      progress: {
+        current: 1,
+        total: 3,
+        label: "Step 1 of 3",
+      },
       currentStage: {
         title: "Numbing the area",
         copy: "Numbing the area now.",
         illustrationUrl: "https://example.test/numb.png",
+      },
+      nextStage: {
+        title: "Checking the tooth",
+        copy: "Checking the tooth carefully.",
       },
     });
   });
@@ -201,6 +236,7 @@ describe("loadPatientDisplay", () => {
       kind: "ok",
       mode: "CALM",
       currentStage: { copy: "We are gently numbing the area." },
+      nextStage: { copy: "We are taking a close look." },
     });
   });
 
@@ -243,6 +279,49 @@ describe("loadPatientDisplay", () => {
     expect(result).toMatchObject({
       kind: "ok",
       currentStage: { illustrationUrl: null },
+    });
+  });
+
+  it("computes progress from the current stage position", async () => {
+    prismaMock.client.procedureSession.findUnique.mockResolvedValueOnce(
+      buildSession({ currentStageTemplateId: NEXT_STAGE_ID })
+    );
+
+    const result = await loadPatientDisplay(TOKEN);
+
+    expect(result).toMatchObject({
+      kind: "ok",
+      progress: {
+        current: 2,
+        total: 3,
+        label: "Step 2 of 3",
+      },
+      currentStage: {
+        title: "Checking the tooth",
+        copy: "Checking the tooth carefully.",
+      },
+      nextStage: {
+        title: "Finishing this part",
+        copy: "Finishing this part now.",
+      },
+    });
+  });
+
+  it("returns nextStage as null for the last ordered stage", async () => {
+    prismaMock.client.procedureSession.findUnique.mockResolvedValueOnce(
+      buildSession({ currentStageTemplateId: FINAL_STAGE_ID })
+    );
+
+    const result = await loadPatientDisplay(TOKEN);
+
+    expect(result).toMatchObject({
+      kind: "ok",
+      progress: {
+        current: 3,
+        total: 3,
+        label: "Step 3 of 3",
+      },
+      nextStage: null,
     });
   });
 
@@ -300,6 +379,33 @@ describe("loadPatientDisplay", () => {
     });
   });
 
+  it("uses mode-matched overrides for the next stage preview", async () => {
+    prismaMock.client.procedureSession.findUnique.mockResolvedValueOnce(
+      buildSession({
+        mode: "DETAILED",
+        stageOverrides: [
+          {
+            procedureStageTemplateId: NEXT_STAGE_ID,
+            title: "Custom next stage title",
+            calmCopy: null,
+            patientCopy: null,
+            detailedCopy: "Custom detailed next-step preview.",
+          },
+        ],
+      })
+    );
+
+    const result = await loadPatientDisplay(TOKEN);
+
+    expect(result).toMatchObject({
+      kind: "ok",
+      nextStage: {
+        title: "Custom next stage title",
+        copy: "Custom detailed next-step preview.",
+      },
+    });
+  });
+
   it("ignores overrides that target a different stage template", async () => {
     prismaMock.client.procedureSession.findUnique.mockResolvedValueOnce(
       buildSession({
@@ -342,12 +448,19 @@ describe("loadPatientDisplay", () => {
         "mode",
         "procedureName",
         "selectedAreaLabel",
+        "progress",
         "currentStage",
+        "nextStage",
       ].sort()
     );
     expect(Object.keys(result.currentStage).sort()).toEqual(
       ["title", "copy", "illustrationUrl"].sort()
     );
+    expect(result.progress).toEqual({
+      current: 1,
+      total: 3,
+      label: "Step 1 of 3",
+    });
 
     const flat = JSON.stringify(result);
     for (const forbidden of [
@@ -391,5 +504,22 @@ describe("loadPatientDisplay", () => {
     expect(call!.select).not.toHaveProperty("doctor");
     expect(call!.select).not.toHaveProperty("room");
     expect(call!.select).not.toHaveProperty("displayToken");
+    expect(call!.select.stageState.select).toEqual({
+      currentStageTemplateId: true,
+    });
+    expect(call!.select.procedureTemplate.select).toEqual({
+      name: true,
+      stageTemplates: {
+        orderBy: { stageOrder: "asc" },
+        select: {
+          id: true,
+          title: true,
+          calmCopy: true,
+          patientCopy: true,
+          detailedCopy: true,
+          illustrationUrl: true,
+        },
+      },
+    });
   });
 });

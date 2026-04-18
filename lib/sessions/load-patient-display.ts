@@ -17,11 +17,20 @@ export type LoadPatientDisplayResult =
       mode: PatientDisplayMode;
       procedureName: string;
       selectedAreaLabel: string | null;
+      progress: {
+        current: number;
+        total: number;
+        label: string;
+      };
       currentStage: {
         title: string;
         copy: string;
         illustrationUrl: string | null;
       };
+      nextStage: {
+        title: string;
+        copy: string;
+      } | null;
     };
 
 type PrismaLike = Pick<typeof prisma, "procedureSession">;
@@ -51,13 +60,11 @@ export async function loadPatientDisplay(
     where: { displayToken },
     select: {
       status: true,
-      procedureTemplate: { select: { name: true } },
-      selectedAreaOption: { select: { label: true } },
-      displayPreferences: { select: { mode: true } },
-      stageState: {
+      procedureTemplate: {
         select: {
-          currentStageTemplateId: true,
-          currentStageTemplate: {
+          name: true,
+          stageTemplates: {
+            orderBy: { stageOrder: "asc" },
             select: {
               id: true,
               title: true,
@@ -67,6 +74,13 @@ export async function loadPatientDisplay(
               illustrationUrl: true,
             },
           },
+        },
+      },
+      selectedAreaOption: { select: { label: true } },
+      displayPreferences: { select: { mode: true } },
+      stageState: {
+        select: {
+          currentStageTemplateId: true,
         },
       },
       stageOverrides: {
@@ -90,10 +104,10 @@ export async function loadPatientDisplay(
   }
 
   const stageState = session.stageState;
-  const currentStageTemplate = stageState?.currentStageTemplate;
   const currentStageTemplateId = stageState?.currentStageTemplateId;
+  const orderedStages = session.procedureTemplate.stageTemplates;
 
-  if (!stageState || !currentStageTemplateId || !currentStageTemplate) {
+  if (!stageState || !currentStageTemplateId || orderedStages.length === 0) {
     return UNAVAILABLE;
   }
 
@@ -102,27 +116,56 @@ export async function loadPatientDisplay(
     return UNAVAILABLE;
   }
 
-  const override = session.stageOverrides.find(
-    (entry) => entry.procedureStageTemplateId === currentStageTemplateId
+  const currentIndex = orderedStages.findIndex(
+    (stage) => stage.id === currentStageTemplateId
   );
 
-  const title = override?.title ?? currentStageTemplate.title;
-  const copy = resolveCopy(
-    displayPreferences.mode,
-    currentStageTemplate,
-    override
-  );
+  if (currentIndex === -1) {
+    return UNAVAILABLE;
+  }
+
+  const currentStageTemplate = orderedStages[currentIndex];
+  const nextStageTemplate = orderedStages[currentIndex + 1] ?? null;
+
+  const currentStage = resolveStageContent({
+    mode: displayPreferences.mode,
+    template: currentStageTemplate,
+    override: session.stageOverrides.find(
+      (entry) => entry.procedureStageTemplateId === currentStageTemplate.id
+    ),
+  });
+
+  const nextStage = nextStageTemplate
+    ? resolveStageContent({
+        mode: displayPreferences.mode,
+        template: nextStageTemplate,
+        override: session.stageOverrides.find(
+          (entry) => entry.procedureStageTemplateId === nextStageTemplate.id
+        ),
+      })
+    : null;
 
   return {
     kind: "ok",
     mode: displayPreferences.mode,
     procedureName: session.procedureTemplate.name,
     selectedAreaLabel: session.selectedAreaOption?.label ?? null,
+    progress: {
+      current: currentIndex + 1,
+      total: orderedStages.length,
+      label: `Step ${currentIndex + 1} of ${orderedStages.length}`,
+    },
     currentStage: {
-      title,
-      copy,
+      title: currentStage.title,
+      copy: currentStage.copy,
       illustrationUrl: currentStageTemplate.illustrationUrl ?? null,
     },
+    nextStage: nextStage
+      ? {
+          title: nextStage.title,
+          copy: nextStage.copy,
+        }
+      : null,
   };
 }
 
@@ -133,9 +176,30 @@ interface StageCopyFields {
 }
 
 interface StageCopyOverrideFields {
+  title: string | null;
   calmCopy: string | null;
   patientCopy: string | null;
   detailedCopy: string | null;
+}
+
+interface ResolvedStageContent {
+  title: string;
+  copy: string;
+}
+
+function resolveStageContent({
+  mode,
+  template,
+  override,
+}: {
+  mode: PatientDisplayMode;
+  template: StageCopyFields & { title: string };
+  override: StageCopyOverrideFields | undefined;
+}): ResolvedStageContent {
+  return {
+    title: override?.title ?? template.title,
+    copy: resolveCopy(mode, template, override),
+  };
 }
 
 function resolveCopy(
