@@ -32,14 +32,48 @@ enum ProcedureSessionStageTransitionDirection {
   PREVIOUS
 }
 
+enum Specialty {
+  DENTAL
+}
+
+enum GuideRevisionStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum PracticeGuideStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum GuideSectionKind {
+  INTRODUCTION
+  IMMEDIATE_CARE
+  FIRST_24_HOURS
+  RECOVERY_TIMELINE
+  WHAT_IS_NORMAL
+  PAIN
+  RESTRICTIONS
+  MEDICATIONS
+  SITE_CARE
+  WHAT_TO_AVOID
+  WARNING_SIGNS
+  CONTACT_PRACTICE
+  EMERGENCY
+  CUSTOM
+}
+
 model Clinic {
   id                 String              @id @default(cuid())
   name               String
+  slug               String              @unique
   memberships        ClinicMembership[]
   procedureTemplates ProcedureTemplate[]
   rooms              Room[]
   doctors            Doctor[]
   procedureSessions  ProcedureSession[]
+  profile            ClinicProfile?
+  practiceGuides     PracticeGuide[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 }
@@ -284,4 +318,136 @@ model ProcedureSessionStageTransition {
   procedureSession ProcedureSession @relation(fields: [procedureSessionId], references: [id], onDelete: Cascade)
 
   @@index([procedureSessionId, occurredAt])
+}
+
+model ClinicProfile {
+  clinicId                 String   @id
+  displayName              String
+  logoUrl                  String?
+  primaryColor             String?
+  accentColor              String?
+  phone                    String?
+  addressLine1             String?
+  addressLine2             String?
+  city                     String?
+  region                   String?
+  postalCode               String?
+  country                  String?
+  bookingUrl               String?
+  contactUrl               String?
+  contactEmail             String?
+  emergencyInstructions    String?
+  showCareGuideAttribution Boolean  @default(true)
+  clinic                   Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+}
+
+model GuideTemplate {
+  id             String                  @id @default(cuid())
+  specialty      Specialty
+  slug           String                  @unique
+  title          String
+  isActive       Boolean                 @default(true)
+  revisions      GuideTemplateRevision[]
+  practiceGuides PracticeGuide[]
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+
+  @@index([specialty, isActive])
+}
+
+model GuideTemplateRevision {
+  id              String                 @id @default(cuid())
+  guideTemplateId String
+  version         Int
+  status          GuideRevisionStatus    @default(DRAFT)
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  publishedAt     DateTime?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  guideTemplate   GuideTemplate          @relation(fields: [guideTemplateId], references: [id], onDelete: Cascade)
+  sections        GuideTemplateSection[]
+  practiceGuides  PracticeGuide[]
+
+  @@unique([guideTemplateId, version])
+  @@unique([id, guideTemplateId])
+  @@index([guideTemplateId, status])
+}
+
+model GuideTemplateSection {
+  id         String                @id @default(cuid())
+  revisionId String
+  key        String
+  kind       GuideSectionKind
+  title      String
+  body       String                @db.Text
+  sortOrder  Int
+  revision   GuideTemplateRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
+
+  @@unique([revisionId, key])
+  @@unique([revisionId, sortOrder])
+  @@index([revisionId])
+}
+
+/// A practice-enabled canonical guide. `guideTemplateId` is both the
+/// template identity and part of the composite foreign key to the pinned
+/// revision, so a practice guide cannot pin a revision from another template.
+model PracticeGuide {
+  id               String                  @id @default(cuid())
+  clinicId         String
+  guideTemplateId  String
+  pinnedRevisionId String
+  publicSlug       String
+  isEnabled        Boolean                 @default(false)
+  status           PracticeGuideStatus     @default(DRAFT)
+  sortOrder        Int                     @default(0)
+  publishedAt      DateTime?
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+  clinic           Clinic                  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  guideTemplate    GuideTemplate           @relation(fields: [guideTemplateId], references: [id], onDelete: Restrict)
+  pinnedRevision   GuideTemplateRevision   @relation(fields: [pinnedRevisionId, guideTemplateId], references: [id, guideTemplateId], onDelete: Restrict)
+  overrides        PracticeGuideOverride[]
+  additions        PracticeGuideAddition[]
+
+  @@unique([clinicId, guideTemplateId])
+  @@unique([clinicId, publicSlug])
+  @@index([clinicId, status, isEnabled])
+  @@index([guideTemplateId])
+  @@index([pinnedRevisionId])
+}
+
+model PracticeGuideOverride {
+  id              String        @id @default(cuid())
+  practiceGuideId String
+  sectionKey      String
+  title           String
+  body            String        @db.Text
+  practiceGuide   PracticeGuide @relation(fields: [practiceGuideId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([practiceGuideId, sectionKey])
+  @@index([practiceGuideId])
+}
+
+model PracticeGuideAddition {
+  id                    String           @id @default(cuid())
+  practiceGuideId       String
+  key                   String
+  kind                  GuideSectionKind
+  title                 String
+  body                  String           @db.Text
+  sortOrder             Int
+  insertAfterSectionKey String?
+  practiceGuide         PracticeGuide    @relation(fields: [practiceGuideId], references: [id], onDelete: Cascade)
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+
+  @@unique([practiceGuideId, key])
+  @@index([practiceGuideId])
 }

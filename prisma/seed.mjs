@@ -16,6 +16,7 @@ const DEMO_PASSWORD = "CareGuideDemo123!";
 const DEMO_CLINIC = {
   id: "clinic_demo_rivers",
   name: "Rivers Care Demo Clinic",
+  slug: "demodental",
 };
 
 const DEMO_USERS = {
@@ -249,6 +250,105 @@ const DEMO_PROCEDURE_TEMPLATES = [
   },
 ];
 
+const DEMO_DISCLAIMER =
+  "DEMO CONTENT ONLY — this is fictional Care Guide sample copy for local development. It is not clinical advice and must not be given to patients.";
+
+const DEMO_CLINIC_PROFILE = {
+  displayName: "Riverside Dental Demo",
+  logoUrl: null,
+  primaryColor: "#0f766e",
+  accentColor: "#f59e0b",
+  phone: "02 5550 0100",
+  addressLine1: "12 Riverside Demo Street",
+  addressLine2: null,
+  city: "Sydney",
+  region: "NSW",
+  postalCode: "2000",
+  country: "AU",
+  bookingUrl: "https://www.example.com/riverside-dental-demo/book",
+  contactUrl: "https://www.example.com/riverside-dental-demo/contact",
+  contactEmail: "hello@riverside-dental-demo.example",
+  emergencyInstructions:
+    "DEMO: If this were a real practice, patients would call the clinic during hours or emergency services if they have trouble breathing, uncontrolled bleeding, or rapidly worsening swelling. This demo text is not clinical advice.",
+  showCareGuideAttribution: true,
+};
+
+const DEMO_EXTRACTION_GUIDE = {
+  templateId: "guide_tmpl_demo_extraction",
+  specialty: "DENTAL",
+  slug: "extraction",
+  title: "Tooth Extraction",
+  revisionId: "guide_rev_demo_extraction_v1",
+  version: 1,
+  practiceGuideId: "practice_guide_demo_rivers_extraction",
+  overrideId: "practice_override_demo_rivers_extraction_contact",
+  additionId: "practice_addition_demo_rivers_extraction_hours",
+  publishedAt: new Date("2026-08-31T00:00:00.000Z"),
+  sections: [
+    {
+      id: "guide_sec_demo_extraction_intro",
+      key: "introduction",
+      kind: "INTRODUCTION",
+      title: "About this demo guide",
+      sortOrder: 1,
+      body: `${DEMO_DISCLAIMER}\n\nThis sample “Tooth Extraction” guide exists so Care Guide can demonstrate canonical aftercare content for the Riverside Dental Demo tenant.`,
+    },
+    {
+      id: "guide_sec_demo_extraction_immediate",
+      key: "immediate-care",
+      kind: "IMMEDIATE_CARE",
+      title: "What to do first (demo)",
+      sortOrder: 2,
+      body: `${DEMO_DISCLAIMER}\n\nA real practice would describe immediate post-extraction steps here. This paragraph is placeholder demo copy only.`,
+    },
+    {
+      id: "guide_sec_demo_extraction_first_day",
+      key: "first-24-hours",
+      kind: "FIRST_24_HOURS",
+      title: "The first day (demo)",
+      sortOrder: 3,
+      body: `${DEMO_DISCLAIMER}\n\nCanonical demo text for the first 24 hours. Riverside Dental Demo overrides this section in the seeded PracticeGuide.`,
+    },
+    {
+      id: "guide_sec_demo_extraction_normal",
+      key: "what-is-normal",
+      kind: "WHAT_IS_NORMAL",
+      title: "What this demo treats as normal",
+      sortOrder: 4,
+      body: `${DEMO_DISCLAIMER}\n\nThis section would usually describe expected recovery sensations. The seeded text is intentionally generic and non-clinical.`,
+    },
+    {
+      id: "guide_sec_demo_extraction_warnings",
+      key: "warning-signs",
+      kind: "WARNING_SIGNS",
+      title: "Warning signs (demo)",
+      sortOrder: 5,
+      body: `${DEMO_DISCLAIMER}\n\nA production guide would list warning signs here. Do not treat this demo list as medical guidance.`,
+    },
+    {
+      id: "guide_sec_demo_extraction_contact",
+      key: "contact-practice",
+      kind: "CONTACT_PRACTICE",
+      title: "Contact the practice (demo)",
+      sortOrder: 6,
+      body: `${DEMO_DISCLAIMER}\n\nCanonical contact prompt. Patients would normally use the practice phone and booking links from the clinic profile, not this paragraph.`,
+    },
+  ],
+  override: {
+    sectionKey: "first-24-hours",
+    title: "The first day at Riverside Dental Demo",
+    body: `${DEMO_DISCLAIMER}\n\nPractice override: Riverside Dental Demo asks patients to use the demo after-hours number on the clinic profile if they have questions during the first evening. This is sample customisation, not clinical advice.`,
+  },
+  addition: {
+    key: "weekend-contact",
+    kind: "CUSTOM",
+    title: "Weekend contact (Riverside demo)",
+    sortOrder: 1,
+    insertAfterSectionKey: "contact-practice",
+    body: `${DEMO_DISCLAIMER}\n\nPractice addition: this extra section shows how Riverside Dental Demo can insert local information after a canonical section. It is not a real on-call roster.`,
+  },
+};
+
 function createPasswordHash(password) {
   const salt = randomBytes(16).toString("hex");
   const hash = scryptSync(password, salt, 64).toString("hex");
@@ -343,11 +443,153 @@ async function upsertProcedureTemplate(clinicId, template) {
   return procedureTemplate;
 }
 
+async function upsertAftercareDemo(clinicId) {
+  await prisma.clinicProfile.upsert({
+    where: { clinicId },
+    update: DEMO_CLINIC_PROFILE,
+    create: {
+      clinicId,
+      ...DEMO_CLINIC_PROFILE,
+    },
+  });
+
+  const template = await prisma.guideTemplate.upsert({
+    where: { id: DEMO_EXTRACTION_GUIDE.templateId },
+    update: {
+      specialty: DEMO_EXTRACTION_GUIDE.specialty,
+      slug: DEMO_EXTRACTION_GUIDE.slug,
+      title: DEMO_EXTRACTION_GUIDE.title,
+      isActive: true,
+    },
+    create: {
+      id: DEMO_EXTRACTION_GUIDE.templateId,
+      specialty: DEMO_EXTRACTION_GUIDE.specialty,
+      slug: DEMO_EXTRACTION_GUIDE.slug,
+      title: DEMO_EXTRACTION_GUIDE.title,
+      isActive: true,
+    },
+  });
+
+  const revision = await prisma.guideTemplateRevision.upsert({
+    where: { id: DEMO_EXTRACTION_GUIDE.revisionId },
+    update: {
+      guideTemplateId: template.id,
+      version: DEMO_EXTRACTION_GUIDE.version,
+      status: "PUBLISHED",
+      publishedAt: DEMO_EXTRACTION_GUIDE.publishedAt,
+      reviewedAt: DEMO_EXTRACTION_GUIDE.publishedAt,
+      reviewedBy: "Care Guide demo seed",
+    },
+    create: {
+      id: DEMO_EXTRACTION_GUIDE.revisionId,
+      guideTemplateId: template.id,
+      version: DEMO_EXTRACTION_GUIDE.version,
+      status: "PUBLISHED",
+      publishedAt: DEMO_EXTRACTION_GUIDE.publishedAt,
+      reviewedAt: DEMO_EXTRACTION_GUIDE.publishedAt,
+      reviewedBy: "Care Guide demo seed",
+    },
+  });
+
+  for (const section of DEMO_EXTRACTION_GUIDE.sections) {
+    await prisma.guideTemplateSection.upsert({
+      where: { id: section.id },
+      update: {
+        revisionId: revision.id,
+        key: section.key,
+        kind: section.kind,
+        title: section.title,
+        body: section.body,
+        sortOrder: section.sortOrder,
+      },
+      create: {
+        id: section.id,
+        revisionId: revision.id,
+        key: section.key,
+        kind: section.kind,
+        title: section.title,
+        body: section.body,
+        sortOrder: section.sortOrder,
+      },
+    });
+  }
+
+  const practiceGuide = await prisma.practiceGuide.upsert({
+    where: { id: DEMO_EXTRACTION_GUIDE.practiceGuideId },
+    update: {
+      clinicId,
+      guideTemplateId: template.id,
+      pinnedRevisionId: revision.id,
+      publicSlug: DEMO_EXTRACTION_GUIDE.slug,
+      isEnabled: true,
+      status: "PUBLISHED",
+      sortOrder: 1,
+      publishedAt: DEMO_EXTRACTION_GUIDE.publishedAt,
+    },
+    create: {
+      id: DEMO_EXTRACTION_GUIDE.practiceGuideId,
+      clinicId,
+      guideTemplateId: template.id,
+      pinnedRevisionId: revision.id,
+      publicSlug: DEMO_EXTRACTION_GUIDE.slug,
+      isEnabled: true,
+      status: "PUBLISHED",
+      sortOrder: 1,
+      publishedAt: DEMO_EXTRACTION_GUIDE.publishedAt,
+    },
+  });
+
+  await prisma.practiceGuideOverride.upsert({
+    where: { id: DEMO_EXTRACTION_GUIDE.overrideId },
+    update: {
+      practiceGuideId: practiceGuide.id,
+      sectionKey: DEMO_EXTRACTION_GUIDE.override.sectionKey,
+      title: DEMO_EXTRACTION_GUIDE.override.title,
+      body: DEMO_EXTRACTION_GUIDE.override.body,
+    },
+    create: {
+      id: DEMO_EXTRACTION_GUIDE.overrideId,
+      practiceGuideId: practiceGuide.id,
+      sectionKey: DEMO_EXTRACTION_GUIDE.override.sectionKey,
+      title: DEMO_EXTRACTION_GUIDE.override.title,
+      body: DEMO_EXTRACTION_GUIDE.override.body,
+    },
+  });
+
+  await prisma.practiceGuideAddition.upsert({
+    where: { id: DEMO_EXTRACTION_GUIDE.additionId },
+    update: {
+      practiceGuideId: practiceGuide.id,
+      key: DEMO_EXTRACTION_GUIDE.addition.key,
+      kind: DEMO_EXTRACTION_GUIDE.addition.kind,
+      title: DEMO_EXTRACTION_GUIDE.addition.title,
+      body: DEMO_EXTRACTION_GUIDE.addition.body,
+      sortOrder: DEMO_EXTRACTION_GUIDE.addition.sortOrder,
+      insertAfterSectionKey:
+        DEMO_EXTRACTION_GUIDE.addition.insertAfterSectionKey,
+    },
+    create: {
+      id: DEMO_EXTRACTION_GUIDE.additionId,
+      practiceGuideId: practiceGuide.id,
+      key: DEMO_EXTRACTION_GUIDE.addition.key,
+      kind: DEMO_EXTRACTION_GUIDE.addition.kind,
+      title: DEMO_EXTRACTION_GUIDE.addition.title,
+      body: DEMO_EXTRACTION_GUIDE.addition.body,
+      sortOrder: DEMO_EXTRACTION_GUIDE.addition.sortOrder,
+      insertAfterSectionKey:
+        DEMO_EXTRACTION_GUIDE.addition.insertAfterSectionKey,
+    },
+  });
+
+  return { template, revision, practiceGuide };
+}
+
 async function main() {
   const clinic = await prisma.clinic.upsert({
     where: { id: DEMO_CLINIC.id },
     update: {
       name: DEMO_CLINIC.name,
+      slug: DEMO_CLINIC.slug,
     },
     create: DEMO_CLINIC,
   });
@@ -424,8 +666,12 @@ async function main() {
     procedureTemplates.push(await upsertProcedureTemplate(clinic.id, template));
   }
 
+  const aftercareDemo = await upsertAftercareDemo(clinic.id);
+
   console.info("Seeded clinic-scoped demo data:");
-  console.info(`- Clinic: ${clinic.name} (${clinic.id})`);
+  console.info(
+    `- Clinic: ${clinic.name} (${clinic.id}) slug=${DEMO_CLINIC.slug}`
+  );
   console.info(
     `- Admin: ${adminUser.email} / ${DEMO_PASSWORD} (${DEMO_USERS.admin.role})`
   );
@@ -440,6 +686,15 @@ async function main() {
   }
   console.info(`- Room: ${room.name} (${room.id})`);
   console.info(`- Doctor: ${doctor.name} (${doctor.id})`);
+  console.info(
+    `- Clinic profile: ${DEMO_CLINIC_PROFILE.displayName} (patient-facing)`
+  );
+  console.info(
+    `- Aftercare template: ${aftercareDemo.template.title} (${aftercareDemo.template.slug}) revision v${aftercareDemo.revision.version}`
+  );
+  console.info(
+    `- Practice guide: ${aftercareDemo.practiceGuide.publicSlug} pinned=${aftercareDemo.revision.id} published/enabled`
+  );
 }
 
 main()

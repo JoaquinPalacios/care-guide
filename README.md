@@ -24,29 +24,31 @@ Authoritative product contract:
 
 ## Current implementation
 
-**The aftercare SaaS described above is not implemented yet.**
+**The aftercare SaaS described above is not a complete product yet.**
 
-This repository currently contains a **different, parked product capability**: clinic-staff authentication plus an in-chair procedure-session workflow (rooms, doctors, live stages, `/display/[token]`, Supabase Realtime, and a completed-session link to an external `aftercareUrl`).
+Phase 1A added the **data/domain foundation** (tenant slug, clinic profile, canonical guide revisions, practice guides, composition, public loaders). There are **no** public tenant hostnames or patient aftercare pages yet.
+
+This repository also contains a **parked product capability**: clinic-staff authentication plus an in-chair procedure-session workflow (rooms, doctors, live stages, `/display/[token]`, Supabase Realtime, and a completed-session link to an external `aftercareUrl`).
 
 That chairside workflow is **parked / future optional**. Do not delete it. Do not use it as the aftercare architecture. **Aftercare must not depend on `ProcedureSession`.**
 
-| | |
-| --- | --- |
-| Product direction | Branded aftercare infrastructure (PRD v1.0) |
-| Current code | Staff auth + parked chairside sessions |
-| Aftercare MVP | Planned (Phases 1–3 in the PRD). Not built. |
+|                   |                                                                    |
+| ----------------- | ------------------------------------------------------------------ |
+| Product direction | Branded aftercare infrastructure (PRD v1.0)                        |
+| Current code      | Staff auth + parked chairside sessions + Phase 1A aftercare domain |
+| Aftercare MVP     | Planned (Phases 1–3 in the PRD). Phase 1A domain only.             |
 
 Examples of **intended** product behaviour that do **not** exist in code yet:
 
 - branded clinic subdomains such as `<tenant>.<platform-domain>`
-- canonical aftercare guide library with practice enablement
-- practice additions/overrides and publish flow
 - public tenant aftercare homepage and `/<guide>` routes
 - QR codes for durable aftercare URLs
 - Care Guide operator aftercare admin
 - basic anonymous aftercare analytics
 
-Pacific Dental is a **conceptual routing example only**. Seeded demo data uses the fictional **Rivers Care Demo Clinic**. Do not reproduce a real practice’s brand assets unless explicitly approved.
+Phase 1A did add the aftercare **domain model** (canonical template + pinned revision + practice override/addition) and demo seed. That is not the public product.
+
+Pacific Dental is a **conceptual routing example only**. Seeded demo data uses the fictional **Rivers Care Demo Clinic** (`demodental` / Riverside Dental Demo). Do not reproduce a real practice’s brand assets unless explicitly approved.
 
 ---
 
@@ -120,12 +122,14 @@ If `AUTH_SECRET` is missing, the app fails fast with a clear startup error inste
 
 The seed creates one fictional clinic plus two clinic-scoped staff users:
 
-- Clinic: `Rivers Care Demo Clinic`
+- Clinic: `Rivers Care Demo Clinic` (`clinic_demo_rivers`)
+- Tenant slug: `demodental`
+- Patient-facing profile: `Riverside Dental Demo`
 - Admin: `admin@care-guide.test`
 - Staff: `staff@care-guide.test`
 - Shared demo password: `CareGuideDemo123!`
 
-The seed also creates parked chairside fixtures (room, doctor, procedure templates). Those templates are **not** the aftercare Guide Template library.
+The seed also creates parked chairside fixtures (room, doctor, procedure templates) and one canonical aftercare **Tooth Extraction** demo guide. Chairside templates are **not** the aftercare Guide Template library. Aftercare demo copy is labelled non-clinical.
 
 ## Current staff auth (implemented)
 
