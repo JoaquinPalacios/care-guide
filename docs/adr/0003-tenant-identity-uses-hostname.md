@@ -40,6 +40,6 @@ Hostname is ultimately **tenant configuration**, so a future custom-domain tier 
 - `Clinic` will need a tenant slug (or equivalent) in a later implementation phase; it does not have one today.
 - DNS and hosting remain infrastructure choices for later; this ADR is a product requirement.
 
-## Notes for later implementation
+## Implementation notes (Phase 1B)
 
-Do not ship `/[clinicSlug]/[guideSlug]` as the identity model. Do not implement custom domains in MVP. Validate slug/hostname rules in Phase 3.
+`CARE_GUIDE_ROOT_DOMAIN` is the platform root. `lib/tenancy/parse-hostname.ts` classifies Host. `proxy.ts` rewrites `<slug>.<root>` to `/_sites/<slug>/…` with no database access. Direct `/_sites` is 404. `Clinic.slug` (added in Phase 1A) is loaded in `app/%5Fsites/[tenant]`. Custom domains remain out of scope.

@@ -29,6 +29,10 @@ Clinic self-service is not required for MVP; operator admin still belongs on the
 - Later cookie, CORS, and host configuration must respect this split.
 - Existing single-origin staff + `/display/[token]` setup stays as parked chairside behaviour until an explicit later decision.
 
+## Implementation notes (Phase 1B)
+
+Tenant hosts block staff/parked paths (`/login`, `/dashboard`, `/sessions`, `/session`, `/display`, `/api/auth`). `app.<root>` is a staff alias for the same application. Auth cookies stay host-only; Phase 1B does not set `Domain=.localhost` or a production parent-domain cookie.
+
 ## Notes for later implementation
 
 Do not gate `https://<tenant>.<platform-domain>/<guide>` on `requireStaffSession()`. Do not reuse the chairside display token as aftercare auth.

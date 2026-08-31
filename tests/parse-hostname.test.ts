@@ -1,0 +1,117 @@
+import { describe, expect, it } from "vitest";
+
+import { parseHostname } from "@/lib/tenancy/parse-hostname";
+
+const LOCAL_ROOT = "localhost";
+const PROD_ROOT = "example.com";
+
+describe("parseHostname", () => {
+  it("classifies localhost:3000 as staff", () => {
+    expect(parseHostname("localhost:3000", LOCAL_ROOT)).toEqual({
+      kind: "staff",
+    });
+  });
+
+  it("classifies app.localhost:3000 as staff", () => {
+    expect(parseHostname("app.localhost:3000", LOCAL_ROOT)).toEqual({
+      kind: "staff",
+    });
+  });
+
+  it("classifies demodental.localhost:3000 as a tenant", () => {
+    expect(parseHostname("demodental.localhost:3000", LOCAL_ROOT)).toEqual({
+      kind: "tenant",
+      slug: "demodental",
+    });
+  });
+
+  it("classifies production-shaped <slug>.<root> as a tenant", () => {
+    expect(parseHostname("demodental.example.com", PROD_ROOT)).toEqual({
+      kind: "tenant",
+      slug: "demodental",
+    });
+  });
+
+  it("classifies production apex and app hosts as staff", () => {
+    expect(parseHostname("example.com", PROD_ROOT)).toEqual({ kind: "staff" });
+    expect(parseHostname("app.example.com", PROD_ROOT)).toEqual({
+      kind: "staff",
+    });
+  });
+
+  it("classifies reserved subdomains as non-tenant", () => {
+    expect(parseHostname("www.localhost", LOCAL_ROOT)).toEqual({
+      kind: "reserved",
+      label: "www",
+    });
+    expect(parseHostname("admin.localhost:3000", LOCAL_ROOT)).toEqual({
+      kind: "reserved",
+      label: "admin",
+    });
+    expect(parseHostname("api.example.com", PROD_ROOT)).toEqual({
+      kind: "reserved",
+      label: "api",
+    });
+  });
+
+  it("rejects an unrelated domain", () => {
+    expect(parseHostname("evil.example", LOCAL_ROOT)).toEqual({
+      kind: "invalid",
+    });
+    expect(parseHostname("demodental.other.com", PROD_ROOT)).toEqual({
+      kind: "invalid",
+    });
+  });
+
+  it("rejects suffix-spoof domains", () => {
+    expect(
+      parseHostname("demodental.localhost.evil.example", LOCAL_ROOT)
+    ).toEqual({ kind: "invalid" });
+    expect(
+      parseHostname("demodental.example.com.evil.example", PROD_ROOT)
+    ).toEqual({ kind: "invalid" });
+  });
+
+  it("rejects extra hostname labels", () => {
+    expect(parseHostname("foo.bar.localhost", LOCAL_ROOT)).toEqual({
+      kind: "invalid",
+    });
+    expect(parseHostname("a.b.example.com", PROD_ROOT)).toEqual({
+      kind: "invalid",
+    });
+  });
+
+  it("rejects a malformed or empty host", () => {
+    expect(parseHostname("", LOCAL_ROOT)).toEqual({ kind: "invalid" });
+    expect(parseHostname("   ", LOCAL_ROOT)).toEqual({ kind: "invalid" });
+    expect(parseHostname(null, LOCAL_ROOT)).toEqual({ kind: "invalid" });
+    expect(parseHostname("localhost:abc", LOCAL_ROOT)).toEqual({
+      kind: "invalid",
+    });
+    expect(parseHostname("demodental.localhost:3000/path", LOCAL_ROOT)).toEqual(
+      {
+        kind: "invalid",
+      }
+    );
+  });
+
+  it("strips the port before classifying", () => {
+    expect(parseHostname("demodental.localhost:3000", LOCAL_ROOT)).toEqual({
+      kind: "tenant",
+      slug: "demodental",
+    });
+    expect(parseHostname("localhost:3000", LOCAL_ROOT)).toEqual({
+      kind: "staff",
+    });
+  });
+
+  it("normalizes uppercase hostnames", () => {
+    expect(parseHostname("DemoDental.LocalHost:3000", LOCAL_ROOT)).toEqual({
+      kind: "tenant",
+      slug: "demodental",
+    });
+    expect(parseHostname("APP.EXAMPLE.COM", PROD_ROOT)).toEqual({
+      kind: "staff",
+    });
+  });
+});

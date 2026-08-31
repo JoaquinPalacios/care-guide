@@ -16,4 +16,4 @@ This directory is the product and architecture documentation for Care Guide.
 2. Read the [ADRs](adr/README.md) for the architectural decisions the PRD depends on.
 3. Use [WORKING-MEMORY.md](product/WORKING-MEMORY.md) only as a map of the current repository.
 
-The aftercare **product** described in the PRD is not complete. Phase 1A added the data/domain foundation only; public tenant routes do not exist yet. The application also contains a parked chairside procedure-session product. See PRD §26 and [ADR 0009](adr/0009-existing-chairside-product-is-parked.md).
+The aftercare **product** described in the PRD is not complete. Phase 1A added the data/domain foundation and Phase 1B added tenant hostname routing; branded patient UI is not built yet. The application also contains a parked chairside procedure-session product. See PRD §26 and [ADR 0009](adr/0009-existing-chairside-product-is-parked.md).

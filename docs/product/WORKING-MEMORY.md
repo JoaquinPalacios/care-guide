@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-08-31 (Phase 1A domain foundation)
+Last updated: 2026-08-31 (Phase 1B tenant hostname routing)
 
 ---
 
@@ -14,16 +14,16 @@ Last updated: 2026-08-31 (Phase 1A domain foundation)
 |                                |                                                                                                                                                                                                          |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics |
-| **Current implementation**     | Staff auth + parked chairside sessions + **Phase 1A aftercare data/domain foundation** (no public tenant routes yet)                                                                                     |
-| **Aftercare MVP implemented?** | **No** — Phase 1A only                                                                                                                                                                                   |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A aftercare data/domain + **Phase 1B tenant hostname routing** (no branded patient UI yet)                                                               |
+| **Aftercare MVP implemented?** | **No** — Phase 1A + 1B only                                                                                                                                                                              |
 
-Do not claim branded subdomains, public aftercare pages, QR codes, or operator aftercare admin exist until they are built.
+Do not claim branded patient aftercare UI, QR codes, or operator aftercare admin exist until they are built. Hostname routing (Phase 1B) is implemented; the tenant pages are a routing boundary only.
 
 ---
 
 ## Phase 1A (implemented)
 
-Data/domain foundation only. No `proxy.ts`, no hostname routing, no patient-facing pages.
+Data/domain foundation. Patient UI is not in 1A.
 
 | Area                   | Location                                                                                                                                                                                       |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -42,16 +42,33 @@ Caching: no `cacheComponents`, no `cacheTag()`. Request-level `React.cache()` wa
 
 ---
 
+## Phase 1B (implemented)
+
+Hostname tenant resolution. No branded patient UI.
+
+| Area            | Location                                                                          |
+| --------------- | --------------------------------------------------------------------------------- |
+| Root domain     | `CARE_GUIDE_ROOT_DOMAIN` (`lib/tenancy/root-domain.ts`)                           |
+| Parser          | `lib/tenancy/parse-hostname.ts` — apex/app staff, reserved, tenant, invalid       |
+| Reserved labels | `lib/tenancy/reserved-slugs.ts`                                                   |
+| Proxy           | `proxy.ts` — rewrite only; no Prisma/auth/tenant-existence lookup                 |
+| Internal routes | `app/%5Fsites/[tenant]/**` (URL `/_sites/<slug>/…`, blocked from the public Host) |
+| Tenant check    | `requireTenantClinic` → `getClinicBySlug` → `notFound()`                          |
+
+Local URLs: `localhost:3000` and `app.localhost:3000` stay staff/parked. `demodental.localhost:3000` rewrites internally. `unknown.localhost:3000` is a generic 404. Tenant hosts block `/login`, `/dashboard`, `/sessions`, `/session`, `/display`, `/api/auth`. Direct `/_sites` is 404.
+
+---
+
 ## Do not do (until a later explicit task)
 
-- Phase 1B hostname routing (`proxy.ts`, `lib/tenancy/parse-hostname.ts`, `app/_sites/**`, `*.localhost`)
-- Patient-facing aftercare pages or branding components
+- Phase 1C patient-facing aftercare pages or branding components
 - Enable `cacheComponents: true`
 - Delete or refactor parked chairside functionality
 - Depend aftercare on `ProcedureSession`
 - Reuse `ProcedureTemplate` as the aftercare Guide Template
 - Use real Pacific Dental brand assets
 - Author scraped/clinically authoritative copy from random websites
+- Parent-domain auth cookies (`Domain=.localhost`)
 
 ---
 
@@ -62,6 +79,7 @@ Caching: no `cacheComponents`, no `cacheTag()`. Request-level `React.cache()` wa
 - Staff auth: `auth.ts`, `lib/auth/*`, `/login`, `/dashboard` layout guard `requireStaffSession()`
 - Clinic-scoped query patterns (membership-derived clinic id)
 - Aftercare domain: `GuideTemplate` → `GuideTemplateRevision` → `GuideTemplateSection`; `PracticeGuide` + override/addition
+- Tenancy: `lib/tenancy/*`, `proxy.ts`, `app/%5Fsites/[tenant]`
 
 ---
 
@@ -104,7 +122,6 @@ Pacific Dental appears in the PRD only as a **conceptual** hostname example (`pa
 
 ## Phase 1 remainder (not started)
 
-**1B** — hostname tenant resolution, local `*.localhost` simulation, public routes.  
 **1C+** — patient UI, revalidation, remaining vertical-slice surfaces.
 
 Phase 1 is a technical vertical slice, not commercial MVP. Commercial MVP is after Phase 3 (see PRD §19 and §22).

@@ -26,22 +26,21 @@ Authoritative product contract:
 
 **The aftercare SaaS described above is not a complete product yet.**
 
-Phase 1A added the **data/domain foundation** (tenant slug, clinic profile, canonical guide revisions, practice guides, composition, public loaders). There are **no** public tenant hostnames or patient aftercare pages yet.
+Phase 1A added the **data/domain foundation**. Phase 1B added **tenant hostname routing** (`proxy.ts` rewrite to `/_sites/<slug>/…`) with a minimal internal route boundary. There is **no** branded patient aftercare UI yet.
 
 This repository also contains a **parked product capability**: clinic-staff authentication plus an in-chair procedure-session workflow (rooms, doctors, live stages, `/display/[token]`, Supabase Realtime, and a completed-session link to an external `aftercareUrl`).
 
 That chairside workflow is **parked / future optional**. Do not delete it. Do not use it as the aftercare architecture. **Aftercare must not depend on `ProcedureSession`.**
 
-|                   |                                                                    |
-| ----------------- | ------------------------------------------------------------------ |
-| Product direction | Branded aftercare infrastructure (PRD v1.0)                        |
-| Current code      | Staff auth + parked chairside sessions + Phase 1A aftercare domain |
-| Aftercare MVP     | Planned (Phases 1–3 in the PRD). Phase 1A domain only.             |
+|                   |                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| Product direction | Branded aftercare infrastructure (PRD v1.0)                                          |
+| Current code      | Staff auth + parked chairside sessions + Phase 1A domain + Phase 1B hostname routing |
+| Aftercare MVP     | Planned (Phases 1–3 in the PRD). Phase 1A–1B only.                                   |
 
 Examples of **intended** product behaviour that do **not** exist in code yet:
 
-- branded clinic subdomains such as `<tenant>.<platform-domain>`
-- public tenant aftercare homepage and `/<guide>` routes
+- branded clinic aftercare homepage and guide UI
 - QR codes for durable aftercare URLs
 - Care Guide operator aftercare admin
 - basic anonymous aftercare analytics
@@ -60,7 +59,18 @@ This is a [Next.js](https://nextjs.org) App Router project.
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The current root page is a temporary **internal staff** landing page (login / parked chairside dashboard), not a patient aftercare homepage.
+Staff / parked chairside (unchanged):
+
+- [http://localhost:3000](http://localhost:3000)
+- [http://app.localhost:3000](http://app.localhost:3000)
+
+Tenant hostname simulation (`*.localhost`, no `/etc/hosts` changes):
+
+- [http://demodental.localhost:3000](http://demodental.localhost:3000) — known demo tenant
+- [http://demodental.localhost:3000/extraction](http://demodental.localhost:3000/extraction) — rewritten tenant guide path
+- [http://unknown.localhost:3000](http://unknown.localhost:3000) — unknown tenant (generic not-found)
+
+Set `CARE_GUIDE_ROOT_DOMAIN=localhost` in `.env`. The current tenant pages are a Phase 1B routing boundary only; branded patient UI is not built yet.
 
 You can start editing `app/page.tsx`; the page auto-updates as you edit.
 
