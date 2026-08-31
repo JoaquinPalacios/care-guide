@@ -11,3 +11,27 @@ This version has breaking changes — APIs, conventions, and file structure may 
 Authoritative product requirements: `docs/product/PRD.md` (v1.0 — Aftercare SaaS).
 
 Care Guide’s **product direction** is branded aftercare SaaS for healthcare practices. The **current codebase** is staff auth, a **parked** chairside procedure-session product, and the Phase 1A aftercare data/domain foundation (no public tenant routes yet). Do not treat chairside sessions as the aftercare architecture. Aftercare must not depend on `ProcedureSession`. Do not claim aftercare MVP features are implemented until they exist.
+
+# Dependency and runtime baseline
+
+Prefer the **latest stable, mutually compatible** version of every direct production and development dependency. Do not stay on an older direct version merely because it currently works.
+
+Do not use alpha, beta, rc, canary, experimental, or preview packages unless there is no suitable stable package for the required capability **and** the exception is listed below. Do not treat a prerelease dist-tag as “latest”.
+
+Verify versions from registry metadata (`pnpm outdated`, `pnpm view`) rather than assuming freshness. “Latest stable” still means the newest versions that keep this repository’s peer-dependency graph working.
+
+Production runtime: latest actively supported **Node.js LTS** (currently 24.x). Do not use Node Current solely because the version number is higher.
+
+Package manager: latest stable pnpm, pinned via `packageManager`.
+
+## Current exceptions
+
+| Package     | Current         | Latest stable                 | Why latest cannot be used                                                                                | Evidence                                                                                                                    | Planned resolution                                                          |
+| ----------- | --------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `next-auth` | `5.0.0-beta.32` | `4.24.15` (`latest` dist-tag) | The app already uses Auth.js v5 (Prisma adapter, `auth.ts`). npm `latest` is v4, a different major line. | `pnpm view next-auth dist-tags` — `latest` is v4; v5 is only on `beta`. Moving to v4 is a significant auth-stack migration. | Stay on the v5 beta line until Auth.js publishes a stable v5, then upgrade. |
+
+`prisma` CLI’s npm `latest` dist-tag currently points at `8.0.0-rc.*`. That is a prerelease. Direct Prisma packages stay on the latest **stable** 7.x line that matches `@prisma/client` (`7.10.0`). That is policy compliance, not an exception.
+
+`@types/node` tracks the Node 24 LTS contract (`^24`), not `@types/node@latest` (Node Current 26).
+
+TypeScript is `7.0.2` (latest stable). `eslint-config-next` still loads `typescript-eslint` 8.x, which requires the TypeScript 5/6 compiler API (`ts.Extension`). TypeScript 7 no longer exports that API from `require("typescript")`, so this repo does not import `eslint-config-next`. ESLint 10 uses `@next/eslint-plugin-next` plus `@babel/eslint-parser` with TypeScript/JSX plugins until `typescript-eslint` supports TypeScript 7. Do not downgrade TypeScript to restore `eslint-config-next`.
