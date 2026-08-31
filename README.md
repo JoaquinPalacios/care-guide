@@ -1,11 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Care Guide
 
-## Database Workflow
+## Product direction
+
+Care Guide is a **B2B SaaS platform** that lets healthcare practices give patients **clear, branded, mobile-first post-treatment aftercare guides** through **permanent web URLs and QR codes**.
+
+- The **practice** is the customer.
+- The **patient** is the end user of the aftercare experience.
+- Care Guide operates the platform, curated guide library, publishing, and admin tools.
+
+The first vertical is **Dental**. The intended patient URL shape is:
+
+```text
+<tenant>.<platform-domain>/<guide>
+```
+
+for example `pacificdental.<platform-domain>/extraction`. The commercial platform domain is **not selected**; do not treat any domain in this repo as final.
+
+Authoritative product contract:
+
+- [docs/product/PRD.md](docs/product/PRD.md) — Care Guide PRD v1.0 — Aftercare SaaS
+- [docs/adr/](docs/adr/README.md) — architecture decisions
+- [docs/README.md](docs/README.md) — documentation index
+
+## Current implementation
+
+**The aftercare SaaS described above is not implemented yet.**
+
+This repository currently contains a **different, parked product capability**: clinic-staff authentication plus an in-chair procedure-session workflow (rooms, doctors, live stages, `/display/[token]`, Supabase Realtime, and a completed-session link to an external `aftercareUrl`).
+
+That chairside workflow is **parked / future optional**. Do not delete it. Do not use it as the aftercare architecture. **Aftercare must not depend on `ProcedureSession`.**
+
+| | |
+| --- | --- |
+| Product direction | Branded aftercare infrastructure (PRD v1.0) |
+| Current code | Staff auth + parked chairside sessions |
+| Aftercare MVP | Planned (Phases 1–3 in the PRD). Not built. |
+
+Examples of **intended** product behaviour that do **not** exist in code yet:
+
+- branded clinic subdomains such as `<tenant>.<platform-domain>`
+- canonical aftercare guide library with practice enablement
+- practice additions/overrides and publish flow
+- public tenant aftercare homepage and `/<guide>` routes
+- QR codes for durable aftercare URLs
+- Care Guide operator aftercare admin
+- basic anonymous aftercare analytics
+
+Pacific Dental is a **conceptual routing example only**. Seeded demo data uses the fictional **Rivers Care Demo Clinic**. Do not reproduce a real practice’s brand assets unless explicitly approved.
+
+---
+
+## Getting started
+
+This is a [Next.js](https://nextjs.org) App Router project.
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). The current root page is a temporary **internal staff** landing page (login / parked chairside dashboard), not a patient aftercare homepage.
+
+You can start editing `app/page.tsx`; the page auto-updates as you edit.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to load Geist.
+
+## Database workflow
 
 This project uses Postgres with Prisma for application data.
 
-Issue #2 replaces the temporary Prisma bootstrap model with the first real
-clinic-scoped staff schema:
+Issue #2 replaced the temporary Prisma bootstrap model with the first real clinic-scoped staff schema:
 
 - `Clinic`
 - `User`
@@ -14,10 +77,7 @@ clinic-scoped staff schema:
 - `Session`
 - `VerificationToken`
 
-The Auth.js adapter models now use the canonical Prisma names for low-risk
-adapter compatibility. To keep future product concepts unambiguous, any later
-workflow/session domain model should use an explicit name such as
-`ProcedureSession`, rather than reusing a generic `Session` name.
+The Auth.js adapter models use the canonical Prisma names for adapter compatibility. The parked chairside workflow uses the explicit name `ProcedureSession` rather than a generic `Session` name. **New aftercare models must not reuse `ProcedureTemplate` / `ProcedureSession` for the aftercare domain** (see the PRD glossary).
 
 ### Local Postgres
 
@@ -54,52 +114,32 @@ AUTH_SECRET="replace-with-a-long-random-string"
 7. Open Prisma Studio with `pnpm db:studio`.
 8. Seed the demo clinic and staff accounts with `pnpm db:seed`.
 
-If `AUTH_SECRET` is missing, the app now fails fast with a clear startup error instead of surfacing repeated Auth.js `MissingSecret` errors later during requests.
+If `AUTH_SECRET` is missing, the app fails fast with a clear startup error instead of surfacing repeated Auth.js `MissingSecret` errors later during requests.
 
 ### Seeded demo accounts
 
-The seed creates one clinic plus two clinic-scoped staff users:
+The seed creates one fictional clinic plus two clinic-scoped staff users:
 
 - Clinic: `Rivers Care Demo Clinic`
 - Admin: `admin@care-guide.test`
 - Staff: `staff@care-guide.test`
 - Shared demo password: `CareGuideDemo123!`
 
-### Issue #3 constraints
+The seed also creates parked chairside fixtures (room, doctor, procedure templates). Those templates are **not** the aftercare Guide Template library.
 
-Issue #3 auth wiring should build on this schema without expanding into broader
-product models:
+## Current staff auth (implemented)
 
-- Treat clinic access as membership-derived, not as a single clinic field on `User`.
-- Keep Auth.js on the canonical `Account`, `Session`, and `VerificationToken`
-  Prisma models.
-- Reserve explicit names such as `ProcedureSession` for later workflow/domain
-  tables instead of introducing another generic `Session` concept.
-- Keep the server auth surface minimal and internal-tool oriented.
-- Do not add password reset, invites, OAuth providers, account settings, or
-  extra auth UI in Issue #3.
-- Do not build protected route behavior or dashboard shell behavior yet.
+Clinic access is membership-derived (`ClinicMembership`), not a single clinic field on `User`. Auth.js uses the canonical `Account`, `Session`, and `VerificationToken` Prisma models. For the current staff helpers, one effective clinic membership per signed-in user is assumed; multiple memberships fail explicitly instead of silently choosing one.
 
-### Issue #3 auth server wiring
-
-Issue #3 adds a server-first Auth.js setup with:
+### Auth server wiring
 
 - `auth.ts` as the root Auth.js configuration
 - `@auth/prisma-adapter` against the canonical Prisma models
 - database-backed sessions
 - a minimal internal credentials sign-in handler for seeded staff accounts
-- reusable server helpers for the current signed-in user and clinic membership
-  context
+- reusable server helpers for the current signed-in user and clinic membership context
 
-### Exercising auth before login UI exists
-
-Before Issue #4 adds `/login`, auth is intended to be exercised through the
-minimal auth API surface:
-
-1. Start the app with `pnpm dev`.
-2. `POST` JSON credentials to `/api/auth/login`.
-3. Reuse the returned cookie when calling `/api/auth/me` or `/api/auth/session`.
-4. `POST` to `/api/auth/logout` to clear the session and cookie.
+The MVP auth flow uses custom `/api/auth/login` and `/api/auth/logout` endpoints layered on top of Auth.js database sessions and shared server-side auth helpers.
 
 Example login request:
 
@@ -109,149 +149,77 @@ curl -X POST http://localhost:3000/api/auth/login \
   -d '{"email":"admin@care-guide.test","password":"CareGuideDemo123!"}'
 ```
 
-This keeps Issue #3 internal-tool oriented and avoids shipping a custom login
-page before Issue `#4`.
+Related routes:
 
-Issue `#4` should consume this existing contract rather than replace it: the
-MVP auth flow currently uses custom `/api/auth/login` and `/api/auth/logout`
-endpoints layered on top of Auth.js database sessions and shared server-side
-auth helpers.
+- `POST /api/auth/login`
+- `GET /api/auth/me` or `/api/auth/session`
+- `POST /api/auth/logout`
+- `/login` — email/password form; successful sign-in redirects to `/dashboard`
+- `app/dashboard/layout.tsx` — protected shell via `lib/auth/require-staff-session.ts`
 
-### Issue #4 login page
+Signed-out visits to `/dashboard` redirect to `/login`. Signed-in visits to `/login` redirect to `/dashboard`. Only users with one effective clinic membership can establish a valid staff session for that shell.
 
-Issue #4 adds a minimal `/login` page that validates email and password with
-Zod, posts credentials to `/api/auth/login`, shows concise failure states, and
-redirects successful sign-ins to `/dashboard`.
+Later **aftercare operator admin** should reuse this kind of server-side protection on an admin host; it is not the same product surface as clinic chairside controls. Clinic self-service aftercare admin is **out of MVP**.
 
-The `/dashboard` route is intentionally only a very small temporary landing page
-for the redirect flow. Protected dashboard behavior and signed-out route gating
-remain deferred to Issue `#5`.
+## Parked chairside implementation notes
 
-### Issue #5 protected dashboard shell
+The following describes **current code**, classified as parked / future optional. It is not the aftercare MVP.
 
-Issue #5 adds the first durable protected-route pattern for internal staff
-pages:
+Historical issue notes below are kept so existing staff/session work stays understandable. Do not extend this domain to “implement aftercare.”
 
-- `app/dashboard/layout.tsx` is the protected shell for `/dashboard`
-- `lib/auth/require-staff-session.ts` is the intentionally tiny server-side
-  guard helper
-- only users with one effective clinic membership can establish a valid staff
-  session for the protected shell
-- signed-out visits to `/dashboard` redirect to `/login`
-- signed-in visits to `/login` redirect to `/dashboard`
-- the shell exposes only minimal signed-in chrome plus logout
+### Procedure templates (chairside)
 
-This guard should stay narrow for now. Later internal staff routes should reuse
-the same server-side shell and helper pattern rather than introducing a second
-auth abstraction or route-protection mechanism.
+Clinic-owned chairside content (not the Care Guide canonical aftercare library):
 
-### Issue #6 procedure template schema
+- `ProcedureTemplate` is owned by a `Clinic` via `clinicId`, has a `name`, a clinic-unique `slug`, and an `isActive` flag. Optional `aftercareUrl` is an **external** link shown after a completed live session.
+- `ProcedureStageTemplate` models linear in-chair stages via `stageOrder`, with `title` plus `calmCopy`, `patientCopy`, and `detailedCopy`.
+- `ProcedureTemplateSelectedAreaOption` is a constrained selected-area list.
 
-Issue #6 introduces clinic-owned procedure template content as durable Prisma
-models, without any UI surface:
+Conventions that still apply to this parked domain:
 
-- `ProcedureTemplate` is owned by a `Clinic` via `clinicId`, has a `name`,
-  a clinic-unique `slug`, and an `isActive` flag.
-- `ProcedureStageTemplate` models linear stages via an explicit `stageOrder`
-  that is unique within a template. Stage content uses a durable `title`
-  plus three mode-specific copy fields: `calmCopy`, `patientCopy`, and
-  `detailedCopy`. Optional fields are `illustrationUrl` (string/URL only)
-  and `defaultDurationHint`.
-- `ProcedureTemplateSelectedAreaOption` models a constrained, template-owned
-  selected-area list via stable `key`, display `label`, and explicit
-  `sortOrder`. It replaces any free-text selected-area concept for v1.
-
-Later issues should continue these conventions:
-
-- Template queries must filter by the signed-in user's effective clinic
-  membership from `getAuthContext()` / `requireStaffSession()`.
+- Template queries must filter by the signed-in user's effective clinic membership from `getAuthContext()` / `requireStaffSession()`.
 - Default selection surfaces should filter to `isActive = true`.
-- Read-only display must respect explicit `stageOrder` and selected-area
-  `sortOrder`, not creation order.
-- If shared starter templates are ever needed, add a separate
-  platform/global-template concept rather than making `ProcedureTemplate`
-  globally owned.
-- Seed data lives in [prisma/seed.mjs](prisma/seed.mjs); the demo clinic owns
-  a minimal `Starter Procedure Walkthrough` template so Issue #7 can build a
-  read-only browser on top of real data.
+- Read-only display must respect explicit `stageOrder` and selected-area `sortOrder`, not creation order.
+- Seed data lives in [prisma/seed.mjs](prisma/seed.mjs).
 
-### Issue #7 procedure template browser
+### Procedure template browser
 
-Issue #7 adds a read-only, clinic-scoped inspection view on top of the Issue #6
-schema:
+- Route: `/dashboard/procedures`, inside the protected dashboard shell.
+- Read-only inspection of active clinic chairside templates.
+- Query helper: [lib/procedures/list-clinic-templates.ts](lib/procedures/list-clinic-templates.ts).
 
-- Route: `/dashboard/procedures`, nested inside the existing protected shell in
-  `app/dashboard/layout.tsx` so the same `requireStaffSession()` guard applies.
-- The page is intentionally read-only. It has no create/edit/delete/publish
-  controls, no session creation, and no patient-facing surface.
-- Clinic scoping is derived from the signed-in user's effective clinic
-  membership — never from URL params or session payload.
-- Default filters: only `ProcedureTemplate.isActive = true` templates are
-  listed, and only `ProcedureTemplateSelectedAreaOption.isActive = true`
-  options are rendered per template.
-- Ordering contract (explicit, never creation order):
-  - Stages render by `ProcedureStageTemplate.stageOrder` ascending.
-  - Selected-area options render by
-    `ProcedureTemplateSelectedAreaOption.sortOrder` ascending.
-- Query helper: [lib/procedures/list-clinic-templates.ts](lib/procedures/list-clinic-templates.ts)
-  exposes a single narrow read-model function,
-  `listActiveClinicProcedureTemplates(clinicId)`, with a typed return shape.
-  It is not a generalized template repository.
-- Dashboard discovery: a single inline link on `/dashboard` points to the new
-  route. No global navigation, sidebar, or breadcrumbs are introduced.
+### Live sessions and patient display
 
-Constraints Issue `#8` (and later work) should respect:
+- Start a session: `/sessions/new`
+- Staff stage control: `/session/[id]/control`
+- Patient display: `/display/[token]` (token-scoped, no staff auth, large-format live view)
+- Realtime: optional Supabase broadcast (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY` in `.env.example`). When unset, live updates are inert; persisted stage changes still appear on refresh.
 
-- Do not repurpose `/dashboard/procedures` for session creation; session
-  lifecycle routes belong under `/sessions/*` per the plan.
-- Do not surface inactive or cross-clinic templates on this route. If admin
-  CRUD lands later, add a separate `/admin/*` surface with its own protected
-  shell rather than widening this view.
-- Continue deriving clinic context from `requireStaffSession()`; do not add
-  a `clinicId` URL param or stash it on the session payload.
-- Keep `lib/procedures/list-clinic-templates.ts` narrow. Session creation
-  pickers and admin CRUD should get their own sibling helpers (e.g. one
-  per call site) instead of extending this one into a multi-purpose API.
-- Do not re-implement auth redirect logic inside individual dashboard pages;
-  the layout-level guard is the single source of truth for protected access.
+A completed session may show “Open aftercare instructions” if `ProcedureTemplate.aftercareUrl` is set. That outbound URL is **not** Care Guide Aftercare SaaS.
 
-### Clinic membership contract for MVP
+### Issue history constraints (staff/chairside)
 
-Clinic context remains database-derived through `ClinicMembership` rather than
-stored in the session payload.
+These constraints applied to the parked/staff work as it was built. They remain true for that code. They do **not** authorise using sessions as aftercare:
 
-For MVP, the auth helper layer assumes one effective clinic membership per
-signed-in staff user. If multiple memberships exist for the same user, helper
-resolution fails explicitly instead of silently choosing one. Issue `#4` must
-respect this contract and should not introduce any implicit clinic selection.
-Issue `#6` and later internal work should continue building on the same
-membership-derived server-side guard pattern instead of redesigning auth.
+- Treat clinic access as membership-derived.
+- Keep Auth.js on the canonical `Account`, `Session`, and `VerificationToken` models.
+- Do not add password reset, invites, OAuth providers, or extra auth UI without a new product decision.
+- Do not repurpose `/dashboard/procedures` for aftercare publishing.
+- Continue deriving clinic context from `requireStaffSession()` on staff routes; do not add a `clinicId` URL param or stash it on the session payload.
 
-## Getting Started
-
-First, run the development server:
-
-```bash
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
+## Learn more
 
 To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js Documentation](https://nextjs.org/docs) — Next.js features and API
+- [Learn Next.js](https://nextjs.org/learn) — interactive tutorial
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+You can check out the [Next.js GitHub repository](https://github.com/vercel/next.js).
+
+Hosting for the aftercare product is **not decided** in the PRD. The note below is only the default Next.js template pointer, not a Care Guide infrastructure decision.
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The easiest way to deploy a Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
