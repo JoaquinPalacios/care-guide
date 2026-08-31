@@ -6,6 +6,7 @@ import "./aftercare.css";
 export const metadata: Metadata = {
   title: "Aftercare",
   description: "Patient aftercare guides.",
+  robots: { index: false, follow: false },
 };
 
 export default function AftercareRootLayout({

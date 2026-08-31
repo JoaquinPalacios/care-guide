@@ -1,6 +1,9 @@
 import "server-only";
 
-import { getClinicBySlug } from "@/lib/aftercare/get-clinic-by-slug";
+import {
+  getClinicBySlug,
+  type ClinicBySlugRecord,
+} from "@/lib/aftercare/get-clinic-by-slug";
 import { PUBLIC_PRACTICE_GUIDE_WHERE } from "@/lib/aftercare/public-practice-guide-predicates";
 import { isValidCareGuideSlug } from "@/lib/aftercare/slug";
 import type { PublishedPracticeGuideSummary } from "@/lib/aftercare/types";
@@ -12,12 +15,7 @@ export interface ListedPublishedPracticeGuides {
     slug: string;
     name: string;
   };
-  profile: {
-    displayName: string;
-    phone: string | null;
-    emergencyInstructions: string | null;
-    showCareGuideAttribution: boolean;
-  } | null;
+  profile: ClinicBySlugRecord["profile"];
   guides: PublishedPracticeGuideSummary[];
 }
 
@@ -57,14 +55,7 @@ export async function listPublishedPracticeGuides(
       slug: clinic.slug,
       name: clinic.name,
     },
-    profile: clinic.profile
-      ? {
-          displayName: clinic.profile.displayName,
-          phone: clinic.profile.phone,
-          emergencyInstructions: clinic.profile.emergencyInstructions,
-          showCareGuideAttribution: clinic.profile.showCareGuideAttribution,
-        }
-      : null,
+    profile: clinic.profile,
     guides: guides.map((guide) => ({
       id: guide.id,
       publicSlug: guide.publicSlug,

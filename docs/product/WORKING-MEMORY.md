@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-08-31 (Phase 1B.5 patient styling + performance foundation)
+Last updated: 2026-08-31 (Phase 1C public patient experience)
 
 ---
 
@@ -14,10 +14,10 @@ Last updated: 2026-08-31 (Phase 1B.5 patient styling + performance foundation)
 |                                |                                                                                                                                                                                                          |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A aftercare data/domain + Phase 1B tenant hostname routing + **Phase 1B.5 patient styling/performance foundation** (no Phase 1C patient UI yet)          |
-| **Aftercare MVP implemented?** | **No** — Phase 1A + 1B + 1B.5 only                                                                                                                                                                       |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A aftercare data/domain + Phase 1B tenant hostname routing + Phase 1B.5 patient styling/performance foundation + **Phase 1C public patient pages**       |
+| **Aftercare MVP implemented?** | **No** — Phase 1A + 1B + 1B.5 + 1C only. Commercial MVP is after Phase 3.                                                                                                                                |
 
-Do not claim branded patient aftercare UI, QR codes, or operator aftercare admin exist until they are built. Hostname routing (Phase 1B) is implemented. Phase 1B.5 proves CSS isolation and server theme tokens; the tenant pages are still a routing/styling boundary, not the product UI.
+Do not claim QR codes, operator aftercare admin, or analytics exist until they are built. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented.
 
 ---
 
@@ -63,14 +63,14 @@ Internal aftercare files now live at `app/(aftercare)/%5Fsites/[tenant]`. Public
 
 ## Phase 1B.5 (implemented)
 
-Patient styling + performance foundation. No Phase 1C product UI.
+Patient styling + performance foundation. Replaced the Phase 1B.5 brand-proof header in 1C.
 
 | Area              | Location                                                                                  |
 | ----------------- | ----------------------------------------------------------------------------------------- |
 | Staff root        | `app/(staff)/layout.tsx` + `staff.css` (Tailwind)                                         |
 | Aftercare root    | `app/(aftercare)/layout.tsx` + `aftercare.css` (no Tailwind)                              |
 | Theme resolver    | `lib/branding/aftercare-theme.ts` — hex-only, contrast fallback, semantic `--cg-*` tokens |
-| CSS Module proof  | `app/(aftercare)/practice-brand-proof.tsx`                                                |
+| Patient CSS       | `app/(aftercare)/patient.module.css`                                                      |
 | Performance notes | [../architecture/PERFORMANCE.md](../architecture/PERFORMANCE.md)                          |
 | Styling ADR       | [ADR 0011](../adr/0011-patient-styling-uses-css-modules-and-semantic-runtime-tokens.md)   |
 
@@ -78,9 +78,37 @@ Tenant branding is server-rendered CSS variables. No client ThemeProvider. No ar
 
 ---
 
+## Phase 1C (implemented)
+
+Public patient experience on tenant hostnames. No patient login, no PII, no analytics, no QR, no operator CMS.
+
+| Area               | Location                                                                                        |
+| ------------------ | ----------------------------------------------------------------------------------------------- |
+| Tenant home        | `app/(aftercare)/%5Fsites/[tenant]/page.tsx`                                                    |
+| Public guide       | `app/(aftercare)/%5Fsites/[tenant]/[guideSlug]/page.tsx`                                        |
+| Patient components | `app/(aftercare)/components/*` — all Server Components                                          |
+| Chrome resolver    | `lib/aftercare/practice-chrome.ts` + `safe-href.ts`                                             |
+| Demo notice        | `lib/aftercare/demo-tenant.ts` — `demodental` only; easy to remove                              |
+| Metadata           | `lib/aftercare/tenant-metadata.ts` — `{Practice} Aftercare` / `{Guide} · {Practice}`, `noindex` |
+| Section tone       | `lib/aftercare/guide-section-tone.ts` — kind-driven, not section-key-driven                     |
+| Demo mark          | `public/demo/riverside-mark.svg` (`ClinicProfile.logoUrl`)                                      |
+
+Patient-specific Client Components: **0**. Native `<a>` / `<img>` (no `next/link` or `next/image` on the patient surface).
+
+Local URLs:
+
+- `http://demodental.localhost:3000/` — practice aftercare home
+- `http://demodental.localhost:3000/extraction` — Tooth Extraction composed guide
+
+Homepage lists only enabled + published PracticeGuides pinned to a published revision, ordered by `sortOrder` then `publicSlug`. Unknown tenant, unknown/draft/disabled guides → generic 404.
+
+Emergency rule: guide `EMERGENCY` / `WARNING_SIGNS` sections explain condition/context; `ClinicProfile` contact/emergency copy is chrome (“how to reach this practice”). They are not merged.
+
+---
+
 ## Do not do (until a later explicit task)
 
-- Phase 1C patient-facing aftercare pages or branding components beyond the 1B.5 proof header
+- Phase 1D operator editing, rich text, guide CMS, QR, analytics, patient-specific guides, extra specialties
 - Enable `cacheComponents: true`
 - Delete or refactor parked chairside functionality
 - Depend aftercare on `ProcedureSession`
@@ -100,6 +128,7 @@ Tenant branding is server-rendered CSS variables. No client ThemeProvider. No ar
 - Aftercare domain: `GuideTemplate` → `GuideTemplateRevision` → `GuideTemplateSection`; `PracticeGuide` + override/addition
 - Tenancy: `lib/tenancy/*`, `proxy.ts`, `app/(aftercare)/%5Fsites/[tenant]`
 - Patient theme: `lib/branding/aftercare-theme.ts`
+- Patient pages: `app/(aftercare)/components/*`, `lib/aftercare/practice-chrome.ts`
 
 ---
 
@@ -125,16 +154,18 @@ Seeded fictional clinic: **Rivers Care Demo Clinic** (`clinic_demo_rivers`).
 
 - Tenant slug: `demodental`
 - Patient-facing profile name: **Riverside Dental Demo**
+- Demo mark: `/demo/riverside-mark.svg`
 - Admin: `admin@care-guide.test`
 - Staff: `staff@care-guide.test`
 - Shared demo password: `CareGuideDemo123!`
 
-Aftercare seed (Phase 1A):
+Aftercare seed (Phase 1A, logo path updated in 1C):
 
 - Canonical template **Tooth Extraction** (`extraction`, specialty `DENTAL`)
 - Published revision v1 with ordered demo sections (explicitly labelled non-clinical)
 - Published/enabled PracticeGuide pinned to that revision
 - One practice override (`first-24-hours`) and one addition (`weekend-contact` after `contact-practice`)
+- Page-level demo notice for `demodental` only: “Demo aftercare content — not clinical advice.”
 
 Pacific Dental appears in the PRD only as a **conceptual** hostname example (`pacificdental.<platform-domain>`).
 
@@ -142,7 +173,7 @@ Pacific Dental appears in the PRD only as a **conceptual** hostname example (`pa
 
 ## Phase 1 remainder (not started)
 
-**1C+** — patient UI, revalidation, remaining vertical-slice surfaces.
+**1D+** — operator editing, remaining vertical-slice surfaces, revalidation as needed.
 
 Phase 1 is a technical vertical slice, not commercial MVP. Commercial MVP is after Phase 3 (see PRD §19 and §22).
 

@@ -95,3 +95,30 @@ Measured Phase 1B.5 tenant CSS is **953 raw / 564 gzip / 444 Brotli**. Phase 1C 
 | Phase 1C tenant CSS budget | 8,192 |   3,072 |      2,560 |
 
 That ceiling is about 8× the 1B.5 proof and still about 70% smaller than the pre-isolation Tailwind payload. Exceeding it is not an automatic product fail, but it requires a measured review. Loading Tailwind on the tenant route **is** an automatic fail.
+
+## After Phase 1C (public patient experience)
+
+Measured 2026-08-31 against `cursor/aftercare-phase-1c-8cd6` after replacing the 1B.5 brand proof with the real homepage and guide. Production `next start` on port 3001. Next.js 16.3.3.
+
+Tenant CSS files (same on `/` and `/extraction`):
+
+- `111_azndupn_s.css` — aftercare base (639 raw)
+- `43vuvrb7qr0jf.css` — `patient.module.css` (4,239 raw)
+
+| Metric                             |         1B.5 tenant `/` |           1C tenant `/` | 1C tenant `/extraction` |
+| ---------------------------------- | ----------------------: | ----------------------: | ----------------------: |
+| CSS files                          |                       2 |                       2 |                       2 |
+| CSS raw bytes                      |                     953 |                   4,878 |                   4,878 |
+| CSS gzip -9                        |                     564 |                   1,431 |                   1,431 |
+| CSS Brotli q11                     |                     444 |                   1,151 |                   1,151 |
+| Tailwind on tenant                 |                      no |                      no |                      no |
+| `--cg-*` in first HTML             |                     yes |                     yes |                     yes |
+| Patient-specific Client Components |                       0 |                       0 |                       0 |
+| Styling-related client JS          |                    none |                    none |                    none |
+| Theme in first HTML                | `--cg-brand:#0f766e`, … | `--cg-brand:#0f766e`, … | `--cg-brand:#0f766e`, … |
+
+Budget check (ceiling 8,192 raw / 3,072 gzip / 2,560 Brotli): **passed** on both tenant routes.
+
+Tenant routes still download Next.js App Router runtime JS (framework chunks only). The tenant client-reference manifest lists Next internals (`error-boundary`, `http-access-fallback`, metadata, etc.) and **no** `app/(aftercare)` Client Components. Branding does not require client JavaScript.
+
+Staff `/` still loads Tailwind (`3_zekvhor4rt9.css`, 27,165 raw / 6,356 gzip / 5,533 Brotli). Staff `/login`, `app.localhost`, unknown-tenant 404, and tenant `/login` + `/dashboard` proxy 404s are unchanged.

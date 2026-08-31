@@ -1,9 +1,17 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
 function read(path: string): string {
   return readFileSync(path, "utf8");
+}
+
+function walk(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+    return entry.isDirectory() ? walk(path) : [path];
+  });
 }
 
 describe("aftercare style boundary", () => {
@@ -44,15 +52,34 @@ describe("aftercare style boundary", () => {
     expect(layout).not.toContain("useContext");
   });
 
-  it("styles the tenant proof with a CSS Module rather than Tailwind", () => {
-    const component = read("app/(aftercare)/practice-brand-proof.tsx");
-    const styles = read("app/(aftercare)/practice-brand-proof.module.css");
+  it("styles patient components with CSS Modules and semantic tokens", () => {
+    const styles = read("app/(aftercare)/patient.module.css");
+    const header = read("app/(aftercare)/components/practice-header.tsx");
 
-    expect(component).not.toMatch(/['"]use client['"]/);
-    expect(component).toContain("practice-brand-proof.module.css");
-    expect(component).not.toContain('className="');
+    expect(header).not.toMatch(/['"]use client['"]/);
+    expect(header).toContain("patient.module.css");
+    expect(header).not.toContain('className="');
     expect(styles).toContain("var(--cg-brand)");
     expect(styles).toContain("var(--cg-on-brand)");
+    expect(styles).toContain("var(--cg-warning)");
+    expect(styles).toContain("var(--cg-emergency)");
     expect(styles).not.toContain("tailwind");
+    expect(styles).not.toContain("--tw-");
+  });
+
+  it("does not introduce patient Client Components or Tailwind class strings", () => {
+    const files = walk("app/(aftercare)").filter((path) =>
+      /\.(ts|tsx|css)$/.test(path)
+    );
+
+    expect(files.length).toBeGreaterThan(5);
+
+    for (const file of files) {
+      const source = read(file);
+      expect(source, file).not.toMatch(/['"]use client['"]/);
+      expect(source, file).not.toContain("tailwindcss");
+      expect(source, file).not.toContain("styled-components");
+      expect(source, file).not.toContain("@emotion");
+    }
   });
 });

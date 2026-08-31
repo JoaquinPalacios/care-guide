@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 
-import { PracticeBrandProof } from "@/app/(aftercare)/practice-brand-proof";
 import {
   resolveAftercareTheme,
   toAftercareThemeStyle,
@@ -12,6 +11,8 @@ interface TenantLayoutProps {
   params: Promise<{ tenant: string }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function TenantLayout({
   children,
   params,
@@ -19,12 +20,6 @@ export default async function TenantLayout({
   const { tenant } = await params;
   const clinic = await requireTenantClinic(tenant);
   const theme = resolveAftercareTheme(clinic.profile);
-  const displayName = clinic.profile?.displayName ?? clinic.name;
 
-  return (
-    <div style={toAftercareThemeStyle(theme)}>
-      <PracticeBrandProof displayName={displayName} />
-      {children}
-    </div>
-  );
+  return <div style={toAftercareThemeStyle(theme)}>{children}</div>;
 }
