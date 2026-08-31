@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { CompleteSessionButton } from "@/app/session/[id]/control/complete-session-button";
-import { StageControls } from "@/app/session/[id]/control/stage-controls";
+import { CompleteSessionButton } from "@/app/(staff)/session/[id]/control/complete-session-button";
+import { StageControls } from "@/app/(staff)/session/[id]/control/stage-controls";
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
 import { prisma } from "@/lib/prisma";
 

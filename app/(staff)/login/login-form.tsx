@@ -3,7 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
-import { loginSchema, type LoginFormValues } from "@/app/login/login-schema";
+import {
+  loginSchema,
+  type LoginFormValues,
+} from "@/app/(staff)/login/login-schema";
 
 interface LoginFormErrors {
   email?: string;

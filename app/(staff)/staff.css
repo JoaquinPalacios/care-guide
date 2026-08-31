@@ -1,3 +1,5 @@
+/* Staff/admin + parked chairside surface. Build-time Tailwind tokens live here.
+   Tenant runtime branding uses CSS custom properties, not @theme. */
 @import "tailwindcss";
 
 :root {

@@ -32,7 +32,7 @@ vi.mock("@/lib/realtime/subscriber", () => ({
   subscribeToDisplayChannel: mocks.subscribeToDisplayChannelMock,
 }));
 
-import { DisplayLiveRefresh } from "@/app/display/[token]/display-live-refresh";
+import { DisplayLiveRefresh } from "@/app/(staff)/display/[token]/display-live-refresh";
 
 describe("DisplayLiveRefresh", () => {
   beforeEach(() => {

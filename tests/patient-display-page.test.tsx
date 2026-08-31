@@ -7,11 +7,11 @@ vi.mock("@/lib/sessions/load-patient-display", () => ({
   loadPatientDisplay: loadPatientDisplayMock,
 }));
 
-vi.mock("@/app/display/[token]/display-live-refresh", () => ({
+vi.mock("@/app/(staff)/display/[token]/display-live-refresh", () => ({
   DisplayLiveRefresh: () => null,
 }));
 
-import PatientDisplayPage from "@/app/display/[token]/page";
+import PatientDisplayPage from "@/app/(staff)/display/[token]/page";
 
 describe("PatientDisplayPage", () => {
   it("renders the generic unavailable screen for invalid or unreadable tokens", async () => {

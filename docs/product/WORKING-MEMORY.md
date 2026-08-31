@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-08-31 (Phase 1B tenant hostname routing)
+Last updated: 2026-08-31 (Phase 1B.5 patient styling + performance foundation)
 
 ---
 
@@ -14,10 +14,10 @@ Last updated: 2026-08-31 (Phase 1B tenant hostname routing)
 |                                |                                                                                                                                                                                                          |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A aftercare data/domain + **Phase 1B tenant hostname routing** (no branded patient UI yet)                                                               |
-| **Aftercare MVP implemented?** | **No** — Phase 1A + 1B only                                                                                                                                                                              |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A aftercare data/domain + Phase 1B tenant hostname routing + **Phase 1B.5 patient styling/performance foundation** (no Phase 1C patient UI yet)          |
+| **Aftercare MVP implemented?** | **No** — Phase 1A + 1B + 1B.5 only                                                                                                                                                                       |
 
-Do not claim branded patient aftercare UI, QR codes, or operator aftercare admin exist until they are built. Hostname routing (Phase 1B) is implemented; the tenant pages are a routing boundary only.
+Do not claim branded patient aftercare UI, QR codes, or operator aftercare admin exist until they are built. Hostname routing (Phase 1B) is implemented. Phase 1B.5 proves CSS isolation and server theme tokens; the tenant pages are still a routing/styling boundary, not the product UI.
 
 ---
 
@@ -57,11 +57,30 @@ Hostname tenant resolution. No branded patient UI.
 
 Local URLs: `localhost:3000` and `app.localhost:3000` stay staff/parked. `demodental.localhost:3000` rewrites internally. `unknown.localhost:3000` is a generic 404. Tenant hosts block `/login`, `/dashboard`, `/sessions`, `/session`, `/display`, `/api/auth`. Direct `/_sites` is 404.
 
+Internal aftercare files now live at `app/(aftercare)/%5Fsites/[tenant]`. Public rewrite target remains `/_sites/<slug>/…`.
+
+---
+
+## Phase 1B.5 (implemented)
+
+Patient styling + performance foundation. No Phase 1C product UI.
+
+| Area              | Location                                                                                  |
+| ----------------- | ----------------------------------------------------------------------------------------- |
+| Staff root        | `app/(staff)/layout.tsx` + `staff.css` (Tailwind)                                         |
+| Aftercare root    | `app/(aftercare)/layout.tsx` + `aftercare.css` (no Tailwind)                              |
+| Theme resolver    | `lib/branding/aftercare-theme.ts` — hex-only, contrast fallback, semantic `--cg-*` tokens |
+| CSS Module proof  | `app/(aftercare)/practice-brand-proof.tsx`                                                |
+| Performance notes | [../architecture/PERFORMANCE.md](../architecture/PERFORMANCE.md)                          |
+| Styling ADR       | [ADR 0011](../adr/0011-patient-styling-uses-css-modules-and-semantic-runtime-tokens.md)   |
+
+Tenant branding is server-rendered CSS variables. No client ThemeProvider. No arbitrary ClinicProfile CSS fields.
+
 ---
 
 ## Do not do (until a later explicit task)
 
-- Phase 1C patient-facing aftercare pages or branding components
+- Phase 1C patient-facing aftercare pages or branding components beyond the 1B.5 proof header
 - Enable `cacheComponents: true`
 - Delete or refactor parked chairside functionality
 - Depend aftercare on `ProcedureSession`
@@ -74,12 +93,13 @@ Local URLs: `localhost:3000` and `app.localhost:3000` stay staff/parked. `demode
 
 ## Reusable foundation
 
-- Next.js App Router, React, Tailwind, PostgreSQL, Prisma
+- Next.js App Router, React, Tailwind (staff only), CSS Modules (patient), PostgreSQL, Prisma
 - `Clinic` (`id`, `name`, **`slug`**), `User`, `ClinicMembership`, **`ClinicProfile`**
 - Staff auth: `auth.ts`, `lib/auth/*`, `/login`, `/dashboard` layout guard `requireStaffSession()`
 - Clinic-scoped query patterns (membership-derived clinic id)
 - Aftercare domain: `GuideTemplate` → `GuideTemplateRevision` → `GuideTemplateSection`; `PracticeGuide` + override/addition
-- Tenancy: `lib/tenancy/*`, `proxy.ts`, `app/%5Fsites/[tenant]`
+- Tenancy: `lib/tenancy/*`, `proxy.ts`, `app/(aftercare)/%5Fsites/[tenant]`
+- Patient theme: `lib/branding/aftercare-theme.ts`
 
 ---
 
@@ -128,12 +148,29 @@ Phase 1 is a technical vertical slice, not commercial MVP. Commercial MVP is aft
 
 ---
 
+## Tooling debt
+
+TypeScript is `7.0.2`. Current `typescript-eslint` stable releases do not yet support TypeScript 7 (`ts.Extension` was removed from the compiler API).
+
+Current bridge:
+
+- ESLint 10
+- `@next/eslint-plugin-next`
+- Babel TypeScript parser (`@babel/eslint-parser`)
+
+This temporarily means we do not have the same TypeScript-aware ESLint rule coverage.
+
+**TODO:** Re-evaluate typescript-eslint on each dependency refresh and restore it once stable TypeScript 7 support is released. Do not install unsupported or canary typescript-eslint merely to regain those rules.
+
+---
+
 ## Documentation files
 
-| File                             | Role                                    |
-| -------------------------------- | --------------------------------------- |
-| `docs/README.md`                 | Docs index                              |
-| `docs/product/PRD.md`            | PRD v1.0                                |
-| `docs/product/WORKING-MEMORY.md` | This file                               |
-| `docs/adr/*.md`                  | Architecture decisions 0001–0010        |
-| `README.md`                      | Repo entry; direction vs implementation |
+| File                               | Role                                           |
+| ---------------------------------- | ---------------------------------------------- |
+| `docs/README.md`                   | Docs index                                     |
+| `docs/product/PRD.md`              | PRD v1.0                                       |
+| `docs/product/WORKING-MEMORY.md`   | This file                                      |
+| `docs/adr/*.md`                    | Architecture decisions 0001–0011               |
+| `docs/architecture/PERFORMANCE.md` | Patient CSS measurement contract and 1C budget |
+| `README.md`                        | Repo entry; direction vs implementation        |

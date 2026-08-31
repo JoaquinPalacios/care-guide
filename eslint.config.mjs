@@ -6,6 +6,9 @@ const nextCoreWebVitals = nextPlugin.configs["core-web-vitals"];
 
 // eslint-config-next still loads typescript-eslint 8.x, which crashes on
 // TypeScript 7 (no ts.Extension). Use the Next plugin + Babel TS parsing.
+// TODO: Re-evaluate typescript-eslint on each dependency refresh and restore
+// it once stable TypeScript 7 support is released. Do not install unsupported
+// or canary typescript-eslint merely to regain type-aware rules.
 const eslintConfig = defineConfig([
   {
     name: "care-guide/next",

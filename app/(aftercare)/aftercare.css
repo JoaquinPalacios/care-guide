@@ -1,0 +1,47 @@
+/* Patient aftercare surface only. Do not import Tailwind here. */
+
+:root {
+  --cg-brand: #155e75;
+  --cg-on-brand: #ffffff;
+  --cg-accent: #b45309;
+  --cg-surface: #ffffff;
+  --cg-surface-subtle: #f8fafc;
+  --cg-text: #0f172a;
+  --cg-text-muted: #475569;
+  --cg-border: #e2e8f0;
+  --cg-warning: #b45309;
+  --cg-warning-surface: #fffbeb;
+  --cg-emergency: #b91c1c;
+  --cg-emergency-surface: #fef2f2;
+  --cg-focus: #155e75;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--cg-surface);
+  color: var(--cg-text);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--cg-focus);
+  outline-offset: 2px;
+}

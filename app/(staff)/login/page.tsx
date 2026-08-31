@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { LoginForm } from "@/app/login/login-form";
+import { LoginForm } from "@/app/(staff)/login/login-form";
 import { getAuthContext } from "@/lib/auth/session";
 
 export const metadata: Metadata = {

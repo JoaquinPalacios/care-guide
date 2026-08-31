@@ -2,7 +2,7 @@
 
 import { useFormStatus } from "react-dom";
 
-import { moveStageAction } from "@/app/session/[id]/control/actions";
+import { moveStageAction } from "@/app/(staff)/session/[id]/control/actions";
 
 interface StageControlsProps {
   sessionId: string;

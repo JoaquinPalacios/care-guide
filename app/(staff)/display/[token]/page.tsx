@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { DisplayLiveRefresh } from "@/app/display/[token]/display-live-refresh";
+import { DisplayLiveRefresh } from "@/app/(staff)/display/[token]/display-live-refresh";
 import { loadPatientDisplay } from "@/lib/sessions/load-patient-display";
 
 export const dynamic = "force-dynamic";

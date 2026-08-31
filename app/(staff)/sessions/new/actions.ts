@@ -10,8 +10,8 @@ import {
   SessionCreationError,
   UnexpectedSelectedAreaOptionError,
 } from "@/lib/sessions/errors";
-import { createSessionSchema } from "@/app/sessions/new/schema";
-import type { CreateSessionActionState } from "@/app/sessions/new/state";
+import { createSessionSchema } from "@/app/(staff)/sessions/new/schema";
+import type { CreateSessionActionState } from "@/app/(staff)/sessions/new/state";
 
 export async function createSessionAction(
   _previousState: CreateSessionActionState,

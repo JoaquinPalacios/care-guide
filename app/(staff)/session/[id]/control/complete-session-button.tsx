@@ -3,7 +3,7 @@
 import type { FormEvent } from "react";
 import { useFormStatus } from "react-dom";
 
-import { completeSessionAction } from "@/app/session/[id]/control/actions";
+import { completeSessionAction } from "@/app/(staff)/session/[id]/control/actions";
 
 interface CompleteSessionButtonProps {
   sessionId: string;

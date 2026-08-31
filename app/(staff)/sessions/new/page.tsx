@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { NewSessionForm } from "@/app/sessions/new/new-session-form";
+import { NewSessionForm } from "@/app/(staff)/sessions/new/new-session-form";
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
 import { listSessionFormOptions } from "@/lib/sessions/list-session-form-options";
 

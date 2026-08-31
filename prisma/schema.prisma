@@ -320,6 +320,7 @@ model ProcedureSessionStageTransition {
   @@index([procedureSessionId, occurredAt])
 }
 
+/// Patient-facing practice chrome. Colour fields are validated hex mapped to semantic CSS tokens. Never add arbitrary CSS injection fields (customCss, stylesheet, headerHtml).
 model ClinicProfile {
   clinicId                 String   @id
   displayName              String

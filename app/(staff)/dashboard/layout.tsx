@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { LogoutButton } from "@/app/dashboard/logout-button";
+import { LogoutButton } from "@/app/(staff)/dashboard/logout-button";
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
 
 export default async function DashboardLayout({

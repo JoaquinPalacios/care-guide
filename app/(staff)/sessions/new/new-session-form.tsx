@@ -4,11 +4,11 @@ import { PatientDisplayMode } from "@prisma/client";
 import Link from "next/link";
 import { useActionState, useMemo, useState } from "react";
 
-import { createSessionAction } from "@/app/sessions/new/actions";
+import { createSessionAction } from "@/app/(staff)/sessions/new/actions";
 import {
   type CreateSessionActionState,
   initialCreateSessionActionState,
-} from "@/app/sessions/new/state";
+} from "@/app/(staff)/sessions/new/state";
 import type { SessionFormOptions } from "@/lib/sessions/list-session-form-options";
 
 interface NewSessionFormProps {
