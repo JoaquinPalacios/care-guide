@@ -24,23 +24,22 @@ Authoritative product contract:
 
 ## Current implementation
 
-**The aftercare SaaS described above is not a complete product yet.**
+**The aftercare SaaS described above is not a complete commercial product yet.**
 
-Phase 1A added the **data/domain foundation**. Phase 1B added **tenant hostname routing** (`proxy.ts` rewrite to `/_sites/<slug>/…`). Phase 1B.5 added the **patient styling/performance foundation** (CSS Modules, server CSS variables, Tailwind isolated to staff). There is **no** Phase 1C branded patient aftercare UI yet.
+Phase 1A added the **data/domain foundation**. Phase 1B added **tenant hostname routing** (`proxy.ts` rewrite to `/_sites/<slug>/…`). Phase 1B.5 added the **patient styling/performance foundation** (CSS Modules, server CSS variables, Tailwind isolated to staff). **Phase 1C** added the first public patient aftercare homepage and guide UI.
 
 This repository also contains a **parked product capability**: clinic-staff authentication plus an in-chair procedure-session workflow (rooms, doctors, live stages, `/display/[token]`, Supabase Realtime, and a completed-session link to an external `aftercareUrl`).
 
 That chairside workflow is **parked / future optional**. Do not delete it. Do not use it as the aftercare architecture. **Aftercare must not depend on `ProcedureSession`.**
 
-|                   |                                                                                                                              |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Product direction | Branded aftercare infrastructure (PRD v1.0)                                                                                  |
-| Current code      | Staff auth + parked chairside sessions + Phase 1A domain + Phase 1B hostname routing + Phase 1B.5 patient styling foundation |
-| Aftercare MVP     | Planned (Phases 1–3 in the PRD). Phase 1A–1B.5 only.                                                                         |
+|                   |                                                                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Product direction | Branded aftercare infrastructure (PRD v1.0)                                                                                        |
+| Current code      | Staff auth + parked chairside sessions + Phase 1A–1C aftercare (domain, hostname routing, styling isolation, public patient pages) |
+| Aftercare MVP     | Planned (Phases 1–3 in the PRD). Phase 1A–1C implemented; 1D/1E and commercial MVP are later.                                      |
 
 Examples of **intended** product behaviour that do **not** exist in code yet:
 
-- branded clinic aftercare homepage and guide UI
 - QR codes for durable aftercare URLs
 - Care Guide operator aftercare admin
 - basic anonymous aftercare analytics
@@ -70,7 +69,7 @@ Tenant hostname simulation (`*.localhost`, no `/etc/hosts` changes):
 - [http://demodental.localhost:3000/extraction](http://demodental.localhost:3000/extraction) — rewritten tenant guide path
 - [http://unknown.localhost:3000](http://unknown.localhost:3000) — unknown tenant (generic not-found)
 
-Set `CARE_GUIDE_ROOT_DOMAIN=localhost` in `.env`. The current tenant pages are a Phase 1B routing boundary plus a Phase 1B.5 styling proof (Riverside Dental Demo brand tokens). Branded patient product UI is not built yet.
+Set `CARE_GUIDE_ROOT_DOMAIN=localhost` in `.env`. Tenant hosts render the Phase 1C public patient experience (practice-branded aftercare home and published guides). Staff/chairside URLs are unchanged.
 
 You can start editing `app/(staff)/page.tsx`; the page auto-updates as you edit.
 

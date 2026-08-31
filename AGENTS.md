@@ -10,7 +10,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 Authoritative product requirements: `docs/product/PRD.md` (v1.0 — Aftercare SaaS).
 
-Care Guide’s **product direction** is branded aftercare SaaS for healthcare practices. The **current codebase** is staff auth, a **parked** chairside procedure-session product, the Phase 1A aftercare data/domain foundation, and Phase 1B tenant hostname routing (no branded patient UI yet). Do not treat chairside sessions as the aftercare architecture. Aftercare must not depend on `ProcedureSession`. Do not claim aftercare MVP features are implemented until they exist.
+Care Guide’s **product direction** is branded aftercare SaaS for healthcare practices. The **current codebase** is staff auth, a **parked** chairside procedure-session product, Phase 1A aftercare data/domain, Phase 1B tenant hostname routing, Phase 1B.5 patient styling isolation, and **Phase 1C public patient aftercare pages**. Do not treat chairside sessions as the aftercare architecture. Aftercare must not depend on `ProcedureSession`. Do not claim later-phase MVP features (QR, operator admin, analytics) are implemented until they exist.
 
 # Dependency and runtime baseline
 

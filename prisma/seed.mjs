@@ -255,7 +255,7 @@ const DEMO_DISCLAIMER =
 
 const DEMO_CLINIC_PROFILE = {
   displayName: "Riverside Dental Demo",
-  logoUrl: null,
+  logoUrl: "/demo/riverside-mark.svg",
   primaryColor: "#0f766e",
   accentColor: "#f59e0b",
   phone: "02 5550 0100",

@@ -30,6 +30,16 @@ const eslintConfig = defineConfig([
       },
     },
   },
+  {
+    name: "care-guide/aftercare-native-markup",
+    files: ["app/(aftercare)/**/*.{ts,tsx}"],
+    rules: {
+      // Patient pages stay Server Components. next/link and next/image
+      // would add client JS; native anchors and img are the approved contract.
+      "@next/next/no-html-link-for-pages": "off",
+      "@next/next/no-img-element": "off",
+    },
+  },
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
 ]);
 

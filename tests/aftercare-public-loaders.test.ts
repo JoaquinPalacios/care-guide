@@ -236,6 +236,7 @@ describe("aftercare public loaders", () => {
     expect(listed?.clinic.id).toBe(CLINIC_B.id);
     expect(listed?.profile?.displayName).toBe("Other Clinic Patient Brand");
     expect(listed?.profile?.phone).toBe("555-0199");
+    expect(listed?.profile?.bookingUrl).toBe("https://example.test/book");
     expect(listed?.guides).toEqual([]);
     expect(prismaMock.practiceGuide.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -243,6 +244,7 @@ describe("aftercare public loaders", () => {
           clinicId: CLINIC_B.id,
           ...PUBLIC_PRACTICE_GUIDE_WHERE,
         }),
+        orderBy: [{ sortOrder: "asc" }, { publicSlug: "asc" }],
       })
     );
   });
