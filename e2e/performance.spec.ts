@@ -1,0 +1,106 @@
+import { expect, test } from "@playwright/test";
+import { readFileSync } from "node:fs";
+
+import {
+  expectCssWithinPhase1Budget,
+  expectNoTailwind,
+  expectStaffCssHasTailwind,
+  measurePageAssets,
+  patientSpecificJs,
+  sumMetric,
+} from "./helpers/assets";
+import { DEMO_TENANT_SLUG, staffUrl, tenantUrl } from "./helpers/origins";
+
+const HOME = tenantUrl(DEMO_TENANT_SLUG, "/");
+const EXTRACTION = tenantUrl(DEMO_TENANT_SLUG, "/extraction");
+
+test.describe("Phase 1 performance and asset contracts", () => {
+  test("tenant CSS stays under budget without Tailwind or patient Client Components", async ({
+    page,
+  }, testInfo) => {
+    const home = await measurePageAssets(page, HOME);
+    expectCssWithinPhase1Budget(home.css);
+    expectNoTailwind(home.css);
+    expect(patientSpecificJs(home.js)).toEqual([]);
+
+    const guide = await measurePageAssets(page, EXTRACTION);
+    expectCssWithinPhase1Budget(guide.css);
+    expectNoTailwind(guide.css);
+    expect(patientSpecificJs(guide.js)).toEqual([]);
+
+    testInfo.attach("phase-1e-performance.json", {
+      contentType: "application/json",
+      body: JSON.stringify(
+        {
+          home: {
+            cssRequests: home.css.length,
+            cssRaw: sumMetric(home.css, "raw"),
+            cssGzip: sumMetric(home.css, "gzip"),
+            cssBrotli: sumMetric(home.css, "brotli"),
+            jsRequests: home.js.length,
+            jsRaw: sumMetric(home.js, "raw"),
+            jsGzip: sumMetric(home.js, "gzip"),
+            jsBrotli: sumMetric(home.js, "brotli"),
+            jsUrls: home.js.map((asset) => asset.url),
+            patientSpecificJs: patientSpecificJs(home.js).map(
+              (asset) => asset.url
+            ),
+          },
+          guide: {
+            cssRequests: guide.css.length,
+            cssRaw: sumMetric(guide.css, "raw"),
+            cssGzip: sumMetric(guide.css, "gzip"),
+            cssBrotli: sumMetric(guide.css, "brotli"),
+            jsRequests: guide.js.length,
+            jsRaw: sumMetric(guide.js, "raw"),
+            jsGzip: sumMetric(guide.js, "gzip"),
+            jsBrotli: sumMetric(guide.js, "brotli"),
+            jsUrls: guide.js.map((asset) => asset.url),
+            patientSpecificJs: patientSpecificJs(guide.js).map(
+              (asset) => asset.url
+            ),
+          },
+        },
+        null,
+        2
+      ),
+    });
+  });
+
+  test("demo logo is a small same-origin SVG with explicit dimensions", async ({
+    page,
+  }) => {
+    const logoPath = "public/demo/riverside-mark.svg";
+    const fileBytes = readFileSync(logoPath).byteLength;
+    expect(fileBytes).toBeLessThan(2048);
+
+    await page.goto(HOME, { waitUntil: "load" });
+    const logo = page.locator('img[src="/demo/riverside-mark.svg"]');
+    await expect(logo).toHaveAttribute("width", "40");
+    await expect(logo).toHaveAttribute("height", "40");
+    await expect(logo).toHaveAttribute("alt", "");
+
+    const response = await page.request.get(
+      tenantUrl(DEMO_TENANT_SLUG, "/demo/riverside-mark.svg")
+    );
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"] ?? "").toMatch(/svg/i);
+    const body = await response.body();
+    expect(body.byteLength).toBe(fileBytes);
+    const cacheControl = response.headers()["cache-control"] ?? "";
+    expect(cacheControl).toMatch(/public|max-age|immutable/i);
+  });
+
+  test("staff still loads Tailwind while the tenant does not", async ({
+    page,
+  }) => {
+    const staff = await measurePageAssets(page, staffUrl("/"));
+    expectStaffCssHasTailwind(staff.css);
+
+    const tenant = await measurePageAssets(
+      page,
+      tenantUrl(DEMO_TENANT_SLUG, "/")
+    );
+    expectNoTailwind(tenant.css);
+  });
+});

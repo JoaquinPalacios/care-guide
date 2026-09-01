@@ -44,6 +44,7 @@
   font-size: 1.0625rem;
   font-weight: 650;
   letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
 }
 
 .main {
@@ -69,6 +70,7 @@
   line-height: 1.2;
   font-weight: 650;
   letter-spacing: -0.03em;
+  overflow-wrap: anywhere;
 }
 
 .lede {

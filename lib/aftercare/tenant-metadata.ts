@@ -26,6 +26,8 @@ export async function publicTenantCanonicalUrl(
     (host.includes("localhost") ? "http" : "https");
   const normalizedPath = pathname === "" || pathname === "/" ? "/" : pathname;
 
+  // Canonical URLs always mirror the incoming Host. They must not hard-code
+  // `.localhost` or a commercial platform domain.
   return `${protocol}://${host}${normalizedPath}`;
 }
 

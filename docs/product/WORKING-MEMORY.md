@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-08-31 (Phase 1C public patient experience)
+Last updated: 2026-09-01 (Phase 1E quality, performance, and acceptance hardening)
 
 ---
 
@@ -14,10 +14,26 @@ Last updated: 2026-08-31 (Phase 1C public patient experience)
 |                                |                                                                                                                                                                                                          |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A aftercare data/domain + Phase 1B tenant hostname routing + Phase 1B.5 patient styling/performance foundation + **Phase 1C public patient pages**       |
-| **Aftercare MVP implemented?** | **No** — Phase 1A + 1B + 1B.5 + 1C only. Commercial MVP is after Phase 3.                                                                                                                                |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance**. Phase 1D was absorbed into 1C.                                                             |
+| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                  |
 
-Do not claim QR codes, operator aftercare admin, or analytics exist until they are built. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented.
+Do not claim QR codes, operator aftercare admin, or analytics exist until they are built. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented. Phase 1E added Playwright + axe browser acceptance; it did not add product features.
+
+---
+
+## Phase status
+
+| Phase | Status                                                    |
+| ----- | --------------------------------------------------------- |
+| 1A    | COMPLETE / APPROVED                                       |
+| 1B    | COMPLETE / APPROVED                                       |
+| 1B.5  | COMPLETE / APPROVED                                       |
+| 1C    | COMPLETE / APPROVED                                       |
+| 1D    | ABSORBED INTO PHASE 1C / NO SEPARATE IMPLEMENTATION       |
+| 1E    | COMPLETE — TECHNICALLY READY FOR LOCAL JOAQUÍN ACCEPTANCE |
+| 2+    | Not started                                               |
+
+Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
 
 ---
 
@@ -106,9 +122,25 @@ Emergency rule: guide `EMERGENCY` / `WARNING_SIGNS` sections explain condition/c
 
 ---
 
+## Phase 1E (implemented)
+
+Quality, performance, and acceptance hardening for the Phase 1 vertical slice. No Phase 2 features.
+
+| Area              | Location                                                                                        |
+| ----------------- | ----------------------------------------------------------------------------------------------- |
+| Browser E2E       | `e2e/*.spec.ts`, `playwright.config.ts` — production `next start` on port 4173, `*.localhost`   |
+| Accessibility     | `@axe-core/playwright` 4.13.0 on tenant home and Tooth Extraction                               |
+| Fixtures          | `e2e/fixtures/phase1e-data.ts` — Harbor Family Dental + draft/disabled/pinned-draft, cleaned up |
+| Composition edges | `tests/compose-guide-document.test.ts`                                                          |
+| Performance notes | [../architecture/PERFORMANCE.md](../architecture/PERFORMANCE.md)                                |
+
+Patient-specific Client Components remain **0**. Native `<a>` / `<img>` kept. Playwright and axe are **devDependencies** only.
+
+---
+
 ## Do not do (until a later explicit task)
 
-- Phase 1D operator editing, rich text, guide CMS, QR, analytics, patient-specific guides, extra specialties
+- Phase 2 operator admin, QR, analytics, SMS/email, billing, custom domains, extra specialties, clinical CMS, rich-text editor, patient-specific guides, chairside integration
 - Enable `cacheComponents: true`
 - Delete or refactor parked chairside functionality
 - Depend aftercare on `ProcedureSession`
@@ -129,6 +161,7 @@ Emergency rule: guide `EMERGENCY` / `WARNING_SIGNS` sections explain condition/c
 - Tenancy: `lib/tenancy/*`, `proxy.ts`, `app/(aftercare)/%5Fsites/[tenant]`
 - Patient theme: `lib/branding/aftercare-theme.ts`
 - Patient pages: `app/(aftercare)/components/*`, `lib/aftercare/practice-chrome.ts`
+- Browser acceptance: `e2e/*`, `@playwright/test`, `@axe-core/playwright` (dev only)
 
 ---
 
@@ -159,7 +192,7 @@ Seeded fictional clinic: **Rivers Care Demo Clinic** (`clinic_demo_rivers`).
 - Staff: `staff@care-guide.test`
 - Shared demo password: `CareGuideDemo123!`
 
-Aftercare seed (Phase 1A, logo path updated in 1C):
+Aftercare seed (Phase 1A, logo path updated in 1C; canonical copy made clinic-neutral in 1E):
 
 - Canonical template **Tooth Extraction** (`extraction`, specialty `DENTAL`)
 - Published revision v1 with ordered demo sections (explicitly labelled non-clinical)
@@ -173,9 +206,9 @@ Pacific Dental appears in the PRD only as a **conceptual** hostname example (`pa
 
 ## Phase 1 remainder (not started)
 
-**1D+** — operator editing, remaining vertical-slice surfaces, revalidation as needed.
+Phase 1 is technically ready for **local visual/device acceptance**. Do not merge to `feature/aftercare-phase-1` or `main` until that happens.
 
-Phase 1 is a technical vertical slice, not commercial MVP. Commercial MVP is after Phase 3 (see PRD §19 and §22).
+Commercial MVP is after Phase 3 (see PRD §19 and §22). Do not begin Phase 2 from this branch.
 
 ---
 
@@ -197,11 +230,11 @@ This temporarily means we do not have the same TypeScript-aware ESLint rule cove
 
 ## Documentation files
 
-| File                               | Role                                           |
-| ---------------------------------- | ---------------------------------------------- |
-| `docs/README.md`                   | Docs index                                     |
-| `docs/product/PRD.md`              | PRD v1.0                                       |
-| `docs/product/WORKING-MEMORY.md`   | This file                                      |
-| `docs/adr/*.md`                    | Architecture decisions 0001–0011               |
-| `docs/architecture/PERFORMANCE.md` | Patient CSS measurement contract and 1C budget |
-| `README.md`                        | Repo entry; direction vs implementation        |
+| File                               | Role                                                    |
+| ---------------------------------- | ------------------------------------------------------- |
+| `docs/README.md`                   | Docs index                                              |
+| `docs/product/PRD.md`              | PRD v1.0                                                |
+| `docs/product/WORKING-MEMORY.md`   | This file                                               |
+| `docs/adr/*.md`                    | Architecture decisions 0001–0011                        |
+| `docs/architecture/PERFORMANCE.md` | Patient CSS/JS measurement contract and Phase 1E budget |
+| `README.md`                        | Repo entry; direction vs implementation                 |

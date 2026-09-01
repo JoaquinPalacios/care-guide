@@ -261,6 +261,27 @@ describe("tenant guide page", () => {
     expect(JSON.stringify(metadata)).not.toContain("/_sites");
   });
 
+  it("renders a heading when a composed section has an empty body", async () => {
+    getPublishedPracticeGuide.mockResolvedValue({
+      ...GUIDE_A,
+      sections: [
+        {
+          key: "empty-body",
+          kind: "INTRODUCTION" as const,
+          title: "Empty body section",
+          body: "   \n\n",
+          provenance: "canonical" as const,
+        },
+      ],
+    });
+
+    const html = await renderGuide();
+
+    expect(html).toContain("Empty body section");
+    expect(html).toContain("<h2");
+    expect(html).not.toContain("Canonical intro for Riverside patients.");
+  });
+
   it("returns not-found behaviour for unknown, draft, or disabled guides", async () => {
     getPublishedPracticeGuide.mockResolvedValue(null);
 

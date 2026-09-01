@@ -212,4 +212,96 @@ describe("composeGuideDocument", () => {
       ["appended", "practice_addition"],
     ]);
   });
+
+  it("breaks canonical sortOrder ties by key", () => {
+    const document = composeGuideDocument({
+      canonicalSections: [
+        section("zeta", 1),
+        section("alpha", 1),
+        section("mu", 1),
+      ],
+      overrides: [],
+      additions: [],
+    });
+
+    expect(document.sections.map((item) => item.key)).toEqual([
+      "alpha",
+      "mu",
+      "zeta",
+    ]);
+  });
+
+  it("uses the last override when the same sectionKey appears twice", () => {
+    const document = composeGuideDocument({
+      canonicalSections: [section("introduction", 1, "Intro")],
+      overrides: [
+        override("introduction", "First override", "First body"),
+        override("introduction", "Second override", "Second body"),
+      ],
+      additions: [],
+    });
+
+    expect(document.sections).toEqual([
+      {
+        key: "introduction",
+        kind: "INTRODUCTION",
+        title: "Second override",
+        body: "Second body",
+        provenance: "practice_override",
+      },
+    ]);
+  });
+
+  it("passes through empty titles and bodies without throwing", () => {
+    const document = composeGuideDocument({
+      canonicalSections: [
+        {
+          key: "empty-canonical",
+          kind: "INTRODUCTION",
+          title: "",
+          body: "",
+          sortOrder: 1,
+        },
+      ],
+      overrides: [override("empty-canonical", "", "")],
+      additions: [
+        {
+          key: "empty-addition",
+          kind: "CUSTOM",
+          title: "",
+          body: "   ",
+          sortOrder: 1,
+          insertAfterSectionKey: "empty-canonical",
+        },
+      ],
+    });
+
+    expect(document.sections).toEqual([
+      {
+        key: "empty-canonical",
+        kind: "INTRODUCTION",
+        title: "",
+        body: "",
+        provenance: "practice_override",
+      },
+      {
+        key: "empty-addition",
+        kind: "CUSTOM",
+        title: "",
+        body: "   ",
+        provenance: "practice_addition",
+      },
+    ]);
+  });
+
+  it("returns an empty document when there are no canonical sections", () => {
+    const document = composeGuideDocument({
+      canonicalSections: [],
+      overrides: [override("missing", "Gone", "Ignored")],
+      additions: [addition("orphaned", 1, "missing")],
+    });
+
+    expect(document.sections.map((item) => item.key)).toEqual(["orphaned"]);
+    expect(document.sections[0]?.provenance).toBe("practice_addition");
+  });
 });

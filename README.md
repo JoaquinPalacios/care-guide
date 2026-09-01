@@ -26,17 +26,17 @@ Authoritative product contract:
 
 **The aftercare SaaS described above is not a complete commercial product yet.**
 
-Phase 1A added the **data/domain foundation**. Phase 1B added **tenant hostname routing** (`proxy.ts` rewrite to `/_sites/<slug>/…`). Phase 1B.5 added the **patient styling/performance foundation** (CSS Modules, server CSS variables, Tailwind isolated to staff). **Phase 1C** added the first public patient aftercare homepage and guide UI.
+Phase 1A added the **data/domain foundation**. Phase 1B added **tenant hostname routing** (`proxy.ts` rewrite to `/_sites/<slug>/…`). Phase 1B.5 added the **patient styling/performance foundation** (CSS Modules, server CSS variables, Tailwind isolated to staff). **Phase 1C** added the first public patient aftercare homepage and guide UI. **Phase 1D was absorbed into 1C** (composition, overrides, additions, and semantic guide rendering already shipped there). **Phase 1E** added Playwright browser acceptance, axe checks, and performance gates.
 
 This repository also contains a **parked product capability**: clinic-staff authentication plus an in-chair procedure-session workflow (rooms, doctors, live stages, `/display/[token]`, Supabase Realtime, and a completed-session link to an external `aftercareUrl`).
 
 That chairside workflow is **parked / future optional**. Do not delete it. Do not use it as the aftercare architecture. **Aftercare must not depend on `ProcedureSession`.**
 
-|                   |                                                                                                                                    |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Product direction | Branded aftercare infrastructure (PRD v1.0)                                                                                        |
-| Current code      | Staff auth + parked chairside sessions + Phase 1A–1C aftercare (domain, hostname routing, styling isolation, public patient pages) |
-| Aftercare MVP     | Planned (Phases 1–3 in the PRD). Phase 1A–1C implemented; 1D/1E and commercial MVP are later.                                      |
+|                   |                                                                                                                                                 |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Product direction | Branded aftercare infrastructure (PRD v1.0)                                                                                                     |
+| Current code      | Staff auth + parked chairside sessions + Phase 1A–1E aftercare (domain, hostname routing, public patient pages, browser/performance acceptance) |
+| Aftercare MVP     | Planned (Phases 1–3 in the PRD). Phase 1 technical slice is implemented; commercial MVP is later.                                               |
 
 Examples of **intended** product behaviour that do **not** exist in code yet:
 
@@ -69,11 +69,21 @@ Tenant hostname simulation (`*.localhost`, no `/etc/hosts` changes):
 - [http://demodental.localhost:3000/extraction](http://demodental.localhost:3000/extraction) — rewritten tenant guide path
 - [http://unknown.localhost:3000](http://unknown.localhost:3000) — unknown tenant (generic not-found)
 
-Set `CARE_GUIDE_ROOT_DOMAIN=localhost` in `.env`. Tenant hosts render the Phase 1C public patient experience (practice-branded aftercare home and published guides). Staff/chairside URLs are unchanged.
+Set `CARE_GUIDE_ROOT_DOMAIN=localhost` in `.env`. Tenant hosts render the public patient experience (practice-branded aftercare home and published guides). Staff/chairside URLs are unchanged.
 
 You can start editing `app/(staff)/page.tsx`; the page auto-updates as you edit.
 
 Staff surfaces use Tailwind. Patient tenant routes use CSS Modules and server-rendered CSS custom properties — see [docs/architecture/PERFORMANCE.md](docs/architecture/PERFORMANCE.md).
+
+## Tests
+
+```bash
+pnpm test          # Vitest (unit, loaders, routing, server render)
+pnpm test:e2e      # Playwright against production `next start` on port 4173
+pnpm test:all      # Vitest then Playwright
+```
+
+Browser tests expect a seeded database (`pnpm db:seed`), `CARE_GUIDE_ROOT_DOMAIN=localhost`, and RFC 6761 `*.localhost` resolution (no `/etc/hosts`). Install Chromium once with `pnpm exec playwright install chromium`. Playwright and axe are development-only.
 
 ## Database workflow
 

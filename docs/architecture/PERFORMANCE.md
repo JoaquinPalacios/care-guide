@@ -122,3 +122,71 @@ Budget check (ceiling 8,192 raw / 3,072 gzip / 2,560 Brotli): **passed** on both
 Tenant routes still download Next.js App Router runtime JS (framework chunks only). The tenant client-reference manifest lists Next internals (`error-boundary`, `http-access-fallback`, metadata, etc.) and **no** `app/(aftercare)` Client Components. Branding does not require client JavaScript.
 
 Staff `/` still loads Tailwind (`3_zekvhor4rt9.css`, 27,165 raw / 6,356 gzip / 5,533 Brotli). Staff `/login`, `app.localhost`, unknown-tenant 404, and tenant `/login` + `/dashboard` proxy 404s are unchanged.
+
+## Phase 1E acceptance (quality, performance, browser)
+
+Measured 2026-09-01 against `cursor/aftercare-phase-1e-hardening` from `807a183`. Production `next start` on port 4173. Next.js 16.3.3.
+
+Ongoing patient CSS budget (unchanged):
+
+|                           |   Raw | gzip -9 | Brotli q11 |
+| ------------------------- | ----: | ------: | ---------: |
+| Phase 1 tenant CSS budget | 8,192 |   3,072 |      2,560 |
+
+Tenant CSS files (same on `/` and `/extraction`):
+
+- `25lyr2n1eceye.css` — aftercare base (720 raw)
+- `2xee_qhb8ibf4.css` — `patient.module.css` (4,285 raw)
+
+| Metric                             |                         Home `/` |     Guide `/extraction` |
+| ---------------------------------- | -------------------------------: | ----------------------: |
+| CSS requests                       |                                2 |                       2 |
+| CSS raw bytes                      |                            5,005 |                   5,005 |
+| CSS gzip -9                        |                            1,529 |                   1,529 |
+| CSS Brotli q11                     |                            1,214 |                   1,214 |
+| Tailwind on tenant                 |                               no |                      no |
+| `--cg-*` in first HTML             |                              yes |                     yes |
+| Patient-specific Client Components |                                0 |                       0 |
+| Patient-specific client JS chunks  |                                0 |                       0 |
+| Logo                               | 381 B `/demo/riverside-mark.svg` |                    same |
+| Theme in first HTML                |          `--cg-brand:#0f766e`, … | `--cg-brand:#0f766e`, … |
+
+Budget check: **passed**. The 1E delta versus 1C is overflow-wrap and a generic `.notFound` rule (~127 raw). No dead Phase 1B.5 proof CSS, no Tailwind, no staff styles, no duplicate rule cleanup worth doing.
+
+### JavaScript
+
+Patient routes still download Next.js App Router / Turbopack **framework** runtime. HTML lists several `_next/static/chunks/*.js` files plus one `nomodule` polyfill for legacy browsers. Chromium E2E intercepts found **no** chunks attributable to `app/(aftercare)` or other Care Guide patient Client Components.
+
+| JS (framework runtime, not a product budget) | Home | Guide |
+| -------------------------------------------- | ---: | ----: |
+| Script tags in HTML (incl. nomodule)         |    7 |     7 |
+| Patient-specific Client Component JS         |    0 |     0 |
+
+Do **not** set an aggressive framework-runtime JS budget from this baseline. Next/React/Turbopack own those bytes. The accepted Care Guide baseline remains:
+
+```
+Patient-specific Client Components = 0
+```
+
+### Logo
+
+`/demo/riverside-mark.svg` is same-origin, 381 bytes, `image/svg+xml`, explicit `width=40` `height=40`, decorative `alt=""`. `Cache-Control: public, max-age=0` with `ETag` is the Next `public/` default; the file is small enough that hashed immutable caching is not required. Keep native `<img>`. Do not switch to `next/image` for this SVG. Raster logo optimization, if needed later, belongs in an asset pipeline.
+
+### Native `<a>` decision
+
+Keep native anchors on the patient surface. Homepage → extraction and extraction → homepage are full document navigations.
+
+Evidence:
+
+- Pages are small (5 KB CSS, no patient Client Components).
+- Navigation frequency is low (a patient opens a guide, then may return home).
+- `next/link` would introduce client JS and prefetch behaviour for no measured UX gain.
+- Keyboard Enter on the Tooth Extraction link already activates the native anchor.
+- Browser-native behaviour stays robust without a client router.
+
+Revisit only if a later phase adds authenticated or highly interactive patient UI.
+
+### 404 distinction
+
+- **Security routing 404:** hostname proxy returns an empty 404 for invalid/reserved hosts, direct `/_sites`, and staff paths on a tenant host. Do not brand these.
+- **Application tenant 404:** unknown tenant, unknown/draft/disabled guide, or pinned draft revision render `app/(aftercare)/not-found.tsx` (“Not found” / “This aftercare page is not available.”). Generic, practice-neutral copy. Known-tenant layout may still apply CSS variables around that page; visible chrome does not advertise another tenant.

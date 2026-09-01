@@ -291,7 +291,7 @@ const DEMO_EXTRACTION_GUIDE = {
       kind: "INTRODUCTION",
       title: "About this demo guide",
       sortOrder: 1,
-      body: `${DEMO_DISCLAIMER}\n\nThis sample “Tooth Extraction” guide exists so Care Guide can demonstrate canonical aftercare content for the Riverside Dental Demo tenant.`,
+      body: `${DEMO_DISCLAIMER}\n\nThis sample “Tooth Extraction” guide exists so Care Guide can demonstrate canonical aftercare content for a published dental PracticeGuide.`,
     },
     {
       id: "guide_sec_demo_extraction_immediate",
@@ -307,7 +307,7 @@ const DEMO_EXTRACTION_GUIDE = {
       kind: "FIRST_24_HOURS",
       title: "The first day (demo)",
       sortOrder: 3,
-      body: `${DEMO_DISCLAIMER}\n\nCanonical demo text for the first 24 hours. Riverside Dental Demo overrides this section in the seeded PracticeGuide.`,
+      body: `${DEMO_DISCLAIMER}\n\nCanonical demo text for the first 24 hours. A practice can override this section in its published PracticeGuide.`,
     },
     {
       id: "guide_sec_demo_extraction_normal",
