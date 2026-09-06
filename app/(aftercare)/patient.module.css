@@ -59,7 +59,7 @@
 }
 
 .themeSpacer {
-  flex: 0 0 10.75rem;
+  flex: 0 0 2.6rem;
   height: 2.4rem;
 }
 
@@ -177,6 +177,38 @@
 
 .body:last-child {
   margin-bottom: 0;
+}
+
+.timeline {
+  margin: 0 0 1.15rem;
+}
+
+.timelineList {
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timelineItem {
+  position: relative;
+  display: grid;
+  gap: 0.3rem 1.15rem;
+  margin: 0;
+  padding: 0 0 1.05rem 1rem;
+  border-left: 2px solid var(--cg-border);
+}
+
+.timelineItem:last-child {
+  padding-bottom: 0.15rem;
+}
+
+.timelinePeriod {
+  margin: 0;
+  color: var(--cg-text-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
 }
 
 .warning,
@@ -299,5 +331,10 @@
 
   .main {
     padding-top: 2.4rem;
+  }
+
+  .timelineItem {
+    grid-template-columns: 8.6rem minmax(0, 1fr);
+    padding-left: 1.15rem;
   }
 }

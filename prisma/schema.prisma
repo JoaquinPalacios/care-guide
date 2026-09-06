@@ -403,16 +403,17 @@ model GuideTemplateRevision {
 }
 
 model GuideTemplateSection {
-  id         String                @id @default(cuid())
-  revisionId String
-  key        String
-  kind       GuideSectionKind
-  title      String
-  body       String                @db.Text
-  sortOrder  Int
-  revision   GuideTemplateRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
-  createdAt  DateTime              @default(now())
-  updatedAt  DateTime              @updatedAt
+  id          String                @id @default(cuid())
+  revisionId  String
+  key         String
+  kind        GuideSectionKind
+  title       String
+  body        String                @db.Text
+  periodLabel String?
+  sortOrder   Int
+  revision    GuideTemplateRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
 
   @@unique([revisionId, key])
   @@unique([revisionId, sortOrder])
@@ -468,6 +469,7 @@ model PracticeGuideAddition {
   kind                  GuideSectionKind
   title                 String
   body                  String           @db.Text
+  periodLabel           String?
   sortOrder             Int
   insertAfterSectionKey String?
   practiceGuide         PracticeGuide    @relation(fields: [practiceGuideId], references: [id], onDelete: Cascade)

@@ -128,10 +128,10 @@ describe("tenant homepage", () => {
     expect(html).toContain("View post-treatment instructions");
     expect(html).toContain('href="tel:0255500100"');
     expect(html).toContain("Call Riverside Dental Demo");
-    expect(html).toContain(
+    expect(html).not.toContain(
       'href="https://www.example.com/riverside-dental-demo/book"'
     );
-    expect(html).toContain("Book an appointment");
+    expect(html).not.toContain("Book an appointment");
     expect(html).toContain("DEMO: call the clinic or emergency services.");
     expect(html).toContain("Powered by Aftercare Guide");
     expect(html).toContain("Demo aftercare content — not clinical advice.");

@@ -43,11 +43,12 @@ test.describe("tenant homepage and guide", () => {
     ).toBeVisible();
     await expect(
       page.getByRole("link", { name: "Book an appointment" })
-    ).toBeVisible();
+    ).toHaveCount(0);
     await expect(page.getByText("Powered by Aftercare Guide")).toBeVisible();
     await expect(
-      page.getByRole("group", { name: "Colour theme" })
+      page.getByRole("button", { name: /Change colour theme/ })
     ).toBeVisible();
+    await expect(page.getByRole("radio", { name: "System" })).toHaveCount(0);
     await expect(
       page.getByText("Demo aftercare content — not clinical advice.")
     ).toBeVisible();
@@ -86,7 +87,14 @@ test.describe("tenant homepage and guide", () => {
     ).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "Warning signs (demo)" })
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("heading", { name: "When to contact us (demo)" })
     ).toBeVisible();
+    await expect(page.getByText("First few hours")).toBeVisible();
+    await expect(page.getByText("Today / first 24 hours")).toBeVisible();
+    await expect(page.getByText("Days 2–3")).toBeVisible();
+    await expect(page.getByText("Days 4–7")).toBeVisible();
     await expect(page.locator("text=Important.")).toHaveCount(1);
     await expect(page.getByText("If you need urgent help")).toBeVisible();
     await expect(
@@ -130,7 +138,7 @@ test.describe("tenant homepage and guide", () => {
     );
     await tabUntil(page, (href, text) =>
       Boolean(
-        href?.startsWith("https://") && text.includes("Book an appointment")
+        href?.startsWith("https://") && text.includes("Practice contact page")
       )
     );
   });

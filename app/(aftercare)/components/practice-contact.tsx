@@ -22,7 +22,7 @@ export function PracticeContact({ chrome }: { chrome: PracticeChrome }) {
         Use these details if you have a question about your recovery or need to
         arrange a follow-up.
       </p>
-      {chrome.phoneHref || chrome.bookingHref || chrome.contactHref ? (
+      {chrome.phoneHref || chrome.contactHref ? (
         <div className={styles.actions}>
           {chrome.phoneHref ? (
             <a
@@ -30,14 +30,6 @@ export function PracticeContact({ chrome }: { chrome: PracticeChrome }) {
               href={chrome.phoneHref}
             >
               Call {chrome.displayName}
-            </a>
-          ) : null}
-          {chrome.bookingHref ? (
-            <a
-              className={`${styles.action} ${styles.secondary}`}
-              href={chrome.bookingHref}
-            >
-              Book an appointment
             </a>
           ) : null}
           {chrome.contactHref ? (

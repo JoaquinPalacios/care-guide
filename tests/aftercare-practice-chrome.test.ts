@@ -98,4 +98,23 @@ describe("resolvePracticeChrome", () => {
     expect(chrome.themeMode).toBe("DARK");
     expect(chrome.allowPatientThemeToggle).toBe(true);
   });
+
+  it("keeps bookingHref for later configuration even though the CTA is not rendered", () => {
+    const chrome = resolvePracticeChrome({
+      slug: "demodental",
+      name: "Rivers Care Demo Clinic",
+      profile: {
+        ...PROFILE,
+        phone: null,
+        contactUrl: null,
+        emergencyInstructions: null,
+      },
+    });
+
+    expect(chrome.bookingHref).toBe(
+      "https://www.example.com/riverside-dental-demo/book"
+    );
+    expect(chrome.phoneHref).toBeNull();
+    expect(chrome.contactHref).toBeNull();
+  });
 });

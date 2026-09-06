@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { GuideSection } from "@/app/(aftercare)/components/guide-section";
+import { GuideDocument } from "@/app/(aftercare)/components/guide-document";
 import { PatientPage } from "@/app/(aftercare)/components/patient-page";
 import { getPublishedPracticeGuide } from "@/lib/aftercare/get-published-practice-guide";
 import { instructionLabel } from "@/lib/aftercare/instruction-terminology";
@@ -74,9 +74,7 @@ export default async function TenantGuidePage({
           help.
         </p>
       </header>
-      {document.sections.map((section) => (
-        <GuideSection key={section.key} section={section} />
-      ))}
+      <GuideDocument sections={document.sections} />
     </PatientPage>
   );
 }

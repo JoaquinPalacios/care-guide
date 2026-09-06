@@ -30,6 +30,9 @@ describe("marketing homepage", () => {
     const html = renderToStaticMarkup(await MarketingHomePage());
 
     expect(html).toContain("Aftercare Guide");
+    expect(html).toContain("Aftercare platform");
+    expect(html).not.toContain("Clinic-branded aftercare");
+    expect(html).not.toContain("THE AFTERCARE PLATFORM");
     expect(html).toContain("Aftercare that still feels like your clinic.");
     expect(html).toContain("always leave with clarity.");
     expect(html).toContain("Paper");
@@ -38,7 +41,10 @@ describe("marketing homepage", () => {
     expect(html).toContain("Apply clinic brand");
     expect(html).toContain("View the clinic demo");
     expect(html).toContain("Early access");
-    expect(html).toContain("Colour theme");
+    expect(html).toContain("Change colour theme");
+    expect(html).toContain("Branded aftercare patients can revisit.");
+    expect(html).toContain("Staff sign in");
+    expect(html).not.toContain("Book an appointment");
     expect(html).toContain("http://demodental.localhost:3000/");
     expect(html).toContain("http://app.localhost:3000/login");
     expect(html).toContain("Riverside Dental Demo");

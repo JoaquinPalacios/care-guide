@@ -1,3 +1,4 @@
+import { normalizePeriodLabel } from "@/lib/aftercare/period-label";
 import type {
   CanonicalGuideSection,
   ComposedGuideDocument,
@@ -25,6 +26,7 @@ function toAdditionSection(
     kind: addition.kind,
     title: addition.title,
     body: addition.body,
+    periodLabel: normalizePeriodLabel(addition.periodLabel),
     provenance: "practice_addition",
   };
 }
@@ -110,6 +112,7 @@ function composeCanonicalSection(
       kind: canonicalSection.kind,
       title: canonicalSection.title,
       body: canonicalSection.body,
+      periodLabel: normalizePeriodLabel(canonicalSection.periodLabel),
       provenance: "canonical",
     };
   }
@@ -119,6 +122,7 @@ function composeCanonicalSection(
     kind: canonicalSection.kind,
     title: override.title,
     body: override.body,
+    periodLabel: normalizePeriodLabel(canonicalSection.periodLabel),
     provenance: "practice_override",
   };
 }

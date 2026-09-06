@@ -90,7 +90,7 @@ export default async function MarketingHomePage() {
         <section className={styles.hero} aria-labelledby="marketing-hero">
           <div className={`${styles.inner} ${styles.heroGrid}`}>
             <div className={styles.heroCopy}>
-              <p className={styles.eyebrow}>Clinic-branded aftercare</p>
+              <p className={styles.eyebrow}>Aftercare platform</p>
               <h1 id="marketing-hero">
                 Aftercare that still feels like your clinic.
               </h1>
@@ -149,7 +149,10 @@ export default async function MarketingHomePage() {
           </div>
         </section>
 
-        <section className={styles.band} aria-labelledby="problem-heading">
+        <section
+          className={`${styles.band} ${styles.surfaceSubtle}`}
+          aria-labelledby="problem-heading"
+        >
           <div className={`${styles.inner} ${styles.problemGrid}`}>
             <div>
               <p className={styles.eyebrow}>The problem</p>
@@ -176,7 +179,10 @@ export default async function MarketingHomePage() {
           </div>
         </section>
 
-        <section className={styles.band} aria-labelledby="product-heading">
+        <section
+          className={`${styles.band} ${styles.surfaceBase}`}
+          aria-labelledby="product-heading"
+        >
           <div className={`${styles.inner} ${styles.productGrid}`}>
             <div className={styles.productCopy}>
               <p className={styles.eyebrow}>The product</p>
@@ -194,7 +200,7 @@ export default async function MarketingHomePage() {
 
         <section
           id="how-it-works"
-          className={styles.band}
+          className={`${styles.band} ${styles.surfaceContrast}`}
           aria-labelledby="how-heading"
         >
           <div className={styles.inner}>
@@ -239,7 +245,10 @@ export default async function MarketingHomePage() {
           </div>
         </section>
 
-        <section className={styles.band} aria-labelledby="why-heading">
+        <section
+          className={`${styles.band} ${styles.surfaceBase}`}
+          aria-labelledby="why-heading"
+        >
           <div className={styles.inner}>
             <p className={styles.eyebrow}>Why clinics use it</p>
             <h2 id="why-heading">
@@ -268,10 +277,10 @@ export default async function MarketingHomePage() {
                 </p>
               </li>
               <li>
-                <h3>Contact and rebooking</h3>
+                <h3>Practice contact</h3>
                 <p>
-                  Call and booking actions sit with the instructions, plus a
-                  distinct urgent-help block.
+                  Call the practice from the same page as the instructions, plus
+                  a distinct urgent-help block.
                 </p>
               </li>
               <li>
@@ -293,7 +302,10 @@ export default async function MarketingHomePage() {
           </div>
         </section>
 
-        <section className={styles.band} aria-labelledby="brand-heading">
+        <section
+          className={`${styles.band} ${styles.surfaceContrast}`}
+          aria-labelledby="brand-heading"
+        >
           <div className={styles.inner}>
             <p className={styles.eyebrow}>Branding</p>
             <h2 id="brand-heading">One product, many practice identities</h2>
@@ -321,7 +333,7 @@ export default async function MarketingHomePage() {
 
         <section
           id="preview"
-          className={styles.band}
+          className={`${styles.band} ${styles.surfaceBase}`}
           aria-labelledby="preview-heading"
         >
           <div className={`${styles.inner} ${styles.previewGrid}`}>
@@ -353,7 +365,7 @@ export default async function MarketingHomePage() {
 
         <section
           id="early-access"
-          className={styles.ctaBlock}
+          className={`${styles.ctaBlock} ${styles.surfaceBrand}`}
           aria-labelledby="cta-heading"
         >
           <div className={styles.inner}>
@@ -387,8 +399,24 @@ export default async function MarketingHomePage() {
       </main>
 
       <footer className={styles.footer}>
+        <div className={`${styles.inner} ${styles.footerInner}`}>
+          <div className={styles.footerBrand}>
+            <p className={styles.footerName}>{PRODUCT_NAME}</p>
+            <p className={styles.footerTag}>
+              Branded aftercare patients can revisit.
+            </p>
+          </div>
+          <nav className={styles.footerNav} aria-label="Footer">
+            <Link href="#how-it-works">How it works</Link>
+            <Link href="#preview">Clinic preview</Link>
+            <Link href="#early-access">Early access</Link>
+            <a href={staffHref}>Staff sign in</a>
+          </nav>
+        </div>
         <div className={styles.inner}>
-          {PRODUCT_NAME} — provisional aftercare platform
+          <p className={styles.footerCopy}>
+            © {new Date().getFullYear()} {PRODUCT_NAME}
+          </p>
         </div>
       </footer>
     </div>

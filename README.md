@@ -28,17 +28,17 @@ Authoritative product contract:
 
 **The aftercare SaaS described above is not a complete commercial product yet.**
 
-Phase 1A added the **data/domain foundation**. Phase 1B added **tenant hostname routing** (`proxy.ts` rewrite to `/_sites/<slug>/…`). Phase 1B.5 added the **patient styling/performance foundation** (CSS Modules, server CSS variables, Tailwind isolated to staff). **Phase 1C** added the first public patient aftercare homepage and guide UI. **Phase 1D was absorbed into 1C** (composition, overrides, additions, and semantic guide rendering already shipped there). **Phase 1E** added Playwright browser acceptance, axe checks, and performance gates. **Phase 1F** added the public marketing homepage, patient UX/UI uplift, and a controlled branding-token foundation (including light/dark and radius presets). **Phase 1F.1** refined the Aftercare Guide marketing identity, tenant presentation settings (terminology, theme policy, optional patient theme toggle), and premium visual language.
+Phase 1A added the **data/domain foundation**. Phase 1B added **tenant hostname routing** (`proxy.ts` rewrite to `/_sites/<slug>/…`). Phase 1B.5 added the **patient styling/performance foundation** (CSS Modules, server CSS variables, Tailwind isolated to staff). **Phase 1C** added the first public patient aftercare homepage and guide UI. **Phase 1D was absorbed into 1C** (composition, overrides, additions, and semantic guide rendering already shipped there). **Phase 1E** added Playwright browser acceptance, axe checks, and performance gates. **Phase 1F** added the public marketing homepage, patient UX/UI uplift, and a controlled branding-token foundation (including light/dark and radius presets). **Phase 1F.1** refined the Aftercare Guide marketing identity, tenant presentation settings (terminology, theme policy, optional patient theme toggle), and premium visual language. **Phase 1F.2** added marketing section surfaces and footer, a compact theme popover, a data-driven recovery timeline, and explicit local login env accounts.
 
 This repository also contains a **parked product capability**: clinic-staff authentication plus an in-chair procedure-session workflow (rooms, doctors, live stages, `/display/[token]`, Supabase Realtime, and a completed-session link to an external `aftercareUrl`).
 
 That chairside workflow is **parked / future optional**. Do not delete it. Do not use it as the aftercare architecture. **Aftercare must not depend on `ProcedureSession`.**
 
-|                   |                                                                                                                                                                                                                     |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Product direction | Branded aftercare infrastructure (PRD v1.0)                                                                                                                                                                         |
-| Current code      | Staff auth + parked chairside sessions + Phase 1A–1F.1 aftercare (domain, hostname routing, public patient pages, Aftercare Guide marketing homepage, tenant presentation settings, browser/performance acceptance) |
-| Aftercare MVP     | Planned (Phases 1–3 in the PRD). Phase 1 technical slice is implemented; commercial MVP is later.                                                                                                                   |
+|                   |                                                                                                                                                                                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Product direction | Branded aftercare infrastructure (PRD v1.0)                                                                                                                                                                                                            |
+| Current code      | Staff auth + parked chairside sessions + Phase 1A–1F.2 aftercare (domain, hostname routing, public patient pages, Aftercare Guide marketing homepage, tenant presentation settings, recovery timeline, local login DX, browser/performance acceptance) |
+| Aftercare MVP     | Planned (Phases 1–3 in the PRD). Phase 1 technical slice is implemented; commercial MVP is later.                                                                                                                                                      |
 
 Examples of **intended** product behaviour that do **not** exist in code yet:
 
@@ -76,6 +76,14 @@ Tenant hostname simulation (`*.localhost`, no `/etc/hosts` changes):
 - [http://unknown.localhost:3000](http://unknown.localhost:3000) — unknown tenant (generic not-found)
 
 Set `CARE_GUIDE_ROOT_DOMAIN=localhost` in `.env`. Tenant hosts render the public patient experience (practice-branded aftercare home and published guides). The staff app stays on `app.localhost`.
+
+Staff URL:
+
+```text
+http://app.localhost:3000/login
+```
+
+Local login credentials come from `LOCAL_<ROLE>_EMAIL` and `LOCAL_<ROLE>_PASSWORD` in `.env` or `.env.local`. `.env.example` shows the local-only defaults for the two current membership roles (`ADMIN` and `STAFF`). Those values are refused by the seed in production. Do not use them outside local development.
 
 You can start editing `app/(marketing)/%5Fmarketing/page.tsx` or `app/(staff)/page.tsx`; the page auto-updates as you edit.
 
@@ -145,14 +153,15 @@ If `AUTH_SECRET` is missing, the app fails fast with a clear startup error inste
 
 ### Seeded demo accounts
 
-The seed creates one fictional clinic plus two clinic-scoped staff users:
+The seed creates one fictional clinic plus clinic-scoped staff users when local env vars are present:
 
 - Clinic: `Rivers Care Demo Clinic` (`clinic_demo_rivers`)
 - Tenant slug: `demodental`
 - Patient-facing profile: `Riverside Dental Demo`
-- Admin: `admin@care-guide.test`
-- Staff: `staff@care-guide.test`
-- Shared demo password: `CareGuideDemo123!`
+- Admin: `LOCAL_ADMIN_EMAIL` / `LOCAL_ADMIN_PASSWORD`
+- Staff: `LOCAL_STAFF_EMAIL` / `LOCAL_STAFF_PASSWORD`
+
+Copy the `LOCAL_*` examples from `.env.example`. They are fake local-only values and are not created if `NODE_ENV=production`.
 
 The seed also creates parked chairside fixtures (room, doctor, procedure templates) and one canonical aftercare **Tooth Extraction** demo guide. Chairside templates are **not** the aftercare Guide Template library. Aftercare demo copy is labelled non-clinical.
 
@@ -170,12 +179,12 @@ Clinic access is membership-derived (`ClinicMembership`), not a single clinic fi
 
 The MVP auth flow uses custom `/api/auth/login` and `/api/auth/logout` endpoints layered on top of Auth.js database sessions and shared server-side auth helpers.
 
-Example login request:
+Example login request (use the `LOCAL_ADMIN_*` values from your env file):
 
 ```bash
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST http://app.localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@care-guide.test","password":"CareGuideDemo123!"}'
+  -d '{"email":"<LOCAL_ADMIN_EMAIL>","password":"<LOCAL_ADMIN_PASSWORD>"}'
 ```
 
 Related routes:

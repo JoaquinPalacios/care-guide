@@ -1,0 +1,174 @@
+export const LOCAL_LOGIN_ROLES = ["ADMIN", "STAFF"] as const;
+
+export type LocalLoginRole = (typeof LOCAL_LOGIN_ROLES)[number];
+
+export interface LocalLoginAccount {
+  role: LocalLoginRole;
+  email: string;
+  password: string;
+  userId: string;
+  name: string;
+}
+
+export type LocalLoginSeedPlan =
+  | { status: "seed"; accounts: LocalLoginAccount[] }
+  | { status: "skipped"; reason: "production" | "missing" }
+  | { status: "refused"; reason: string };
+
+const ACCOUNT_META: Record<
+  LocalLoginRole,
+  { userId: string; name: string; emailKey: string; passwordKey: string }
+> = {
+  ADMIN: {
+    userId: "user_demo_admin",
+    name: "Demo Admin",
+    emailKey: "LOCAL_ADMIN_EMAIL",
+    passwordKey: "LOCAL_ADMIN_PASSWORD",
+  },
+  STAFF: {
+    userId: "user_demo_staff",
+    name: "Demo Staff",
+    emailKey: "LOCAL_STAFF_EMAIL",
+    passwordKey: "LOCAL_STAFF_PASSWORD",
+  },
+};
+
+export function localLoginEnvKeys(role: LocalLoginRole): {
+  emailKey: string;
+  passwordKey: string;
+} {
+  return {
+    emailKey: ACCOUNT_META[role].emailKey,
+    passwordKey: ACCOUNT_META[role].passwordKey,
+  };
+}
+
+function readPair(
+  env: NodeJS.Dict<string>,
+  role: LocalLoginRole
+): LocalLoginAccount | null {
+  const meta = ACCOUNT_META[role];
+  const email = env[meta.emailKey]?.trim() ?? "";
+  const password = env[meta.passwordKey] ?? "";
+
+  if (!email && !password) {
+    return null;
+  }
+
+  if (!email || !password) {
+    return null;
+  }
+
+  return {
+    role,
+    email,
+    password,
+    userId: meta.userId,
+    name: meta.name,
+  };
+}
+
+function hasAnyLocalLoginEnv(env: NodeJS.Dict<string>): boolean {
+  return LOCAL_LOGIN_ROLES.some((role) => {
+    const keys = localLoginEnvKeys(role);
+    return Boolean(env[keys.emailKey] || env[keys.passwordKey]);
+  });
+}
+
+export function resolveLocalLoginSeed(
+  env: NodeJS.Dict<string> = process.env,
+  nodeEnv = env.NODE_ENV
+): LocalLoginSeedPlan {
+  const production = nodeEnv === "production";
+  const configured = hasAnyLocalLoginEnv(env);
+
+  if (production && configured) {
+    return {
+      status: "refused",
+      reason:
+        "LOCAL_* authentication variables must not be set in production. Development accounts were not created.",
+    };
+  }
+
+  if (production) {
+    return { status: "skipped", reason: "production" };
+  }
+
+  const accounts = LOCAL_LOGIN_ROLES.map((role) => readPair(env, role)).filter(
+    (account): account is LocalLoginAccount => account !== null
+  );
+
+  if (accounts.length === 0) {
+    return { status: "skipped", reason: "missing" };
+  }
+
+  return { status: "seed", accounts };
+}
+
+export interface LocalLoginPrisma {
+  user: {
+    upsert: (args: {
+      where: { id: string };
+      update: { name: string; email: string; passwordHash: string };
+      create: {
+        id: string;
+        name: string;
+        email: string;
+        passwordHash: string;
+      };
+    }) => Promise<{ id: string; email: string }>;
+  };
+  clinicMembership: {
+    upsert: (args: {
+      where: { clinicId_userId: { clinicId: string; userId: string } };
+      update: { role: LocalLoginRole };
+      create: { clinicId: string; userId: string; role: LocalLoginRole };
+    }) => Promise<unknown>;
+  };
+}
+
+export async function upsertLocalLoginAccounts(input: {
+  prisma: LocalLoginPrisma;
+  clinicId: string;
+  accounts: LocalLoginAccount[];
+  hashPassword: (password: string) => string;
+}): Promise<{ id: string; email: string; role: LocalLoginRole }[]> {
+  const seeded = [];
+
+  for (const account of input.accounts) {
+    const passwordHash = input.hashPassword(account.password);
+    const user = await input.prisma.user.upsert({
+      where: { id: account.userId },
+      update: {
+        name: account.name,
+        email: account.email,
+        passwordHash,
+      },
+      create: {
+        id: account.userId,
+        name: account.name,
+        email: account.email,
+        passwordHash,
+      },
+    });
+
+    await input.prisma.clinicMembership.upsert({
+      where: {
+        clinicId_userId: {
+          clinicId: input.clinicId,
+          userId: user.id,
+        },
+      },
+      update: { role: account.role },
+      create: {
+        clinicId: input.clinicId,
+        userId: user.id,
+        role: account.role,
+      },
+    });
+
+    seeded.push({ id: user.id, email: user.email, role: account.role });
+  }
+
+  return seeded;
+}

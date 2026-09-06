@@ -302,3 +302,43 @@ Do not treat that chunk as a theme-toggle budget. Comparable isolated theme-cont
 Staff `app.localhost/` still loads Tailwind (`1d4zsgjtjjx9r.css`, 27,330 raw / 6,408 gzip / 5,555 Brotli).
 
 Apex `/login` remains a proxy 404. Staff login remains on `app.localhost/login`.
+
+## After Phase 1F.2 (recovery timeline and compact theme control)
+
+Measured 2026-09-07 against `cursor/aftercare-phase-1e-hardening` after the Phase 1F.2 polish. Production `next build` (Next.js 16.3.3 / Turbopack).
+
+The 8,192 raw ceiling had 44 bytes of headroom after 1F.1. Compact theme-control CSS replaced the segmented control, but the recovery timeline is real additional CSS. Duplicate timeline title/body rules were removed first. Remaining tenant CSS:
+
+- `3x2sst5om57qc.css` — aftercare base, including compact `.ptc` popover (3,168 raw / 1,024 gzip / 866 Brotli)
+- `27tw0ygq7mx2s.css` — `patient.module.css` with timeline (5,855 raw / 1,385 gzip / 1,131 Brotli)
+
+| Metric         |  1F.1 |      1F.2 |    Delta |
+| -------------- | ----: | --------: | -------: |
+| CSS raw        | 8,148 | **9,023** | **+875** |
+| CSS gzip -9    | 2,192 | **2,409** | **+217** |
+| CSS Brotli q11 | 1,827 | **1,997** | **+170** |
+| Tailwind       |    no |        no |        — |
+
+gzip and Brotli remain under the previous 3,072 / 2,560 ceilings. Raw does not. Proposed tenant CSS budget after this review:
+
+|                               |    Raw | gzip -9 | Brotli q11 |
+| ----------------------------- | -----: | ------: | ---------: |
+| Previous Phase 1 ceiling      |  8,192 |   3,072 |      2,560 |
+| Phase 1F.2 tenant CSS ceiling | 10,240 |   3,072 |      2,560 |
+
+Reason: data-driven recovery timeline (~0.9 KB raw after dedupe) plus a compact native popover. Still far below pre-isolation Tailwind (26,928 raw). Do not treat 10,240 as a target; prefer smaller.
+
+### Tenant JavaScript
+
+| Surface                                      | Patient-specific Client Components rendered | Theme-control chunk                                          |
+| -------------------------------------------- | ------------------------------------------: | ------------------------------------------------------------ |
+| Riverside (`allowPatientThemeToggle = true`) |                   1 (`PatientThemeControl`) | `3gup781hok6po.js` **2,885 raw / 1,272 gzip / 1,089 Brotli** |
+| Harbor (`allowPatientThemeToggle = false`)   |                                           0 | Control not rendered                                         |
+
+1F.1 isolated theme JS was 1,199 raw. The 1F.2 delta is the native popover plus three inline SVG glyphs in the shared `AppearanceMenu`. No theme library.
+
+### Marketing theme JS
+
+Marketing still shares a chunk with `next/link` (`0hq91uq9ps6t6.js`, 11,644 raw / 4,656 gzip / 4,059 Brotli). Do not treat that as theme-only. Comparable isolated size is the patient chunk above.
+
+Marketing CSS (section surfaces + footer): 2,822 + 8,722 = **11,544** raw. Still far below staff Tailwind. No Tailwind on marketing.

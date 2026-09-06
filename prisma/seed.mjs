@@ -11,27 +11,27 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter });
 
-const DEMO_PASSWORD = "CareGuideDemo123!";
+const LOCAL_LOGIN_ACCOUNTS = [
+  {
+    role: ClinicMembershipRole.ADMIN,
+    userId: "user_demo_admin",
+    name: "Demo Admin",
+    emailKey: "LOCAL_ADMIN_EMAIL",
+    passwordKey: "LOCAL_ADMIN_PASSWORD",
+  },
+  {
+    role: ClinicMembershipRole.STAFF,
+    userId: "user_demo_staff",
+    name: "Demo Staff",
+    emailKey: "LOCAL_STAFF_EMAIL",
+    passwordKey: "LOCAL_STAFF_PASSWORD",
+  },
+];
 
 const DEMO_CLINIC = {
   id: "clinic_demo_rivers",
   name: "Rivers Care Demo Clinic",
   slug: "demodental",
-};
-
-const DEMO_USERS = {
-  admin: {
-    id: "user_demo_admin",
-    name: "Demo Admin",
-    email: "admin@care-guide.test",
-    role: ClinicMembershipRole.ADMIN,
-  },
-  staff: {
-    id: "user_demo_staff",
-    name: "Demo Staff",
-    email: "staff@care-guide.test",
-    role: ClinicMembershipRole.STAFF,
-  },
 };
 
 const DEMO_ROOM = {
@@ -295,48 +295,72 @@ const DEMO_EXTRACTION_GUIDE = {
       key: "introduction",
       kind: "INTRODUCTION",
       title: "About this demo guide",
+      periodLabel: null,
       sortOrder: 1,
-      body: `${DEMO_DISCLAIMER}\n\nThis sample “Tooth Extraction” guide exists so Care Guide can demonstrate canonical aftercare content for a published dental PracticeGuide.`,
+      body: `${DEMO_DISCLAIMER}\n\nThis sample “Tooth Extraction” guide exists so Aftercare Guide can demonstrate a clinic-branded recovery page. The stages below are paraphrased demo structure, not clinical advice.`,
     },
     {
       id: "guide_sec_demo_extraction_immediate",
       key: "immediate-care",
-      kind: "IMMEDIATE_CARE",
-      title: "What to do first (demo)",
+      kind: "RECOVERY_TIMELINE",
+      title: "Immediate care",
+      periodLabel: "First few hours",
       sortOrder: 2,
-      body: `${DEMO_DISCLAIMER}\n\nA real practice would describe immediate post-extraction steps here. This paragraph is placeholder demo copy only.`,
+      body: `Bite gently on the gauze the clinic placed and keep the site still so a clot can form. Rest, keep your head up, and avoid rinsing, spitting, or using a straw during this first period.`,
     },
     {
       id: "guide_sec_demo_extraction_first_day",
       key: "first-24-hours",
-      kind: "FIRST_24_HOURS",
-      title: "The first day (demo)",
+      kind: "RECOVERY_TIMELINE",
+      title: "Protect the healing site",
+      periodLabel: "Today / first 24 hours",
       sortOrder: 3,
-      body: `${DEMO_DISCLAIMER}\n\nCanonical demo text for the first 24 hours. A practice can override this section in its published PracticeGuide.`,
+      body: `Leave the site undisturbed. Choose soft, cool foods and take any pain relief only as the clinic advised. Do not smoke, drink alcohol, or poke the area today.`,
+    },
+    {
+      id: "guide_sec_demo_extraction_days_2_3",
+      key: "days-2-3",
+      kind: "RECOVERY_TIMELINE",
+      title: "Early recovery",
+      periodLabel: "Days 2–3",
+      sortOrder: 4,
+      body: `Swelling often peaks, then eases. If the clinic recommended a gentle salt-water rinse, start it now. Keep meals soft and avoid strenuous exercise until you feel steady.`,
+    },
+    {
+      id: "guide_sec_demo_extraction_days_4_7",
+      key: "days-4-7",
+      kind: "RECOVERY_TIMELINE",
+      title: "Healing check",
+      periodLabel: "Days 4–7",
+      sortOrder: 5,
+      body: `Discomfort should continue to settle. Return to usual food only as comfort allows. Contact the practice if pain increases, the site feels worse, or you are unsure.`,
     },
     {
       id: "guide_sec_demo_extraction_normal",
       key: "what-is-normal",
       kind: "WHAT_IS_NORMAL",
       title: "What this demo treats as normal",
-      sortOrder: 4,
-      body: `${DEMO_DISCLAIMER}\n\nThis section would usually describe expected recovery sensations. The seeded text is intentionally generic and non-clinical.`,
+      periodLabel: null,
+      sortOrder: 6,
+      body: `Mild swelling, a dull ache, and a little oozing can be expected in the first days. This seeded text is generic demonstration copy and does not describe every recovery.`,
     },
     {
       id: "guide_sec_demo_extraction_warnings",
       key: "warning-signs",
       kind: "WARNING_SIGNS",
-      title: "Warning signs (demo)",
-      sortOrder: 5,
-      body: `${DEMO_DISCLAIMER}\n\nA production guide would list warning signs here. Do not treat this demo list as medical guidance.`,
+      title: "When to contact us (demo)",
+      periodLabel: null,
+      sortOrder: 7,
+      body: `Call the practice if bleeding will not slow, swelling spreads, swallowing becomes difficult, or pain gets worse after the first few days. For trouble breathing, use emergency services. Do not treat this demo list as medical guidance.`,
     },
     {
       id: "guide_sec_demo_extraction_contact",
       key: "contact-practice",
       kind: "CONTACT_PRACTICE",
       title: "Contact the practice (demo)",
-      sortOrder: 6,
-      body: `${DEMO_DISCLAIMER}\n\nCanonical contact prompt. Patients would normally use the practice phone and booking links from the clinic profile, not this paragraph.`,
+      periodLabel: null,
+      sortOrder: 8,
+      body: `Use the practice phone on this page if you have a question about recovery. This paragraph is sample copy; patients would normally use the clinic profile contact details.`,
     },
   ],
   override: {
@@ -350,6 +374,7 @@ const DEMO_EXTRACTION_GUIDE = {
     title: "Weekend contact (Riverside demo)",
     sortOrder: 1,
     insertAfterSectionKey: "contact-practice",
+    periodLabel: null,
     body: `${DEMO_DISCLAIMER}\n\nPractice addition: this extra section shows how Riverside Dental Demo can insert local information after a canonical section. It is not a real on-call roster.`,
   },
 };
@@ -361,19 +386,55 @@ function createPasswordHash(password) {
   return `scrypt:${salt}:${hash}`;
 }
 
-async function upsertDemoUser(user) {
-  const passwordHash = createPasswordHash(DEMO_PASSWORD);
+function resolveLocalLoginAccounts(env = process.env) {
+  const production = env.NODE_ENV === "production";
+  const configured = LOCAL_LOGIN_ACCOUNTS.some(
+    (account) => env[account.emailKey] || env[account.passwordKey]
+  );
+
+  if (production && configured) {
+    return {
+      status: "refused",
+      reason:
+        "LOCAL_* authentication variables must not be set in production. Development accounts were not created.",
+      accounts: [],
+    };
+  }
+
+  if (production) {
+    return { status: "skipped", reason: "production", accounts: [] };
+  }
+
+  const accounts = LOCAL_LOGIN_ACCOUNTS.flatMap((account) => {
+    const email = env[account.emailKey]?.trim() ?? "";
+    const password = env[account.passwordKey] ?? "";
+    if (!email || !password) {
+      return [];
+    }
+    return [{ ...account, email, password }];
+  });
+
+  if (accounts.length === 0) {
+    return { status: "skipped", reason: "missing", accounts: [] };
+  }
+
+  return { status: "seed", accounts };
+}
+
+async function upsertLocalLoginUser(account) {
+  const passwordHash = createPasswordHash(account.password);
 
   return prisma.user.upsert({
-    where: { email: user.email },
+    where: { id: account.userId },
     update: {
-      name: user.name,
+      name: account.name,
+      email: account.email,
       passwordHash,
     },
     create: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
+      id: account.userId,
+      name: account.name,
+      email: account.email,
       passwordHash,
     },
   });
@@ -496,24 +557,20 @@ async function upsertAftercareDemo(clinicId) {
     },
   });
 
+  await prisma.guideTemplateSection.deleteMany({
+    where: { revisionId: revision.id },
+  });
+
   for (const section of DEMO_EXTRACTION_GUIDE.sections) {
-    await prisma.guideTemplateSection.upsert({
-      where: { id: section.id },
-      update: {
-        revisionId: revision.id,
-        key: section.key,
-        kind: section.kind,
-        title: section.title,
-        body: section.body,
-        sortOrder: section.sortOrder,
-      },
-      create: {
+    await prisma.guideTemplateSection.create({
+      data: {
         id: section.id,
         revisionId: revision.id,
         key: section.key,
         kind: section.kind,
         title: section.title,
         body: section.body,
+        periodLabel: section.periodLabel,
         sortOrder: section.sortOrder,
       },
     });
@@ -569,6 +626,7 @@ async function upsertAftercareDemo(clinicId) {
       kind: DEMO_EXTRACTION_GUIDE.addition.kind,
       title: DEMO_EXTRACTION_GUIDE.addition.title,
       body: DEMO_EXTRACTION_GUIDE.addition.body,
+      periodLabel: DEMO_EXTRACTION_GUIDE.addition.periodLabel,
       sortOrder: DEMO_EXTRACTION_GUIDE.addition.sortOrder,
       insertAfterSectionKey:
         DEMO_EXTRACTION_GUIDE.addition.insertAfterSectionKey,
@@ -580,6 +638,7 @@ async function upsertAftercareDemo(clinicId) {
       kind: DEMO_EXTRACTION_GUIDE.addition.kind,
       title: DEMO_EXTRACTION_GUIDE.addition.title,
       body: DEMO_EXTRACTION_GUIDE.addition.body,
+      periodLabel: DEMO_EXTRACTION_GUIDE.addition.periodLabel,
       sortOrder: DEMO_EXTRACTION_GUIDE.addition.sortOrder,
       insertAfterSectionKey:
         DEMO_EXTRACTION_GUIDE.addition.insertAfterSectionKey,
@@ -599,42 +658,37 @@ async function main() {
     create: DEMO_CLINIC,
   });
 
-  const adminUser = await upsertDemoUser(DEMO_USERS.admin);
-  const staffUser = await upsertDemoUser(DEMO_USERS.staff);
+  const localLogin = resolveLocalLoginAccounts();
+  if (localLogin.status === "refused") {
+    console.error(localLogin.reason);
+  } else if (
+    localLogin.status === "skipped" &&
+    localLogin.reason === "missing"
+  ) {
+    console.info(
+      "No LOCAL_ADMIN_* / LOCAL_STAFF_* credentials found. Staff login accounts were not seeded."
+    );
+  }
 
-  await prisma.clinicMembership.upsert({
-    where: {
-      clinicId_userId: {
-        clinicId: clinic.id,
-        userId: adminUser.id,
+  for (const account of localLogin.accounts) {
+    const user = await upsertLocalLoginUser(account);
+    await prisma.clinicMembership.upsert({
+      where: {
+        clinicId_userId: {
+          clinicId: clinic.id,
+          userId: user.id,
+        },
       },
-    },
-    update: {
-      role: DEMO_USERS.admin.role,
-    },
-    create: {
-      clinicId: clinic.id,
-      userId: adminUser.id,
-      role: DEMO_USERS.admin.role,
-    },
-  });
-
-  await prisma.clinicMembership.upsert({
-    where: {
-      clinicId_userId: {
-        clinicId: clinic.id,
-        userId: staffUser.id,
+      update: {
+        role: account.role,
       },
-    },
-    update: {
-      role: DEMO_USERS.staff.role,
-    },
-    create: {
-      clinicId: clinic.id,
-      userId: staffUser.id,
-      role: DEMO_USERS.staff.role,
-    },
-  });
+      create: {
+        clinicId: clinic.id,
+        userId: user.id,
+        role: account.role,
+      },
+    });
+  }
 
   const room = await prisma.room.upsert({
     where: { id: DEMO_ROOM.id },
@@ -677,12 +731,13 @@ async function main() {
   console.info(
     `- Clinic: ${clinic.name} (${clinic.id}) slug=${DEMO_CLINIC.slug}`
   );
-  console.info(
-    `- Admin: ${adminUser.email} / ${DEMO_PASSWORD} (${DEMO_USERS.admin.role})`
-  );
-  console.info(
-    `- Staff: ${staffUser.email} / ${DEMO_PASSWORD} (${DEMO_USERS.staff.role})`
-  );
+  if (localLogin.accounts.length > 0) {
+    for (const account of localLogin.accounts) {
+      console.info(
+        `- ${account.role}: ${account.email} (${account.emailKey} / ${account.passwordKey})`
+      );
+    }
+  }
   for (const [index, template] of procedureTemplates.entries()) {
     const seededTemplate = DEMO_PROCEDURE_TEMPLATES[index];
     console.info(

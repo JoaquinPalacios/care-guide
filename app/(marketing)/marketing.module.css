@@ -62,11 +62,13 @@
 
 .hero {
   padding: 3.4rem 0 3.6rem;
-  background: radial-gradient(
-    48rem 22rem at 88% -8%,
-    color-mix(in srgb, var(--mk-brand-strong) 16%, transparent),
-    transparent 70%
-  );
+  background:
+    radial-gradient(
+      48rem 22rem at 88% -8%,
+      color-mix(in srgb, var(--mk-brand-strong) 16%, transparent),
+      transparent 70%
+    ),
+    var(--mk-bg);
 }
 
 .heroGrid {
@@ -252,6 +254,22 @@
   padding: 3.4rem 0;
 }
 
+.surfaceBase {
+  background: var(--mk-bg);
+}
+
+.surfaceSubtle {
+  background: var(--mk-surface);
+}
+
+.surfaceContrast {
+  background: var(--mk-contrast);
+}
+
+.surfaceBrand {
+  background: var(--mk-brand-tint);
+}
+
 .problemGrid,
 .productGrid,
 .previewGrid {
@@ -403,9 +421,54 @@
 }
 
 .footer {
-  padding: 1.3rem 0 1.7rem;
+  padding: 2.4rem 0 1.7rem;
+  background: var(--mk-bg);
   color: var(--mk-muted);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+}
+
+.footerInner {
+  display: grid;
+  gap: 1.4rem;
+}
+
+.footerBrand {
+  max-width: 22rem;
+}
+
+.footerName {
+  margin: 0 0 0.3rem;
+  color: var(--mk-ink);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.footerTag {
+  margin: 0;
+}
+
+.footerNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.1rem;
+}
+
+.footerNav a {
+  color: var(--mk-muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footerNav a:hover,
+.footerNav a:focus-visible {
+  color: var(--mk-ink);
+}
+
+.footerCopy {
+  margin: 0.4rem 0 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--mk-line);
+  font-size: 0.82rem;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -450,6 +513,12 @@
 
   .brandGrid {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .footerInner {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    justify-content: space-between;
   }
 }
 

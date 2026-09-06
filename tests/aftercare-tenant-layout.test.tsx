@@ -45,7 +45,7 @@ describe("tenant layout branding", () => {
     expect(html).toContain("light-dark(");
     expect(html).toContain("child");
     expect(html).not.toContain("ThemeProvider");
-    expect(html).not.toContain("Colour theme");
+    expect(html).not.toContain("Change colour theme");
   });
 
   it.each([
@@ -74,7 +74,7 @@ describe("tenant layout branding", () => {
     );
 
     expect(html).toContain(`html{color-scheme:${scheme}}`);
-    expect(html).not.toContain("Colour theme");
+    expect(html).not.toContain("Change colour theme");
   });
 
   it("renders the patient theme control only when the clinic allows it", async () => {
@@ -98,8 +98,8 @@ describe("tenant layout branding", () => {
       })
     );
 
-    expect(html).toContain("Colour theme");
-    expect(html).toContain("patient-theme");
+    expect(html).toContain("Change colour theme");
+    expect(html).toContain("ptc");
     expect(html).toContain("localStorage.getItem");
     expect(html).not.toContain("ThemeProvider");
   });

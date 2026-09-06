@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { LoginForm } from "@/app/(staff)/login/login-form";
 import { getAuthContext } from "@/lib/auth/session";
+import { resolveLocalLoginSeed } from "@/lib/dev/local-login-accounts";
 
 export const metadata: Metadata = {
   title: "Staff Sign In",
@@ -18,6 +19,11 @@ export default async function LoginPage() {
   if (authContext.user && authContext.clinicMembership) {
     redirect("/dashboard");
   }
+
+  const localLogin =
+    process.env.NODE_ENV === "development"
+      ? resolveLocalLoginSeed(process.env)
+      : null;
 
   return (
     <main className="flex flex-1 items-center justify-center bg-zinc-50 px-6 py-16">
@@ -35,6 +41,20 @@ export default async function LoginPage() {
         </div>
 
         <LoginForm />
+        {localLogin?.status === "seed" ? (
+          <div className="mt-6 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-3 text-sm text-zinc-600">
+            <p className="font-medium text-zinc-900">
+              Local development account
+            </p>
+            <ul className="mt-2 flex flex-col gap-1">
+              {localLogin.accounts.map((account) => (
+                <li key={account.role}>
+                  {account.role}: {account.email}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </div>
     </main>
   );

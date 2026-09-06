@@ -88,6 +88,7 @@ describe("composeGuideDocument", () => {
         kind: "INTRODUCTION",
         title: "Intro",
         body: "introduction body",
+        periodLabel: null,
         provenance: "canonical",
       },
       {
@@ -95,6 +96,7 @@ describe("composeGuideDocument", () => {
         kind: "INTRODUCTION",
         title: "Riverside immediate care",
         body: "Call reception.",
+        periodLabel: null,
         provenance: "practice_override",
       },
     ]);
@@ -168,6 +170,7 @@ describe("composeGuideDocument", () => {
         kind: "INTRODUCTION",
         title: "introduction",
         body: "introduction body",
+        periodLabel: null,
         provenance: "canonical",
       },
     ]);
@@ -247,6 +250,7 @@ describe("composeGuideDocument", () => {
         kind: "INTRODUCTION",
         title: "Second override",
         body: "Second body",
+        periodLabel: null,
         provenance: "practice_override",
       },
     ]);
@@ -282,6 +286,7 @@ describe("composeGuideDocument", () => {
         kind: "INTRODUCTION",
         title: "",
         body: "",
+        periodLabel: null,
         provenance: "practice_override",
       },
       {
@@ -289,6 +294,7 @@ describe("composeGuideDocument", () => {
         kind: "CUSTOM",
         title: "",
         body: "   ",
+        periodLabel: null,
         provenance: "practice_addition",
       },
     ]);
@@ -303,5 +309,48 @@ describe("composeGuideDocument", () => {
 
     expect(document.sections.map((item) => item.key)).toEqual(["orphaned"]);
     expect(document.sections[0]?.provenance).toBe("practice_addition");
+  });
+
+  it("keeps data-driven period labels through overrides without adding patient fields", () => {
+    const document = composeGuideDocument({
+      canonicalSections: [
+        {
+          key: "stage-one",
+          kind: "RECOVERY_TIMELINE",
+          title: "Immediate care",
+          body: "Canonical body",
+          periodLabel: "First 4 hours",
+          sortOrder: 1,
+        },
+        {
+          key: "stage-two",
+          kind: "RECOVERY_TIMELINE",
+          title: "Later healing",
+          body: "Week two body",
+          periodLabel: "Week 2+",
+          sortOrder: 2,
+        },
+      ],
+      overrides: [override("stage-one", "Local immediate care", "Local body")],
+      additions: [],
+    });
+
+    expect(
+      document.sections.map((item) => [item.periodLabel, item.title, item.kind])
+    ).toEqual([
+      ["First 4 hours", "Local immediate care", "RECOVERY_TIMELINE"],
+      ["Week 2+", "Later healing", "RECOVERY_TIMELINE"],
+    ]);
+    expect(document.sections[0]).toEqual({
+      key: "stage-one",
+      kind: "RECOVERY_TIMELINE",
+      title: "Local immediate care",
+      body: "Local body",
+      periodLabel: "First 4 hours",
+      provenance: "practice_override",
+    });
+    expect(document.sections.every((item) => !("patientName" in item))).toBe(
+      true
+    );
   });
 });

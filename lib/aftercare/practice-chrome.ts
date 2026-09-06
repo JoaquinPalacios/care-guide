@@ -73,9 +73,6 @@ export function resolvePracticeChrome(input: {
 
 export function hasPracticeContact(chrome: PracticeChrome): boolean {
   return Boolean(
-    chrome.phoneHref ||
-    chrome.bookingHref ||
-    chrome.contactHref ||
-    chrome.emergencyInstructions
+    chrome.phoneHref || chrome.contactHref || chrome.emergencyInstructions
   );
 }

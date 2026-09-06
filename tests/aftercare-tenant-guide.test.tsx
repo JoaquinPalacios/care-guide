@@ -81,6 +81,7 @@ const GUIDE_A = {
       kind: "INTRODUCTION" as const,
       title: "About this demo guide",
       body: "Canonical intro for Riverside patients.",
+      periodLabel: null,
       provenance: "canonical" as const,
     },
     {
@@ -88,6 +89,7 @@ const GUIDE_A = {
       kind: "FIRST_24_HOURS" as const,
       title: "The first day at Riverside Dental Demo",
       body: "Practice override: use the demo after-hours number.",
+      periodLabel: "Today / first 24 hours",
       provenance: "practice_override" as const,
     },
     {
@@ -95,6 +97,7 @@ const GUIDE_A = {
       kind: "WARNING_SIGNS" as const,
       title: "Warning signs (demo)",
       body: "Canonical warning copy. Do not treat this as medical guidance.",
+      periodLabel: null,
       provenance: "canonical" as const,
     },
     {
@@ -102,6 +105,7 @@ const GUIDE_A = {
       kind: "EMERGENCY" as const,
       title: "When this is urgent (demo)",
       body: "Canonical emergency context for the condition.",
+      periodLabel: null,
       provenance: "canonical" as const,
     },
     {
@@ -109,6 +113,7 @@ const GUIDE_A = {
       kind: "CUSTOM" as const,
       title: "Weekend contact (Riverside demo)",
       body: "Practice addition: local weekend information.",
+      periodLabel: null,
       provenance: "practice_addition" as const,
     },
   ],
@@ -136,6 +141,7 @@ const GUIDE_B = {
       kind: "INTRODUCTION" as const,
       title: "Other clinic intro",
       body: "Tenant B canonical intro.",
+      periodLabel: null,
       provenance: "canonical" as const,
     },
     {
@@ -143,6 +149,7 @@ const GUIDE_B = {
       kind: "FIRST_24_HOURS" as const,
       title: "Other clinic first day",
       body: "Tenant B override copy.",
+      periodLabel: null,
       provenance: "practice_override" as const,
     },
   ],
@@ -190,7 +197,7 @@ describe("tenant guide page", () => {
     expect(html).toContain("DEMO: call the clinic or emergency services.");
     expect(html).toContain('href="tel:0255500100"');
     expect(html).toContain("Call Riverside Dental Demo");
-    expect(html).toContain("Book an appointment");
+    expect(html).not.toContain("Book an appointment");
     expect(html).toContain("Demo aftercare content — not clinical advice.");
     expect(html).toContain("Powered by Aftercare Guide");
     expect(html).not.toContain("practice_override");
@@ -274,6 +281,7 @@ describe("tenant guide page", () => {
           kind: "INTRODUCTION" as const,
           title: "Empty body section",
           body: "   \n\n",
+          periodLabel: null,
           provenance: "canonical" as const,
         },
       ],

@@ -5,17 +5,17 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-06 (Phase 1F.1 premium product experience)
+Last updated: 2026-09-07 (Phase 1F.2 premium polish, recovery timeline, local login DX)
 
 ---
 
 ## Product direction vs current implementation
 
-|                                |                                                                                                                                                                                                                                                                                            |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                   |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** + **Phase 1F.1 Aftercare Guide branding, tenant presentation settings, and premium marketing/tenant UX**. Phase 1D was absorbed into 1C. |
-| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                    |
+|                                |                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                            |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** + **Phase 1F.1 Aftercare Guide branding, tenant presentation settings, and premium marketing/tenant UX** + **Phase 1F.2 marketing polish, recovery timeline, and local login DX**. Phase 1D was absorbed into 1C. |
+| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                             |
 
 Do not claim QR codes, operator aftercare admin, or analytics exist until they are built. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented. Phase 1E added Playwright + axe browser acceptance; it did not add product features.
 
@@ -33,6 +33,7 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 | 1E    | COMPLETE — TECHNICALLY READY FOR LOCAL JOAQUÍN ACCEPTANCE |
 | 1F    | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                 |
 | 1F.1  | COMPLETE — PREMIUM PRODUCT EXPERIENCE READY FOR REVIEW    |
+| 1F.2  | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                 |
 | 2+    | Not started                                               |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
@@ -188,6 +189,29 @@ Future `typographyPreset` (`CLINICAL` / `MODERN` / `EDITORIAL`) is documented, n
 
 ---
 
+## Phase 1F.2 (implemented)
+
+Premium polish, recovery timeline, and local login DX. No Phase 2 operator admin.
+
+| Area              | Location                                                                                       |
+| ----------------- | ---------------------------------------------------------------------------------------------- |
+| Marketing eyebrow | `AFTERCARE PLATFORM` (category language, not a branded claim)                                  |
+| Section surfaces  | Reusable `surfaceBase` / `surfaceSubtle` / `surfaceContrast` / `surfaceBrand` full-bleed bands |
+| Marketing footer  | Product name, short tagline, in-page links, year copyright                                     |
+| Theme control     | Compact icon + native popover (`AppearanceMenu`); System / Light / Dark; same persistence      |
+| Recovery timeline | `GuideTemplateSection.periodLabel` + consecutive `RECOVERY_TIMELINE` grouping                  |
+| Timeline ADR      | [ADR 0014](../adr/0014-recovery-timeline-stages-are-data-driven-sections.md)                   |
+| Booking CTA       | Not rendered. `bookingUrl` remains on `ClinicProfile` for later structured CTA config          |
+| Local login       | `LOCAL_ADMIN_*` and `LOCAL_STAFF_*`; seed upserts hashed users; refused in production          |
+
+Demo extraction stages: First few hours → Today / first 24 hours → Days 2–3 → Days 4–7, then what-is-normal, warnings, contact. Demo copy is paraphrased from SA Dental extraction guidance structure, not verbatim, and remains labelled non-clinical.
+
+Patient CTAs should later become structured configuration (`call`, `contact page`, `booking`, `email`, `emergency/after-hours`) with enable/disable, label, and order. Not implemented now.
+
+Local staff URL: `http://app.localhost:3000/login`. Credentials come from `LOCAL_<ROLE>_EMAIL` / `LOCAL_<ROLE>_PASSWORD`.
+
+---
+
 ## Do not do (until a later explicit task)
 
 - Phase 2 operator admin, QR, analytics, SMS/email, billing, custom domains, extra specialties, clinical CMS, rich-text editor, patient-specific guides, chairside integration
@@ -238,9 +262,8 @@ Seeded fictional clinic: **Rivers Care Demo Clinic** (`clinic_demo_rivers`).
 - Tenant slug: `demodental`
 - Patient-facing profile name: **Riverside Dental Demo**
 - Demo mark: `/demo/riverside-mark.svg`
-- Admin: `admin@care-guide.test`
-- Staff: `staff@care-guide.test`
-- Shared demo password: `CareGuideDemo123!`
+- Admin: `LOCAL_ADMIN_EMAIL` / `LOCAL_ADMIN_PASSWORD` (see `.env.example`)
+- Staff: `LOCAL_STAFF_EMAIL` / `LOCAL_STAFF_PASSWORD`
 
 Aftercare seed (Phase 1A, logo path updated in 1C; canonical copy made clinic-neutral in 1E):
 
@@ -285,6 +308,6 @@ This temporarily means we do not have the same TypeScript-aware ESLint rule cove
 | `docs/README.md`                   | Docs index                                              |
 | `docs/product/PRD.md`              | PRD v1.0                                                |
 | `docs/product/WORKING-MEMORY.md`   | This file                                               |
-| `docs/adr/*.md`                    | Architecture decisions 0001–0013                        |
+| `docs/adr/*.md`                    | Architecture decisions 0001–0014                        |
 | `docs/architecture/PERFORMANCE.md` | Patient CSS/JS measurement contract and Phase 1E budget |
 | `README.md`                        | Repo entry; direction vs implementation                 |

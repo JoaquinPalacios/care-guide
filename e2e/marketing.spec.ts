@@ -12,6 +12,12 @@ test.describe("marketing homepage", () => {
     expect(page.url()).toBe(marketingUrl("/"));
     expect(page.url()).not.toContain("/_marketing");
     await expectOneH1(page, "Aftercare that still feels like your clinic.");
+    await expect(page.getByText("Aftercare platform").first()).toBeVisible();
+    await expect(
+      page
+        .getByRole("contentinfo")
+        .getByText("Aftercare Guide", { exact: true })
+    ).toBeVisible();
     await expect(
       page.getByRole("heading", {
         name: "From approved guidance to a page patients keep",

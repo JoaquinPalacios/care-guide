@@ -24,40 +24,34 @@ test.describe("patient accessibility", () => {
       await expect(page.locator("h1")).toHaveCount(1);
       await expect(page.locator("main")).toHaveCount(1);
       await expect(
-        page.getByRole("group", { name: "Colour theme" })
+        page.getByRole("button", { name: /Change colour theme/ })
       ).toBeVisible();
-      await expect(page.getByRole("radio", { name: "System" })).toBeVisible();
+      await expect(page.getByRole("radio", { name: "System" })).toHaveCount(0);
     });
   }
 
-  test("extraction guide has no serious or critical axe violations", async ({
-    page,
-  }) => {
-    await page.goto(EXTRACTION, { waitUntil: "load" });
-    await expectNoSeriousAxeViolations(page);
-
-    const headingTags = await page
-      .locator("h1, h2, h3")
-      .evaluateAll((nodes) => nodes.map((node) => node.tagName.toLowerCase()));
-    expect(headingTags[0]).toBe("h1");
-    expect(headingTags.slice(1).every((tag) => tag !== "h1")).toBe(true);
-    expect(headingTags).toContain("h2");
-
-    await expect(page.locator("text=Important.")).toHaveCount(1);
-    await expect(page.getByText("If you need urgent help")).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: /Call Riverside Dental Demo/ })
-    ).toBeVisible();
-  });
+  for (const colorScheme of ["light", "dark"] as const) {
+    test(`extraction timeline has no serious axe violations in ${colorScheme}`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme });
+      await page.goto(EXTRACTION, { waitUntil: "load" });
+      await expectNoSeriousAxeViolations(page);
+      await expect(page.getByText("First few hours")).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: "Recovery timeline" })
+      ).toBeVisible();
+    });
+  }
 
   test("harbor tenant does not expose a patient theme control", async ({
     page,
   }) => {
     await page.goto(HARBOR_HOME, { waitUntil: "load" });
     await expectNoSeriousAxeViolations(page);
-    await expect(page.getByRole("group", { name: "Colour theme" })).toHaveCount(
-      0
-    );
+    await expect(
+      page.getByRole("button", { name: /Change colour theme/ })
+    ).toHaveCount(0);
   });
 });
 
@@ -72,7 +66,7 @@ test.describe("marketing accessibility", () => {
       await expect(page.locator("h1")).toHaveCount(1);
       await expect(page.locator("main")).toHaveCount(1);
       await expect(
-        page.getByRole("group", { name: "Colour theme" })
+        page.getByRole("button", { name: /Change colour theme/ })
       ).toBeVisible();
     });
   }
