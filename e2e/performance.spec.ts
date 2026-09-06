@@ -7,6 +7,7 @@ import {
   expectStaffCssHasTailwind,
   measurePageAssets,
   patientSpecificJs,
+  patientThemeToggleJs,
   sumMetric,
 } from "./helpers/assets";
 import {
@@ -26,12 +27,29 @@ test.describe("Phase 1 performance and asset contracts", () => {
     const home = await measurePageAssets(page, HOME);
     expectCssWithinPhase1Budget(home.css);
     expectNoTailwind(home.css);
-    expect(patientSpecificJs(home.js)).toEqual([]);
 
     const guide = await measurePageAssets(page, EXTRACTION);
     expectCssWithinPhase1Budget(guide.css);
     expectNoTailwind(guide.css);
-    expect(patientSpecificJs(guide.js)).toEqual([]);
+
+    expect(
+      patientSpecificJs(home.js)
+        .map((asset) => asset.url)
+        .sort()
+    ).toEqual(
+      patientThemeToggleJs(home.js)
+        .map((asset) => asset.url)
+        .sort()
+    );
+    expect(
+      patientSpecificJs(guide.js)
+        .map((asset) => asset.url)
+        .sort()
+    ).toEqual(
+      patientThemeToggleJs(guide.js)
+        .map((asset) => asset.url)
+        .sort()
+    );
 
     testInfo.attach("phase-1e-performance.json", {
       contentType: "application/json",
@@ -49,6 +67,14 @@ test.describe("Phase 1 performance and asset contracts", () => {
             jsUrls: home.js.map((asset) => asset.url),
             patientSpecificJs: patientSpecificJs(home.js).map(
               (asset) => asset.url
+            ),
+            patientThemeToggleJs: patientThemeToggleJs(home.js).map(
+              (asset) => ({
+                url: asset.url,
+                raw: asset.raw,
+                gzip: asset.gzip,
+                brotli: asset.brotli,
+              })
             ),
           },
           guide: {

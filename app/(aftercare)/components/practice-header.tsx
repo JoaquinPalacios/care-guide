@@ -5,7 +5,7 @@ import styles from "../patient.module.css";
 export function PracticeHeader({ chrome }: { chrome: PracticeChrome }) {
   return (
     <header className={styles.header}>
-      <div className={styles.headerInner}>
+      <div className={`${styles.headerInner} ${styles.shell}`}>
         <a href="/" className={styles.brand}>
           {chrome.logoSrc ? (
             <img
@@ -18,6 +18,9 @@ export function PracticeHeader({ chrome }: { chrome: PracticeChrome }) {
           ) : null}
           <span className={styles.name}>{chrome.displayName}</span>
         </a>
+        {chrome.allowPatientThemeToggle ? (
+          <span className={styles.themeSpacer} aria-hidden="true" />
+        ) : null}
       </div>
     </header>
   );

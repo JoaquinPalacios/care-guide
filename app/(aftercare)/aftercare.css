@@ -2,11 +2,11 @@
 
 :root {
   color-scheme: light dark;
-  --cg-brand: #155e75;
+  --cg-brand: #1e293b;
   --cg-on-brand: #ffffff;
   --cg-accent: #b45309;
-  --cg-surface: light-dark(#ffffff, #0c1116);
-  --cg-surface-subtle: light-dark(#f8fafc, #141b22);
+  --cg-surface: light-dark(#ffffff, #10151c);
+  --cg-surface-subtle: light-dark(#f6f3ee, #0c1116);
   --cg-text: light-dark(#0f172a, #f8fafc);
   --cg-text-muted: light-dark(#475569, #94a3b8);
   --cg-border: light-dark(#e2e8f0, #243040);
@@ -14,8 +14,20 @@
   --cg-warning-surface: light-dark(#fffbeb, #2a1f0e);
   --cg-emergency: light-dark(#b91c1c, #f87171);
   --cg-emergency-surface: light-dark(#fef2f2, #2a1212);
-  --cg-focus: #155e75;
+  --cg-focus: #1e293b;
   --cg-radius: 0.75rem;
+}
+
+html[data-theme-mode="light"] {
+  color-scheme: light;
+}
+
+html[data-theme-mode="dark"] {
+  color-scheme: dark;
+}
+
+html[data-theme-mode="system"] {
+  color-scheme: light dark;
 }
 
 *,
@@ -34,21 +46,74 @@ body {
   min-height: 100%;
   background: var(--cg-surface-subtle);
   color: var(--cg-text);
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    sans-serif;
+  font-family: ui-sans-serif, system-ui, sans-serif;
   line-height: 1.55;
   overflow-wrap: break-word;
-  -webkit-font-smoothing: antialiased;
 }
 
 .aftercareTheme {
+  position: relative;
   min-height: 100%;
   background: var(--cg-surface-subtle);
   color: var(--cg-text);
+}
+
+.patientThemeSlot {
+  position: absolute;
+  top: 0.9rem;
+  right: max(1.25rem, calc((100% - 56rem) / 2 + 1.5rem));
+  z-index: 2;
+}
+
+.ptc {
+  display: flex;
+  margin: 0;
+  padding: 0.18rem;
+  border: 1px solid var(--cg-border);
+  border-radius: calc(var(--cg-radius) * 0.9);
+  background: var(--cg-surface-subtle);
+}
+
+.ptc label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0 0.55rem;
+  border-radius: calc(var(--cg-radius) * 0.7);
+  color: var(--cg-text-muted);
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.ptc input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ptc input:focus-visible + span {
+  outline: 2px solid var(--cg-focus);
+  outline-offset: 2px;
+}
+
+html[data-theme-mode="light"] .ptc label:has([value="light"]),
+html[data-theme-mode="dark"] .ptc label:has([value="dark"]),
+html[data-theme-mode="system"] .ptc label:has([value="system"]),
+html:not([data-theme-mode]) .ptc label:has([value="system"]) {
+  background: var(--cg-surface);
+  color: var(--cg-text);
+}
+
+@media (max-width: 47.99rem) {
+  .patientThemeSlot {
+    position: static;
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.7rem 1.25rem 0;
+  }
 }
 
 .notFound {
@@ -59,10 +124,4 @@ body {
 :focus-visible {
   outline: 2px solid var(--cg-focus);
   outline-offset: 3px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
 }

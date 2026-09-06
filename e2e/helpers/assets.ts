@@ -100,6 +100,15 @@ export function patientSpecificJs(
   });
 }
 
+export function patientThemeToggleJs(
+  assets: AssetMeasurement[]
+): AssetMeasurement[] {
+  return assets.filter((asset) => {
+    const url = decodeURIComponent(asset.url);
+    return /patient-theme-control|theme-preference/i.test(url);
+  });
+}
+
 export function expectCssWithinPhase1Budget(css: AssetMeasurement[]): void {
   const raw = sumMetric(css, "raw");
   const gzip = sumMetric(css, "gzip");

@@ -47,6 +47,9 @@ const PROFILE_A = {
   contactEmail: "hello@riverside-dental-demo.example",
   emergencyInstructions: "DEMO: call the clinic or emergency services.",
   showCareGuideAttribution: true,
+  instructionTerminology: "POST_TREATMENT",
+  themeMode: "SYSTEM",
+  allowPatientThemeToggle: true,
 };
 
 const GUIDE_A = {
@@ -170,7 +173,8 @@ describe("tenant guide page", () => {
     const html = await renderGuide();
 
     expect(html).toContain("Tooth Extraction");
-    expect(html).toContain("Post-operative instructions");
+    expect(html).toContain("Post-treatment instructions");
+    expect(html).not.toContain("Tooth Extraction — Tooth Extraction");
     expect(html).toContain("Canonical intro for Riverside patients.");
     expect(html).toContain("The first day at Riverside Dental Demo");
     expect(html).toContain(
@@ -188,7 +192,7 @@ describe("tenant guide page", () => {
     expect(html).toContain("Call Riverside Dental Demo");
     expect(html).toContain("Book an appointment");
     expect(html).toContain("Demo aftercare content — not clinical advice.");
-    expect(html).toContain("Powered by Care Guide");
+    expect(html).toContain("Powered by Aftercare Guide");
     expect(html).not.toContain("practice_override");
     expect(html).not.toContain("practice_addition");
     expect(html).not.toContain("login");
@@ -226,7 +230,7 @@ describe("tenant guide page", () => {
       "Practice override: use the demo after-hours number."
     );
     expect(html).not.toContain("Weekend contact (Riverside demo)");
-    expect(html).not.toContain("Powered by Care Guide");
+    expect(html).not.toContain("Powered by Aftercare Guide");
   });
 
   it("uses one h1, sequential headings, and a main landmark", async () => {

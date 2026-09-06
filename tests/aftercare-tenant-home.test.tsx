@@ -53,6 +53,9 @@ const DEMODENTAL = {
     contactEmail: "hello@riverside-dental-demo.example",
     emergencyInstructions: "DEMO: call the clinic or emergency services.",
     showCareGuideAttribution: true,
+    instructionTerminology: "POST_TREATMENT",
+    themeMode: "SYSTEM",
+    allowPatientThemeToggle: true,
   },
   guides: [
     {
@@ -118,11 +121,11 @@ describe("tenant homepage", () => {
 
     expect(html).toContain("Riverside Dental Demo");
     expect(html).toContain(
-      "Riverside Dental Demo — Post-operative instructions"
+      "Riverside Dental Demo — Post-treatment instructions"
     );
     expect(html).toContain("Tooth Extraction");
     expect(html).toContain('href="/extraction"');
-    expect(html).toContain("View recovery instructions");
+    expect(html).toContain("View post-treatment instructions");
     expect(html).toContain('href="tel:0255500100"');
     expect(html).toContain("Call Riverside Dental Demo");
     expect(html).toContain(
@@ -130,7 +133,7 @@ describe("tenant homepage", () => {
     );
     expect(html).toContain("Book an appointment");
     expect(html).toContain("DEMO: call the clinic or emergency services.");
-    expect(html).toContain("Powered by Care Guide");
+    expect(html).toContain("Powered by Aftercare Guide");
     expect(html).toContain("Demo aftercare content — not clinical advice.");
     expect(html).toContain('src="/demo/riverside-mark.svg"');
     expect(html).not.toContain("Implant Aftercare");
@@ -169,7 +172,7 @@ describe("tenant homepage", () => {
     expect(html).not.toContain("tel:");
     expect(html).not.toContain("Book an appointment");
     expect(html).not.toContain("If you need urgent help");
-    expect(html).not.toContain("Powered by Care Guide");
+    expect(html).not.toContain("Powered by Aftercare Guide");
     expect(html).not.toContain("<img");
   });
 
@@ -183,7 +186,7 @@ describe("tenant homepage", () => {
 
     expect(html).toContain("Riverside Dental Demo");
     expect(html).toContain(
-      "No post-operative instructions are published by this practice yet."
+      "No post-treatment instructions are published by this practice yet."
     );
     expect(html).not.toContain('href="/extraction"');
   });
@@ -228,7 +231,7 @@ describe("tenant homepage", () => {
     expect(html).not.toContain("Riverside Dental Demo");
     expect(html).not.toContain("02 5550 0100");
     expect(html).not.toContain("riverside-dental-demo");
-    expect(html).not.toContain("Powered by Care Guide");
+    expect(html).not.toContain("Powered by Aftercare Guide");
     expect(html).not.toContain("Demo aftercare content");
   });
 
@@ -252,7 +255,7 @@ describe("tenant homepage", () => {
     });
 
     expect(metadata.title).toBe(
-      "Riverside Dental Demo — Post-operative instructions"
+      "Riverside Dental Demo — Post-treatment instructions"
     );
     expect(metadata.robots).toEqual({ index: false, follow: false });
     expect(metadata.alternates?.canonical).toBe(

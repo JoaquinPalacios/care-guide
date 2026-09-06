@@ -26,7 +26,7 @@ test.describe("tenant isolation and unpublished content", () => {
     ).toHaveCount(0);
     await expect(
       page.getByRole("heading", {
-        name: "Riverside Dental Demo — Post-operative instructions",
+        name: "Riverside Dental Demo — Post-treatment instructions",
       })
     ).toHaveCount(0);
     await expect(
@@ -58,7 +58,7 @@ test.describe("tenant isolation and unpublished content", () => {
     await expect(
       page.getByRole("link", { name: /Call Riverside Dental Demo/ })
     ).toHaveCount(0);
-    await expect(page.getByText("Powered by Care Guide")).toHaveCount(0);
+    await expect(page.getByText("Powered by Aftercare Guide")).toHaveCount(0);
     await expect(
       page.locator('img[src="/demo/riverside-mark.svg"]')
     ).toHaveCount(0);
@@ -95,7 +95,7 @@ test.describe("tenant isolation and unpublished content", () => {
     await expect(
       page.getByRole("link", { name: /Call Riverside Dental Demo/ })
     ).toHaveCount(0);
-    await expect(page.getByText("Powered by Care Guide")).toHaveCount(0);
+    await expect(page.getByText("Powered by Aftercare Guide")).toHaveCount(0);
     await expect(
       page.locator('img[src="/demo/riverside-mark.svg"]')
     ).toHaveCount(0);
@@ -228,7 +228,7 @@ test.describe("public marketing host", () => {
     expect(home?.status()).toBe(200);
     await expect(
       page.getByRole("heading", {
-        name: "Post-operative instructions patients can actually follow",
+        name: "Aftercare that still feels like your clinic.",
       })
     ).toBeVisible();
     await expect(

@@ -4,6 +4,10 @@ import { notFound } from "next/navigation";
 import { GuideList } from "@/app/(aftercare)/components/guide-list";
 import { PatientPage } from "@/app/(aftercare)/components/patient-page";
 import { listPublishedPracticeGuides } from "@/lib/aftercare/list-published-practice-guides";
+import {
+  instructionLabel,
+  practiceInstructionsTitle,
+} from "@/lib/aftercare/instruction-terminology";
 import { resolvePracticeChrome } from "@/lib/aftercare/practice-chrome";
 import {
   aftercarePageMetadata,
@@ -24,16 +28,20 @@ export async function generateMetadata({
 
   if (!listed) {
     return aftercarePageMetadata({
-      title: "Post-operative instructions",
-      description: "Patient post-operative instructions.",
+      title: instructionLabel(null),
+      description: "Patient aftercare instructions.",
     });
   }
 
   const displayName = listed.profile?.displayName ?? listed.clinic.name;
+  const title = practiceInstructionsTitle(
+    displayName,
+    listed.profile?.instructionTerminology
+  );
 
   return aftercarePageMetadata({
-    title: `${displayName} — Post-operative instructions`,
-    description: `Post-operative instructions from ${displayName}. Revisit this page after treatment for practice-branded recovery information.`,
+    title,
+    description: `${instructionLabel(listed.profile?.instructionTerminology)} from ${displayName}. Revisit this page after treatment for practice-branded recovery information.`,
     canonicalUrl: await publicTenantCanonicalUrl("/"),
   });
 }
@@ -55,9 +63,8 @@ export default async function TenantHomePage({ params }: TenantHomePageProps) {
   return (
     <PatientPage chrome={chrome}>
       <header className={styles.hero}>
-        <p className={styles.kicker}>Aftercare</p>
         <h1 className={styles.title}>
-          {chrome.displayName} — Post-operative instructions
+          {chrome.displayName} — {chrome.instructionsLabel}
         </h1>
         <p className={styles.lede}>
           Clear recovery information from {chrome.displayName}. Open a guide if
@@ -65,7 +72,10 @@ export default async function TenantHomePage({ params }: TenantHomePageProps) {
           to check what to do next.
         </p>
       </header>
-      <GuideList guides={listed.guides} />
+      <GuideList
+        guides={listed.guides}
+        instructionsLabel={chrome.instructionsLabel}
+      />
     </PatientPage>
   );
 }

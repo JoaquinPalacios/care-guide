@@ -29,18 +29,21 @@ describe("marketing homepage", () => {
   it("explains the product and links to the demo tenant, not the staff console", async () => {
     const html = renderToStaticMarkup(await MarketingHomePage());
 
-    expect(html).toContain("Care Guide");
-    expect(html).toContain(
-      "Post-operative instructions patients can actually follow"
-    );
-    expect(html).toContain("paper");
-    expect(html).toContain("PDF");
+    expect(html).toContain("Aftercare Guide");
+    expect(html).toContain("Aftercare that still feels like your clinic.");
+    expect(html).toContain("always leave with clarity.");
+    expect(html).toContain("Paper");
+    expect(html).toContain("PDFs");
     expect(html).toContain("How it works");
-    expect(html).toContain("Apply clinic branding");
+    expect(html).toContain("Apply clinic brand");
     expect(html).toContain("View the clinic demo");
+    expect(html).toContain("Early access");
+    expect(html).toContain("Colour theme");
     expect(html).toContain("http://demodental.localhost:3000/");
     expect(html).toContain("http://app.localhost:3000/login");
     expect(html).toContain("Riverside Dental Demo");
+    expect(html).not.toContain("Aftercare Rx");
+    expect(html).not.toContain("Powered by Care Guide");
     expect(html).not.toContain("Internal staff workspace");
     expect(html).not.toContain("/_marketing");
     expect(html).not.toContain("/_sites");

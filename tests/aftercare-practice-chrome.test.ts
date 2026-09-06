@@ -35,6 +35,10 @@ describe("resolvePracticeChrome", () => {
     );
     expect(chrome.showCareGuideAttribution).toBe(true);
     expect(chrome.showDemoNotice).toBe(true);
+    expect(chrome.instructionTerminology).toBe("AFTERCARE");
+    expect(chrome.instructionsLabel).toBe("Aftercare instructions");
+    expect(chrome.themeMode).toBe("SYSTEM");
+    expect(chrome.allowPatientThemeToggle).toBe(false);
     expect(DEMO_AFTERCARE_NOTICE).toContain("not clinical advice");
   });
 
@@ -73,5 +77,25 @@ describe("resolvePracticeChrome", () => {
     expect(chrome.displayName).toBe("Other Clinic");
     expect(chrome.showCareGuideAttribution).toBe(false);
     expect(chrome.showDemoNotice).toBe(false);
+    expect(chrome.instructionTerminology).toBe("AFTERCARE");
+    expect(chrome.allowPatientThemeToggle).toBe(false);
+  });
+
+  it("maps clinic terminology, theme policy, and the patient toggle flag", () => {
+    const chrome = resolvePracticeChrome({
+      slug: "demodental",
+      name: "Rivers Care Demo Clinic",
+      profile: {
+        ...PROFILE,
+        instructionTerminology: "POST_TREATMENT",
+        themeMode: "DARK",
+        allowPatientThemeToggle: true,
+      },
+    });
+
+    expect(chrome.instructionTerminology).toBe("POST_TREATMENT");
+    expect(chrome.instructionsLabel).toBe("Post-treatment instructions");
+    expect(chrome.themeMode).toBe("DARK");
+    expect(chrome.allowPatientThemeToggle).toBe(true);
   });
 });

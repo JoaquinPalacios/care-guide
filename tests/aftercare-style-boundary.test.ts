@@ -82,7 +82,11 @@ describe("aftercare style boundary", () => {
     expect(styles).not.toContain("--tw-");
   });
 
-  it("does not introduce patient Client Components or Tailwind class strings", () => {
+  it("keeps optional Client Components isolated to theme controls", () => {
+    const allowedClient = new Set([
+      "app/(aftercare)/components/patient-theme-control.tsx",
+      "app/(marketing)/components/marketing-theme-control.tsx",
+    ]);
     const files = walk("app/(aftercare)").filter((path) =>
       /\.(ts|tsx|css)$/.test(path)
     );
@@ -91,7 +95,9 @@ describe("aftercare style boundary", () => {
 
     for (const file of files) {
       const source = read(file);
-      expect(source, file).not.toMatch(/['"]use client['"]/);
+      if (!allowedClient.has(file)) {
+        expect(source, file).not.toMatch(/['"]use client['"]/);
+      }
       expect(source, file).not.toContain("tailwindcss");
       expect(source, file).not.toContain("styled-components");
       expect(source, file).not.toContain("@emotion");
@@ -103,10 +109,19 @@ describe("aftercare style boundary", () => {
     expect(marketingFiles.length).toBeGreaterThan(2);
     for (const file of marketingFiles) {
       const source = read(file);
-      expect(source, file).not.toMatch(/['"]use client['"]/);
+      if (!allowedClient.has(file)) {
+        expect(source, file).not.toMatch(/['"]use client['"]/);
+      }
       expect(source, file).not.toContain("tailwindcss");
       expect(source, file).not.toContain("styled-components");
       expect(source, file).not.toContain("@emotion");
     }
+
+    expect(
+      read("app/(aftercare)/components/patient-theme-control.tsx")
+    ).toMatch(/['"]use client['"]/);
+    expect(
+      read("app/(marketing)/components/marketing-theme-control.tsx")
+    ).toMatch(/['"]use client['"]/);
   });
 });

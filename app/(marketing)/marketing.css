@@ -2,16 +2,29 @@
 
 :root {
   color-scheme: light dark;
-  --mk-bg: light-dark(#f6f3ee, #0c1116);
-  --mk-surface: light-dark(#fffcf8, #141b22);
-  --mk-ink: light-dark(#14202b, #f4f1ea);
-  --mk-muted: light-dark(#5b6873, #9aa8b5);
-  --mk-brand: light-dark(#15414d, #7eb8c4);
-  --mk-brand-strong: light-dark(#12343e, #9ccdd6);
-  --mk-accent: #b45309;
-  --mk-line: light-dark(#e6dfd4, #243040);
-  --mk-focus: light-dark(#15414d, #7eb8c4);
-  --mk-radius: 1rem;
+  --mk-bg: light-dark(#f5f3ee, #0a0d14);
+  --mk-surface: light-dark(#fffdf9, #121722);
+  --mk-ink: light-dark(#0a0d14, #f5f3ee);
+  --mk-muted: light-dark(#5c6573, #98a2b3);
+  --mk-brand: light-dark(#3b4bd1, #a6b8ff);
+  --mk-brand-strong: light-dark(#3b4bd1, #7c8cff);
+  --mk-on-brand: light-dark(#ffffff, #0a0d14);
+  --mk-accent: #c07a3a;
+  --mk-line: light-dark(#e4dfd6, #1d2430);
+  --mk-focus: light-dark(#3b4bd1, #a6b8ff);
+  --mk-radius: 1.1rem;
+}
+
+html[data-theme-mode="light"] {
+  color-scheme: light;
+}
+
+html[data-theme-mode="dark"] {
+  color-scheme: dark;
+}
+
+html[data-theme-mode="system"] {
+  color-scheme: light dark;
 }
 
 *,
@@ -23,6 +36,7 @@
 html {
   height: 100%;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -43,4 +57,53 @@ body {
 :focus-visible {
   outline: 2px solid var(--mk-focus);
   outline-offset: 3px;
+}
+
+.mtc {
+  display: flex;
+  margin: 0;
+  padding: 0.16rem;
+  gap: 0.08rem;
+  border: 1px solid var(--mk-line);
+  border-radius: 999px;
+  background: var(--mk-surface);
+}
+
+.mtc label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.9rem;
+  padding: 0 0.55rem;
+  border-radius: 999px;
+  color: var(--mk-muted);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.mtc input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.mtc input:focus-visible + span {
+  outline: 2px solid var(--mk-focus);
+  outline-offset: 2px;
+}
+
+html[data-theme-mode="light"] .mtc label:has([value="light"]),
+html[data-theme-mode="dark"] .mtc label:has([value="dark"]),
+html[data-theme-mode="system"] .mtc label:has([value="system"]),
+html:not([data-theme-mode]) .mtc label:has([value="system"]) {
+  background: var(--mk-bg);
+  color: var(--mk-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

@@ -33,7 +33,7 @@ test.describe("tenant homepage and guide", () => {
     ).toBeVisible();
     await expectOneH1(
       page,
-      "Riverside Dental Demo — Post-operative instructions"
+      "Riverside Dental Demo — Post-treatment instructions"
     );
     await expect(
       page.getByRole("link", { name: "Tooth Extraction" })
@@ -44,7 +44,10 @@ test.describe("tenant homepage and guide", () => {
     await expect(
       page.getByRole("link", { name: "Book an appointment" })
     ).toBeVisible();
-    await expect(page.getByText("Powered by Care Guide")).toBeVisible();
+    await expect(page.getByText("Powered by Aftercare Guide")).toBeVisible();
+    await expect(
+      page.getByRole("group", { name: "Colour theme" })
+    ).toBeVisible();
     await expect(
       page.getByText("Demo aftercare content — not clinical advice.")
     ).toBeVisible();
@@ -137,7 +140,7 @@ test.describe("tenant homepage and guide", () => {
   }) => {
     await page.goto(HOME, { waitUntil: "load" });
     await expect(page).toHaveTitle(
-      "Riverside Dental Demo — Post-operative instructions"
+      "Riverside Dental Demo — Post-treatment instructions"
     );
     const homeRobots = await page
       .locator('meta[name="robots"]')
@@ -207,4 +210,33 @@ test.describe("mobile viewport", () => {
       }
     });
   }
+});
+
+test.describe("tenant light and dark screenshots", () => {
+  test("captures home and extraction in both schemes", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.goto(HOME, { waitUntil: "load" });
+    await page.screenshot({
+      path: "test-results/artifacts/tenant-home-desktop-light.png",
+      fullPage: true,
+    });
+    await page.goto(EXTRACTION, { waitUntil: "load" });
+    await page.screenshot({
+      path: "test-results/artifacts/extraction-desktop-light.png",
+      fullPage: true,
+    });
+
+    await page.emulateMedia({ colorScheme: "dark" });
+    await page.goto(HOME, { waitUntil: "load" });
+    await page.screenshot({
+      path: "test-results/artifacts/tenant-home-desktop-dark.png",
+      fullPage: true,
+    });
+    await page.goto(EXTRACTION, { waitUntil: "load" });
+    await page.screenshot({
+      path: "test-results/artifacts/extraction-desktop-dark.png",
+      fullPage: true,
+    });
+  });
 });

@@ -14,6 +14,9 @@ export interface ClinicBySlugRecord {
     accentColor: string | null;
     neutralColor: string | null;
     radiusPreset: string;
+    instructionTerminology: string;
+    themeMode: string;
+    allowPatientThemeToggle: boolean;
     phone: string | null;
     addressLine1: string | null;
     addressLine2: string | null;
@@ -41,6 +44,9 @@ export const clinicBySlugSelect = {
       accentColor: true,
       neutralColor: true,
       radiusPreset: true,
+      instructionTerminology: true,
+      themeMode: true,
+      allowPatientThemeToggle: true,
       phone: true,
       addressLine1: true,
       addressLine2: true,

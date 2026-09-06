@@ -6,6 +6,11 @@
  */
 import type { CSSProperties } from "react";
 
+import {
+  colorSchemeForThemeMode,
+  parseThemeMode,
+} from "@/lib/branding/theme-preference";
+
 export const AFTERCARE_THEME_SCOPE = "aftercareTheme";
 
 export const AFTERCARE_THEME_TOKEN_KEYS = [
@@ -44,6 +49,11 @@ export interface AftercareThemeInput {
   accentColor: string | null;
   neutralColor?: string | null;
   radiusPreset?: string | null;
+  themeMode?: string | null;
+}
+
+export interface AftercareThemeCssOptions {
+  themeMode?: string | null;
 }
 
 const HEX_COLOR_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
@@ -149,14 +159,20 @@ export function toAftercareThemeStyle(theme: AftercareTheme): CSSProperties {
   return theme.light as CSSProperties;
 }
 
-export function serializeAftercareThemeCss(theme: AftercareTheme): string {
-  return `.${AFTERCARE_THEME_SCOPE}{${cssDeclarations(theme.light)}}@media (prefers-color-scheme: dark){.${AFTERCARE_THEME_SCOPE}{${cssDeclarations(theme.dark)}}}`;
-}
+export function serializeAftercareThemeCss(
+  theme: AftercareTheme,
+  options?: AftercareThemeCssOptions
+): string {
+  const mode = parseThemeMode(options?.themeMode);
+  const colorScheme = colorSchemeForThemeMode(mode);
+  const tokens = AFTERCARE_THEME_TOKEN_KEYS.map((key) => {
+    const light = theme.light[key];
+    const dark = theme.dark[key];
+    const value = light === dark ? light : `light-dark(${light},${dark})`;
+    return `${key}:${value}`;
+  }).join(";");
 
-function cssDeclarations(tokens: AftercareThemeTokens): string {
-  return AFTERCARE_THEME_TOKEN_KEYS.map((key) => `${key}:${tokens[key]}`).join(
-    ";"
-  );
+  return `html{color-scheme:${colorScheme}}.${AFTERCARE_THEME_SCOPE}{${tokens}}`;
 }
 
 function parseRadiusPreset(value: string | null | undefined): string {

@@ -227,7 +227,7 @@ describe("resolveAftercareTheme", () => {
 });
 
 describe("serializeAftercareThemeCss", () => {
-  it("emits scoped light tokens and dark-scheme overrides without arbitrary CSS", () => {
+  it("emits scoped light-dark tokens and the SYSTEM color-scheme without arbitrary CSS", () => {
     const theme = resolveAftercareTheme({
       primaryColor: "#0f766e",
       accentColor: "#f59e0b",
@@ -236,18 +236,34 @@ describe("serializeAftercareThemeCss", () => {
     });
     const css = serializeAftercareThemeCss(theme);
 
+    expect(css).toContain("html{color-scheme:light dark}");
     expect(css).toContain(`.${AFTERCARE_THEME_SCOPE}{`);
     expect(css).toContain("--cg-brand:#0f766e");
     expect(css).toContain("--cg-accent:#f59e0b");
-    expect(css).toContain("--cg-surface:#f4efe6");
+    expect(css).toContain("--cg-surface:light-dark(#f4efe6,");
     expect(css).toContain(`--cg-radius:${RADIUS_PRESET_VALUES.SOFT}`);
-    expect(css).toContain("@media (prefers-color-scheme: dark)");
-    expect(css).toContain("--cg-text:#f8fafc");
+    expect(css).toContain("--cg-text:light-dark(#0f172a,#f8fafc)");
+    expect(css).not.toContain("@media (prefers-color-scheme: dark)");
     expect(css).not.toContain("customCss");
     expect(css).not.toContain("<");
     expect(css).not.toContain("url(");
     expect(css).not.toContain("expression(");
   });
+
+  it.each([
+    ["LIGHT", "light"],
+    ["DARK", "dark"],
+    ["SYSTEM", "light dark"],
+  ] as const)(
+    "locks clinic theme mode %s to color-scheme %s",
+    (mode, scheme) => {
+      const css = serializeAftercareThemeCss(DEFAULT_AFTERCARE_THEME, {
+        themeMode: mode,
+      });
+
+      expect(css).toContain(`html{color-scheme:${scheme}}`);
+    }
+  );
 });
 
 describe("toAftercareThemeStyle", () => {

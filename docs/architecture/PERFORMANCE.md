@@ -224,3 +224,81 @@ Dark/light: tenant tokens are server-emitted on `.aftercareTheme`, with `@media 
 Marketing CSS is a separate root layout and stays lean (6,296 raw). It uses `next/link` for same-origin anchors only; that is marketing JS, not patient-specific Client Components.
 
 Apex `/login` is a proxy 404. Staff login remains on `app.localhost/login`. Direct `/_marketing` is blocked like `/_sites`.
+
+## After Phase 1F.1 (premium product experience)
+
+Measured 2026-09-06 against `cursor/aftercare-phase-1e-hardening` after the Phase 1F.1 brand, presentation-settings, and theme-control work. Production `next build` (Next.js 16.3.3 / Turbopack).
+
+The Phase 1 tenant CSS ceiling is **unchanged**:
+
+|                           |   Raw | gzip -9 | Brotli q11 |
+| ------------------------- | ----: | ------: | ---------: |
+| Phase 1 tenant CSS budget | 8,192 |   3,072 |      2,560 |
+
+Richer marketing and tenant design was not an excuse to raise that ceiling. Tenant CSS first exceeded 8,192 because theme-control rules lived in the hashed CSS Module and because the client island imported that module (pulling the class map into JS). The fix:
+
+1. Keep patient chrome in CSS Modules against `--cg-*` tokens.
+2. Put the optional theme control on short global classes in `aftercare.css` (`.ptc`, `.patientThemeSlot`).
+3. Do **not** import CSS Modules from the theme-control Client Components.
+
+The original 8,192 raw threshold remains reasonable. Do not raise it without a new measured review.
+
+Dark/light no longer uses `@media (prefers-color-scheme: dark)` token overrides. Clinic `themeMode` serializes `html { color-scheme }`; semantic tokens use `light-dark()`. `html[data-theme-mode]` lets an optional patient preference override without a ThemeProvider. Clinic brand/accent colours are still not inverted.
+
+### Tenant CSS (same on `/` and `/extraction`)
+
+- `18kzypcy7h8-t.css` — aftercare base, including `.ptc` (2,913 raw / 924 gzip / 788 Brotli)
+- `0d16u7jokxcm_.css` — `patient.module.css` (5,235 raw / 1,268 gzip / 1,039 Brotli)
+
+| Metric                         | 1F tenant | 1F.1 tenant |
+| ------------------------------ | --------: | ----------: |
+| CSS files                      |         2 |           2 |
+| CSS raw                        |     7,218 |   **8,148** |
+| CSS gzip -9                    |     1,883 |   **2,192** |
+| CSS Brotli q11                 |     1,567 |   **1,827** |
+| Tailwind                       |        no |          no |
+| `--cg-*` in first HTML         |       yes |         yes |
+| Budget (8,192 / 3,072 / 2,560) |      pass |    **pass** |
+
+### Tenant JavaScript
+
+| Surface                                      | Patient-specific Client Components rendered | Theme-control chunk                                      |
+| -------------------------------------------- | ------------------------------------------: | -------------------------------------------------------- |
+| Riverside (`allowPatientThemeToggle = true`) |                   1 (`PatientThemeControl`) | `1v4h_seuffrwc.js` **1,199 raw / 631 gzip / 510 Brotli** |
+| Harbor (`allowPatientThemeToggle = false`)   |                                           0 | Control not rendered; no ThemeProvider                   |
+
+The shared tenant layout lists `patient-theme-control.tsx` in the client-reference manifest because the layout file contains a conditional `import()`. Harbor still must not show the control. Next/React framework runtime is unchanged and is not a product budget.
+
+The accepted patient baseline is now:
+
+```
+Patient-specific Client Components rendered = 0 when allowPatientThemeToggle is false
+Patient-specific Client Components rendered = 1 when allowPatientThemeToggle is true
+```
+
+### Marketing CSS
+
+- `27c0zuqdpwg3t.css` — marketing base, including `.mtc` (2,499 raw / 795 gzip / 676 Brotli)
+- `2-nr0h8xmodx-.css` — `marketing.module.css` (7,586 raw / 1,802 gzip / 1,552 Brotli)
+
+| Metric         | 1F marketing | 1F.1 marketing |
+| -------------- | -----------: | -------------: |
+| CSS files      |            2 |              2 |
+| CSS raw        |        6,296 |     **10,085** |
+| CSS gzip -9    |        1,688 |      **2,597** |
+| CSS Brotli q11 |        1,429 |      **2,228** |
+| Tailwind       |           no |             no |
+
+Marketing CSS is allowed to be larger than tenant CSS. It is still far below staff Tailwind (27,330 raw). No marketing CSS-in-JS.
+
+### Marketing JavaScript
+
+Isolated `MarketingThemeControl` Client Component. Production currently emits it in the same client chunk as `next/link`:
+
+- `1sx-e9toe047y.js` — **9,962 raw / 4,047 gzip / 3,528 Brotli** (Link + theme control; not theme-only)
+
+Do not treat that chunk as a theme-toggle budget. Comparable isolated theme-control size is the patient chunk above (~1.2 KB raw). No theme library.
+
+Staff `app.localhost/` still loads Tailwind (`1d4zsgjtjjx9r.css`, 27,330 raw / 6,408 gzip / 5,555 Brotli).
+
+Apex `/login` remains a proxy 404. Staff login remains on `app.localhost/login`.

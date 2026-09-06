@@ -1,8 +1,10 @@
 # Care Guide
 
+The repository is still called **care-guide**. The current provisional commercial/product name is **Aftercare Guide**. That name is not a legal brand lock.
+
 ## Product direction
 
-Care Guide is a **B2B SaaS platform** that lets healthcare practices give patients **clear, branded, mobile-first post-treatment aftercare guides** through **permanent web URLs and QR codes**.
+**Aftercare Guide** is a **B2B SaaS platform** that lets healthcare practices give patients **clear, branded, mobile-first post-treatment aftercare guides** through **permanent web URLs and QR codes**.
 
 - The **practice** is the customer.
 - The **patient** is the end user of the aftercare experience.
@@ -26,17 +28,17 @@ Authoritative product contract:
 
 **The aftercare SaaS described above is not a complete commercial product yet.**
 
-Phase 1A added the **data/domain foundation**. Phase 1B added **tenant hostname routing** (`proxy.ts` rewrite to `/_sites/<slug>/…`). Phase 1B.5 added the **patient styling/performance foundation** (CSS Modules, server CSS variables, Tailwind isolated to staff). **Phase 1C** added the first public patient aftercare homepage and guide UI. **Phase 1D was absorbed into 1C** (composition, overrides, additions, and semantic guide rendering already shipped there). **Phase 1E** added Playwright browser acceptance, axe checks, and performance gates. **Phase 1F** added the public marketing homepage, patient UX/UI uplift, and a controlled branding-token foundation (including light/dark and radius presets).
+Phase 1A added the **data/domain foundation**. Phase 1B added **tenant hostname routing** (`proxy.ts` rewrite to `/_sites/<slug>/…`). Phase 1B.5 added the **patient styling/performance foundation** (CSS Modules, server CSS variables, Tailwind isolated to staff). **Phase 1C** added the first public patient aftercare homepage and guide UI. **Phase 1D was absorbed into 1C** (composition, overrides, additions, and semantic guide rendering already shipped there). **Phase 1E** added Playwright browser acceptance, axe checks, and performance gates. **Phase 1F** added the public marketing homepage, patient UX/UI uplift, and a controlled branding-token foundation (including light/dark and radius presets). **Phase 1F.1** refined the Aftercare Guide marketing identity, tenant presentation settings (terminology, theme policy, optional patient theme toggle), and premium visual language.
 
 This repository also contains a **parked product capability**: clinic-staff authentication plus an in-chair procedure-session workflow (rooms, doctors, live stages, `/display/[token]`, Supabase Realtime, and a completed-session link to an external `aftercareUrl`).
 
 That chairside workflow is **parked / future optional**. Do not delete it. Do not use it as the aftercare architecture. **Aftercare must not depend on `ProcedureSession`.**
 
-|                   |                                                                                                                                                                                      |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Product direction | Branded aftercare infrastructure (PRD v1.0)                                                                                                                                          |
-| Current code      | Staff auth + parked chairside sessions + Phase 1A–1F aftercare (domain, hostname routing, public patient pages, marketing homepage, branding tokens, browser/performance acceptance) |
-| Aftercare MVP     | Planned (Phases 1–3 in the PRD). Phase 1 technical slice is implemented; commercial MVP is later.                                                                                    |
+|                   |                                                                                                                                                                                                                     |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Product direction | Branded aftercare infrastructure (PRD v1.0)                                                                                                                                                                         |
+| Current code      | Staff auth + parked chairside sessions + Phase 1A–1F.1 aftercare (domain, hostname routing, public patient pages, Aftercare Guide marketing homepage, tenant presentation settings, browser/performance acceptance) |
+| Aftercare MVP     | Planned (Phases 1–3 in the PRD). Phase 1 technical slice is implemented; commercial MVP is later.                                                                                                                   |
 
 Examples of **intended** product behaviour that do **not** exist in code yet:
 

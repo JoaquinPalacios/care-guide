@@ -1,7 +1,9 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 
+import { MarketingThemeControl } from "@/app/(marketing)/components/marketing-theme-control";
 import { DEMO_AFTERCARE_TENANT_SLUG } from "@/lib/aftercare/demo-tenant";
+import { PRODUCT_NAME } from "@/lib/branding/product-name";
 import { labeledPublicUrl } from "@/lib/tenancy/public-url";
 import { getRootDomain } from "@/lib/tenancy/root-domain";
 
@@ -48,12 +50,38 @@ export default async function MarketingHomePage() {
       <header className={styles.top}>
         <div className={styles.topInner}>
           <Link className={styles.wordmark} href="/">
-            Care Guide
+            <svg
+              className={styles.mark}
+              viewBox="0 0 32 32"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <rect
+                x="5"
+                y="4"
+                width="16"
+                height="21"
+                rx="3.5"
+                fill="currentColor"
+                opacity="0.38"
+              />
+              <rect
+                x="11"
+                y="8"
+                width="16"
+                height="21"
+                rx="3.5"
+                fill="currentColor"
+              />
+            </svg>
+            {PRODUCT_NAME}
           </Link>
           <nav className={styles.nav} aria-label="Marketing">
             <Link href="#how-it-works">How it works</Link>
             <Link href="#preview">Clinic preview</Link>
+            <Link href="#early-access">Early access</Link>
             <a href={staffHref}>Staff sign in</a>
+            <MarketingThemeControl />
           </nav>
         </div>
       </header>
@@ -61,15 +89,15 @@ export default async function MarketingHomePage() {
       <main>
         <section className={styles.hero} aria-labelledby="marketing-hero">
           <div className={`${styles.inner} ${styles.heroGrid}`}>
-            <div>
-              <p className={styles.eyebrow}>Aftercare platform</p>
+            <div className={styles.heroCopy}>
+              <p className={styles.eyebrow}>Clinic-branded aftercare</p>
               <h1 id="marketing-hero">
-                Post-operative instructions patients can actually follow
+                Aftercare that still feels like your clinic.
               </h1>
               <p className={styles.lede}>
-                Care Guide gives clinics branded, mobile-first recovery pages —
-                so patients leave with a permanent link instead of a paper
-                handout or a PDF they will not reopen.
+                Turn approved post-treatment instructions into branded,
+                mobile-first pages patients can reopen whenever they need them.
+                No app. No login. No PDF to hunt down.
               </p>
               <div className={styles.actions}>
                 <a
@@ -86,41 +114,79 @@ export default async function MarketingHomePage() {
                 </Link>
               </div>
             </div>
-            <aside className={styles.preview} aria-label="Product preview">
-              <div className={styles.previewBar} aria-hidden="true">
-                <i />
-                <i />
-                <i />
+            <aside className={styles.stage} aria-label="Product preview">
+              <div className={styles.desktopFrame}>
+                <div className={styles.desktopBar} aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </div>
+                <div className={styles.clinicScreen}>
+                  <div className={styles.clinicBrand}>
+                    <span className={styles.clinicMark} aria-hidden="true" />
+                    Riverside Dental Demo
+                  </div>
+                  <p className={styles.clinicKicker}>
+                    Post-treatment instructions
+                  </p>
+                  <p className={styles.clinicTitle}>Tooth Extraction</p>
+                  <div className={styles.clinicCard}>
+                    Clear recovery steps, kept on a page patients can reopen.
+                  </div>
+                  <span className={styles.clinicCta}>Call the practice</span>
+                </div>
               </div>
-              <div className={styles.previewCard}>
-                <div className={styles.previewBrand}>Riverside Dental Demo</div>
-                <div className={styles.previewBody}>
-                  <p>Post-operative instructions</p>
-                  <span className={styles.previewRow}>Tooth Extraction</span>
+              <div className={styles.phoneFrame} aria-hidden="true">
+                <div className={styles.phoneScreen}>
+                  <p className={styles.phoneMeta}>Riverside Dental Demo</p>
+                  <h3>Tooth Extraction</h3>
+                  <p className={styles.phoneMeta}>
+                    Mobile aftercare with clinic contact when it matters.
+                  </p>
                 </div>
               </div>
             </aside>
           </div>
         </section>
 
-        <section className={`${styles.band} ${styles.mutedBand}`}>
-          <div className={`${styles.inner} ${styles.split}`}>
+        <section className={styles.band} aria-labelledby="problem-heading">
+          <div className={`${styles.inner} ${styles.problemGrid}`}>
             <div>
               <p className={styles.eyebrow}>The problem</p>
-              <h2>Paper and PDFs disappear at the moment patients need them</h2>
-              <p className={styles.copy}>
-                Traditional aftercare is easy to lose and hard to read. Generic
-                printouts look the same from every clinic. PDFs fight small
-                screens. Weak websites bury the few lines a patient is looking
-                for after they get home.
-              </p>
+              <h2 id="problem-heading" className={styles.problemTitle}>
+                Patients leave with instructions. They don&apos;t always leave
+                with clarity.
+              </h2>
             </div>
-            <div className={styles.card}>
-              <h3>A calmer alternative</h3>
-              <p>
-                Each practice gets a branded aftercare home and durable guide
-                pages. Patients reopen clear instructions on their phone, in the
-                clinic’s look, whenever they need them.
+            <ul className={styles.problemList}>
+              <li>
+                Verbal advice is easy to forget once the appointment ends.
+              </li>
+              <li>Paper is easy to lose between the chair and home.</li>
+              <li>PDFs are awkward to reopen on a phone.</li>
+              <li>Generic handouts weaken the clinic&apos;s own identity.</li>
+              <li>
+                Patients often need the same instructions again days later.
+              </li>
+              <li>
+                Unclear aftercare creates avoidable calls and follow-up
+                questions.
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section className={styles.band} aria-labelledby="product-heading">
+          <div className={`${styles.inner} ${styles.productGrid}`}>
+            <div className={styles.productCopy}>
+              <p className={styles.eyebrow}>The product</p>
+              <h2 id="product-heading">
+                A branded patient aftercare page that stays available.
+              </h2>
+              <p className={styles.copy}>
+                {PRODUCT_NAME} gives each practice a durable, clinic-first
+                aftercare home. Patients reopen the same instructions in the
+                practice&apos;s look — without creating an account.
               </p>
             </div>
           </div>
@@ -133,11 +199,13 @@ export default async function MarketingHomePage() {
         >
           <div className={styles.inner}>
             <p className={styles.eyebrow}>How it works</p>
-            <h2 id="how-heading">From the chair to a page patients keep</h2>
+            <h2 id="how-heading">
+              From approved guidance to a page patients keep
+            </h2>
             <ol className={styles.steps}>
               <li className={styles.step}>
                 <span className={styles.stepIndex}>Step 1</span>
-                <h3>Select procedures</h3>
+                <h3>Select guides</h3>
                 <p>
                   The clinic enables the recovery guides that match the care it
                   provides.
@@ -145,23 +213,23 @@ export default async function MarketingHomePage() {
               </li>
               <li className={styles.step}>
                 <span className={styles.stepIndex}>Step 2</span>
-                <h3>Apply clinic branding</h3>
+                <h3>Apply clinic brand</h3>
                 <p>
-                  Colour, logo, and a controlled visual tone make the pages feel
-                  like the practice.
+                  Colour, logo, terminology, and a controlled visual tone make
+                  the pages feel like the practice.
                 </p>
               </li>
               <li className={styles.step}>
                 <span className={styles.stepIndex}>Step 3</span>
                 <h3>Share a durable link</h3>
                 <p>
-                  Patients receive a URL they can save. QR handoff is part of
-                  the product direction.
+                  Patients receive a URL they can save. Designed for QR handoff;
+                  QR tooling is next, not a dashboard in this release.
                 </p>
               </li>
               <li className={styles.step}>
                 <span className={styles.stepIndex}>Step 4</span>
-                <h3>Revisit anytime</h3>
+                <h3>Patient revisits anytime</h3>
                 <p>
                   The same instructions stay available after the appointment, on
                   a phone-sized layout.
@@ -171,54 +239,83 @@ export default async function MarketingHomePage() {
           </div>
         </section>
 
-        <section className={`${styles.band} ${styles.mutedBand}`}>
+        <section className={styles.band} aria-labelledby="why-heading">
           <div className={styles.inner}>
             <p className={styles.eyebrow}>Why clinics use it</p>
-            <h2>Branded aftercare that is built for the way patients read</h2>
-            <ul className={styles.features}>
-              <li className={styles.feature}>
-                <h3>Clinic-first pages</h3>
+            <h2 id="why-heading">
+              Clinic-first aftercare, built for rereading
+            </h2>
+            <ul className={styles.reasons}>
+              <li>
+                <h3>Clinic-first presence</h3>
                 <p>
-                  Patients see the practice name, not a generic platform
-                  dashboard.
+                  Patients see the practice name, colours, and contact details —
+                  not a generic platform dashboard.
                 </p>
               </li>
-              <li className={styles.feature}>
-                <h3>Mobile-first reading</h3>
+              <li>
+                <h3>Mobile reading</h3>
                 <p>
-                  Typography, spacing, and actions are designed for a phone in a
-                  quiet evening at home.
+                  Typography, spacing, and actions are designed for a phone at
+                  home, not a waiting-room printout.
                 </p>
               </li>
-              <li className={styles.feature}>
-                <h3>Permanent URLs</h3>
+              <li>
+                <h3>Durable URLs</h3>
                 <p>
-                  Guides live at stable addresses the clinic can print, send, or
-                  later attach to a QR code.
+                  Guides live at stable addresses the clinic can share by link
+                  now, and later attach to a QR-ready handoff.
                 </p>
               </li>
-              <li className={styles.feature}>
-                <h3>Contact when it matters</h3>
+              <li>
+                <h3>Contact and rebooking</h3>
                 <p>
                   Call and booking actions sit with the instructions, plus a
                   distinct urgent-help block.
                 </p>
               </li>
-              <li className={styles.feature}>
+              <li>
                 <h3>Controlled customisation</h3>
                 <p>
-                  Clinics choose colour, accent, surface tone, and corner
-                  radius. Arbitrary CSS is not part of the model.
+                  Clinics choose colour, accent, surface tone, radius,
+                  terminology, and theme policy. Arbitrary CSS is not part of
+                  the model.
                 </p>
               </li>
-              <li className={styles.feature}>
-                <h3>Built to grow with the practice</h3>
+              <li>
+                <h3>Managed guide library</h3>
                 <p>
-                  Publishing, analytics, and operator tools are on the roadmap.
-                  The patient page is already the public face.
+                  Practices enable reviewed recovery guides rather than
+                  assembling a website from scratch.
                 </p>
               </li>
             </ul>
+          </div>
+        </section>
+
+        <section className={styles.band} aria-labelledby="brand-heading">
+          <div className={styles.inner}>
+            <p className={styles.eyebrow}>Branding</p>
+            <h2 id="brand-heading">One product, many practice identities</h2>
+            <p className={styles.copy}>
+              Tenant pages keep the clinic&apos;s colours. The {PRODUCT_NAME}{" "}
+              marketing brand stays separate, so a green dental practice does
+              not inherit a platform look.
+            </p>
+            <div className={styles.brandGrid}>
+              <article className={`${styles.brandCard} ${styles.brandTeal}`}>
+                <h3>Riverside Dental Demo</h3>
+                <p>Warm clinical teal for a general dental practice.</p>
+              </article>
+              <article className={`${styles.brandCard} ${styles.brandNavy}`}>
+                <h3>Specialist oral surgery</h3>
+                <p>Ink and navy for a calmer specialist presence.</p>
+              </article>
+              <article className={`${styles.brandCard} ${styles.brandWarm}`}>
+                <h3>Family practice</h3>
+                <p>A warmer accent when the clinic wants a softer welcome.</p>
+              </article>
+            </div>
           </div>
         </section>
 
@@ -227,15 +324,15 @@ export default async function MarketingHomePage() {
           className={styles.band}
           aria-labelledby="preview-heading"
         >
-          <div className={`${styles.inner} ${styles.split}`}>
-            <div>
+          <div className={`${styles.inner} ${styles.previewGrid}`}>
+            <div className={styles.previewCopy}>
               <p className={styles.eyebrow}>Clinic preview</p>
               <h2 id="preview-heading">
                 See a branded aftercare home, not a staff console
               </h2>
               <p className={styles.copy}>
                 The Riverside Dental Demo tenant shows the patient experience: a
-                practice header, post-operative instructions, and a published
+                practice header, post-treatment instructions, and a published
                 Tooth Extraction guide.
               </p>
               <div className={styles.actions}>
@@ -247,23 +344,25 @@ export default async function MarketingHomePage() {
                 </a>
               </div>
             </div>
-            <div className={styles.card}>
-              <h3>What patients get</h3>
-              <p>
-                A calm clinic resource page. Not a login. Not a feed. Just the
-                recovery information the practice wants them to have.
-              </p>
-            </div>
+            <p className={styles.copy}>
+              A calm clinic resource page. Not a login. Not a feed. Just the
+              recovery information the practice wants patients to keep.
+            </p>
           </div>
         </section>
 
-        <section className={styles.ctaBlock} aria-labelledby="cta-heading">
+        <section
+          id="early-access"
+          className={styles.ctaBlock}
+          aria-labelledby="cta-heading"
+        >
           <div className={styles.inner}>
-            <p className={styles.eyebrow}>Next step</p>
-            <h2 id="cta-heading">Show the aftercare experience to a clinic</h2>
+            <p className={styles.eyebrow}>Early access</p>
+            <h2 id="cta-heading">Talk to us about a design-partner clinic</h2>
             <p className={styles.lede}>
-              Start with the public demo, then use the staff app for the parked
-              internal workspace. A full clinic admin is not in this release.
+              This is an early product. Pricing is not locked, and operator
+              admin is not in this release. Start with the public demo, then
+              continue the conversation from there.
             </p>
             <div className={styles.actions}>
               <a
@@ -280,15 +379,17 @@ export default async function MarketingHomePage() {
               </a>
             </div>
             <p className={styles.fine}>
-              Care Guide is the working platform label for this aftercare
-              product.
+              {PRODUCT_NAME} is the current provisional commercial name for this
+              aftercare product.
             </p>
           </div>
         </section>
       </main>
 
       <footer className={styles.footer}>
-        <div className={styles.inner}>Care Guide — aftercare platform</div>
+        <div className={styles.inner}>
+          {PRODUCT_NAME} — provisional aftercare platform
+        </div>
       </footer>
     </div>
   );

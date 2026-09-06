@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { GuideSection } from "@/app/(aftercare)/components/guide-section";
 import { PatientPage } from "@/app/(aftercare)/components/patient-page";
 import { getPublishedPracticeGuide } from "@/lib/aftercare/get-published-practice-guide";
+import { instructionLabel } from "@/lib/aftercare/instruction-terminology";
 import { resolvePracticeChrome } from "@/lib/aftercare/practice-chrome";
 import {
   aftercarePageMetadata,
@@ -27,8 +28,8 @@ export async function generateMetadata({
 
   if (!document) {
     return aftercarePageMetadata({
-      title: "Post-operative instructions",
-      description: "Patient post-operative instructions.",
+      title: instructionLabel(null),
+      description: "Patient aftercare instructions.",
     });
   }
 
@@ -36,7 +37,7 @@ export async function generateMetadata({
 
   return aftercarePageMetadata({
     title: `${document.template.title} · ${displayName}`,
-    description: `${document.template.title} recovery instructions from ${displayName}.`,
+    description: `${document.template.title} ${instructionLabel(document.profile?.instructionTerminology).toLowerCase()} from ${displayName}.`,
     canonicalUrl: await publicTenantCanonicalUrl(
       `/${document.practiceGuide.publicSlug}`
     ),
@@ -65,7 +66,7 @@ export default async function TenantGuidePage({
   return (
     <PatientPage chrome={chrome}>
       <header className={styles.hero}>
-        <p className={styles.kicker}>Post-operative instructions</p>
+        <p className={styles.kicker}>{chrome.instructionsLabel}</p>
         <h1 className={styles.title}>{document.template.title}</h1>
         <p className={styles.lede}>
           Recovery information from {chrome.displayName}. Read the sections
