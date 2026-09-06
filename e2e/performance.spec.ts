@@ -9,7 +9,12 @@ import {
   patientSpecificJs,
   sumMetric,
 } from "./helpers/assets";
-import { DEMO_TENANT_SLUG, staffUrl, tenantUrl } from "./helpers/origins";
+import {
+  DEMO_TENANT_SLUG,
+  marketingUrl,
+  staffUrl,
+  tenantUrl,
+} from "./helpers/origins";
 
 const HOME = tenantUrl(DEMO_TENANT_SLUG, "/");
 const EXTRACTION = tenantUrl(DEMO_TENANT_SLUG, "/extraction");
@@ -76,8 +81,8 @@ test.describe("Phase 1 performance and asset contracts", () => {
 
     await page.goto(HOME, { waitUntil: "load" });
     const logo = page.locator('img[src="/demo/riverside-mark.svg"]');
-    await expect(logo).toHaveAttribute("width", "40");
-    await expect(logo).toHaveAttribute("height", "40");
+    await expect(logo).toHaveAttribute("width", "44");
+    await expect(logo).toHaveAttribute("height", "44");
     await expect(logo).toHaveAttribute("alt", "");
 
     const response = await page.request.get(
@@ -91,11 +96,14 @@ test.describe("Phase 1 performance and asset contracts", () => {
     expect(cacheControl).toMatch(/public|max-age|immutable/i);
   });
 
-  test("staff still loads Tailwind while the tenant does not", async ({
+  test("staff still loads Tailwind while marketing and tenant do not", async ({
     page,
   }) => {
     const staff = await measurePageAssets(page, staffUrl("/"));
     expectStaffCssHasTailwind(staff.css);
+
+    const marketing = await measurePageAssets(page, marketingUrl("/"));
+    expectNoTailwind(marketing.css);
 
     const tenant = await measurePageAssets(
       page,

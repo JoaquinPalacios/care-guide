@@ -1,0 +1,46 @@
+/* Public marketing surface. Do not import Tailwind here. */
+
+:root {
+  color-scheme: light dark;
+  --mk-bg: light-dark(#f6f3ee, #0c1116);
+  --mk-surface: light-dark(#fffcf8, #141b22);
+  --mk-ink: light-dark(#14202b, #f4f1ea);
+  --mk-muted: light-dark(#5b6873, #9aa8b5);
+  --mk-brand: light-dark(#15414d, #7eb8c4);
+  --mk-brand-strong: light-dark(#12343e, #9ccdd6);
+  --mk-accent: #b45309;
+  --mk-line: light-dark(#e6dfd4, #243040);
+  --mk-focus: light-dark(#15414d, #7eb8c4);
+  --mk-radius: 1rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--mk-bg);
+  color: var(--mk-ink);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--mk-focus);
+  outline-offset: 3px;
+}

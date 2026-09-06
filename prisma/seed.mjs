@@ -258,6 +258,8 @@ const DEMO_CLINIC_PROFILE = {
   logoUrl: "/demo/riverside-mark.svg",
   primaryColor: "#0f766e",
   accentColor: "#f59e0b",
+  neutralColor: "#f6f3ee",
+  radiusPreset: "SOFT",
   phone: "02 5550 0100",
   addressLine1: "12 Riverside Demo Street",
   addressLine2: null,

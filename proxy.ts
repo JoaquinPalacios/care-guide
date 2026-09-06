@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import { parseHostname } from "@/lib/tenancy/parse-hostname";
 import {
-  isInternalSitesPath,
+  isInternalAppPath,
   isStaffPath,
   normalizePathname,
 } from "@/lib/tenancy/paths";
@@ -34,7 +34,7 @@ function continueWithoutSpoofedHeaders(request: NextRequest): NextResponse {
 export function proxy(request: NextRequest): NextResponse {
   const pathname = normalizePathname(request.nextUrl.pathname);
 
-  if (isInternalSitesPath(pathname)) {
+  if (isInternalAppPath(pathname)) {
     return notFound();
   }
 
@@ -49,6 +49,21 @@ export function proxy(request: NextRequest): NextResponse {
 
   if (classification.kind === "staff") {
     return continueWithoutSpoofedHeaders(request);
+  }
+
+  if (classification.kind === "marketing") {
+    if (pathname !== "/") {
+      return notFound();
+    }
+
+    const url = request.nextUrl.clone();
+    url.pathname = "/_marketing";
+
+    return NextResponse.rewrite(url, {
+      request: {
+        headers: stripSpoofableHeaders(request),
+      },
+    });
   }
 
   if (isStaffPath(pathname)) {

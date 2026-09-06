@@ -117,9 +117,12 @@ describe("tenant homepage", () => {
     const html = await renderHome();
 
     expect(html).toContain("Riverside Dental Demo");
-    expect(html).toContain("Aftercare guides");
+    expect(html).toContain(
+      "Riverside Dental Demo — Post-operative instructions"
+    );
     expect(html).toContain("Tooth Extraction");
     expect(html).toContain('href="/extraction"');
+    expect(html).toContain("View recovery instructions");
     expect(html).toContain('href="tel:0255500100"');
     expect(html).toContain("Call Riverside Dental Demo");
     expect(html).toContain(
@@ -178,9 +181,9 @@ describe("tenant homepage", () => {
 
     const html = await renderHome();
 
-    expect(html).toContain("Aftercare guides");
+    expect(html).toContain("Riverside Dental Demo");
     expect(html).toContain(
-      "No aftercare guides are available from this practice yet."
+      "No post-operative instructions are published by this practice yet."
     );
     expect(html).not.toContain('href="/extraction"');
   });
@@ -248,7 +251,9 @@ describe("tenant homepage", () => {
       params: Promise.resolve({ tenant: "demodental" }),
     });
 
-    expect(metadata.title).toBe("Riverside Dental Demo Aftercare");
+    expect(metadata.title).toBe(
+      "Riverside Dental Demo — Post-operative instructions"
+    );
     expect(metadata.robots).toEqual({ index: false, follow: false });
     expect(metadata.alternates?.canonical).toBe(
       "http://demodental.localhost:3000/"

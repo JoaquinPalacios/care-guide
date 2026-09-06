@@ -63,6 +63,12 @@ enum GuideSectionKind {
   CUSTOM
 }
 
+enum ClinicRadiusPreset {
+  SHARP
+  MEDIUM
+  SOFT
+}
+
 model Clinic {
   id                 String              @id @default(cuid())
   name               String
@@ -320,13 +326,15 @@ model ProcedureSessionStageTransition {
   @@index([procedureSessionId, occurredAt])
 }
 
-/// Patient-facing practice chrome. Colour fields are validated hex mapped to semantic CSS tokens. Never add arbitrary CSS injection fields (customCss, stylesheet, headerHtml).
+/// Patient-facing practice chrome. Colour and radius fields are validated and mapped to semantic CSS tokens. Never add arbitrary CSS injection fields (customCss, stylesheet, headerHtml).
 model ClinicProfile {
-  clinicId                 String   @id
+  clinicId                 String             @id
   displayName              String
   logoUrl                  String?
   primaryColor             String?
   accentColor              String?
+  neutralColor             String?
+  radiusPreset             ClinicRadiusPreset @default(MEDIUM)
   phone                    String?
   addressLine1             String?
   addressLine2             String?

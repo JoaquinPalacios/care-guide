@@ -38,6 +38,7 @@ Do not create an ADR for a reversible UI detail. Create one when a later impleme
 | [0009](0009-existing-chairside-product-is-parked.md)                         | Existing chairside product is parked, not deleted            | Accepted |
 | [0010](0010-practice-guides-explicitly-pin-canonical-revisions.md)           | Practice guides explicitly pin canonical revisions           | Accepted |
 | [0011](0011-patient-styling-uses-css-modules-and-semantic-runtime-tokens.md) | Patient styling uses CSS Modules and semantic runtime tokens | Accepted |
+| [0012](0012-apex-host-is-the-public-marketing-face.md)                       | Apex host is the public marketing face                       | Accepted |
 
 Related product contract: [../product/PRD.md](../product/PRD.md).
 Performance contract: [../architecture/PERFORMANCE.md](../architecture/PERFORMANCE.md).

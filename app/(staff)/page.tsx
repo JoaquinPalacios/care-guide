@@ -11,9 +11,8 @@ export default function Home() {
           Internal staff workspace
         </h1>
         <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-600">
-          This temporary landing page keeps local testing focused while the
-          staff workflow is still being built. Use the login page to access the
-          protected dashboard and procedure templates.
+          Staff and parked chairside tools live on the app host. The public
+          product homepage is served from the root domain.
         </p>
 
         <div className="mt-8 flex flex-wrap items-center gap-3">

@@ -6,6 +6,7 @@ import {
   DEMO_TENANT_SLUG,
   HARBOR_TENANT_SLUG,
   UNKNOWN_TENANT_SLUG,
+  marketingUrl,
   staffUrl,
   tenantUrl,
 } from "./helpers/origins";
@@ -22,6 +23,11 @@ test.describe("tenant isolation and unpublished content", () => {
     await expectGenericNotFound(page);
     await expect(
       page.getByRole("heading", { name: "Aftercare guides" })
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("heading", {
+        name: "Riverside Dental Demo — Post-operative instructions",
+      })
     ).toHaveCount(0);
     await expect(
       page.getByRole("link", { name: "Tooth Extraction" })
@@ -57,8 +63,10 @@ test.describe("tenant isolation and unpublished content", () => {
       page.locator('img[src="/demo/riverside-mark.svg"]')
     ).toHaveCount(0);
     const homeBrand = await page
-      .locator("[style*='--cg-brand']")
-      .getAttribute("style");
+      .locator(".aftercareTheme")
+      .evaluate((element) =>
+        getComputedStyle(element).getPropertyValue("--cg-brand").trim()
+      );
     expect(homeBrand).toContain(HARBOR.primaryColor);
     expect(homeBrand).not.toContain("#0f766e");
 
@@ -191,7 +199,9 @@ test.describe("staff isolation", () => {
     ).toBeVisible();
   });
 
-  test("direct internal /_sites paths stay blocked", async ({ page }) => {
+  test("direct internal /_sites and /_marketing paths stay blocked", async ({
+    page,
+  }) => {
     const direct = await page.goto(staffUrl("/_sites/demodental/extraction"), {
       waitUntil: "domcontentloaded",
     });
@@ -202,5 +212,43 @@ test.describe("staff isolation", () => {
       { waitUntil: "domcontentloaded" }
     );
     expect(encoded?.status()).toBe(404);
+
+    const marketing = await page.goto(staffUrl("/_marketing"), {
+      waitUntil: "domcontentloaded",
+    });
+    expect(marketing?.status()).toBe(404);
+  });
+});
+
+test.describe("public marketing host", () => {
+  test("root domain serves the marketing homepage instead of staff", async ({
+    page,
+  }) => {
+    const home = await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    expect(home?.status()).toBe(200);
+    await expect(
+      page.getByRole("heading", {
+        name: "Post-operative instructions patients can actually follow",
+      })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "View the clinic demo" }).first()
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Internal staff workspace" })
+    ).toHaveCount(0);
+    expect(page.url()).not.toContain("/_marketing");
+  });
+
+  test("root domain blocks staff routes", async ({ page }) => {
+    for (const pathname of ["/login", "/dashboard"] as const) {
+      const response = await page.goto(marketingUrl(pathname), {
+        waitUntil: "domcontentloaded",
+      });
+      expect(response?.status(), pathname).toBe(404);
+      await expect(
+        page.getByRole("heading", { name: "Staff sign in" })
+      ).toHaveCount(0);
+    }
   });
 });

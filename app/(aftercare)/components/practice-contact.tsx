@@ -16,10 +16,11 @@ export function PracticeContact({ chrome }: { chrome: PracticeChrome }) {
       aria-labelledby="practice-contact-heading"
     >
       <h2 id="practice-contact-heading" className={styles.contactTitle}>
-        Contact this practice
+        Contact {chrome.displayName}
       </h2>
       <p className={styles.contactCopy}>
-        Reach the practice that published this aftercare information.
+        Use these details if you have a question about your recovery or need to
+        arrange a follow-up.
       </p>
       {chrome.phoneHref || chrome.bookingHref || chrome.contactHref ? (
         <div className={styles.actions}>

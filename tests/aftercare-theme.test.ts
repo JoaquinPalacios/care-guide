@@ -1,93 +1,188 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  AFTERCARE_THEME_SCOPE,
   AFTERCARE_THEME_TOKEN_KEYS,
   DEFAULT_AFTERCARE_THEME,
+  RADIUS_PRESET_VALUES,
   resolveAftercareTheme,
+  serializeAftercareThemeCss,
   toAftercareThemeStyle,
 } from "@/lib/branding/aftercare-theme";
 
 describe("resolveAftercareTheme", () => {
-  it("returns the default theme when the clinic profile is missing", () => {
+  it("returns the default light and dark themes when the clinic profile is missing", () => {
     expect(resolveAftercareTheme(null)).toEqual(DEFAULT_AFTERCARE_THEME);
   });
 
-  it("returns the default theme when both colours are missing", () => {
+  it("returns the default theme when colours and radius are missing", () => {
     expect(
-      resolveAftercareTheme({ primaryColor: null, accentColor: null })
+      resolveAftercareTheme({
+        primaryColor: null,
+        accentColor: null,
+        neutralColor: null,
+        radiusPreset: null,
+      })
     ).toEqual(DEFAULT_AFTERCARE_THEME);
   });
 
-  it("maps a valid clinic primary onto the brand token", () => {
+  it("maps a valid clinic primary onto the brand token in both schemes", () => {
     const theme = resolveAftercareTheme({
       primaryColor: "#0f766e",
       accentColor: null,
+      neutralColor: null,
+      radiusPreset: null,
     });
 
-    expect(theme["--cg-brand"]).toBe("#0f766e");
-    expect(theme["--cg-on-brand"]).toBe("#ffffff");
-    expect(theme["--cg-accent"]).toBe(DEFAULT_AFTERCARE_THEME["--cg-accent"]);
+    expect(theme.light["--cg-brand"]).toBe("#0f766e");
+    expect(theme.dark["--cg-brand"]).toBe("#0f766e");
+    expect(theme.light["--cg-on-brand"]).toBe("#ffffff");
+    expect(theme.dark["--cg-on-brand"]).toBe("#ffffff");
+    expect(theme.light["--cg-accent"]).toBe(
+      DEFAULT_AFTERCARE_THEME.light["--cg-accent"]
+    );
   });
 
   it("maps a valid clinic accent onto the accent token", () => {
     const theme = resolveAftercareTheme({
       primaryColor: null,
       accentColor: "#f59e0b",
+      neutralColor: null,
+      radiusPreset: null,
     });
 
-    expect(theme["--cg-accent"]).toBe("#f59e0b");
-    expect(theme["--cg-brand"]).toBe(DEFAULT_AFTERCARE_THEME["--cg-brand"]);
+    expect(theme.light["--cg-accent"]).toBe("#f59e0b");
+    expect(theme.dark["--cg-accent"]).toBe("#f59e0b");
+    expect(theme.light["--cg-brand"]).toBe(
+      DEFAULT_AFTERCARE_THEME.light["--cg-brand"]
+    );
+  });
+
+  it("maps a light neutral onto the surface scale without changing brand", () => {
+    const theme = resolveAftercareTheme({
+      primaryColor: "#0f766e",
+      accentColor: null,
+      neutralColor: "#f4efe6",
+      radiusPreset: null,
+    });
+
+    expect(theme.light["--cg-surface"]).toBe("#f4efe6");
+    expect(theme.light["--cg-surface-subtle"]).not.toBe("#f4efe6");
+    expect(theme.light["--cg-text"]).toBe("#0f172a");
+    expect(theme.light["--cg-brand"]).toBe("#0f766e");
+    expect(theme.dark["--cg-surface"]).not.toBe("#f4efe6");
+    expect(theme.dark["--cg-text"]).toBe("#f8fafc");
+  });
+
+  it("maps radius presets onto a single semantic radius token", () => {
+    expect(
+      resolveAftercareTheme({
+        primaryColor: null,
+        accentColor: null,
+        neutralColor: null,
+        radiusPreset: "SHARP",
+      }).light["--cg-radius"]
+    ).toBe(RADIUS_PRESET_VALUES.SHARP);
+    expect(
+      resolveAftercareTheme({
+        primaryColor: null,
+        accentColor: null,
+        neutralColor: null,
+        radiusPreset: "MEDIUM",
+      }).light["--cg-radius"]
+    ).toBe(RADIUS_PRESET_VALUES.MEDIUM);
+    expect(
+      resolveAftercareTheme({
+        primaryColor: null,
+        accentColor: null,
+        neutralColor: null,
+        radiusPreset: "SOFT",
+      }).dark["--cg-radius"]
+    ).toBe(RADIUS_PRESET_VALUES.SOFT);
   });
 
   it("expands 3-digit hex colours", () => {
     const theme = resolveAftercareTheme({
       primaryColor: "#0a8",
       accentColor: "#fc0",
+      neutralColor: "#eee",
+      radiusPreset: null,
     });
 
-    expect(theme["--cg-brand"]).toBe("#00aa88");
-    expect(theme["--cg-accent"]).toBe("#ffcc00");
+    expect(theme.light["--cg-brand"]).toBe("#00aa88");
+    expect(theme.light["--cg-accent"]).toBe("#ffcc00");
+    expect(theme.light["--cg-surface"]).toBe("#eeeeee");
   });
 
   it("chooses a dark on-brand foreground for a light brand colour", () => {
     const theme = resolveAftercareTheme({
       primaryColor: "#fef3c7",
       accentColor: null,
+      neutralColor: null,
+      radiusPreset: null,
     });
 
-    expect(theme["--cg-brand"]).toBe("#fef3c7");
-    expect(theme["--cg-on-brand"]).toBe("#0f172a");
+    expect(theme.light["--cg-brand"]).toBe("#fef3c7");
+    expect(theme.light["--cg-on-brand"]).toBe("#0f172a");
+    expect(theme.dark["--cg-on-brand"]).toBe("#0f172a");
   });
 
   it("normalizes surrounding whitespace on otherwise valid hex colours", () => {
     const theme = resolveAftercareTheme({
       primaryColor: " #0f766e ",
       accentColor: " #f59e0b ",
+      neutralColor: " #f8fafc ",
+      radiusPreset: " medium ",
     });
 
-    expect(theme["--cg-brand"]).toBe("#0f766e");
-    expect(theme["--cg-accent"]).toBe("#f59e0b");
+    expect(theme.light["--cg-brand"]).toBe("#0f766e");
+    expect(theme.light["--cg-accent"]).toBe("#f59e0b");
+    expect(theme.light["--cg-surface"]).toBe("#f8fafc");
+    expect(theme.light["--cg-radius"]).toBe(RADIUS_PRESET_VALUES.MEDIUM);
   });
 
   it("falls back when a colour cannot produce readable on-brand text", () => {
     const theme = resolveAftercareTheme({
       primaryColor: "#7a7a7a",
       accentColor: null,
+      neutralColor: null,
+      radiusPreset: null,
     });
 
-    expect(theme["--cg-brand"]).toBe(DEFAULT_AFTERCARE_THEME["--cg-brand"]);
-    expect(theme["--cg-on-brand"]).toBe(
-      DEFAULT_AFTERCARE_THEME["--cg-on-brand"]
+    expect(theme.light["--cg-brand"]).toBe(
+      DEFAULT_AFTERCARE_THEME.light["--cg-brand"]
+    );
+    expect(theme.light["--cg-on-brand"]).toBe(
+      DEFAULT_AFTERCARE_THEME.light["--cg-on-brand"]
     );
   });
 
-  it("returns only the expected semantic token names", () => {
+  it("falls back when a dark or unreadable neutral is supplied", () => {
+    const theme = resolveAftercareTheme({
+      primaryColor: null,
+      accentColor: null,
+      neutralColor: "#0f172a",
+      radiusPreset: "weird",
+    });
+
+    expect(theme.light["--cg-surface"]).toBe(
+      DEFAULT_AFTERCARE_THEME.light["--cg-surface"]
+    );
+    expect(theme.light["--cg-radius"]).toBe(RADIUS_PRESET_VALUES.MEDIUM);
+  });
+
+  it("returns only the expected semantic token names in each scheme", () => {
     const theme = resolveAftercareTheme({
       primaryColor: "#0f766e",
       accentColor: "#f59e0b",
+      neutralColor: "#f4efe6",
+      radiusPreset: "SOFT",
     });
 
-    expect(Object.keys(theme).sort()).toEqual(
+    expect(Object.keys(theme.light).sort()).toEqual(
+      [...AFTERCARE_THEME_TOKEN_KEYS].sort()
+    );
+    expect(Object.keys(theme.dark).sort()).toEqual(
       [...AFTERCARE_THEME_TOKEN_KEYS].sort()
     );
   });
@@ -114,18 +209,54 @@ describe("resolveAftercareTheme", () => {
     const theme = resolveAftercareTheme({
       primaryColor: value,
       accentColor: value,
+      neutralColor: value,
+      radiusPreset: value,
     });
 
-    expect(theme["--cg-brand"]).toBe(DEFAULT_AFTERCARE_THEME["--cg-brand"]);
-    expect(theme["--cg-accent"]).toBe(DEFAULT_AFTERCARE_THEME["--cg-accent"]);
+    expect(theme.light["--cg-brand"]).toBe(
+      DEFAULT_AFTERCARE_THEME.light["--cg-brand"]
+    );
+    expect(theme.light["--cg-accent"]).toBe(
+      DEFAULT_AFTERCARE_THEME.light["--cg-accent"]
+    );
+    expect(theme.light["--cg-surface"]).toBe(
+      DEFAULT_AFTERCARE_THEME.light["--cg-surface"]
+    );
+    expect(theme.light["--cg-radius"]).toBe(RADIUS_PRESET_VALUES.MEDIUM);
+  });
+});
+
+describe("serializeAftercareThemeCss", () => {
+  it("emits scoped light tokens and dark-scheme overrides without arbitrary CSS", () => {
+    const theme = resolveAftercareTheme({
+      primaryColor: "#0f766e",
+      accentColor: "#f59e0b",
+      neutralColor: "#f4efe6",
+      radiusPreset: "SOFT",
+    });
+    const css = serializeAftercareThemeCss(theme);
+
+    expect(css).toContain(`.${AFTERCARE_THEME_SCOPE}{`);
+    expect(css).toContain("--cg-brand:#0f766e");
+    expect(css).toContain("--cg-accent:#f59e0b");
+    expect(css).toContain("--cg-surface:#f4efe6");
+    expect(css).toContain(`--cg-radius:${RADIUS_PRESET_VALUES.SOFT}`);
+    expect(css).toContain("@media (prefers-color-scheme: dark)");
+    expect(css).toContain("--cg-text:#f8fafc");
+    expect(css).not.toContain("customCss");
+    expect(css).not.toContain("<");
+    expect(css).not.toContain("url(");
+    expect(css).not.toContain("expression(");
   });
 });
 
 describe("toAftercareThemeStyle", () => {
-  it("exposes the semantic tokens as a serializable style object", () => {
+  it("exposes the light semantic tokens as a serializable style object", () => {
     const theme = resolveAftercareTheme({
       primaryColor: "#0f766e",
       accentColor: "#f59e0b",
+      neutralColor: null,
+      radiusPreset: "SHARP",
     });
     const style = toAftercareThemeStyle(theme);
 
@@ -134,6 +265,7 @@ describe("toAftercareThemeStyle", () => {
         "--cg-brand": "#0f766e",
         "--cg-accent": "#f59e0b",
         "--cg-on-brand": "#ffffff",
+        "--cg-radius": RADIUS_PRESET_VALUES.SHARP,
       })
     );
   });

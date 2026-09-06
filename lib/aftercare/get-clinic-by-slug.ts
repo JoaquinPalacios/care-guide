@@ -12,6 +12,8 @@ export interface ClinicBySlugRecord {
     logoUrl: string | null;
     primaryColor: string | null;
     accentColor: string | null;
+    neutralColor: string | null;
+    radiusPreset: string;
     phone: string | null;
     addressLine1: string | null;
     addressLine2: string | null;
@@ -37,6 +39,8 @@ export const clinicBySlugSelect = {
       logoUrl: true,
       primaryColor: true,
       accentColor: true,
+      neutralColor: true,
+      radiusPreset: true,
       phone: true,
       addressLine1: true,
       addressLine2: true,

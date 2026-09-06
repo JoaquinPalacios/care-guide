@@ -2,6 +2,7 @@ import { isValidCareGuideSlug } from "@/lib/aftercare/slug";
 import { isReservedTenantSlug } from "@/lib/tenancy/reserved-slugs";
 
 export type HostnameClassification =
+  | { kind: "marketing" }
   | { kind: "staff" }
   | { kind: "tenant"; slug: string }
   | { kind: "reserved"; label: string }
@@ -43,7 +44,7 @@ export function parseHostname(
   }
 
   if (stripped === normalizedRoot) {
-    return { kind: "staff" };
+    return { kind: "marketing" };
   }
 
   const suffix = `.${normalizedRoot}`;

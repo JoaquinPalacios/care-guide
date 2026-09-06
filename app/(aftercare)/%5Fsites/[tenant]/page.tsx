@@ -24,16 +24,16 @@ export async function generateMetadata({
 
   if (!listed) {
     return aftercarePageMetadata({
-      title: "Aftercare",
-      description: "Patient aftercare guides.",
+      title: "Post-operative instructions",
+      description: "Patient post-operative instructions.",
     });
   }
 
   const displayName = listed.profile?.displayName ?? listed.clinic.name;
 
   return aftercarePageMetadata({
-    title: `${displayName} Aftercare`,
-    description: `Aftercare guides from ${displayName}. Revisit this page after treatment for practice-branded recovery information.`,
+    title: `${displayName} — Post-operative instructions`,
+    description: `Post-operative instructions from ${displayName}. Revisit this page after treatment for practice-branded recovery information.`,
     canonicalUrl: await publicTenantCanonicalUrl("/"),
   });
 }
@@ -54,12 +54,17 @@ export default async function TenantHomePage({ params }: TenantHomePageProps) {
 
   return (
     <PatientPage chrome={chrome}>
-      <p className={styles.kicker}>Aftercare</p>
-      <h1 className={styles.title}>Aftercare guides</h1>
-      <p className={styles.lede}>
-        Information to revisit after treatment from {chrome.displayName}. These
-        guides stay available on this page whenever you need them.
-      </p>
+      <header className={styles.hero}>
+        <p className={styles.kicker}>Aftercare</p>
+        <h1 className={styles.title}>
+          {chrome.displayName} — Post-operative instructions
+        </h1>
+        <p className={styles.lede}>
+          Clear recovery information from {chrome.displayName}. Open a guide if
+          you have just had treatment, or return to this page whenever you need
+          to check what to do next.
+        </p>
+      </header>
       <GuideList guides={listed.guides} />
     </PatientPage>
   );

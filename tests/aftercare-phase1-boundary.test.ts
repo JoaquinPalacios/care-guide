@@ -18,6 +18,7 @@ describe("Phase 1 aftercare product boundary", () => {
   it("does not couple aftercare to ProcedureSession or patient PII", () => {
     const files = [
       ...sourceFiles("app/(aftercare)"),
+      ...sourceFiles("app/(marketing)"),
       ...sourceFiles("lib/aftercare"),
       ...sourceFiles("lib/tenancy"),
       ...sourceFiles("lib/branding"),

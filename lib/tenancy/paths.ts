@@ -17,6 +17,14 @@ export function isInternalSitesPath(pathname: string): boolean {
   return pathname === "/_sites" || pathname.startsWith("/_sites/");
 }
 
+export function isInternalMarketingPath(pathname: string): boolean {
+  return pathname === "/_marketing" || pathname.startsWith("/_marketing/");
+}
+
+export function isInternalAppPath(pathname: string): boolean {
+  return isInternalSitesPath(pathname) || isInternalMarketingPath(pathname);
+}
+
 export function normalizePathname(pathname: string): string {
   let decoded = pathname;
   try {

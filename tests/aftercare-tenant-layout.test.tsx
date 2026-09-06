@@ -38,6 +38,8 @@ describe("tenant layout branding", () => {
     expect(html).toContain("--cg-brand:#0f766e");
     expect(html).toContain("--cg-accent:#f59e0b");
     expect(html).toContain("--cg-on-brand:#ffffff");
+    expect(html).toContain("aftercareTheme");
+    expect(html).toContain("@media (prefers-color-scheme: dark)");
     expect(html).toContain("child");
     expect(html).not.toContain("ThemeProvider");
   });

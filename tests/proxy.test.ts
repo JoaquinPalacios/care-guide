@@ -55,10 +55,27 @@ describe("proxy", () => {
     expect(rewritten?.search).toBe("?ref=qr");
   });
 
-  it("lets the apex staff host pass through", () => {
-    const response = proxy(requestFor("http://localhost:3000/dashboard"));
+  it("rewrites the apex homepage to /_marketing", () => {
+    const response = proxy(requestFor("http://localhost:3000/"));
+    const rewritten = rewrittenUrl(response);
     expect(response.status).toBe(200);
-    expect(rewrittenUrl(response)).toBeNull();
+    expect(rewritten?.pathname).toBe("/_marketing");
+  });
+
+  it("blocks staff paths on the marketing host", () => {
+    expect(proxy(requestFor("http://localhost:3000/login")).status).toBe(404);
+    expect(proxy(requestFor("http://localhost:3000/dashboard")).status).toBe(
+      404
+    );
+    expect(proxy(requestFor("http://localhost:3000/sessions/new")).status).toBe(
+      404
+    );
+  });
+
+  it("blocks unknown paths on the marketing host", () => {
+    expect(proxy(requestFor("http://localhost:3000/extraction")).status).toBe(
+      404
+    );
   });
 
   it("lets the app staff host pass through", () => {
@@ -67,12 +84,33 @@ describe("proxy", () => {
     expect(rewrittenUrl(response)).toBeNull();
   });
 
-  it("blocks direct /_sites access on the staff host", () => {
+  it("lets the app staff homepage pass through", () => {
+    const response = proxy(requestFor("http://app.localhost:3000/"));
+    expect(response.status).toBe(200);
+    expect(rewrittenUrl(response)).toBeNull();
+  });
+
+  it("blocks direct /_sites access on the marketing host", () => {
     const response = proxy(
       requestFor("http://localhost:3000/_sites/demodental/extraction")
     );
     expect(response.status).toBe(404);
     expect(rewrittenUrl(response)).toBeNull();
+  });
+
+  it("blocks direct /_marketing access on every public host", () => {
+    expect(proxy(requestFor("http://localhost:3000/_marketing")).status).toBe(
+      404
+    );
+    expect(
+      proxy(requestFor("http://app.localhost:3000/_marketing")).status
+    ).toBe(404);
+    expect(
+      proxy(requestFor("http://demodental.localhost:3000/_marketing")).status
+    ).toBe(404);
+    expect(proxy(requestFor("http://localhost:3000/%5Fmarketing")).status).toBe(
+      404
+    );
   });
 
   it("blocks /_sites on a tenant host without revealing the namespace", () => {
@@ -119,7 +157,7 @@ describe("proxy", () => {
 
   it("blocks encoded /_sites access", () => {
     const response = proxy(
-      requestFor("http://localhost:3000/%5Fsites/demodental/extraction")
+      requestFor("http://app.localhost:3000/%5Fsites/demodental/extraction")
     );
     expect(response.status).toBe(404);
   });

@@ -10,18 +10,22 @@ export function GuideList({
   if (guides.length === 0) {
     return (
       <p className={styles.empty}>
-        No aftercare guides are available from this practice yet.
+        No post-operative instructions are published by this practice yet.
+        Contact the practice if you need recovery information after treatment.
       </p>
     );
   }
 
   return (
-    <nav aria-label="Aftercare guides">
+    <nav aria-label="Post-operative instructions">
       <ul className={styles.guideList}>
         {guides.map((guide) => (
           <li key={guide.id} className={styles.guideItem}>
             <a className={styles.guideLink} href={`/${guide.publicSlug}`}>
-              {guide.title}
+              <span className={styles.guideCardTitle}>{guide.title}</span>
+              <span className={styles.guideCardHint}>
+                View recovery instructions
+              </span>
             </a>
           </li>
         ))}

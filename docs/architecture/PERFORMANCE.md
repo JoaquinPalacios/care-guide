@@ -190,3 +190,37 @@ Revisit only if a later phase adds authenticated or highly interactive patient U
 
 - **Security routing 404:** hostname proxy returns an empty 404 for invalid/reserved hosts, direct `/_sites`, and staff paths on a tenant host. Do not brand these.
 - **Application tenant 404:** unknown tenant, unknown/draft/disabled guide, or pinned draft revision render `app/(aftercare)/not-found.tsx` (“Not found” / “This aftercare page is not available.”). Generic, practice-neutral copy. Known-tenant layout may still apply CSS variables around that page; visible chrome does not advertise another tenant.
+
+## After Phase 1F (public experience and branding foundation)
+
+Measured 2026-09-06 against `cursor/aftercare-phase-1e-hardening` after the Phase 1F UI/routing work. Production `next start` on port 3001. Next.js 16.3.3.
+
+Ongoing patient CSS budget (unchanged):
+
+|                           |   Raw | gzip -9 | Brotli q11 |
+| ------------------------- | ----: | ------: | ---------: |
+| Phase 1 tenant CSS budget | 8,192 |   3,072 |      2,560 |
+
+Tenant CSS files (same on `/` and `/extraction`):
+
+- `0864u-a0z2a9f.css` — aftercare base (1,592 raw)
+- `1xgy9-pgjfsyz.css` — `patient.module.css` (5,626 raw)
+
+| Metric                             | 1E tenant `/` | 1F tenant `/` | 1F tenant `/extraction` | 1F marketing `/` |
+| ---------------------------------- | ------------: | ------------: | ----------------------: | ---------------: |
+| CSS files                          |             2 |             2 |                       2 |                2 |
+| CSS raw bytes                      |         5,005 |         7,218 |                   7,218 |            6,296 |
+| CSS gzip -9                        |         1,529 |         1,883 |                   1,883 |            1,688 |
+| CSS Brotli q11                     |         1,214 |         1,567 |                   1,567 |            1,429 |
+| Tailwind                           |            no |            no |                      no |               no |
+| `--cg-*` in first HTML             |           yes |           yes |                     yes |               no |
+| `--cg-radius` / dark media query   |            no |           yes |                     yes |               no |
+| Patient-specific Client Components |             0 |             0 |                       0 |  n/a (marketing) |
+
+Budget check (patient): **passed**. The 1F delta is the homepage/guide visual uplift plus radius and dark-scheme tokens. No Tailwind on tenant or marketing. Staff `app.localhost/` still loads Tailwind (27,330 raw / 6,408 gzip / 5,555 Brotli).
+
+Dark/light: tenant tokens are server-emitted on `.aftercareTheme`, with `@media (prefers-color-scheme: dark)` overrides. Brand/accent colours are not inverted. There is **no** patient theme-toggle Client Component.
+
+Marketing CSS is a separate root layout and stays lean (6,296 raw). It uses `next/link` for same-origin anchors only; that is marketing JS, not patient-specific Client Components.
+
+Apex `/login` is a proxy 404. Staff login remains on `app.localhost/login`. Direct `/_marketing` is blocked like `/_sites`.

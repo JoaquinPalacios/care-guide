@@ -12,8 +12,8 @@ export function PracticeHeader({ chrome }: { chrome: PracticeChrome }) {
               className={styles.logo}
               src={chrome.logoSrc}
               alt=""
-              width={40}
-              height={40}
+              width={44}
+              height={44}
             />
           ) : null}
           <span className={styles.name}>{chrome.displayName}</span>

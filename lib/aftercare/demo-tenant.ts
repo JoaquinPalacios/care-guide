@@ -5,7 +5,9 @@
 export const DEMO_AFTERCARE_NOTICE =
   "Demo aftercare content — not clinical advice.";
 
-const DEMO_AFTERCARE_TENANT_SLUGS = new Set(["demodental"]);
+export const DEMO_AFTERCARE_TENANT_SLUG = "demodental";
+
+const DEMO_AFTERCARE_TENANT_SLUGS = new Set([DEMO_AFTERCARE_TENANT_SLUG]);
 
 export function shouldShowDemoAftercareNotice(clinicSlug: string): boolean {
   return DEMO_AFTERCARE_TENANT_SLUGS.has(clinicSlug);

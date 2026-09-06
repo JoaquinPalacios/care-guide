@@ -5,17 +5,17 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-01 (Phase 1E quality, performance, and acceptance hardening)
+Last updated: 2026-09-06 (Phase 1F public experience and branding foundation)
 
 ---
 
 ## Product direction vs current implementation
 
-|                                |                                                                                                                                                                                                          |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance**. Phase 1D was absorbed into 1C.                                                             |
-| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                  |
+|                                |                                                                                                                                                                                                                           |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                  |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face, patient UX uplift, and branding tokens**. Phase 1D was absorbed into 1C. |
+| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                   |
 
 Do not claim QR codes, operator aftercare admin, or analytics exist until they are built. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented. Phase 1E added Playwright + axe browser acceptance; it did not add product features.
 
@@ -31,6 +31,7 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 | 1C    | COMPLETE / APPROVED                                       |
 | 1D    | ABSORBED INTO PHASE 1C / NO SEPARATE IMPLEMENTATION       |
 | 1E    | COMPLETE — TECHNICALLY READY FOR LOCAL JOAQUÍN ACCEPTANCE |
+| 1F    | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                 |
 | 2+    | Not started                                               |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
@@ -71,9 +72,9 @@ Hostname tenant resolution. No branded patient UI.
 | Internal routes | `app/%5Fsites/[tenant]/**` (URL `/_sites/<slug>/…`, blocked from the public Host) |
 | Tenant check    | `requireTenantClinic` → `getClinicBySlug` → `notFound()`                          |
 
-Local URLs: `localhost:3000` and `app.localhost:3000` stay staff/parked. `demodental.localhost:3000` rewrites internally. `unknown.localhost:3000` is a generic 404. Tenant hosts block `/login`, `/dashboard`, `/sessions`, `/session`, `/display`, `/api/auth`. Direct `/_sites` is 404.
+Local URLs: `localhost:3000` is the public marketing homepage. `app.localhost:3000` stays staff/parked. `demodental.localhost:3000` rewrites internally. `unknown.localhost:3000` is a generic 404. Tenant hosts block `/login`, `/dashboard`, `/sessions`, `/session`, `/display`, `/api/auth`. Direct `/_sites` and `/_marketing` are 404.
 
-Internal aftercare files now live at `app/(aftercare)/%5Fsites/[tenant]`. Public rewrite target remains `/_sites/<slug>/…`.
+Internal aftercare files now live at `app/(aftercare)/%5Fsites/[tenant]`. Public rewrite target remains `/_sites/<slug>/…`. The marketing homepage rewrites to `/_marketing`.
 
 ---
 
@@ -81,16 +82,16 @@ Internal aftercare files now live at `app/(aftercare)/%5Fsites/[tenant]`. Public
 
 Patient styling + performance foundation. Replaced the Phase 1B.5 brand-proof header in 1C.
 
-| Area              | Location                                                                                  |
-| ----------------- | ----------------------------------------------------------------------------------------- |
-| Staff root        | `app/(staff)/layout.tsx` + `staff.css` (Tailwind)                                         |
-| Aftercare root    | `app/(aftercare)/layout.tsx` + `aftercare.css` (no Tailwind)                              |
-| Theme resolver    | `lib/branding/aftercare-theme.ts` — hex-only, contrast fallback, semantic `--cg-*` tokens |
-| Patient CSS       | `app/(aftercare)/patient.module.css`                                                      |
-| Performance notes | [../architecture/PERFORMANCE.md](../architecture/PERFORMANCE.md)                          |
-| Styling ADR       | [ADR 0011](../adr/0011-patient-styling-uses-css-modules-and-semantic-runtime-tokens.md)   |
+| Area              | Location                                                                                                             |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Staff root        | `app/(staff)/layout.tsx` + `staff.css` (Tailwind)                                                                    |
+| Aftercare root    | `app/(aftercare)/layout.tsx` + `aftercare.css` (no Tailwind)                                                         |
+| Theme resolver    | `lib/branding/aftercare-theme.ts` — hex-only, contrast fallback, light/dark semantic `--cg-*` tokens, radius presets |
+| Patient CSS       | `app/(aftercare)/patient.module.css`                                                                                 |
+| Performance notes | [../architecture/PERFORMANCE.md](../architecture/PERFORMANCE.md)                                                     |
+| Styling ADR       | [ADR 0011](../adr/0011-patient-styling-uses-css-modules-and-semantic-runtime-tokens.md)                              |
 
-Tenant branding is server-rendered CSS variables. No client ThemeProvider. No arbitrary ClinicProfile CSS fields.
+Tenant branding is server-rendered CSS variables. No client ThemeProvider. No arbitrary ClinicProfile CSS fields. Dark/light uses `prefers-color-scheme` and a server-emitted stylesheet, not a patient theme toggle.
 
 ---
 
@@ -98,16 +99,16 @@ Tenant branding is server-rendered CSS variables. No client ThemeProvider. No ar
 
 Public patient experience on tenant hostnames. No patient login, no PII, no analytics, no QR, no operator CMS.
 
-| Area               | Location                                                                                        |
-| ------------------ | ----------------------------------------------------------------------------------------------- |
-| Tenant home        | `app/(aftercare)/%5Fsites/[tenant]/page.tsx`                                                    |
-| Public guide       | `app/(aftercare)/%5Fsites/[tenant]/[guideSlug]/page.tsx`                                        |
-| Patient components | `app/(aftercare)/components/*` — all Server Components                                          |
-| Chrome resolver    | `lib/aftercare/practice-chrome.ts` + `safe-href.ts`                                             |
-| Demo notice        | `lib/aftercare/demo-tenant.ts` — `demodental` only; easy to remove                              |
-| Metadata           | `lib/aftercare/tenant-metadata.ts` — `{Practice} Aftercare` / `{Guide} · {Practice}`, `noindex` |
-| Section tone       | `lib/aftercare/guide-section-tone.ts` — kind-driven, not section-key-driven                     |
-| Demo mark          | `public/demo/riverside-mark.svg` (`ClinicProfile.logoUrl`)                                      |
+| Area               | Location                                                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Tenant home        | `app/(aftercare)/%5Fsites/[tenant]/page.tsx`                                                                        |
+| Public guide       | `app/(aftercare)/%5Fsites/[tenant]/[guideSlug]/page.tsx`                                                            |
+| Patient components | `app/(aftercare)/components/*` — all Server Components                                                              |
+| Chrome resolver    | `lib/aftercare/practice-chrome.ts` + `safe-href.ts`                                                                 |
+| Demo notice        | `lib/aftercare/demo-tenant.ts` — `demodental` only; easy to remove                                                  |
+| Metadata           | `lib/aftercare/tenant-metadata.ts` — `{Practice} — Post-operative instructions` / `{Guide} · {Practice}`, `noindex` |
+| Section tone       | `lib/aftercare/guide-section-tone.ts` — kind-driven, not section-key-driven                                         |
+| Demo mark          | `public/demo/riverside-mark.svg` (`ClinicProfile.logoUrl`)                                                          |
 
 Patient-specific Client Components: **0**. Native `<a>` / `<img>` (no `next/link` or `next/image` on the patient surface).
 
@@ -138,6 +139,31 @@ Patient-specific Client Components remain **0**. Native `<a>` / `<img>` kept. Pl
 
 ---
 
+## Phase 1F (implemented)
+
+Public marketing face, patient UX/UI uplift, and branding-token foundation. No Phase 2 operator admin.
+
+| Area               | Location                                                                                 |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| Apex routing       | `parseHostname` `marketing` kind; `proxy.ts` rewrites `/` to `/_marketing`               |
+| Marketing homepage | `app/(marketing)/%5Fmarketing/page.tsx` + `marketing.css` / `marketing.module.css`       |
+| Staff host         | `app.localhost` continues to serve `/`, `/login`, dashboard, and parked chairside        |
+| Patient home/guide | Clinic-first post-operative copy and refined CSS Modules                                 |
+| Branding fields    | `ClinicProfile.neutralColor`, `ClinicProfile.radiusPreset` (`SHARP` / `MEDIUM` / `SOFT`) |
+| Theme              | `lib/branding/aftercare-theme.ts` — light/dark semantic tokens, radius, no arbitrary CSS |
+| Routing ADR        | [ADR 0012](../adr/0012-apex-host-is-the-public-marketing-face.md)                        |
+
+Patient-specific Client Components remain **0**. Dark/light follows `prefers-color-scheme`. No patient theme-toggle Client Component.
+
+Local URLs:
+
+- `http://localhost:3000/` — public marketing homepage
+- `http://app.localhost:3000/` — internal staff workspace
+- `http://demodental.localhost:3000/` — Riverside Dental Demo aftercare home
+- `http://demodental.localhost:3000/extraction` — Tooth Extraction guide
+
+---
+
 ## Do not do (until a later explicit task)
 
 - Phase 2 operator admin, QR, analytics, SMS/email, billing, custom domains, extra specialties, clinical CMS, rich-text editor, patient-specific guides, chairside integration
@@ -153,12 +179,12 @@ Patient-specific Client Components remain **0**. Native `<a>` / `<img>` kept. Pl
 
 ## Reusable foundation
 
-- Next.js App Router, React, Tailwind (staff only), CSS Modules (patient), PostgreSQL, Prisma
-- `Clinic` (`id`, `name`, **`slug`**), `User`, `ClinicMembership`, **`ClinicProfile`**
+- Next.js App Router, React, Tailwind (staff only), CSS Modules (patient + marketing), PostgreSQL, Prisma
+- `Clinic` (`id`, `name`, **`slug`**), `User`, `ClinicMembership`, **`ClinicProfile`** (`primaryColor`, `accentColor`, `neutralColor`, `radiusPreset`)
 - Staff auth: `auth.ts`, `lib/auth/*`, `/login`, `/dashboard` layout guard `requireStaffSession()`
 - Clinic-scoped query patterns (membership-derived clinic id)
 - Aftercare domain: `GuideTemplate` → `GuideTemplateRevision` → `GuideTemplateSection`; `PracticeGuide` + override/addition
-- Tenancy: `lib/tenancy/*`, `proxy.ts`, `app/(aftercare)/%5Fsites/[tenant]`
+- Tenancy: `lib/tenancy/*`, `proxy.ts`, `app/(aftercare)/%5Fsites/[tenant]`, `app/(marketing)/%5Fmarketing`
 - Patient theme: `lib/branding/aftercare-theme.ts`
 - Patient pages: `app/(aftercare)/components/*`, `lib/aftercare/practice-chrome.ts`
 - Browser acceptance: `e2e/*`, `@playwright/test`, `@axe-core/playwright` (dev only)
@@ -235,6 +261,6 @@ This temporarily means we do not have the same TypeScript-aware ESLint rule cove
 | `docs/README.md`                   | Docs index                                              |
 | `docs/product/PRD.md`              | PRD v1.0                                                |
 | `docs/product/WORKING-MEMORY.md`   | This file                                               |
-| `docs/adr/*.md`                    | Architecture decisions 0001–0011                        |
+| `docs/adr/*.md`                    | Architecture decisions 0001–0012                        |
 | `docs/architecture/PERFORMANCE.md` | Patient CSS/JS measurement contract and Phase 1E budget |
 | `README.md`                        | Repo entry; direction vs implementation                 |

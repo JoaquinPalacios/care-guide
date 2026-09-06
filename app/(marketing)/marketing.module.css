@@ -1,0 +1,280 @@
+.page {
+  min-height: 100%;
+}
+
+.top {
+  border-bottom: 1px solid var(--mk-line);
+  background: var(--mk-surface);
+}
+
+.topInner,
+.inner {
+  width: min(70rem, calc(100% - 2.5rem));
+  margin: 0 auto;
+}
+
+.topInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 4rem;
+}
+
+.wordmark {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+
+.nav a {
+  color: var(--mk-muted);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.nav a:hover,
+.nav a:focus-visible {
+  color: var(--mk-ink);
+}
+
+.hero {
+  padding: 3rem 0 2.5rem;
+}
+
+.heroGrid {
+  display: grid;
+  gap: 2rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.7rem;
+  color: var(--mk-brand);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero h1,
+.section h2,
+.ctaBlock h2 {
+  margin: 0 0 0.8rem;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.35rem);
+  font-weight: 720;
+  max-width: 18ch;
+}
+
+.lede,
+.copy {
+  margin: 0 0 1.25rem;
+  color: var(--mk-muted);
+  max-width: 42rem;
+  font-size: 1.05rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: calc(var(--mk-radius) * 0.7);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.primary {
+  background: var(--mk-brand-strong);
+  color: light-dark(#fffaf4, #0c1116);
+}
+
+.secondary {
+  border: 1px solid var(--mk-line);
+  color: var(--mk-ink);
+  background: var(--mk-surface);
+}
+
+.preview {
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+  padding: 1rem;
+}
+
+.previewBar {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+}
+
+.previewBar i {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--mk-line);
+  display: block;
+}
+
+.previewCard {
+  border-radius: calc(var(--mk-radius) * 0.8);
+  overflow: hidden;
+  border: 1px solid var(--mk-line);
+}
+
+.previewBrand {
+  background: #0f766e;
+  color: #fff;
+  padding: 0.7rem 0.9rem;
+  font-weight: 650;
+  font-size: 0.9rem;
+}
+
+.previewBody {
+  background: light-dark(#fff, #0c1116);
+  padding: 0.95rem 0.9rem 1.05rem;
+}
+
+.previewBody p {
+  margin: 0 0 0.75rem;
+  color: var(--mk-muted);
+  font-size: 0.92rem;
+}
+
+.previewRow {
+  display: block;
+  padding: 0.75rem 0.8rem;
+  border: 1px solid var(--mk-line);
+  border-radius: 0.7rem;
+  font-weight: 650;
+  font-size: 0.92rem;
+}
+
+.band {
+  padding: 2.4rem 0;
+}
+
+.mutedBand {
+  background: var(--mk-surface);
+  border-block: 1px solid var(--mk-line);
+}
+
+.split {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.card,
+.step,
+.feature {
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+  padding: 1.15rem 1.2rem 1.25rem;
+}
+
+.mutedBand .card,
+.mutedBand .step,
+.mutedBand .feature {
+  background: var(--mk-bg);
+}
+
+.card h3,
+.step h3,
+.feature h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
+.card p,
+.step p,
+.feature p {
+  margin: 0;
+  color: var(--mk-muted);
+}
+
+.steps,
+.features {
+  display: grid;
+  gap: 0.9rem;
+  margin: 1.2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stepIndex {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+  color: var(--mk-brand);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ctaBlock {
+  padding: 2.8rem 0 3.2rem;
+  text-align: center;
+}
+
+.ctaBlock .lede {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ctaBlock .actions {
+  justify-content: center;
+}
+
+.fine {
+  margin: 1.1rem 0 0;
+  color: var(--mk-muted);
+  font-size: 0.85rem;
+}
+
+.footer {
+  padding: 1.2rem 0 1.6rem;
+  border-top: 1px solid var(--mk-line);
+  color: var(--mk-muted);
+  font-size: 0.85rem;
+}
+
+@media (min-width: 64rem) {
+  .heroGrid,
+  .split {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+  }
+
+  .steps {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero {
+    padding: 4.2rem 0 3.2rem;
+  }
+}

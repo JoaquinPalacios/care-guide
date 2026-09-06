@@ -1,19 +1,21 @@
 /* Patient aftercare surface only. Do not import Tailwind here. */
 
 :root {
+  color-scheme: light dark;
   --cg-brand: #155e75;
   --cg-on-brand: #ffffff;
   --cg-accent: #b45309;
-  --cg-surface: #ffffff;
-  --cg-surface-subtle: #f8fafc;
-  --cg-text: #0f172a;
-  --cg-text-muted: #475569;
-  --cg-border: #e2e8f0;
-  --cg-warning: #b45309;
-  --cg-warning-surface: #fffbeb;
-  --cg-emergency: #b91c1c;
-  --cg-emergency-surface: #fef2f2;
+  --cg-surface: light-dark(#ffffff, #0c1116);
+  --cg-surface-subtle: light-dark(#f8fafc, #141b22);
+  --cg-text: light-dark(#0f172a, #f8fafc);
+  --cg-text-muted: light-dark(#475569, #94a3b8);
+  --cg-border: light-dark(#e2e8f0, #243040);
+  --cg-warning: light-dark(#b45309, #f59e0b);
+  --cg-warning-surface: light-dark(#fffbeb, #2a1f0e);
+  --cg-emergency: light-dark(#b91c1c, #f87171);
+  --cg-emergency-surface: light-dark(#fef2f2, #2a1212);
   --cg-focus: #155e75;
+  --cg-radius: 0.75rem;
 }
 
 *,
@@ -30,7 +32,7 @@ html {
 body {
   margin: 0;
   min-height: 100%;
-  background: var(--cg-surface);
+  background: var(--cg-surface-subtle);
   color: var(--cg-text);
   font-family:
     ui-sans-serif,
@@ -38,17 +40,29 @@ body {
     -apple-system,
     "Segoe UI",
     sans-serif;
-  line-height: 1.5;
+  line-height: 1.55;
   overflow-wrap: break-word;
   -webkit-font-smoothing: antialiased;
 }
 
+.aftercareTheme {
+  min-height: 100%;
+  background: var(--cg-surface-subtle);
+  color: var(--cg-text);
+}
+
 .notFound {
   padding: 1.5rem 1.25rem 2.5rem;
-  max-width: 40rem;
+  max-width: 42rem;
 }
 
 :focus-visible {
   outline: 2px solid var(--cg-focus);
-  outline-offset: 2px;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

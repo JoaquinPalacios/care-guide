@@ -31,7 +31,10 @@ test.describe("tenant homepage and guide", () => {
     await expect(
       page.getByRole("link", { name: "Riverside Dental Demo", exact: true })
     ).toBeVisible();
-    await expectOneH1(page, "Aftercare guides");
+    await expectOneH1(
+      page,
+      "Riverside Dental Demo — Post-operative instructions"
+    );
     await expect(
       page.getByRole("link", { name: "Tooth Extraction" })
     ).toBeVisible();
@@ -133,7 +136,9 @@ test.describe("tenant homepage and guide", () => {
     page,
   }) => {
     await page.goto(HOME, { waitUntil: "load" });
-    await expect(page).toHaveTitle("Riverside Dental Demo Aftercare");
+    await expect(page).toHaveTitle(
+      "Riverside Dental Demo — Post-operative instructions"
+    );
     const homeRobots = await page
       .locator('meta[name="robots"]')
       .getAttribute("content");
@@ -185,11 +190,13 @@ test.describe("mobile viewport", () => {
         page.getByRole("link", { name: /Call Riverside Dental Demo/ })
       );
       await expect(
-        page.locator("section").filter({ hasText: "Contact this practice" })
+        page.locator("section").filter({
+          hasText: "Contact Riverside Dental Demo",
+        })
       ).toBeVisible();
       const contactOverflow = await page
         .locator("section")
-        .filter({ hasText: "Contact this practice" })
+        .filter({ hasText: "Contact Riverside Dental Demo" })
         .evaluate((element) => element.scrollWidth - element.clientWidth);
       expect(contactOverflow).toBeLessThanOrEqual(1);
       if (viewport.width === 390) {

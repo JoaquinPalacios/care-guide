@@ -1,10 +1,11 @@
-import type { ReactNode } from "react";
-
 import {
+  AFTERCARE_THEME_SCOPE,
   resolveAftercareTheme,
-  toAftercareThemeStyle,
+  serializeAftercareThemeCss,
 } from "@/lib/branding/aftercare-theme";
 import { requireTenantClinic } from "@/lib/tenancy/require-tenant-clinic";
+
+import type { ReactNode } from "react";
 
 interface TenantLayoutProps {
   children: ReactNode;
@@ -21,5 +22,12 @@ export default async function TenantLayout({
   const clinic = await requireTenantClinic(tenant);
   const theme = resolveAftercareTheme(clinic.profile);
 
-  return <div style={toAftercareThemeStyle(theme)}>{children}</div>;
+  return (
+    <>
+      <style
+        dangerouslySetInnerHTML={{ __html: serializeAftercareThemeCss(theme) }}
+      />
+      <div className={AFTERCARE_THEME_SCOPE}>{children}</div>
+    </>
+  );
 }

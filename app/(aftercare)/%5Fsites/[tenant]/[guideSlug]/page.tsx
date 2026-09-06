@@ -27,8 +27,8 @@ export async function generateMetadata({
 
   if (!document) {
     return aftercarePageMetadata({
-      title: "Aftercare",
-      description: "Patient aftercare guides.",
+      title: "Post-operative instructions",
+      description: "Patient post-operative instructions.",
     });
   }
 
@@ -36,7 +36,7 @@ export async function generateMetadata({
 
   return aftercarePageMetadata({
     title: `${document.template.title} · ${displayName}`,
-    description: `${document.template.title} aftercare from ${displayName}.`,
+    description: `${document.template.title} recovery instructions from ${displayName}.`,
     canonicalUrl: await publicTenantCanonicalUrl(
       `/${document.practiceGuide.publicSlug}`
     ),
@@ -64,12 +64,15 @@ export default async function TenantGuidePage({
 
   return (
     <PatientPage chrome={chrome}>
-      <p className={styles.kicker}>Aftercare guide</p>
-      <h1 className={styles.title}>{document.template.title}</h1>
-      <p className={styles.lede}>
-        Recovery information from {chrome.displayName}. Use the sections below
-        and contact the practice if you need help.
-      </p>
+      <header className={styles.hero}>
+        <p className={styles.kicker}>Post-operative instructions</p>
+        <h1 className={styles.title}>{document.template.title}</h1>
+        <p className={styles.lede}>
+          Recovery information from {chrome.displayName}. Read the sections
+          below in order, and contact the practice if you are unsure or need
+          help.
+        </p>
+      </header>
       {document.sections.map((section) => (
         <GuideSection key={section.key} section={section} />
       ))}

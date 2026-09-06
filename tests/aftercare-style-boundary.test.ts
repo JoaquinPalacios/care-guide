@@ -22,6 +22,10 @@ describe("aftercare style boundary", () => {
     expect(staffCss).toContain('@import "tailwindcss"');
     expect(aftercareCss).not.toContain("tailwindcss");
     expect(aftercareCss).not.toContain("@theme");
+
+    const marketingCss = read("app/(marketing)/marketing.css");
+    expect(marketingCss).not.toContain("tailwindcss");
+    expect(marketingCss).not.toContain("@theme");
   });
 
   it("loads Tailwind from the staff root layout", () => {
@@ -41,12 +45,22 @@ describe("aftercare style boundary", () => {
     expect(layout).not.toMatch(/['"]use client['"]/);
   });
 
+  it("does not import Tailwind from the marketing root layout", () => {
+    const layout = read("app/(marketing)/layout.tsx");
+
+    expect(layout).toContain("./marketing.css");
+    expect(layout).not.toContain("staff.css");
+    expect(layout).not.toContain("aftercare.css");
+    expect(layout).not.toContain("tailwind");
+    expect(layout).not.toMatch(/['"]use client['"]/);
+  });
+
   it("applies semantic CSS variables in the tenant layout on the server", () => {
     const layout = read("app/(aftercare)/%5Fsites/[tenant]/layout.tsx");
 
     expect(layout).not.toMatch(/['"]use client['"]/);
     expect(layout).toContain("resolveAftercareTheme");
-    expect(layout).toContain("toAftercareThemeStyle");
+    expect(layout).toContain("serializeAftercareThemeCss");
     expect(layout).not.toContain("ThemeProvider");
     expect(layout).not.toContain("localStorage");
     expect(layout).not.toContain("useContext");
@@ -63,6 +77,7 @@ describe("aftercare style boundary", () => {
     expect(styles).toContain("var(--cg-on-brand)");
     expect(styles).toContain("var(--cg-warning)");
     expect(styles).toContain("var(--cg-emergency)");
+    expect(styles).toContain("var(--cg-radius)");
     expect(styles).not.toContain("tailwind");
     expect(styles).not.toContain("--tw-");
   });
@@ -75,6 +90,18 @@ describe("aftercare style boundary", () => {
     expect(files.length).toBeGreaterThan(5);
 
     for (const file of files) {
+      const source = read(file);
+      expect(source, file).not.toMatch(/['"]use client['"]/);
+      expect(source, file).not.toContain("tailwindcss");
+      expect(source, file).not.toContain("styled-components");
+      expect(source, file).not.toContain("@emotion");
+    }
+
+    const marketingFiles = walk("app/(marketing)").filter((path) =>
+      /\.(ts|tsx|css)$/.test(path)
+    );
+    expect(marketingFiles.length).toBeGreaterThan(2);
+    for (const file of marketingFiles) {
       const source = read(file);
       expect(source, file).not.toMatch(/['"]use client['"]/);
       expect(source, file).not.toContain("tailwindcss");

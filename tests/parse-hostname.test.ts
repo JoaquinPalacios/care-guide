@@ -6,9 +6,9 @@ const LOCAL_ROOT = "localhost";
 const PROD_ROOT = "example.com";
 
 describe("parseHostname", () => {
-  it("classifies localhost:3000 as staff", () => {
+  it("classifies localhost:3000 as the public marketing host", () => {
     expect(parseHostname("localhost:3000", LOCAL_ROOT)).toEqual({
-      kind: "staff",
+      kind: "marketing",
     });
   });
 
@@ -32,8 +32,10 @@ describe("parseHostname", () => {
     });
   });
 
-  it("classifies production apex and app hosts as staff", () => {
-    expect(parseHostname("example.com", PROD_ROOT)).toEqual({ kind: "staff" });
+  it("classifies production apex as marketing and app as staff", () => {
+    expect(parseHostname("example.com", PROD_ROOT)).toEqual({
+      kind: "marketing",
+    });
     expect(parseHostname("app.example.com", PROD_ROOT)).toEqual({
       kind: "staff",
     });
@@ -101,7 +103,7 @@ describe("parseHostname", () => {
       slug: "demodental",
     });
     expect(parseHostname("localhost:3000", LOCAL_ROOT)).toEqual({
-      kind: "staff",
+      kind: "marketing",
     });
   });
 

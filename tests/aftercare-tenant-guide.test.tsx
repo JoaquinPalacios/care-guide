@@ -170,7 +170,7 @@ describe("tenant guide page", () => {
     const html = await renderGuide();
 
     expect(html).toContain("Tooth Extraction");
-    expect(html).toContain("Aftercare guide");
+    expect(html).toContain("Post-operative instructions");
     expect(html).toContain("Canonical intro for Riverside patients.");
     expect(html).toContain("The first day at Riverside Dental Demo");
     expect(html).toContain(
@@ -204,7 +204,7 @@ describe("tenant guide page", () => {
     expect(html).toContain("When this is urgent (demo)");
     expect(html).toContain("Canonical emergency context for the condition.");
     expect(html).toContain("If you need urgent help");
-    expect(html).toContain("Contact this practice");
+    expect(html).toContain("Contact Riverside Dental Demo");
     expect(html.indexOf("When this is urgent (demo)")).toBeLessThan(
       html.indexOf("If you need urgent help")
     );

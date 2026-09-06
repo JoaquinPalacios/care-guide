@@ -1,7 +1,10 @@
 import "server-only";
 
 import { composeGuideDocument } from "@/lib/aftercare/compose-guide-document";
-import { clinicBySlugSelect } from "@/lib/aftercare/get-clinic-by-slug";
+import {
+  type ClinicBySlugRecord,
+  clinicBySlugSelect,
+} from "@/lib/aftercare/get-clinic-by-slug";
 import { PUBLIC_PRACTICE_GUIDE_WHERE } from "@/lib/aftercare/public-practice-guide-predicates";
 import { isValidCareGuideSlug } from "@/lib/aftercare/slug";
 import type { ComposedGuideSection } from "@/lib/aftercare/types";
@@ -13,24 +16,7 @@ export interface PublishedPracticeGuideDocument {
     slug: string;
     name: string;
   };
-  profile: {
-    displayName: string;
-    logoUrl: string | null;
-    primaryColor: string | null;
-    accentColor: string | null;
-    phone: string | null;
-    addressLine1: string | null;
-    addressLine2: string | null;
-    city: string | null;
-    region: string | null;
-    postalCode: string | null;
-    country: string | null;
-    bookingUrl: string | null;
-    contactUrl: string | null;
-    contactEmail: string | null;
-    emergencyInstructions: string | null;
-    showCareGuideAttribution: boolean;
-  } | null;
+  profile: ClinicBySlugRecord["profile"];
   template: {
     id: string;
     slug: string;
