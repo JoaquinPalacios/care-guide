@@ -1,5 +1,20 @@
 .page {
   min-height: 100%;
+  --mk-chapter-bg: var(--mk-hero);
+  background-color: var(--mk-chapter-bg);
+  transition: background-color 0.8s ease;
+}
+
+.page[data-chapter="soft"] {
+  --mk-chapter-bg: var(--mk-soft);
+}
+
+.page[data-chapter="showcase"] {
+  --mk-chapter-bg: var(--mk-showcase);
+}
+
+.page[data-chapter="closing"] {
+  --mk-chapter-bg: var(--mk-closing);
 }
 
 .marketingBase,
@@ -287,8 +302,18 @@
   padding: 3.6rem 0;
 }
 
-.chapterRule {
-  border-top: 1px solid var(--mk-line);
+.blendToShowcase,
+.blendToClosing {
+  height: 3.25rem;
+  pointer-events: none;
+}
+
+.blendToShowcase {
+  background: linear-gradient(to bottom, var(--mk-soft), var(--mk-showcase));
+}
+
+.blendToClosing {
+  background: linear-gradient(to bottom, var(--mk-showcase), var(--mk-closing));
 }
 
 .problemTitle {
@@ -508,5 +533,11 @@
     grid-template-columns: 1fr auto;
     align-items: start;
     justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page {
+    transition: none;
   }
 }

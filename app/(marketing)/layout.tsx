@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
+import { marketingMotionBootstrapScript } from "@/lib/marketing/motion-bootstrap";
 import {
   MARKETING_THEME_STORAGE_KEY,
   themePreferenceBootstrapScript,
@@ -28,6 +29,18 @@ export default function MarketingRootLayout({
             __html: themePreferenceBootstrapScript(MARKETING_THEME_STORAGE_KEY),
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: marketingMotionBootstrapScript(),
+          }}
+        />
+        <noscript>
+          <style>
+            {
+              "html[data-mk-motion] .mkReveal{opacity:1!important;transform:none!important;animation:none!important}"
+            }
+          </style>
+        </noscript>
         {children}
       </body>
     </html>

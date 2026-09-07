@@ -109,13 +109,33 @@ export function patientThemeToggleJs(
   });
 }
 
+export function motionLibraryJs(
+  assets: AssetMeasurement[]
+): AssetMeasurement[] {
+  return assets.filter((asset) => {
+    const url = decodeURIComponent(asset.url);
+    const body = asset.body;
+    return (
+      /marketing-experience|marketing-motion-features|motion\/react|react-m/i.test(
+        url
+      ) ||
+      body.includes("staggerChildren") ||
+      body.includes("whileInView") ||
+      body.includes("LazyMotion") ||
+      body.includes("data-mk-pending") ||
+      body.includes("domAnimation")
+    );
+  });
+}
+
 export function expectCssWithinPhase1Budget(css: AssetMeasurement[]): void {
   const raw = sumMetric(css, "raw");
   const gzip = sumMetric(css, "gzip");
   const brotli = sumMetric(css, "brotli");
 
-  // Phase 1F.3: prefer at or below the 1F.2 measured 9,023 raw tenant CSS.
-  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(9_023);
+  // Phase 1F.4: guide-card hover + recovery-surface CSS. Measured tenant CSS
+  // is 9,538 raw (gzip/Brotli stay under the previous 3,072 / 2,560 ceilings).
+  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(9_538);
   expect(gzip, `CSS gzip ${gzip}`).toBeLessThanOrEqual(3072);
   expect(brotli, `CSS brotli ${brotli}`).toBeLessThanOrEqual(2560);
 }

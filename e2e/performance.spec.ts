@@ -8,6 +8,7 @@ import {
   measurePageAssets,
   patientSpecificJs,
   patientThemeToggleJs,
+  motionLibraryJs,
   sumMetric,
 } from "./helpers/assets";
 import {
@@ -130,11 +131,13 @@ test.describe("Phase 1 performance and asset contracts", () => {
 
     const marketing = await measurePageAssets(page, marketingUrl("/"));
     expectNoTailwind(marketing.css);
+    expect(motionLibraryJs(marketing.js).length).toBeGreaterThan(0);
 
     const tenant = await measurePageAssets(
       page,
       tenantUrl(DEMO_TENANT_SLUG, "/")
     );
     expectNoTailwind(tenant.css);
+    expect(motionLibraryJs(tenant.js)).toEqual([]);
   });
 });

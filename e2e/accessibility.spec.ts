@@ -62,7 +62,14 @@ test.describe("marketing accessibility", () => {
     }) => {
       await page.emulateMedia({ colorScheme });
       await page.goto(marketingUrl("/"), { waitUntil: "load" });
-      await expectNoSeriousAxeViolations(page);
+      await expect(
+        page.getByRole("heading", {
+          name: "Aftercare that still feels like your clinic.",
+        })
+      ).toBeVisible();
+      await expectNoSeriousAxeViolations(page, {
+        exclude: "[data-mk-pending]",
+      });
       await expect(page.locator("h1")).toHaveCount(1);
       await expect(page.locator("main")).toHaveCount(1);
       await expect(

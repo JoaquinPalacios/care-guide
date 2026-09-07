@@ -1,7 +1,7 @@
 import { test } from "@playwright/test";
 
 import { expectOneH1, expectPublicTenantUrl } from "./helpers/assertions";
-import { DEMO_TENANT_SLUG, tenantUrl } from "./helpers/origins";
+import { DEMO_TENANT_SLUG, marketingUrl, tenantUrl } from "./helpers/origins";
 
 const HOME = tenantUrl(DEMO_TENANT_SLUG, "/");
 const EXTRACTION = tenantUrl(DEMO_TENANT_SLUG, "/extraction");
@@ -16,4 +16,13 @@ test("records homepage to extraction navigation", async ({ page }) => {
   await page.getByRole("link", { name: "Tooth Extraction" }).click();
   await expectPublicTenantUrl(page, EXTRACTION);
   await expectOneH1(page, "Tooth Extraction");
+});
+
+test("records marketing scroll choreography", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(marketingUrl("/"), { waitUntil: "load" });
+  await expectOneH1(page, "Aftercare that still feels like your clinic.");
+  await page.locator("#how-it-works").scrollIntoViewIfNeeded();
+  await page.locator("#preview").scrollIntoViewIfNeeded();
+  await page.locator("#early-access").scrollIntoViewIfNeeded();
 });

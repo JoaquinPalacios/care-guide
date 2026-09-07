@@ -107,10 +107,14 @@ describe("aftercare style boundary", () => {
     expect(styles).not.toContain(".surfaceBrand");
   });
 
-  it("keeps optional Client Components isolated to theme controls", () => {
-    const allowedClient = new Set([
+  it("keeps patient Client Components isolated to theme control and marketing Motion to marketing", () => {
+    const allowedPatientClient = new Set([
       "app/(aftercare)/components/patient-theme-control.tsx",
+    ]);
+    const allowedMarketingClient = new Set([
       "app/(marketing)/components/marketing-theme-control.tsx",
+      "app/(marketing)/components/marketing-experience.tsx",
+      "app/(marketing)/components/marketing-motion-features.ts",
     ]);
     const files = walk("app/(aftercare)").filter((path) =>
       /\.(ts|tsx|css)$/.test(path)
@@ -120,12 +124,14 @@ describe("aftercare style boundary", () => {
 
     for (const file of files) {
       const source = read(file);
-      if (!allowedClient.has(file)) {
+      if (!allowedPatientClient.has(file)) {
         expect(source, file).not.toMatch(/['"]use client['"]/);
       }
       expect(source, file).not.toContain("tailwindcss");
       expect(source, file).not.toContain("styled-components");
       expect(source, file).not.toContain("@emotion");
+      expect(source, file).not.toMatch(/from ["']motion(\/|$)/);
+      expect(source, file).not.toContain("framer-motion");
     }
 
     const marketingFiles = walk("app/(marketing)").filter((path) =>
@@ -134,12 +140,13 @@ describe("aftercare style boundary", () => {
     expect(marketingFiles.length).toBeGreaterThan(2);
     for (const file of marketingFiles) {
       const source = read(file);
-      if (!allowedClient.has(file)) {
+      if (!allowedMarketingClient.has(file)) {
         expect(source, file).not.toMatch(/['"]use client['"]/);
       }
       expect(source, file).not.toContain("tailwindcss");
       expect(source, file).not.toContain("styled-components");
       expect(source, file).not.toContain("@emotion");
+      expect(source, file).not.toContain("framer-motion");
     }
 
     expect(
@@ -148,5 +155,17 @@ describe("aftercare style boundary", () => {
     expect(
       read("app/(marketing)/components/marketing-theme-control.tsx")
     ).toMatch(/['"]use client['"]/);
+    expect(read("app/(marketing)/components/marketing-experience.tsx")).toMatch(
+      /['"]use client['"]/
+    );
+    expect(read("app/(aftercare)/components/guide-list.tsx")).not.toMatch(
+      /['"]use client['"]/
+    );
+    expect(read("app/(marketing)/%5Fmarketing/page.tsx")).toContain(
+      "MarketingRevealHero"
+    );
+    expect(read("app/(marketing)/%5Fmarketing/page.tsx")).not.toMatch(
+      /import \{[^}]*\bMarketingReveal\b[^}]*\} from/
+    );
   });
 });
