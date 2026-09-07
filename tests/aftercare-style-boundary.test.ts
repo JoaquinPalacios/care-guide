@@ -7,6 +7,21 @@ function read(path: string): string {
   return readFileSync(path, "utf8");
 }
 
+function hexLuminance(hex: string): number {
+  const raw = hex.replace("#", "");
+  const value =
+    raw.length === 3
+      ? raw
+          .split("")
+          .map((char) => `${char}${char}`)
+          .join("")
+      : raw.slice(0, 6);
+  const red = Number.parseInt(value.slice(0, 2), 16) / 255;
+  const green = Number.parseInt(value.slice(2, 4), 16) / 255;
+  const blue = Number.parseInt(value.slice(4, 6), 16) / 255;
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
+
 function walk(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = join(directory, entry.name);
@@ -106,6 +121,37 @@ describe("aftercare style boundary", () => {
     expect(styles).not.toContain(".surfaceSubtle");
     expect(styles).not.toContain(".surfaceContrast");
     expect(styles).not.toContain(".surfaceBrand");
+  });
+
+  it("gives the light marketing hero a warm-white foundation and a 42/58 product row", () => {
+    const tokens = read("app/(marketing)/marketing.css");
+    const styles = read("app/(marketing)/marketing.module.css");
+    const wave = read("app/(marketing)/components/marketing-wave.tsx");
+    const preview = read(
+      "app/(marketing)/components/marketing-product-preview.tsx"
+    );
+
+    const hero = tokens.match(
+      /--mk-hero:\s*light-dark\((#[0-9a-fA-F]{3,8}),\s*(#[0-9a-fA-F]{3,8})\)/
+    );
+    expect(hero).not.toBeNull();
+    expect(hexLuminance(hero![1])).toBeGreaterThan(0.85);
+    expect(hexLuminance(hero![2])).toBeLessThan(0.12);
+
+    expect(styles).not.toMatch(
+      /\.marketingBase[^{]*\{[^}]*color:\s*var\(--mk-on-dark\)/
+    );
+    expect(styles).toContain("0.42fr 0.58fr");
+    expect(styles).not.toContain("100vh");
+    expect(styles).not.toContain("perspective");
+    expect(styles).not.toContain("rotateY");
+    expect(wave).toContain('aria-hidden="true"');
+    expect(wave).toContain('focusable="false"');
+    expect(preview).not.toMatch(/['"]use client['"]/);
+    expect(preview).toContain('aria-hidden="true"');
+    expect(preview).not.toContain("<img");
+    expect(preview).not.toContain("<button");
+    expect(preview).not.toContain("<a ");
   });
 
   it("keeps patient Client Components isolated to theme control and marketing Motion to marketing", () => {

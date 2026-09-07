@@ -28,3 +28,13 @@ export async function expectHeadingDoesNotOverflow(
 
   expect(overflow).toBeLessThanOrEqual(1);
 }
+
+export function relativeLuminance(rgb: string): number {
+  const match = rgb.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/);
+  if (!match) {
+    return -1;
+  }
+
+  const [red, green, blue] = match.slice(1).map((value) => Number(value) / 255);
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}

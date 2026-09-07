@@ -1,11 +1,25 @@
 export function MarketingWave() {
   return (
     <div className="mkWave" aria-hidden="true">
-      <div className="mkWaveInner">
-        <svg viewBox="0 0 1440 72" preserveAspectRatio="none">
-          <path d="M0 28C180 64 360 4 540 22C720 40 900 70 1080 46C1260 22 1350 8 1440 24V72H0Z" />
-        </svg>
-      </div>
+      <svg
+        className="mkWaveInner"
+        viewBox="0 0 1440 48"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path className="mkWaveFill" d="M0 30C360 42 1080 18 1440 30V48H0Z" />
+        <path
+          className="mkWaveGlow"
+          d="M0 30C360 42 1080 18 1440 30"
+          fill="none"
+        />
+        <path
+          className="mkWaveEdge"
+          d="M0 30C360 42 1080 18 1440 30"
+          fill="none"
+        />
+      </svg>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import {
   MarketingRevealItem,
   MarketingRevealPreview,
 } from "@/app/(marketing)/components/marketing-experience";
+import { MarketingProductPreview } from "@/app/(marketing)/components/marketing-product-preview";
 import { MarketingThemeControl } from "@/app/(marketing)/components/marketing-theme-control";
 import { MarketingWave } from "@/app/(marketing)/components/marketing-wave";
 import { DEMO_AFTERCARE_TENANT_SLUG } from "@/lib/aftercare/demo-tenant";
@@ -108,79 +109,49 @@ export default async function MarketingHomePage() {
           data-mk-chapter="hero"
         >
           <MarketingReveal.Hero>
-            <div className={`${styles.inner} ${styles.heroGrid}`}>
-              <div className={styles.heroCopy}>
+            <div className={`${styles.inner} ${styles.heroLayout}`}>
+              <div className={styles.heroStatement}>
                 <MarketingReveal.Item>
-                  <p className={styles.eyebrow}>Aftercare platform</p>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item>
-                  <h1 id="marketing-hero">
-                    Aftercare that still feels like your clinic.
-                  </h1>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item>
-                  <p className={styles.lede}>
-                    Turn approved post-treatment instructions into branded,
-                    mobile-first pages patients can reopen whenever they need
-                    them. No app. No login. No PDF to hunt down.
+                  <p className={`${styles.eyebrow} ${styles.heroEyebrow}`}>
+                    Aftercare platform
                   </p>
                 </MarketingReveal.Item>
                 <MarketingReveal.Item>
-                  <div className={styles.actions}>
-                    <a
-                      className={`${styles.button} ${styles.primary}`}
-                      href={demoHref}
-                    >
-                      View the clinic demo
-                    </a>
-                    <Link
-                      className={`${styles.button} ${styles.secondary}`}
-                      href="#how-it-works"
-                    >
-                      See how it works
-                    </Link>
-                  </div>
+                  <h1 id="marketing-hero" className={styles.heroTitle}>
+                    Aftercare that still feels like your clinic.
+                  </h1>
                 </MarketingReveal.Item>
               </div>
-              <MarketingReveal.Preview>
-                <aside className={styles.stage} aria-label="Product preview">
-                  <div className={styles.desktopFrame}>
-                    <div className={styles.desktopBar} aria-hidden="true">
-                      <i />
-                      <i />
-                      <i />
+              <div className={styles.heroLower}>
+                <div className={styles.heroSupport}>
+                  <MarketingReveal.Item>
+                    <p className={`${styles.lede} ${styles.heroBody}`}>
+                      Turn approved post-treatment instructions into branded,
+                      mobile-first pages patients can reopen whenever they need
+                      them. No app. No login. No PDF to hunt down.
+                    </p>
+                  </MarketingReveal.Item>
+                  <MarketingReveal.Item>
+                    <div className={`${styles.actions} ${styles.heroActions}`}>
+                      <a
+                        className={`${styles.button} ${styles.primary}`}
+                        href={demoHref}
+                      >
+                        View the clinic demo
+                      </a>
+                      <Link
+                        className={`${styles.button} ${styles.secondary}`}
+                        href="#how-it-works"
+                      >
+                        See how it works
+                      </Link>
                     </div>
-                    <div className={styles.clinicScreen}>
-                      <div className={styles.clinicBrand}>
-                        <span
-                          className={styles.clinicMark}
-                          aria-hidden="true"
-                        />
-                        Riverside Dental Demo
-                      </div>
-                      <p className={styles.clinicKicker}>
-                        Post-treatment instructions
-                      </p>
-                      <p className={styles.clinicTitle}>Tooth Extraction</p>
-                      <hr className={styles.clinicRule} />
-                      <p className={styles.clinicStage}>First few hours</p>
-                      <p className={styles.clinicBody}>Immediate care</p>
-                      <span className={styles.clinicCta}>
-                        Call the practice
-                      </span>
-                    </div>
-                  </div>
-                  <div className={styles.phoneFrame} aria-hidden="true">
-                    <div className={styles.phoneScreen}>
-                      <p className={styles.phoneMeta}>Riverside Dental Demo</p>
-                      <h3>Tooth Extraction</h3>
-                      <p className={styles.phoneMeta}>
-                        Mobile aftercare with clinic contact when it matters.
-                      </p>
-                    </div>
-                  </div>
-                </aside>
-              </MarketingReveal.Preview>
+                  </MarketingReveal.Item>
+                </div>
+                <MarketingReveal.Preview>
+                  <MarketingProductPreview />
+                </MarketingReveal.Preview>
+              </div>
             </div>
           </MarketingReveal.Hero>
         </section>

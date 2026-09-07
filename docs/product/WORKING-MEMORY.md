@@ -5,17 +5,17 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-07 (Phase 1F.4 marketing Motion choreography and patient card/timeline polish)
+Last updated: 2026-09-07 (Phase 1F.5 marketing hero composition and HTML/CSS product device preview)
 
 ---
 
 ## Product direction vs current implementation
 
-|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** + **Phase 1F.1 Aftercare Guide branding, tenant presentation settings, and premium marketing/tenant UX** + **Phase 1F.2 marketing polish, recovery timeline, and local login DX** + **Phase 1F.3 visual simplification and document-led patient pages** + **Phase 1F.4 marketing Motion choreography and CSS-only patient card/timeline polish**. Phase 1D was absorbed into 1C. Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. |
-| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** + **Phase 1F.1 Aftercare Guide branding, tenant presentation settings, and premium marketing/tenant UX** + **Phase 1F.2 marketing polish, recovery timeline, and local login DX** + **Phase 1F.3 visual simplification and document-led patient pages** + **Phase 1F.4 marketing Motion choreography and CSS-only patient card/timeline polish** + **Phase 1F.5 static marketing hero composition (light/dark treatment, full-width H1, 42/58 device stage)**. Phase 1D was absorbed into 1C. Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. |
+| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 Do not claim QR codes, operator aftercare admin, or analytics exist until they are built. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented. Phase 1E added Playwright + axe browser acceptance; it did not add product features.
 
@@ -35,6 +35,8 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 | 1F.1  | COMPLETE — PREMIUM PRODUCT EXPERIENCE READY FOR REVIEW    |
 | 1F.2  | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                 |
 | 1F.3  | COMPLETE — VISUAL SIMPLIFICATION READY FOR JOAQUÍN REVIEW |
+| 1F.4  | COMPLETE — MARKETING MOTION READY FOR JOAQUÍN REVIEW      |
+| 1F.5  | COMPLETE — HERO COMPOSITION READY FOR JOAQUÍN REVIEW      |
 | 2+    | Not started                                               |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
@@ -249,6 +251,23 @@ Marketing-only Motion choreography plus CSS-only patient polish. No Phase 2. Aft
 | Recovery timeline  | One `--cg-recovery-surface` chapter; stages remain cardless                                                                  |
 
 Motion is **not** loaded on tenant routes. See [PERFORMANCE.md](../architecture/PERFORMANCE.md) for the 1F.4 bundle table.
+
+---
+
+## Phase 1F.5 (implemented)
+
+Static marketing hero composition only. No Motion choreography change. No Phase 2. Patient product UI was not redesigned.
+
+| Area               | Behaviour                                                                                                                        |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| Light hero         | Warm-white `--mk-hero` (`#fffcf8`), dark ink, restrained periwinkle/cool-cyan glow toward the device stage                       |
+| Dark hero          | Deep ink foundation (`#07090e`) with a restrained periwinkle/cobalt glow, not a neon wash                                        |
+| Layout             | Full-width editorial H1, then a 42/58 supporting-copy / product-preview row at `64rem+`                                          |
+| Device stage       | HTML/CSS browser portal (clinic aftercare home) behind an overlapping phone (extraction recovery timeline). `aria-hidden="true"` |
+| Clinic vs platform | Riverside teal stays inside the mockup. Platform chrome/CTAs stay periwinkle/cobalt/ink                                          |
+| Wave               | One shallower inline SVG between hero and the soft chapter; light hairline / dark restrained edge                                |
+
+Do not treat the device-stage labels “Dental Implant” and “Root Canal” as published GuideTemplates. They are static marketing-demo copy only.
 
 ---
 

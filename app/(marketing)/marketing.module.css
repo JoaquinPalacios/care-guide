@@ -17,9 +17,13 @@
   --mk-chapter-bg: var(--mk-closing);
 }
 
-.marketingBase,
+.marketingBase {
+  background-color: var(--mk-hero);
+  color: var(--mk-ink);
+}
+
 .marketingClosing {
-  background: var(--mk-hero);
+  background: var(--mk-closing);
   color: var(--mk-on-dark);
   --mk-ink: var(--mk-on-dark);
   --mk-muted: var(--mk-muted-on-dark);
@@ -28,10 +32,6 @@
   --mk-brand-strong: #7c8cff;
   --mk-on-brand: #0a0d14;
   --mk-surface: #151a24;
-}
-
-.marketingClosing {
-  background: var(--mk-closing);
 }
 
 .marketingSoft {
@@ -102,19 +102,78 @@
 }
 
 .hero {
-  padding: 3.6rem 0 4rem;
+  position: relative;
+  isolation: isolate;
+  padding: 2.6rem 0 2.4rem;
 }
 
-.heroGrid,
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(58% 80% at 86% 48%, var(--mk-hero-glow), transparent 72%),
+    radial-gradient(42% 55% at 78% 62%, var(--mk-hero-mist), transparent 70%),
+    radial-gradient(
+      90% 50% at 18% 0%,
+      light-dark(transparent, color-mix(in srgb, #151a24 55%, transparent)),
+      transparent 68%
+    );
+}
+
+.hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.heroLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.7rem;
+}
+
+.heroStatement {
+  max-width: min(61rem, 100%);
+}
+
+.heroEyebrow {
+  margin-bottom: 0.7rem;
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: clamp(2.45rem, 4.6vw + 1.15rem, 5.1rem);
+  font-weight: 680;
+  letter-spacing: -0.055em;
+  line-height: 1;
+  text-wrap: pretty;
+}
+
+.heroLower {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.heroLower > * {
+  min-width: 0;
+}
+
+.heroSupport {
+  max-width: 36rem;
+}
+
+.heroBody {
+  margin-bottom: 1.15rem;
+}
+
 .problemGrid,
 .productGrid,
 .previewGrid {
   display: grid;
   gap: 2.2rem;
-}
-
-.heroCopy {
-  max-width: 42rem;
 }
 
 .eyebrow {
@@ -124,15 +183,6 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-}
-
-.hero h1 {
-  margin: 0 0 0.9rem;
-  font-size: clamp(2.35rem, 6vw, 4.1rem);
-  font-weight: 680;
-  letter-spacing: -0.05em;
-  line-height: 1.04;
-  max-width: 14ch;
 }
 
 .lede,
@@ -171,57 +221,94 @@
   background: transparent;
 }
 
-.stage {
+.deviceStage {
   position: relative;
+  isolation: isolate;
+  min-height: 18.5rem;
+  padding: 0.2rem 0 1.15rem;
+  overflow-x: clip;
 }
 
-.desktopFrame {
-  background: var(--mk-surface);
+.deviceStage::before {
+  content: "";
+  position: absolute;
+  inset: 8% 2% 4% 18%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    var(--mk-hero-glow),
+    transparent 74%
+  );
+}
+
+.desktopPreview {
+  position: relative;
+  z-index: 1;
+  width: 92%;
+  padding: 0.48rem 0.5rem 0.62rem;
   border: 1px solid var(--mk-line);
-  border-radius: 1rem;
-  padding: 0.65rem 0.65rem 0.85rem;
+  border-radius: 0.95rem;
+  background: light-dark(#ece9e2, #121722);
+  box-shadow: 0 18px 42px color-mix(in srgb, #0a0d14 14%, transparent);
+}
+
+.desktopChrome {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 1.15rem;
+  margin: 0 0 0.45rem 0.15rem;
 }
 
 .desktopBar {
   display: flex;
-  gap: 0.35rem;
-  margin-bottom: 0.7rem;
+  gap: 0.32rem;
 }
 
 .desktopBar i {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.46rem;
+  height: 0.46rem;
   border-radius: 999px;
-  background: var(--mk-line);
+  background: color-mix(in srgb, var(--mk-ink) 22%, var(--mk-line));
   display: block;
+}
+
+.desktopChromeTitle {
+  margin: 0;
+  color: var(--mk-muted);
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
 }
 
 .clinicScreen {
   display: grid;
-  gap: 0.45rem;
-  padding: 1.05rem 1.1rem 1.2rem;
+  gap: 0.2rem;
+  padding: 0.85rem 0.9rem 0.95rem;
   background: #fff;
   color: #111318;
+  border-radius: 0.55rem;
 }
 
 .clinicBrand {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.5rem;
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
 }
 
 .clinicMark {
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 1.15rem;
+  height: 1.15rem;
   background: #0f766e;
 }
 
 .clinicKicker {
-  margin: 0.55rem 0 0;
+  margin: 0.45rem 0 0;
   color: #0f766e;
-  font-size: 0.7rem;
+  font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -229,73 +316,129 @@
 
 .clinicTitle {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.12rem;
+  font-weight: 680;
   letter-spacing: -0.04em;
 }
 
-.clinicRule {
-  margin: 0.55rem 0 0.35rem;
-  border: 0;
-  border-top: 1px solid #ecece8;
+.clinicGuideList {
+  display: grid;
+  gap: 0.38rem;
+  margin: 0.65rem 0 0;
 }
 
-.clinicStage {
+.clinicGuide {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin: 0;
+  min-height: 2.05rem;
+  padding: 0.38rem 0.6rem;
+  border: 1px solid #ecece8;
+  border-radius: 0.42rem;
+  background: #fff;
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.clinicGuideArrow {
   color: #0f766e;
-  font-size: 0.7rem;
+}
+
+.mobilePreview {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  width: 9.6rem;
+  padding: 0.42rem 0.38rem 0.46rem;
+  border: 1px solid color-mix(in srgb, #7c8cff 24%, #2a3140);
+  border-radius: 1.25rem;
+  background: #111318;
+  box-shadow:
+    0 16px 34px color-mix(in srgb, #0a0d14 26%, transparent),
+    0 0 0 1px color-mix(in srgb, #7c8cff 12%, transparent);
+}
+
+.phoneScreen {
+  min-height: 15.4rem;
+  padding: 0.62rem 0.58rem 0.7rem;
+  border-radius: 0.85rem;
+  background: #fff;
+  color: #111318;
+}
+
+.phoneClinic {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.62rem;
+  font-weight: 650;
+}
+
+.phoneTitle {
+  margin: 0.18rem 0 0;
+  font-size: 0.92rem;
+  font-weight: 680;
+  letter-spacing: -0.03em;
+}
+
+.phoneKicker {
+  margin: 0.18rem 0 0;
+  color: #0f766e;
+  font-size: 0.54rem;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
-.clinicBody {
-  margin: 0;
-  color: #4b5563;
-  font-size: 0.92rem;
+.phoneRecovery {
+  margin: 0.55rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
 }
 
-.clinicCta {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.2rem;
-  margin-top: 0.45rem;
-  padding: 0 0.85rem;
+.phoneTimeline {
+  display: grid;
+  gap: 0.48rem;
+  margin: 0.5rem 0 0;
+}
+
+.phoneStage {
+  position: relative;
+  padding: 0 0 0.12rem 0.7rem;
+  border-left: 2px solid #0f766e;
+}
+
+.phoneStage::before {
+  content: "";
+  position: absolute;
+  left: -0.28rem;
+  top: 0.26rem;
+  width: 0.4rem;
+  height: 0.4rem;
   border-radius: 999px;
   background: #0f766e;
-  color: #fff;
-  font-size: 0.82rem;
+}
+
+.phoneStage:last-child {
+  border-left-color: color-mix(in srgb, #0f766e 45%, #ecece8);
+}
+
+.phonePeriod {
+  margin: 0;
+  color: #0f766e;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.phoneStageTitle {
+  margin: 0.08rem 0 0;
+  font-size: 0.72rem;
   font-weight: 650;
-}
-
-.phoneFrame {
-  width: min(14.5rem, 100%);
-  margin-top: -2.8rem;
-  margin-left: auto;
-  padding: 0.65rem;
-  border: 1px solid var(--mk-line);
-  border-radius: 1.25rem;
-  background: var(--mk-hero);
-}
-
-.phoneScreen {
-  padding: 0.9rem 0.85rem 1rem;
-  background: #111318;
-  color: #f4f1ea;
-}
-
-.phoneScreen p,
-.phoneScreen h3 {
-  margin: 0 0 0.4rem;
-}
-
-.phoneScreen h3 {
-  font-size: 1.05rem;
-  letter-spacing: -0.03em;
-}
-
-.phoneMeta {
-  color: #9aa3ad;
-  font-size: 0.78rem;
+  letter-spacing: -0.02em;
 }
 
 .band {
@@ -498,14 +641,42 @@
 }
 
 @media (max-width: 47.99rem) {
-  .phoneFrame {
-    margin-top: 0.5rem;
-    margin-left: 0;
+  .deviceStage {
+    min-height: 16.8rem;
+  }
+
+  .desktopPreview {
+    width: 88%;
+  }
+
+  .mobilePreview {
+    width: 8.7rem;
+  }
+}
+
+@media (max-width: 24.99rem) {
+  .hero {
+    padding: 2rem 0 1.8rem;
+  }
+
+  .heroTitle {
+    font-size: clamp(2.15rem, 11vw, 2.6rem);
+  }
+
+  .deviceStage {
+    min-height: 15.6rem;
+  }
+
+  .desktopPreview {
+    width: 84%;
+  }
+
+  .mobilePreview {
+    width: 8.15rem;
   }
 }
 
 @media (min-width: 64rem) {
-  .heroGrid,
   .problemGrid,
   .productGrid,
   .previewGrid {
@@ -514,7 +685,30 @@
   }
 
   .hero {
-    padding: 5.2rem 0 5rem;
+    padding: 3.35rem 0 2.7rem;
+  }
+
+  .heroLayout {
+    gap: 2.05rem;
+  }
+
+  .heroLower {
+    display: grid;
+    grid-template-columns: 0.42fr 0.58fr;
+    gap: 2rem 1.8rem;
+    align-items: center;
+  }
+
+  .deviceStage {
+    min-height: 20.4rem;
+  }
+
+  .desktopPreview {
+    width: 90%;
+  }
+
+  .mobilePreview {
+    width: 11rem;
   }
 
   .steps {
