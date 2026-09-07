@@ -376,3 +376,58 @@ Four chapter surfaces (`marketingBase` / `marketingSoft` / `marketingShowcase` /
 | Tailwind |     no |         no |        — |
 
 Staff still loads Tailwind. No Tailwind on tenant or marketing.
+
+## After Phase 1F.4 (marketing Motion + patient card/timeline polish)
+
+Measured 2026-09-07 against `cursor/aftercare-phase-1e-hardening` after Phase 1F.4. Production `next build` (Next.js 16.3.3 / Turbopack). Motion **13.2.0** (`motion` / `motion/react` / `motion/react-m`). No direct `framer-motion` import.
+
+### Reduced-motion policy
+
+Marketing bootstrap sets `html[data-mk-motion]=enhance|reduce` from `prefers-reduced-motion` before paint. Pending reveals are hidden with CSS only when `enhance`. A 1.6s `mk-fail-open` animation and a `<noscript>` override keep copy visible if JS never runs. `MotionConfig reducedMotion="user"` plus `initial={false}` when reduced skip entrance motion. Patient pages do not load Motion; the homepage card’s hover transform is CSS-only and disabled under `prefers-reduced-motion`.
+
+### Tenant CSS
+
+Guide-card hover/focus and the recovery-timeline surface added CSS. Aftercare base is unchanged from 1F.3 (`2m5gc51ajgv8t.css`, 3,025 raw / 985 gzip / 829 Brotli). `patient.module.css` grew (`1_n81f590gcs4.css`, 6,513 raw / 1,625 gzip / 1,370 Brotli).
+
+| Metric           |  1F.3 |      1F.4 |      Delta |
+| ---------------- | ----: | --------: | ---------: |
+| CSS raw          | 8,482 | **9,538** | **+1,056** |
+| CSS gzip -9      | 2,363 | **2,610** |   **+247** |
+| CSS Brotli q11   | 1,952 | **2,199** |   **+247** |
+| Tailwind         |    no |        no |          — |
+| Motion on tenant |    no |        no |          — |
+
+gzip and Brotli remain under 3,072 / 2,560. Raw exceeds the 1F.3 ceiling of 9,023. Playwright now enforces **≤ 9,538 raw** (this measured total). Do not treat 9,538 as a target; prefer smaller.
+
+### Tenant JavaScript
+
+Unchanged from 1F.2/1F.3. Riverside still loads `PatientThemeControl` (`3gup781hok6po.js`, **2,885 raw / 1,272 gzip / 1,089 Brotli**). Harbor does not. No Motion chunks on tenant home or `/extraction`.
+
+### Marketing CSS
+
+Chapter wash, fail-open reveal CSS, and the SVG wave added a little over 1 KB.
+
+- `36u94vb-a_vkf.css` — marketing base, including `.mtc` and fail-open (3,495 raw / 1,141 gzip / 970 Brotli)
+- `2x9cf5xfkz7rm.css` — `marketing.module.css` (9,208 raw / 1,983 gzip / 1,716 Brotli)
+
+| Metric         |   1F.3 |       1F.4 |      Delta |
+| -------------- | -----: | ---------: | ---------: |
+| CSS raw        | 11,427 | **12,703** | **+1,276** |
+| CSS gzip -9    |  2,772 |  **3,124** |   **+352** |
+| CSS Brotli q11 |  2,375 |  **2,686** |   **+311** |
+| Tailwind       |     no |         no |          — |
+
+### Marketing JavaScript
+
+1F.3 marketing JS was theme control plus `next/link` (shared chunk ~11.6 KB raw). 1F.4 adds a LazyMotion island (`domAnimation` loaded async). Production Chromium captured three Motion-attributed chunks that tenant does not download:
+
+| Chunk                       | Role                                            |         Raw |    gzip -9 | Brotli q11 |
+| --------------------------- | ----------------------------------------------- | ----------: | ---------: | ---------: |
+| `2nc761jkoferc.js`          | Marketing experience + theme menu               |      22,702 |      8,670 |      7,727 |
+| `01t426ne8zhgx.js`          | Motion runtime (`motion/react-m`, `LazyMotion`) |      39,519 |     13,611 |     12,298 |
+| `0xel--zsolmq6.js`          | Async `domAnimation` features                   |      37,896 |     13,973 |     12,677 |
+| **Motion-attributed total** |                                                 | **100,117** | **36,254** | **32,702** |
+
+Marketing page JS total (including Next/React runtime shared with tenant): 554,987 raw / 170,489 gzip / 147,944 Brotli. Tenant home: 457,540 raw / 135,309 gzip / 116,157 Brotli. The delta is the Motion island, not a leak onto patient routes.
+
+Staff still loads Tailwind. No Tailwind on tenant or marketing.

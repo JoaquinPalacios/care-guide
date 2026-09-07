@@ -5,17 +5,17 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-07 (Phase 1F.3 visual simplification, document-led patient experience)
+Last updated: 2026-09-07 (Phase 1F.4 marketing Motion choreography and patient card/timeline polish)
 
 ---
 
 ## Product direction vs current implementation
 
-|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                  |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** + **Phase 1F.1 Aftercare Guide branding, tenant presentation settings, and premium marketing/tenant UX** + **Phase 1F.2 marketing polish, recovery timeline, and local login DX** + **Phase 1F.3 visual simplification and document-led patient pages**. Phase 1D was absorbed into 1C. |
-| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                   |
+|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** + **Phase 1F.1 Aftercare Guide branding, tenant presentation settings, and premium marketing/tenant UX** + **Phase 1F.2 marketing polish, recovery timeline, and local login DX** + **Phase 1F.3 visual simplification and document-led patient pages** + **Phase 1F.4 marketing Motion choreography and CSS-only patient card/timeline polish**. Phase 1D was absorbed into 1C. Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. |
+| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 Do not claim QR codes, operator aftercare admin, or analytics exist until they are built. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented. Phase 1E added Playwright + axe browser acceptance; it did not add product features.
 
@@ -236,6 +236,22 @@ Patient pages are document-led: homepage guide list is a row with an arrow, not 
 
 ---
 
+## Phase 1F.4 (implemented)
+
+Marketing-only Motion choreography plus CSS-only patient polish. No Phase 2. Aftercare still does not depend on `ProcedureSession`.
+
+| Surface            | Behaviour                                                                                                                    |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Marketing reveals  | `LazyMotion` + `motion/react-m`, `whileInView` once, stagger 85ms, tween `easeOut`, `transform` + `opacity`                  |
+| Chapter wash       | IntersectionObserver sets `data-chapter`; CSS transitions `--mk-chapter-bg`. One SVG wave between hero and the soft chapter. |
+| Fail-open          | Blocking bootstrap `data-mk-motion`; pending reveals hidden only when `enhance`; 1.6s fail-open; `<noscript>` override       |
+| Patient guide card | CSS-only hover (−2px) / arrow (+4px) / focus ring. Server Component. No Motion, tilt, or 3D.                                 |
+| Recovery timeline  | One `--cg-recovery-surface` chapter; stages remain cardless                                                                  |
+
+Motion is **not** loaded on tenant routes. See [PERFORMANCE.md](../architecture/PERFORMANCE.md) for the 1F.4 bundle table.
+
+---
+
 ## Do not do (until a later explicit task)
 
 - Phase 2 operator admin, QR, analytics, SMS/email, billing, custom domains, extra specialties, clinical CMS, rich-text editor, patient-specific guides, chairside integration
@@ -327,11 +343,11 @@ This temporarily means we do not have the same TypeScript-aware ESLint rule cove
 
 ## Documentation files
 
-| File                               | Role                                                    |
-| ---------------------------------- | ------------------------------------------------------- |
-| `docs/README.md`                   | Docs index                                              |
-| `docs/product/PRD.md`              | PRD v1.0                                                |
-| `docs/product/WORKING-MEMORY.md`   | This file                                               |
-| `docs/adr/*.md`                    | Architecture decisions 0001–0014                        |
-| `docs/architecture/PERFORMANCE.md` | Patient CSS/JS measurement contract and Phase 1E budget |
-| `README.md`                        | Repo entry; direction vs implementation                 |
+| File                               | Role                                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------- |
+| `docs/README.md`                   | Docs index                                                                      |
+| `docs/product/PRD.md`              | PRD v1.0                                                                        |
+| `docs/product/WORKING-MEMORY.md`   | This file                                                                       |
+| `docs/adr/*.md`                    | Architecture decisions 0001–0014                                                |
+| `docs/architecture/PERFORMANCE.md` | Patient CSS/JS measurement contract, Phase 1E budget, and 1F.4 Motion isolation |
+| `README.md`                        | Repo entry; direction vs implementation                                         |

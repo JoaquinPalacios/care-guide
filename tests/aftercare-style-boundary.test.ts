@@ -78,9 +78,10 @@ describe("aftercare style boundary", () => {
     expect(styles).toContain("var(--cg-warning)");
     expect(styles).toContain("var(--cg-emergency)");
     expect(styles).toContain("var(--cg-radius)");
+    expect(styles).toContain("var(--cg-recovery-surface)");
     expect(styles).not.toContain("tailwind");
     expect(styles).not.toContain("--tw-");
-    expect(styles).not.toMatch(/\.guideLink\s*\{[^}]*box-shadow/);
+    expect(styles).toMatch(/\.guideLink\s*\{[^}]*box-shadow/);
     expect(styles).not.toMatch(/\.timelineItem\s*\{[^}]*box-shadow/);
     expect(styles).not.toMatch(/\.timelineItem\s*\{[^}]*border-radius/);
   });

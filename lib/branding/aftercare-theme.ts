@@ -28,6 +28,7 @@ export const AFTERCARE_THEME_TOKEN_KEYS = [
   "--cg-emergency-surface",
   "--cg-focus",
   "--cg-radius",
+  "--cg-recovery-surface",
 ] as const;
 
 export type AftercareThemeTokenName =
@@ -66,10 +67,12 @@ const INK = "#0f172a";
 const TEXT = "#111318";
 const MUTED_INK = "#4b5563";
 const PAPER = "#f7f7f5";
+const CLINICAL_MIST = "#f6faf9";
 const DARK_PAPER = "#f4f1ea";
 const DARK_MUTED = "#9aa3ad";
 const DARK_SURFACE = "#111318";
 const DARK_SURFACE_SUBTLE = "#171a1f";
+const DARK_RECOVERY = "#151a1a";
 const DARK_BORDER = "#2a3038";
 
 type Rgb = readonly [number, number, number];
@@ -95,6 +98,7 @@ const DEFAULT_LIGHT: AftercareThemeTokens = {
   "--cg-emergency-surface": "#fef2f2",
   "--cg-focus": "#155e75",
   "--cg-radius": RADIUS_PRESET_VALUES.MEDIUM,
+  "--cg-recovery-surface": mixHex(CLINICAL_MIST, "#155e75", 0.035),
 };
 
 const DEFAULT_DARK: AftercareThemeTokens = {
@@ -112,6 +116,7 @@ const DEFAULT_DARK: AftercareThemeTokens = {
   "--cg-emergency-surface": "#1c1416",
   "--cg-focus": "#155e75",
   "--cg-radius": RADIUS_PRESET_VALUES.MEDIUM,
+  "--cg-recovery-surface": mixHex(DARK_RECOVERY, "#155e75", 0.07),
 };
 
 export const DEFAULT_AFTERCARE_THEME: AftercareTheme = {
@@ -152,6 +157,16 @@ export function resolveAftercareTheme(
   dark["--cg-radius"] = radius;
   light["--cg-focus"] = focusColor(light["--cg-brand"], light["--cg-surface"]);
   dark["--cg-focus"] = focusColor(dark["--cg-brand"], dark["--cg-surface"]);
+  light["--cg-recovery-surface"] = mixHex(
+    CLINICAL_MIST,
+    light["--cg-brand"],
+    0.035
+  );
+  dark["--cg-recovery-surface"] = mixHex(
+    DARK_RECOVERY,
+    dark["--cg-brand"],
+    0.07
+  );
 
   return { light, dark };
 }

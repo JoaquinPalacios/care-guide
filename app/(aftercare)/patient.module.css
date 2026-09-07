@@ -127,22 +127,45 @@
   grid-template-columns: minmax(0, 1fr) auto;
   column-gap: 1rem;
   align-items: center;
-  min-height: 2.75rem;
-  padding: 0.85rem 0;
-  border-bottom: 1px solid var(--cg-border);
+  min-height: 44px;
+  margin: 0 0 0.85rem;
+  padding: 1.15rem 1.1rem;
+  border: 1px solid var(--cg-border);
+  border-radius: var(--cg-radius);
+  background: light-dark(#ffffff, var(--cg-surface-subtle));
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--cg-text) 6%, transparent);
   color: var(--cg-text);
   text-decoration: none;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
 }
 
 .guideLink::after {
   content: "→";
   color: var(--cg-brand);
   font-weight: 650;
+  transition: transform 180ms ease;
 }
 
-.guideLink:hover,
+.guideLink:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--cg-brand) 28%, var(--cg-border));
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--cg-text) 10%, transparent);
+}
+
+.guideLink:hover::after {
+  transform: translateX(4px);
+}
+
 .guideLink:focus-visible {
-  color: var(--cg-brand);
+  outline: 2px solid var(--cg-focus);
+  outline-offset: 3px;
+}
+
+.guideLink:active {
+  transform: translateY(0);
 }
 
 .guideTitle {
@@ -155,11 +178,18 @@
   margin: 0;
 }
 
-.section,
-.timeline {
+.section {
   margin: 0 0 1.35rem;
   padding: 0 0 1.35rem;
   border-bottom: 1px solid var(--cg-border);
+}
+
+.timeline {
+  margin: 0 0 1.6rem;
+  padding: 1.4rem 1.25rem 1.55rem;
+  background: var(--cg-recovery-surface);
+  border: 1px solid color-mix(in srgb, var(--cg-border) 75%, transparent);
+  border-radius: var(--cg-radius);
 }
 
 .sectionTitle {
@@ -264,7 +294,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.75rem;
+  min-height: 44px;
   padding: 0.5rem 1.1rem;
   border-radius: calc(var(--cg-radius) * 0.85);
   font-weight: 650;
@@ -308,6 +338,18 @@
 @media (max-width: 47.99rem) {
   .themeSpacer {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guideLink,
+  .guideLink::after {
+    transition: none;
+  }
+
+  .guideLink:hover,
+  .guideLink:hover::after {
+    transform: none;
   }
 }
 

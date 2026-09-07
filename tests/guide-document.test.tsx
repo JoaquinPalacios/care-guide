@@ -53,6 +53,7 @@ describe("GuideDocument timeline rendering", () => {
     expect(html).toContain("<ol");
     expect(html.match(/<ol\b/g)).toHaveLength(1);
     expect(html.match(/<li\b/g)).toHaveLength(2);
+    expect(html).not.toContain("<article");
     expect(html).not.toContain("patient name");
     expect(html).not.toContain("PIN");
     expect(html).not.toContain("plan ID");

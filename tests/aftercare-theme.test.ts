@@ -82,6 +82,8 @@ describe("resolveAftercareTheme", () => {
     expect(theme.dark["--cg-surface"]).toBe("#111318");
     expect(theme.dark["--cg-surface-subtle"]).toBe("#171a1f");
     expect(theme.dark["--cg-text"]).toBe("#f4f1ea");
+    expect(theme.light["--cg-recovery-surface"]).not.toBe("#ffffff");
+    expect(theme.dark["--cg-recovery-surface"]).not.toBe("#111318");
   });
 
   it("maps radius presets onto a single semantic radius token", () => {
