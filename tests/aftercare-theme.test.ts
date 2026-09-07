@@ -58,7 +58,7 @@ describe("resolveAftercareTheme", () => {
     );
   });
 
-  it("maps a light neutral onto the surface scale without changing brand", () => {
+  it("keeps the light page canvas white and uses clinic paper only as a subtle tint", () => {
     const theme = resolveAftercareTheme({
       primaryColor: "#0f766e",
       accentColor: null,
@@ -66,12 +66,22 @@ describe("resolveAftercareTheme", () => {
       radiusPreset: null,
     });
 
-    expect(theme.light["--cg-surface"]).toBe("#f4efe6");
-    expect(theme.light["--cg-surface-subtle"]).not.toBe("#f4efe6");
-    expect(theme.light["--cg-text"]).toBe("#0f172a");
+    expect(theme.light["--cg-surface"]).toBe("#ffffff");
+    expect(theme.light["--cg-surface-subtle"]).not.toBe("#ffffff");
+    expect(theme.light["--cg-text"]).toBe("#111318");
     expect(theme.light["--cg-brand"]).toBe("#0f766e");
-    expect(theme.dark["--cg-surface"]).not.toBe("#f4efe6");
-    expect(theme.dark["--cg-text"]).toBe("#f8fafc");
+    expect(theme.dark["--cg-surface"]).toBe("#111318");
+    expect(theme.dark["--cg-text"]).toBe("#f4f1ea");
+  });
+
+  it("uses a white light canvas and a calm dark page by default", () => {
+    const theme = resolveAftercareTheme(null);
+
+    expect(theme.light["--cg-surface"]).toBe("#ffffff");
+    expect(theme.light["--cg-surface-subtle"]).toBe("#f7f7f5");
+    expect(theme.dark["--cg-surface"]).toBe("#111318");
+    expect(theme.dark["--cg-surface-subtle"]).toBe("#171a1f");
+    expect(theme.dark["--cg-text"]).toBe("#f4f1ea");
   });
 
   it("maps radius presets onto a single semantic radius token", () => {
@@ -111,7 +121,8 @@ describe("resolveAftercareTheme", () => {
 
     expect(theme.light["--cg-brand"]).toBe("#00aa88");
     expect(theme.light["--cg-accent"]).toBe("#ffcc00");
-    expect(theme.light["--cg-surface"]).toBe("#eeeeee");
+    expect(theme.light["--cg-surface"]).toBe("#ffffff");
+    expect(theme.light["--cg-surface-subtle"]).not.toBe("#ffffff");
   });
 
   it("chooses a dark on-brand foreground for a light brand colour", () => {
@@ -137,7 +148,7 @@ describe("resolveAftercareTheme", () => {
 
     expect(theme.light["--cg-brand"]).toBe("#0f766e");
     expect(theme.light["--cg-accent"]).toBe("#f59e0b");
-    expect(theme.light["--cg-surface"]).toBe("#f8fafc");
+    expect(theme.light["--cg-surface"]).toBe("#ffffff");
     expect(theme.light["--cg-radius"]).toBe(RADIUS_PRESET_VALUES.MEDIUM);
   });
 
@@ -240,9 +251,9 @@ describe("serializeAftercareThemeCss", () => {
     expect(css).toContain(`.${AFTERCARE_THEME_SCOPE}{`);
     expect(css).toContain("--cg-brand:#0f766e");
     expect(css).toContain("--cg-accent:#f59e0b");
-    expect(css).toContain("--cg-surface:light-dark(#f4efe6,");
+    expect(css).toContain("--cg-surface:light-dark(#ffffff,");
     expect(css).toContain(`--cg-radius:${RADIUS_PRESET_VALUES.SOFT}`);
-    expect(css).toContain("--cg-text:light-dark(#0f172a,#f8fafc)");
+    expect(css).toContain("--cg-text:light-dark(#111318,#f4f1ea)");
     expect(css).not.toContain("@media (prefers-color-scheme: dark)");
     expect(css).not.toContain("customCss");
     expect(css).not.toContain("<");

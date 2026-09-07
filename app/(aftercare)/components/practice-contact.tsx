@@ -18,10 +18,7 @@ export function PracticeContact({ chrome }: { chrome: PracticeChrome }) {
       <h2 id="practice-contact-heading" className={styles.contactTitle}>
         Contact {chrome.displayName}
       </h2>
-      <p className={styles.contactCopy}>
-        Use these details if you have a question about your recovery or need to
-        arrange a follow-up.
-      </p>
+      <p className={styles.contactCopy}>Questions about your recovery?</p>
       {chrome.phoneHref || chrome.contactHref ? (
         <div className={styles.actions}>
           {chrome.phoneHref ? (

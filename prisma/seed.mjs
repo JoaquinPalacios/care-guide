@@ -258,7 +258,7 @@ const DEMO_CLINIC_PROFILE = {
   logoUrl: "/demo/riverside-mark.svg",
   primaryColor: "#0f766e",
   accentColor: "#f59e0b",
-  neutralColor: "#f6f3ee",
+  neutralColor: "#ffffff",
   radiusPreset: "SOFT",
   instructionTerminology: "POST_TREATMENT",
   themeMode: "SYSTEM",

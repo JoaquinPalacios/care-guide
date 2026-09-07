@@ -2,19 +2,21 @@
 
 :root {
   color-scheme: light dark;
-  --mk-bg: light-dark(#f5f3ee, #0a0d14);
-  --mk-surface: light-dark(#fffdf9, #121722);
+  --mk-hero: light-dark(#0a0d14, #07090e);
+  --mk-soft: light-dark(#f8f6f1, #12151c);
+  --mk-showcase: light-dark(#eef0f7, #1c2433);
+  --mk-closing: light-dark(#0a0d14, #07090e);
   --mk-ink: light-dark(#0a0d14, #f5f3ee);
   --mk-muted: light-dark(#5c6573, #98a2b3);
+  --mk-on-dark: #f5f3ee;
+  --mk-muted-on-dark: #98a2b3;
   --mk-brand: light-dark(#3b4bd1, #a6b8ff);
   --mk-brand-strong: light-dark(#3b4bd1, #7c8cff);
   --mk-on-brand: light-dark(#ffffff, #0a0d14);
-  --mk-accent: #c07a3a;
-  --mk-line: light-dark(#e4dfd6, #1d2430);
+  --mk-line: light-dark(#e4dfd6, #2a3140);
+  --mk-line-on-dark: #2a3140;
   --mk-focus: light-dark(#3b4bd1, #a6b8ff);
-  --mk-radius: 1.1rem;
-  --mk-contrast: light-dark(#efe8dc, #151b27);
-  --mk-brand-tint: color-mix(in srgb, var(--mk-brand) 10%, var(--mk-bg));
+  --mk-surface: light-dark(#fffdf9, #151a24);
 }
 
 html[data-theme-mode="light"] {
@@ -44,7 +46,7 @@ html {
 body {
   margin: 0;
   min-height: 100%;
-  background: var(--mk-bg);
+  background: var(--mk-hero);
   color: var(--mk-ink);
   font-family:
     ui-sans-serif,
@@ -99,10 +101,9 @@ body {
   padding: 0.3rem;
   min-width: 9.25rem;
   border: 1px solid var(--mk-line);
-  border-radius: 0.85rem;
+  border-radius: 0.7rem;
   background: var(--mk-surface);
   color: var(--mk-ink);
-  box-shadow: 0 10px 28px color-mix(in srgb, #0a0d14 16%, transparent);
 }
 
 .mtcOption {
@@ -112,7 +113,7 @@ body {
   margin: 0;
   padding: 0 0.7rem;
   border: 0;
-  border-radius: 0.6rem;
+  border-radius: 0.5rem;
   background: transparent;
   color: var(--mk-muted);
   font: inherit;
@@ -123,13 +124,9 @@ body {
 }
 
 .mtcOption:hover,
-.mtcOption:focus-visible {
-  background: var(--mk-bg);
-  color: var(--mk-ink);
-}
-
+.mtcOption:focus-visible,
 .mtcOption[aria-checked="true"] {
-  background: var(--mk-bg);
+  background: color-mix(in srgb, var(--mk-ink) 8%, transparent);
   color: var(--mk-ink);
 }
 

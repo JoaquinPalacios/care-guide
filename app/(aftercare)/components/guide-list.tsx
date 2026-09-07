@@ -22,11 +22,13 @@ export function GuideList({
     <nav aria-label={instructionsLabel}>
       <ul className={styles.guideList}>
         {guides.map((guide) => (
-          <li key={guide.id} className={styles.guideItem}>
+          <li key={guide.id}>
             <a className={styles.guideLink} href={`/${guide.publicSlug}`}>
-              <span className={styles.guideCardTitle}>{guide.title}</span>
-              <span className={styles.guideCardHint}>
-                View {instructionsLabel.toLowerCase()}
+              <span>
+                <span className={styles.guideTitle}>{guide.title}</span>
+                <span className={styles.guideHint}>
+                  View {instructionsLabel.toLowerCase()}
+                </span>
               </span>
             </a>
           </li>

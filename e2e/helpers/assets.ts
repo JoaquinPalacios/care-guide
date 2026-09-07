@@ -114,8 +114,8 @@ export function expectCssWithinPhase1Budget(css: AssetMeasurement[]): void {
   const gzip = sumMetric(css, "gzip");
   const brotli = sumMetric(css, "brotli");
 
-  // Phase 1F.2: raw ceiling raised after measured timeline CSS. gzip/brotli unchanged.
-  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(10_240);
+  // Phase 1F.3: prefer at or below the 1F.2 measured 9,023 raw tenant CSS.
+  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(9_023);
   expect(gzip, `CSS gzip ${gzip}`).toBeLessThanOrEqual(3072);
   expect(brotli, `CSS brotli ${brotli}`).toBeLessThanOrEqual(2560);
 }

@@ -31,10 +31,10 @@ test.describe("tenant homepage and guide", () => {
     await expect(
       page.getByRole("link", { name: "Riverside Dental Demo", exact: true })
     ).toBeVisible();
-    await expectOneH1(
-      page,
-      "Riverside Dental Demo — Post-treatment instructions"
-    );
+    await expectOneH1(page, "Riverside Dental Demo");
+    await expect(
+      page.getByText("Post-treatment instructions").first()
+    ).toBeVisible();
     await expect(
       page.getByRole("link", { name: "Tooth Extraction" })
     ).toBeVisible();
@@ -95,6 +95,9 @@ test.describe("tenant homepage and guide", () => {
     await expect(page.getByText("Today / first 24 hours")).toBeVisible();
     await expect(page.getByText("Days 2–3")).toBeVisible();
     await expect(page.getByText("Days 4–7")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Recovery guide" })
+    ).toBeVisible();
     await expect(page.locator("text=Important.")).toHaveCount(1);
     await expect(page.getByText("If you need urgent help")).toBeVisible();
     await expect(
@@ -225,6 +228,14 @@ test.describe("tenant light and dark screenshots", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.emulateMedia({ colorScheme: "light" });
     await page.goto(HOME, { waitUntil: "load" });
+    const homeBackground = await page.evaluate(() => {
+      const pageSurface = document.querySelector("body");
+      return pageSurface ? getComputedStyle(pageSurface).backgroundColor : "";
+    });
+    const rgb = homeBackground.match(/\d+/g)?.map(Number) ?? [];
+    expect(rgb[0]).toBeGreaterThanOrEqual(247);
+    expect(rgb[1]).toBeGreaterThanOrEqual(247);
+    expect(rgb[2]).toBeGreaterThanOrEqual(245);
     await page.screenshot({
       path: "test-results/artifacts/tenant-home-desktop-light.png",
       fullPage: true,
@@ -244,6 +255,31 @@ test.describe("tenant light and dark screenshots", () => {
     await page.goto(EXTRACTION, { waitUntil: "load" });
     await page.screenshot({
       path: "test-results/artifacts/extraction-desktop-dark.png",
+      fullPage: true,
+    });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.goto(HOME, { waitUntil: "load" });
+    await page.screenshot({
+      path: "test-results/artifacts/tenant-home-mobile-light.png",
+      fullPage: true,
+    });
+    await page.goto(EXTRACTION, { waitUntil: "load" });
+    await page.screenshot({
+      path: "test-results/artifacts/extraction-mobile-light.png",
+      fullPage: true,
+    });
+
+    await page.emulateMedia({ colorScheme: "dark" });
+    await page.goto(HOME, { waitUntil: "load" });
+    await page.screenshot({
+      path: "test-results/artifacts/tenant-home-mobile-dark.png",
+      fullPage: true,
+    });
+    await page.goto(EXTRACTION, { waitUntil: "load" });
+    await page.screenshot({
+      path: "test-results/artifacts/extraction-mobile-dark.png",
       fullPage: true,
     });
   });

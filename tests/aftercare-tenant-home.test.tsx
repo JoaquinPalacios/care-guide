@@ -120,8 +120,9 @@ describe("tenant homepage", () => {
     const html = await renderHome();
 
     expect(html).toContain("Riverside Dental Demo");
-    expect(html).toContain(
-      "Riverside Dental Demo — Post-treatment instructions"
+    expect(html).toContain(">Post-treatment instructions<");
+    expect(html).not.toContain(
+      "Riverside Dental Demo — Post-treatment instructions</h1>"
     );
     expect(html).toContain("Tooth Extraction");
     expect(html).toContain('href="/extraction"');
@@ -245,6 +246,8 @@ describe("tenant homepage", () => {
     expect(headingTags(html)[0]).toBe("h1");
     expect(html).toContain('href="tel:0255500100"');
     expect(html).toContain("Call Riverside Dental Demo");
+    expect(html).toContain("Questions about your recovery?");
+    expect(html).toContain('aria-label="Post-treatment instructions"');
   });
 
   it("returns tenant-aware noindex metadata with a public canonical URL", async () => {

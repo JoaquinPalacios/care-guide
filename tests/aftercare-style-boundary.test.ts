@@ -80,6 +80,31 @@ describe("aftercare style boundary", () => {
     expect(styles).toContain("var(--cg-radius)");
     expect(styles).not.toContain("tailwind");
     expect(styles).not.toContain("--tw-");
+    expect(styles).not.toMatch(/\.guideLink\s*\{[^}]*box-shadow/);
+    expect(styles).not.toMatch(/\.timelineItem\s*\{[^}]*box-shadow/);
+    expect(styles).not.toMatch(/\.timelineItem\s*\{[^}]*border-radius/);
+  });
+
+  it("reduces marketing to four chapter surfaces", () => {
+    const page = read("app/(marketing)/%5Fmarketing/page.tsx");
+    const styles = read("app/(marketing)/marketing.module.css");
+
+    expect(page).toContain("marketingBase");
+    expect(page).toContain("marketingSoft");
+    expect(page).toContain("marketingShowcase");
+    expect(page).toContain("marketingClosing");
+    expect(page).not.toContain("surfaceBase");
+    expect(page).not.toContain("surfaceSubtle");
+    expect(page).not.toContain("surfaceContrast");
+    expect(page).not.toContain("surfaceBrand");
+    expect(styles).toContain(".marketingBase");
+    expect(styles).toContain(".marketingSoft");
+    expect(styles).toContain(".marketingShowcase");
+    expect(styles).toContain(".marketingClosing");
+    expect(styles).not.toContain(".surfaceBase");
+    expect(styles).not.toContain(".surfaceSubtle");
+    expect(styles).not.toContain(".surfaceContrast");
+    expect(styles).not.toContain(".surfaceBrand");
   });
 
   it("keeps optional Client Components isolated to theme controls", () => {

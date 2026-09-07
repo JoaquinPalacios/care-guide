@@ -5,17 +5,17 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-07 (Phase 1F.2 premium polish, recovery timeline, local login DX)
+Last updated: 2026-09-07 (Phase 1F.3 visual simplification, document-led patient experience)
 
 ---
 
 ## Product direction vs current implementation
 
-|                                |                                                                                                                                                                                                                                                                                                                                                                     |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                            |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** + **Phase 1F.1 Aftercare Guide branding, tenant presentation settings, and premium marketing/tenant UX** + **Phase 1F.2 marketing polish, recovery timeline, and local login DX**. Phase 1D was absorbed into 1C. |
-| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                             |
+|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                  |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** + **Phase 1F.1 Aftercare Guide branding, tenant presentation settings, and premium marketing/tenant UX** + **Phase 1F.2 marketing polish, recovery timeline, and local login DX** + **Phase 1F.3 visual simplification and document-led patient pages**. Phase 1D was absorbed into 1C. |
+| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                   |
 
 Do not claim QR codes, operator aftercare admin, or analytics exist until they are built. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented. Phase 1E added Playwright + axe browser acceptance; it did not add product features.
 
@@ -34,6 +34,7 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 | 1F    | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                 |
 | 1F.1  | COMPLETE — PREMIUM PRODUCT EXPERIENCE READY FOR REVIEW    |
 | 1F.2  | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                 |
+| 1F.3  | COMPLETE — VISUAL SIMPLIFICATION READY FOR JOAQUÍN REVIEW |
 | 2+    | Not started                                               |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
@@ -209,6 +210,29 @@ Demo extraction stages: First few hours → Today / first 24 hours → Days 2–
 Patient CTAs should later become structured configuration (`call`, `contact page`, `booking`, `email`, `emergency/after-hours`) with enable/disable, label, and order. Not implemented now.
 
 Local staff URL: `http://app.localhost:3000/login`. Credentials come from `LOCAL_<ROLE>_EMAIL` / `LOCAL_<ROLE>_PASSWORD`.
+
+---
+
+## Phase 1F.3 (implemented)
+
+Visual simplification only. No Phase 2 operator admin. No clinical-content architecture change.
+
+Marketing is four visual chapters, not a band per section:
+
+| Chapter | Surface token       | Contents                                    |
+| ------- | ------------------- | ------------------------------------------- |
+| 1       | `marketingBase`     | Sticky header + hero + product preview      |
+| 2       | `marketingSoft`     | Problem, product, how it works, why clinics |
+| 3       | `marketingShowcase` | Branding comparison + clinic preview        |
+| 4       | `marketingClosing`  | Early-access CTA + footer                   |
+
+Internal chapter 2/3 rhythm uses spacing, type scale, alignment, and thin rules (`chapterRule`). Removed `surfaceBase` / `surfaceSubtle` / `surfaceContrast` / `surfaceBrand`.
+
+Patient light canvas is white (`#ffffff`). Clinic `neutralColor` may tint `--cg-surface-subtle` only; it no longer paints the page. Dark patient canvas is `#111318` with `#171a1f` for warning/urgent surfaces. Clinic teal stays on the mark, primary CTA, timeline rule/markers, and (in light mode) small labels.
+
+Patient pages are document-led: homepage guide list is a row with an arrow, not a card; standard guide sections are heading + body; consecutive `RECOVERY_TIMELINE` stages share one “Recovery guide” journey. Visual grammar borrowed from parked staff/chairside UX (white canvas, uppercase labels, thin rules, timeline markers, restrained accent) without PIN, patient name, plan ID, medications, or session data.
+
+**Current staff UI is parked legacy product UX.** Phase 2 will replace the visible staff homepage/navigation with the Aftercare Guide operator workspace. Chairside functionality was not changed in 1F.3.
 
 ---
 

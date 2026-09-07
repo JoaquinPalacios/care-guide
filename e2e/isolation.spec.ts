@@ -26,7 +26,8 @@ test.describe("tenant isolation and unpublished content", () => {
     ).toHaveCount(0);
     await expect(
       page.getByRole("heading", {
-        name: "Riverside Dental Demo — Post-treatment instructions",
+        name: "Riverside Dental Demo",
+        exact: true,
       })
     ).toHaveCount(0);
     await expect(

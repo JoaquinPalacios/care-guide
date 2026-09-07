@@ -39,7 +39,7 @@ test.describe("patient accessibility", () => {
       await expectNoSeriousAxeViolations(page);
       await expect(page.getByText("First few hours")).toBeVisible();
       await expect(
-        page.getByRole("heading", { name: "Recovery timeline" })
+        page.getByRole("heading", { name: "Recovery guide" })
       ).toBeVisible();
     });
   }

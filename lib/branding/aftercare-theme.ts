@@ -63,13 +63,14 @@ const LIGHT_SURFACE_MIN_LUMINANCE = 0.72;
 
 const WHITE = "#ffffff";
 const INK = "#0f172a";
-const MUTED_INK = "#475569";
-const PAPER = "#f8fafc";
-const DARK_PAPER = "#f8fafc";
-const DARK_MUTED = "#94a3b8";
-const DARK_SURFACE = "#0c1116";
-const DARK_SURFACE_SUBTLE = "#141b22";
-const DARK_BORDER = "#243040";
+const TEXT = "#111318";
+const MUTED_INK = "#4b5563";
+const PAPER = "#f7f7f5";
+const DARK_PAPER = "#f4f1ea";
+const DARK_MUTED = "#9aa3ad";
+const DARK_SURFACE = "#111318";
+const DARK_SURFACE_SUBTLE = "#171a1f";
+const DARK_BORDER = "#2a3038";
 
 type Rgb = readonly [number, number, number];
 
@@ -85,9 +86,9 @@ const DEFAULT_LIGHT: AftercareThemeTokens = {
   "--cg-accent": "#b45309",
   "--cg-surface": WHITE,
   "--cg-surface-subtle": PAPER,
-  "--cg-text": INK,
+  "--cg-text": TEXT,
   "--cg-text-muted": MUTED_INK,
-  "--cg-border": "#e2e8f0",
+  "--cg-border": "#ecece8",
   "--cg-warning": "#b45309",
   "--cg-warning-surface": "#fffbeb",
   "--cg-emergency": "#b91c1c",
@@ -106,9 +107,9 @@ const DEFAULT_DARK: AftercareThemeTokens = {
   "--cg-text-muted": DARK_MUTED,
   "--cg-border": DARK_BORDER,
   "--cg-warning": "#f59e0b",
-  "--cg-warning-surface": "#2a1f0e",
-  "--cg-emergency": "#f87171",
-  "--cg-emergency-surface": "#2a1212",
+  "--cg-warning-surface": "#24180c",
+  "--cg-emergency": "#e07a7a",
+  "--cg-emergency-surface": "#1c1416",
   "--cg-focus": "#155e75",
   "--cg-radius": RADIUS_PRESET_VALUES.MEDIUM,
 };
@@ -224,16 +225,15 @@ function applyNeutralSurface(
   dark: AftercareThemeTokens,
   neutral: string
 ): void {
-  light["--cg-surface"] = neutral;
-  light["--cg-surface-subtle"] = mixHex(neutral, INK, 0.04);
-  light["--cg-border"] = mixHex(neutral, INK, 0.12);
-  light["--cg-text"] = INK;
-  light["--cg-text-muted"] = mixHex(INK, neutral, 0.28);
+  light["--cg-surface"] = WHITE;
+  light["--cg-surface-subtle"] = mixHex(WHITE, neutral, 0.55);
+  light["--cg-border"] = mixHex(WHITE, INK, 0.08);
+  light["--cg-text"] = TEXT;
+  light["--cg-text-muted"] = mixHex(TEXT, WHITE, 0.32);
 
-  const darkSurface = mixHex(DARK_SURFACE, neutral, 0.12);
-  dark["--cg-surface"] = darkSurface;
-  dark["--cg-surface-subtle"] = mixHex(darkSurface, WHITE, 0.06);
-  dark["--cg-border"] = mixHex(darkSurface, WHITE, 0.14);
+  dark["--cg-surface"] = DARK_SURFACE;
+  dark["--cg-surface-subtle"] = mixHex(DARK_SURFACE_SUBTLE, neutral, 0.08);
+  dark["--cg-border"] = DARK_BORDER;
   dark["--cg-text"] = DARK_PAPER;
   dark["--cg-text-muted"] = DARK_MUTED;
 }

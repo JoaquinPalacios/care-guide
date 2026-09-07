@@ -63,9 +63,8 @@ export default async function TenantHomePage({ params }: TenantHomePageProps) {
   return (
     <PatientPage chrome={chrome}>
       <header className={styles.hero}>
-        <h1 className={styles.title}>
-          {chrome.displayName} — {chrome.instructionsLabel}
-        </h1>
+        <h1 className={styles.title}>{chrome.displayName}</h1>
+        <p className={styles.kicker}>{chrome.instructionsLabel}</p>
         <p className={styles.lede}>
           Clear recovery information from {chrome.displayName}. Open a guide if
           you have just had treatment, or return to this page whenever you need

@@ -55,5 +55,13 @@ describe("marketing homepage", () => {
     expect(html).not.toContain("/_sites");
     expect(html.match(/<h1\b/g)).toHaveLength(1);
     expect(html).toContain("<main");
+    expect(html).toContain("marketingBase");
+    expect(html).toContain("marketingSoft");
+    expect(html).toContain("marketingShowcase");
+    expect(html).toContain("marketingClosing");
+    expect(html).not.toContain("surfaceBase");
+    expect(html).not.toContain("surfaceSubtle");
+    expect(html).not.toContain("surfaceContrast");
+    expect(html).not.toContain("surfaceBrand");
   });
 });

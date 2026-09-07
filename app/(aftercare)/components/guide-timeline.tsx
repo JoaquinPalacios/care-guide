@@ -24,7 +24,7 @@ export function GuideTimeline({
       aria-labelledby="recovery-timeline-heading"
     >
       <h2 id="recovery-timeline-heading" className={styles.sectionTitle}>
-        Recovery timeline
+        Recovery guide
       </h2>
       <ol className={styles.timelineList}>
         {sections.map((section) => {

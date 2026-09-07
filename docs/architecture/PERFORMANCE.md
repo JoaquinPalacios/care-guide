@@ -342,3 +342,37 @@ Reason: data-driven recovery timeline (~0.9 KB raw after dedupe) plus a compact 
 Marketing still shares a chunk with `next/link` (`0hq91uq9ps6t6.js`, 11,644 raw / 4,656 gzip / 4,059 Brotli). Do not treat that as theme-only. Comparable isolated size is the patient chunk above.
 
 Marketing CSS (section surfaces + footer): 2,822 + 8,722 = **11,544** raw. Still far below staff Tailwind. No Tailwind on marketing.
+
+## After Phase 1F.3 (visual simplification)
+
+Measured 2026-09-07 against `cursor/aftercare-phase-1e-hardening` after the Phase 1F.3 document-led pass. Production `next build` (Next.js 16.3.3 / Turbopack).
+
+Simplifying the visual system reduced tenant CSS instead of raising the budget. The 1F.2 10,240 raw review ceiling is no longer needed. Playwright enforces **≤ 9,023 raw** (the 1F.2 measured total). Actual 1F.3 tenant CSS is under 8,500.
+
+Tenant CSS files (same on `/` and `/extraction`):
+
+- `2m5gc51ajgv8t.css` — aftercare base, including compact `.ptc` popover (3,025 raw / 991 gzip / 829 Brotli)
+- `1k9ytogdhntg9.css` — `patient.module.css` (5,457 raw / 1,372 gzip / 1,123 Brotli)
+
+| Metric         |  1F.2 |      1F.3 |    Delta |
+| -------------- | ----: | --------: | -------: |
+| CSS raw        | 9,023 | **8,482** | **−541** |
+| CSS gzip -9    | 2,409 | **2,363** |  **−46** |
+| CSS Brotli q11 | 1,997 | **1,952** |  **−45** |
+| Tailwind       |    no |        no |        — |
+
+Light patient `--cg-surface` is `#ffffff`. Dark patient `--cg-surface` is `#111318`. Clinic `neutralColor` no longer paints the page canvas.
+
+### Marketing CSS
+
+Four chapter surfaces (`marketingBase` / `marketingSoft` / `marketingShowcase` / `marketingClosing`) replaced the 1F.2 band matrix.
+
+- `2-5ujxf8om7f6.css` — marketing base, including `.mtc` (2,949 raw / 946 gzip / 798 Brotli)
+- `30txgx-3cr1g_.css` — `marketing.module.css` (8,478 raw / 1,826 gzip / 1,577 Brotli)
+
+| Metric   |   1F.2 |       1F.3 |    Delta |
+| -------- | -----: | ---------: | -------: |
+| CSS raw  | 11,544 | **11,427** | **−117** |
+| Tailwind |     no |         no |        — |
+
+Staff still loads Tailwind. No Tailwind on tenant or marketing.

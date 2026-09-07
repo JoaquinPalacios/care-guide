@@ -5,15 +5,15 @@
   --cg-brand: #1e293b;
   --cg-on-brand: #ffffff;
   --cg-accent: #b45309;
-  --cg-surface: light-dark(#ffffff, #10151c);
-  --cg-surface-subtle: light-dark(#f6f3ee, #0c1116);
-  --cg-text: light-dark(#0f172a, #f8fafc);
-  --cg-text-muted: light-dark(#475569, #94a3b8);
-  --cg-border: light-dark(#e2e8f0, #243040);
+  --cg-surface: light-dark(#ffffff, #111318);
+  --cg-surface-subtle: light-dark(#f7f7f5, #171a1f);
+  --cg-text: light-dark(#111318, #f4f1ea);
+  --cg-text-muted: light-dark(#4b5563, #9aa3ad);
+  --cg-border: light-dark(#ecece8, #2a3038);
   --cg-warning: light-dark(#b45309, #f59e0b);
-  --cg-warning-surface: light-dark(#fffbeb, #2a1f0e);
-  --cg-emergency: light-dark(#b91c1c, #f87171);
-  --cg-emergency-surface: light-dark(#fef2f2, #2a1212);
+  --cg-warning-surface: light-dark(#fffbeb, #24180c);
+  --cg-emergency: light-dark(#b91c1c, #e07a7a);
+  --cg-emergency-surface: light-dark(#fdf6f6, #1c1416);
   --cg-focus: #1e293b;
   --cg-radius: 0.75rem;
 }
@@ -44,7 +44,7 @@ html {
 body {
   margin: 0;
   min-height: 100%;
-  background: var(--cg-surface-subtle);
+  background: var(--cg-surface);
   color: var(--cg-text);
   font-family: ui-sans-serif, system-ui, sans-serif;
   line-height: 1.55;
@@ -54,13 +54,11 @@ body {
 .aftercareTheme {
   position: relative;
   min-height: 100%;
-  background: var(--cg-surface-subtle);
-  color: var(--cg-text);
 }
 
 .patientThemeSlot {
   position: absolute;
-  top: 0.9rem;
+  top: 0.7rem;
   right: max(1.25rem, calc((100% - 56rem) / 2 + 1.5rem));
   z-index: 2;
 }
@@ -97,16 +95,15 @@ body {
 
 .ptcMenu {
   inset: unset;
-  top: 3.2rem;
+  top: 3rem;
   right: max(1.25rem, calc((100% - 56rem) / 2 + 1.5rem));
   margin: 0;
   padding: 0.3rem;
   min-width: 9.25rem;
   border: 1px solid var(--cg-border);
-  border-radius: calc(var(--cg-radius) * 0.9);
+  border-radius: 0.5rem;
   background: var(--cg-surface);
   color: var(--cg-text);
-  box-shadow: 0 10px 24px color-mix(in srgb, #0f172a 14%, transparent);
 }
 
 .ptcOption {
@@ -116,7 +113,7 @@ body {
   margin: 0;
   padding: 0 0.7rem;
   border: 0;
-  border-radius: calc(var(--cg-radius) * 0.65);
+  border-radius: 0.4rem;
   background: transparent;
   color: var(--cg-text-muted);
   font: inherit;
@@ -127,11 +124,7 @@ body {
 }
 
 .ptcOption:hover,
-.ptcOption:focus-visible {
-  background: var(--cg-surface-subtle);
-  color: var(--cg-text);
-}
-
+.ptcOption:focus-visible,
 .ptcOption[aria-checked="true"] {
   background: var(--cg-surface-subtle);
   color: var(--cg-text);
@@ -142,7 +135,7 @@ body {
     position: static;
     display: flex;
     justify-content: flex-end;
-    padding: 0.7rem 1.25rem 0;
+    padding: 0.55rem 1.25rem 0;
   }
 
   .ptcMenu {
