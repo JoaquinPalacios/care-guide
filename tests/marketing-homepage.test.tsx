@@ -58,6 +58,11 @@ describe("marketing homepage", () => {
     expect(html).toContain("deviceStage");
     expect(html).toContain("phoneShell");
     expect(html).toContain("phoneScreen");
+    expect(html).toContain("phoneFrame");
+    expect(html).toContain("/marketing/iphone-frame.webp");
+    expect(html).not.toContain("phoneBezel");
+    expect(html).not.toContain("phoneIsland");
+    expect(html).not.toContain("phoneGlass");
     expect(html).not.toContain("phonePreview");
     expect(html).not.toContain("desktopPreview");
     expect(html).not.toContain("mobilePreview");
@@ -77,7 +82,9 @@ describe("marketing homepage", () => {
     expect(html).toContain('focusable="false"');
     expect(html).toContain("linearGradient");
     expect(html).toContain("feGaussianBlur");
-    expect(html).not.toContain("<img");
+    expect(html).toContain('src="/marketing/iphone-frame.webp"');
+    expect(html).toMatch(/fetch[Pp]riority="low"/);
+    expect(html.match(/<img\b/g)).toHaveLength(1);
     expect(html).not.toContain("patient PIN");
     expect(html).not.toContain("treatment ID");
     expect(html).not.toContain("date of birth");

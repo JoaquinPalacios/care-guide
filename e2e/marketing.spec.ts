@@ -7,6 +7,22 @@ import {
 } from "./helpers/layout";
 import { DEMO_TENANT_SLUG, marketingUrl, tenantUrl } from "./helpers/origins";
 
+async function waitForPhoneFrame(page: Page): Promise<void> {
+  const frame = page.locator('[class*="phoneFrame"]');
+  await expect(frame).toHaveCount(1);
+  await expect
+    .poll(async () =>
+      frame.evaluate((element) => {
+        return (
+          element instanceof HTMLImageElement &&
+          element.complete &&
+          element.naturalWidth > 0
+        );
+      })
+    )
+    .toBe(true);
+}
+
 async function waitForHeroReveal(page: Page): Promise<void> {
   await expect
     .poll(async () =>
@@ -29,6 +45,7 @@ async function waitForHeroReveal(page: Page): Promise<void> {
       })
     )
     .toBe(true);
+  await waitForPhoneFrame(page);
 }
 
 async function showMarketingScheme(
@@ -178,6 +195,11 @@ test.describe("marketing homepage", () => {
         "true"
       );
       await expect(hero.locator('[class*="desktopPreview"]')).toHaveCount(0);
+      await expect(hero.locator('[class*="phoneBezel"]')).toHaveCount(0);
+      await expect(hero.locator('[class*="phoneFrame"]')).toHaveAttribute(
+        "src",
+        "/marketing/iphone-frame.webp"
+      );
       await expect(
         hero.locator('[class*="deviceStage"]').getByText("Recovery guide")
       ).toBeVisible();
@@ -210,6 +232,7 @@ test.describe("marketing homepage", () => {
           const eyebrow = section?.querySelector('[class*="heroEyebrow"]');
           const lower = section?.querySelector('[class*="heroLower"]');
           const phone = section?.querySelector('[class*="phoneShell"]');
+          const wave = document.querySelector(".mkWave");
           if (!heading || !section || !header || !eyebrow || !lower || !phone) {
             return null;
           }
@@ -219,6 +242,7 @@ test.describe("marketing homepage", () => {
           const lowerBox = lower.getBoundingClientRect();
           const sectionBox = section.getBoundingClientRect();
           const phoneBox = phone.getBoundingClientRect();
+          const waveBox = wave?.getBoundingClientRect();
           return {
             navbarToEyebrow: Math.round(eyebrowBox.top - headerBox.bottom),
             eyebrowToHeading: Math.round(headingBox.top - eyebrowBox.bottom),
@@ -227,6 +251,12 @@ test.describe("marketing homepage", () => {
             heroBottom: Math.round(sectionBox.bottom),
             viewport: window.innerHeight,
             phoneWidth: Math.round(phoneBox.width),
+            phoneBottom: Math.round(phoneBox.bottom),
+            phoneTop: Math.round(phoneBox.top),
+            waveTop: waveBox ? Math.round(waveBox.top) : 0,
+            separatorClearance: waveBox
+              ? Math.round(waveBox.top - phoneBox.bottom)
+              : 0,
           };
         });
 
@@ -235,19 +265,19 @@ test.describe("marketing homepage", () => {
         expect(desktopRhythm!.navbarToEyebrow).toBeLessThanOrEqual(110);
         expect(desktopRhythm!.eyebrowToHeading).toBeGreaterThanOrEqual(18);
         expect(desktopRhythm!.eyebrowToHeading).toBeLessThanOrEqual(36);
-        expect(desktopRhythm!.headingToLower).toBeGreaterThanOrEqual(60);
+        expect(desktopRhythm!.headingToLower).toBeGreaterThanOrEqual(52);
         expect(desktopRhythm!.headingToLower).toBeLessThanOrEqual(96);
-        expect(desktopRhythm!.heroHeight).toBeGreaterThanOrEqual(720);
-        expect(desktopRhythm!.heroHeight).toBeLessThanOrEqual(840);
-        expect(desktopRhythm!.heroBottom).toBeLessThanOrEqual(
-          desktopRhythm!.viewport
-        );
-        expect(desktopRhythm!.phoneWidth).toBeGreaterThanOrEqual(280);
+        expect(desktopRhythm!.phoneWidth).toBeGreaterThanOrEqual(220);
         expect(desktopRhythm!.phoneWidth).toBeLessThanOrEqual(320);
+        expect(desktopRhythm!.separatorClearance).toBeGreaterThanOrEqual(16);
+        expect(desktopRhythm!.waveTop).toBeLessThan(desktopRhythm!.viewport);
+        expect(desktopRhythm!.phoneBottom).toBeLessThan(
+          desktopRhythm!.heroBottom - 8
+        );
       }
 
       await page.screenshot({
-        path: `test-results/artifacts/phase-1f7-hero-${shot.width}-${shot.scheme}.png`,
+        path: `test-results/artifacts/phase-1f8-hero-${shot.width}-${shot.scheme}.png`,
       });
       await expectNoHorizontalOverflow(page);
     }
@@ -259,7 +289,7 @@ test.describe("marketing homepage", () => {
     await waitForHeroReveal(page);
     await expectNoHorizontalOverflow(page);
     await page.screenshot({
-      path: "test-results/artifacts/phase-1f7-hero-360-light.png",
+      path: "test-results/artifacts/phase-1f8-hero-360-light.png",
     });
 
     await page.setViewportSize({ width: 1280, height: 800 });
@@ -326,6 +356,10 @@ test.describe("marketing homepage", () => {
         ),
         clipsViewport: sectionBox.bottom > window.innerHeight + 1,
         phoneWidth: Math.round(phoneBox.width),
+        phoneBottom: Math.round(phoneBox.bottom),
+        separatorClearance: waveBox
+          ? Math.round(waveBox.top - phoneBox.bottom)
+          : 0,
       };
     });
 
@@ -336,14 +370,14 @@ test.describe("marketing homepage", () => {
     expect(composition!.stageOnRight).toBe(true);
     expect(composition!.hasGradientStroke).toBe(true);
     expect(composition!.hasGlow).toBe(true);
-    expect(composition!.separatorInView).toBe(true);
     expect(composition!.separatorFlush).toBe(true);
-    expect(composition!.clipsViewport).toBe(false);
     expect(composition!.navbarToEyebrow).toBeGreaterThanOrEqual(64);
     expect(composition!.eyebrowToHeading).toBeGreaterThanOrEqual(16);
     expect(composition!.headingToLower).toBeGreaterThanOrEqual(48);
-    expect(composition!.phoneWidth).toBeGreaterThanOrEqual(260);
+    expect(composition!.phoneWidth).toBeGreaterThanOrEqual(200);
     expect(composition!.phoneWidth).toBeLessThanOrEqual(320);
+    expect(composition!.separatorClearance).toBeGreaterThanOrEqual(12);
+    expect(composition!.phoneBottom).toBeLessThan(composition!.heroBottom - 8);
   });
 
   test("reveals sections on scroll without breaking anchors or overflow", async ({

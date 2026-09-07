@@ -551,3 +551,47 @@ No `marketing-product-preview` client chunk.
 ### Tenant CSS / JS
 
 Unchanged from 1F.6. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.
+
+## After Phase 1F.8 (real iPhone frame and hero atmosphere)
+
+Measured 2026-09-08 against `cursor/aftercare-phase-1e-hardening` after Phase 1F.8. Production `next start` on port 4173. Next.js 16.3.3 / Turbopack. No new dependency. No Motion change. No marketing Client Component added for the device frame or atmosphere.
+
+### Device asset
+
+`public/marketing/iphone-frame.webp` — punched-screen hardware overlay from the Rivers Digital Catión Sanity mockup (`cationBlue.png`, 1450×2936 PNG, 456,339 bytes). Optimized to 800×1620 WebP with alpha.
+
+| Form            |   Bytes |
+| --------------- | ------: |
+| Source PNG      | 456,339 |
+| WebP raw        |  19,492 |
+| WebP gzip -9    |  17,748 |
+| WebP Brotli q11 |  17,672 |
+
+Native `<img width="800" height="1620" fetchPriority="low">`. Not preloaded. Decorative (`alt=""`, ancestor `aria-hidden`). H1 remains the intended LCP text.
+
+### Marketing CSS
+
+Removing the CSS bezel/island/glass system offset the new atmosphere layers. Built CSS is essentially unchanged from 1F.7.
+
+- `3vf215wy71yja.css` — marketing base, including `.mtc` and atmosphere tokens (5,369 raw / 1,529 gzip / 1,354 Brotli)
+- `2gc2lszibarnp.css` — `marketing.module.css` (14,969 raw / 3,192 gzip / 2,752 Brotli)
+
+| Metric         |   1F.7 |       1F.8 |       Delta |
+| -------------- | -----: | ---------: | ----------: |
+| CSS raw        | 20,371 | **20,338** |     **−33** |
+| CSS gzip -9    |  4,668 |  **4,721** |     **+53** |
+| CSS Brotli q11 |  4,071 |  **4,106** |     **+35** |
+| Tailwind       |     no |         no |           — |
+| Phone asset    |      0 | **19,492** | **+19,492** |
+
+Source CSS before this pass: `marketing.css` 5,319 + `marketing.module.css` 14,579 = **19,898**. After: 5,450 + 14,361 = **19,811** (**−87**).
+
+### Marketing JavaScript
+
+Phone preview, wave, atmosphere, and CTA states remain Server Components / CSS. Marketing client JS is unchanged from 1F.7 (theme control + existing LazyMotion island). **Hero-attributed client JS added: 0.** Native `<img>` is used instead of `next/image` so the frame does not introduce a Client Component.
+
+No `marketing-product-preview` client chunk.
+
+### Tenant CSS / JS
+
+Unchanged from 1F.7. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.

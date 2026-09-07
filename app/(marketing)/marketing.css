@@ -18,20 +18,24 @@
   --mk-focus: light-dark(#3b4bd1, #a6b8ff);
   --mk-surface: light-dark(#fffdf9, #151a24);
   --mk-hero-glow: light-dark(
-    color-mix(in srgb, #8ea0ff 14%, transparent),
-    color-mix(in srgb, #5b6ee8 22%, transparent)
+    color-mix(in srgb, #b7c2ff 16%, transparent),
+    color-mix(in srgb, #2c46c4 24%, transparent)
+  );
+  --mk-hero-bloom: light-dark(
+    color-mix(in srgb, #cfd6ff 12%, transparent),
+    color-mix(in srgb, #8ea0ff 16%, transparent)
   );
   --mk-hero-mist: light-dark(
-    color-mix(in srgb, #9ee7ef 13%, transparent),
-    color-mix(in srgb, #3b8ea8 12%, transparent)
+    color-mix(in srgb, #b5ebf1 11%, transparent),
+    color-mix(in srgb, #5ec8e0 11%, transparent)
   );
   --mk-hero-sheen: light-dark(
-    color-mix(in srgb, #c5ccff 8%, transparent),
-    color-mix(in srgb, #7c8cff 11%, transparent)
+    color-mix(in srgb, #e4e8ff 9%, transparent),
+    color-mix(in srgb, #7c8cff 10%, transparent)
   );
   --mk-wave-periwinkle: light-dark(#7c8cff, #a6b8ff);
   --mk-wave-cyan: light-dark(#67c5d6, #7ec8e6);
-  --mk-wave-glow-opacity: light-dark(0.26, 0.42);
+  --mk-wave-glow-opacity: light-dark(0.3, 0.52);
   --mk-interact-duration: 180ms;
   --mk-interact-ease: ease-out;
 }
@@ -220,7 +224,7 @@ html[data-mk-motion="enhance"] .mkReveal[data-mk-pending] {
   display: block;
   flex-shrink: 0;
   overflow: visible;
-  background: var(--mk-hero);
+  background: transparent;
   color: var(--mk-soft);
   line-height: 0;
 }
