@@ -141,14 +141,24 @@ describe("aftercare style boundary", () => {
     expect(styles).not.toMatch(
       /\.marketingBase[^{]*\{[^}]*color:\s*var\(--mk-on-dark\)/
     );
+    expect(styles).toContain("heroTitleBlock");
+    expect(styles).toContain("text-align: center");
     expect(styles).toContain("0.42fr 0.58fr");
     expect(styles).not.toContain("100vh");
     expect(styles).not.toContain("perspective");
     expect(styles).not.toContain("rotateY");
+    expect(styles).not.toContain(".desktopPreview");
+    expect(styles).not.toContain(".mobilePreview");
     expect(wave).toContain('aria-hidden="true"');
     expect(wave).toContain('focusable="false"');
+    expect(wave).toContain("linearGradient");
+    expect(wave).toContain("feGaussianBlur");
     expect(preview).not.toMatch(/['"]use client['"]/);
     expect(preview).toContain('aria-hidden="true"');
+    expect(preview).toContain("phonePreview");
+    expect(preview).not.toContain("desktopPreview");
+    expect(preview).not.toContain("Dental Implant");
+    expect(preview).not.toContain("Root Canal");
     expect(preview).not.toContain("<img");
     expect(preview).not.toContain("<button");
     expect(preview).not.toContain("<a ");

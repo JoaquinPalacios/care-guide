@@ -110,7 +110,7 @@ export default async function MarketingHomePage() {
         >
           <MarketingReveal.Hero>
             <div className={`${styles.inner} ${styles.heroLayout}`}>
-              <div className={styles.heroStatement}>
+              <div className={styles.heroTitleBlock}>
                 <MarketingReveal.Item>
                   <p className={`${styles.eyebrow} ${styles.heroEyebrow}`}>
                     Aftercare platform

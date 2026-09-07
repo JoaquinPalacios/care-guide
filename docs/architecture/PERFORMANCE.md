@@ -468,3 +468,40 @@ No `marketing-product-preview` client chunk.
 ### Tenant CSS / JS
 
 Unchanged from 1F.4. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.
+
+## After Phase 1F.6 (premium mobile hero)
+
+Measured 2026-09-07 against `cursor/aftercare-phase-1e-hardening` after Phase 1F.6. Production `next start` on port 4173. Next.js 16.3.3 / Turbopack. No new dependency. No Motion change. No marketing Client Component added for the phone shell or separator.
+
+### Marketing CSS
+
+Removing the desktop mockup offset the larger phone shell and layered SVG separator. Built CSS is slightly smaller than 1F.5.
+
+- `11pjz_niocr-h.css` — marketing base, including `.mtc`, fail-open, and wave (4,172 raw / 1,326 gzip / 1,154 Brotli)
+- `3z74oeid3l3yh.css` — `marketing.module.css` (12,085 raw / 2,706 gzip / 2,337 Brotli)
+
+| Metric         |   1F.5 |       1F.6 |   Delta |
+| -------------- | -----: | ---------: | ------: |
+| CSS raw        | 16,338 | **16,257** | **−81** |
+| CSS gzip -9    |  3,990 |  **4,032** | **+42** |
+| CSS Brotli q11 |  3,415 |  **3,491** | **+76** |
+| Tailwind       |     no |         no |       — |
+
+Source CSS before this pass: `marketing.css` 4,011 + `marketing.module.css` 11,533 = **15,544**. After: 4,051 + 11,461 = **15,512** (**−32**).
+
+### Marketing JavaScript
+
+Phone preview and wave remain Server Components. Marketing client JS is unchanged from 1F.5 (theme control + existing LazyMotion island). **Hero-attributed client JS added: 0.**
+
+Motion chunks on marketing, unchanged:
+
+| Chunk              | Role                                            |    Raw |
+| ------------------ | ----------------------------------------------- | -----: |
+| `2nc761jkoferc.js` | Marketing experience + theme menu               | 22,702 |
+| `01t426ne8zhgx.js` | Motion runtime (`motion/react-m`, `LazyMotion`) | 39,519 |
+
+No `marketing-product-preview` client chunk.
+
+### Tenant CSS / JS
+
+Unchanged from 1F.5. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.

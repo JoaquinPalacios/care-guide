@@ -18,21 +18,20 @@
   --mk-focus: light-dark(#3b4bd1, #a6b8ff);
   --mk-surface: light-dark(#fffdf9, #151a24);
   --mk-hero-glow: light-dark(
-    color-mix(in srgb, #7c8cff 16%, transparent),
-    color-mix(in srgb, #7c8cff 20%, transparent)
+    color-mix(in srgb, #8ea0ff 14%, transparent),
+    color-mix(in srgb, #5b6ee8 22%, transparent)
   );
   --mk-hero-mist: light-dark(
-    color-mix(in srgb, #67c5d6 8%, transparent),
-    color-mix(in srgb, #3b4bd1 12%, transparent)
+    color-mix(in srgb, #9ee7ef 13%, transparent),
+    color-mix(in srgb, #3b8ea8 12%, transparent)
   );
-  --mk-wave-edge: light-dark(
-    color-mix(in srgb, #5b6ee8 52%, transparent),
-    color-mix(in srgb, #a6b8ff 48%, transparent)
+  --mk-hero-sheen: light-dark(
+    color-mix(in srgb, #c5ccff 8%, transparent),
+    color-mix(in srgb, #7c8cff 11%, transparent)
   );
-  --mk-wave-glow: light-dark(
-    color-mix(in srgb, #8ea0ff 28%, transparent),
-    color-mix(in srgb, #7c8cff 32%, transparent)
-  );
+  --mk-wave-periwinkle: light-dark(#7c8cff, #a6b8ff);
+  --mk-wave-cyan: light-dark(#67c5d6, #7ec8e6);
+  --mk-wave-glow-opacity: light-dark(0.26, 0.42);
 }
 
 html[data-theme-mode="light"] {
@@ -179,6 +178,7 @@ html[data-mk-motion="enhance"] .mkReveal[data-mk-pending] {
 
 .mkWave {
   display: block;
+  overflow: visible;
   background: var(--mk-hero);
   color: var(--mk-soft);
   line-height: 0;
@@ -186,8 +186,9 @@ html[data-mk-motion="enhance"] .mkReveal[data-mk-pending] {
 
 .mkWaveInner {
   display: block;
+  overflow: visible;
   width: 100%;
-  height: 2.35rem;
+  height: 2.65rem;
 }
 
 .mkWaveFill {
@@ -195,13 +196,12 @@ html[data-mk-motion="enhance"] .mkReveal[data-mk-pending] {
 }
 
 .mkWaveGlow {
-  stroke: var(--mk-wave-glow);
-  stroke-width: 7;
+  stroke-width: 6.5;
+  opacity: var(--mk-wave-glow-opacity);
   vector-effect: non-scaling-stroke;
 }
 
 .mkWaveEdge {
-  stroke: var(--mk-wave-edge);
-  stroke-width: 1.35;
+  stroke-width: 1.4;
   vector-effect: non-scaling-stroke;
 }

@@ -104,7 +104,7 @@
 .hero {
   position: relative;
   isolation: isolate;
-  padding: 2.6rem 0 2.4rem;
+  padding: 2.15rem 0 1.55rem;
 }
 
 .hero::before {
@@ -114,11 +114,12 @@
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(58% 80% at 86% 48%, var(--mk-hero-glow), transparent 72%),
-    radial-gradient(42% 55% at 78% 62%, var(--mk-hero-mist), transparent 70%),
+    radial-gradient(48% 64% at 83% 44%, var(--mk-hero-glow), transparent 72%),
+    radial-gradient(32% 46% at 88% 72%, var(--mk-hero-mist), transparent 68%),
+    radial-gradient(26% 34% at 76% 56%, var(--mk-hero-sheen), transparent 70%),
     radial-gradient(
       90% 50% at 18% 0%,
-      light-dark(transparent, color-mix(in srgb, #151a24 55%, transparent)),
+      light-dark(transparent, color-mix(in srgb, #151a24 52%, transparent)),
       transparent 68%
     );
 }
@@ -131,11 +132,13 @@
 .heroLayout {
   display: flex;
   flex-direction: column;
-  gap: 1.7rem;
+  gap: 1.55rem;
 }
 
-.heroStatement {
-  max-width: min(61rem, 100%);
+.heroTitleBlock {
+  max-width: min(62rem, 100%);
+  margin-inline: auto;
+  text-align: center;
 }
 
 .heroEyebrow {
@@ -154,7 +157,7 @@
 .heroLower {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.35rem;
 }
 
 .heroLower > * {
@@ -163,10 +166,17 @@
 
 .heroSupport {
   max-width: 36rem;
+  margin-inline: auto;
+  text-align: center;
 }
 
 .heroBody {
+  margin-inline: auto;
   margin-bottom: 1.15rem;
+}
+
+.heroActions {
+  justify-content: center;
 }
 
 .problemGrid,
@@ -224,211 +234,157 @@
 .deviceStage {
   position: relative;
   isolation: isolate;
-  min-height: 18.5rem;
-  padding: 0.2rem 0 1.15rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 0.35rem 0 0;
   overflow-x: clip;
 }
 
 .deviceStage::before {
   content: "";
   position: absolute;
-  inset: 8% 2% 4% 18%;
+  inset: 18% 10% 8% 10%;
   z-index: 0;
   pointer-events: none;
   background: radial-gradient(
     closest-side,
     var(--mk-hero-glow),
-    transparent 74%
+    transparent 76%
   );
 }
 
-.desktopPreview {
+.phonePreview {
   position: relative;
   z-index: 1;
-  width: 92%;
-  padding: 0.48rem 0.5rem 0.62rem;
-  border: 1px solid var(--mk-line);
-  border-radius: 0.95rem;
-  background: light-dark(#ece9e2, #121722);
-  box-shadow: 0 18px 42px color-mix(in srgb, #0a0d14 14%, transparent);
+  width: min(82vw, 19.25rem);
+  padding: 0.11rem;
+  border-radius: 2.55rem;
+  background: linear-gradient(165deg, #8d929c 0%, #3a3e48 42%, #16181e 100%);
+  box-shadow:
+    0 26px 48px color-mix(in srgb, #0a0d14 18%, transparent),
+    0 8px 18px color-mix(in srgb, #0a0d14 10%, transparent);
 }
 
-.desktopChrome {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  min-height: 1.15rem;
-  margin: 0 0 0.45rem 0.15rem;
+.phoneBezel {
+  position: relative;
+  padding: 0.52rem 0.48rem 0.56rem;
+  border-radius: 2.42rem;
+  background: linear-gradient(165deg, #4a4e58 0%, #1a1d24 46%, #0b0d12 100%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #ffffff 18%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #000000 42%, transparent);
 }
 
-.desktopBar {
-  display: flex;
-  gap: 0.32rem;
-}
-
-.desktopBar i {
-  width: 0.46rem;
-  height: 0.46rem;
+.phoneIsland {
+  position: absolute;
+  z-index: 2;
+  top: 0.88rem;
+  left: 50%;
+  width: 4.35rem;
+  height: 1.02rem;
+  transform: translateX(-50%);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--mk-ink) 22%, var(--mk-line));
-  display: block;
+  background: #07090e;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #ffffff 10%, transparent);
 }
 
-.desktopChromeTitle {
-  margin: 0;
-  color: var(--mk-muted);
-  font-size: 0.68rem;
-  font-weight: 650;
-  letter-spacing: 0.02em;
+.phoneGlass {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.86rem;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #ffffff 16%, transparent);
 }
 
-.clinicScreen {
-  display: grid;
-  gap: 0.2rem;
-  padding: 0.85rem 0.9rem 0.95rem;
-  background: #fff;
+.phoneGlass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, #ffffff 18%, transparent),
+    transparent 16%
+  );
+}
+
+.phoneScreen {
+  min-height: 24.8rem;
+  padding: 1.7rem 0.95rem 1.05rem;
+  background: #ffffff;
   color: #111318;
-  border-radius: 0.55rem;
 }
 
-.clinicBrand {
+.phoneBrand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-weight: 700;
-  font-size: 0.82rem;
+  gap: 0.45rem;
+  color: #4b5563;
+  font-size: 0.72rem;
+  font-weight: 650;
 }
 
-.clinicMark {
-  width: 1.15rem;
-  height: 1.15rem;
+.phoneMark {
+  width: 0.95rem;
+  height: 0.95rem;
   background: #0f766e;
 }
 
-.clinicKicker {
-  margin: 0.45rem 0 0;
+.phoneTitle {
+  margin: 0.55rem 0 0;
+  font-size: 1.18rem;
+  font-weight: 680;
+  letter-spacing: -0.04em;
+}
+
+.phoneKicker {
+  margin: 0.22rem 0 0;
   color: #0f766e;
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.clinicTitle {
-  margin: 0;
-  font-size: 1.12rem;
-  font-weight: 680;
-  letter-spacing: -0.04em;
-}
-
-.clinicGuideList {
-  display: grid;
-  gap: 0.38rem;
-  margin: 0.65rem 0 0;
-}
-
-.clinicGuide {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0;
-  min-height: 2.05rem;
-  padding: 0.38rem 0.6rem;
-  border: 1px solid #ecece8;
-  border-radius: 0.42rem;
-  background: #fff;
-  font-size: 0.8rem;
-  font-weight: 650;
-}
-
-.clinicGuideArrow {
-  color: #0f766e;
-}
-
-.mobilePreview {
-  position: absolute;
-  z-index: 2;
-  right: 0;
-  bottom: 0;
-  width: 9.6rem;
-  padding: 0.42rem 0.38rem 0.46rem;
-  border: 1px solid color-mix(in srgb, #7c8cff 24%, #2a3140);
-  border-radius: 1.25rem;
-  background: #111318;
-  box-shadow:
-    0 16px 34px color-mix(in srgb, #0a0d14 26%, transparent),
-    0 0 0 1px color-mix(in srgb, #7c8cff 12%, transparent);
-}
-
-.phoneScreen {
-  min-height: 15.4rem;
-  padding: 0.62rem 0.58rem 0.7rem;
-  border-radius: 0.85rem;
-  background: #fff;
-  color: #111318;
-}
-
-.phoneClinic {
-  margin: 0;
-  color: #4b5563;
-  font-size: 0.62rem;
-  font-weight: 650;
-}
-
-.phoneTitle {
-  margin: 0.18rem 0 0;
-  font-size: 0.92rem;
-  font-weight: 680;
-  letter-spacing: -0.03em;
-}
-
-.phoneKicker {
-  margin: 0.18rem 0 0;
-  color: #0f766e;
-  font-size: 0.54rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-}
-
 .phoneRecovery {
-  margin: 0.55rem 0 0;
-  font-size: 0.72rem;
+  margin: 0.85rem 0 0;
+  font-size: 0.92rem;
   font-weight: 650;
   letter-spacing: -0.02em;
 }
 
 .phoneTimeline {
   display: grid;
-  gap: 0.48rem;
-  margin: 0.5rem 0 0;
+  gap: 0.7rem;
+  margin: 0.7rem 0 0;
 }
 
 .phoneStage {
   position: relative;
-  padding: 0 0 0.12rem 0.7rem;
+  padding: 0 0 0.08rem 0.85rem;
   border-left: 2px solid #0f766e;
 }
 
 .phoneStage::before {
   content: "";
   position: absolute;
-  left: -0.28rem;
-  top: 0.26rem;
-  width: 0.4rem;
-  height: 0.4rem;
+  left: -0.3rem;
+  top: 0.28rem;
+  width: 0.42rem;
+  height: 0.42rem;
   border-radius: 999px;
   background: #0f766e;
 }
 
 .phoneStage:last-child {
-  border-left-color: color-mix(in srgb, #0f766e 45%, #ecece8);
+  border-left-color: color-mix(in srgb, #0f766e 42%, #ecece8);
 }
 
 .phonePeriod {
   margin: 0;
   color: #0f766e;
-  font-size: 0.52rem;
+  font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -436,7 +392,7 @@
 
 .phoneStageTitle {
   margin: 0.08rem 0 0;
-  font-size: 0.72rem;
+  font-size: 0.86rem;
   font-weight: 650;
   letter-spacing: -0.02em;
 }
@@ -641,38 +597,31 @@
 }
 
 @media (max-width: 47.99rem) {
-  .deviceStage {
-    min-height: 16.8rem;
-  }
-
-  .desktopPreview {
-    width: 88%;
-  }
-
-  .mobilePreview {
-    width: 8.7rem;
+  .phoneScreen {
+    min-height: 23.4rem;
   }
 }
 
 @media (max-width: 24.99rem) {
   .hero {
-    padding: 2rem 0 1.8rem;
+    padding: 1.85rem 0 1.35rem;
   }
 
   .heroTitle {
     font-size: clamp(2.15rem, 11vw, 2.6rem);
   }
 
-  .deviceStage {
-    min-height: 15.6rem;
+  .phonePreview {
+    width: min(78vw, 18.5rem);
   }
 
-  .desktopPreview {
-    width: 84%;
+  .phoneScreen {
+    min-height: 21.8rem;
+    padding: 1.55rem 0.85rem 0.95rem;
   }
 
-  .mobilePreview {
-    width: 8.15rem;
+  .phoneTitle {
+    font-size: 1.05rem;
   }
 }
 
@@ -685,30 +634,40 @@
   }
 
   .hero {
-    padding: 3.35rem 0 2.7rem;
+    padding: 2.45rem 0 1.15rem;
   }
 
   .heroLayout {
-    gap: 2.05rem;
+    gap: 1.45rem;
+  }
+
+  .heroSupport {
+    margin-inline: 0;
+    text-align: left;
+  }
+
+  .heroBody {
+    margin-inline: 0;
+  }
+
+  .heroActions {
+    justify-content: flex-start;
   }
 
   .heroLower {
     display: grid;
     grid-template-columns: 0.42fr 0.58fr;
-    gap: 2rem 1.8rem;
+    gap: 1.25rem 1.3rem;
     align-items: center;
   }
 
-  .deviceStage {
-    min-height: 20.4rem;
+  .phonePreview {
+    width: 15.85rem;
+    transform: rotate(-1.15deg);
   }
 
-  .desktopPreview {
-    width: 90%;
-  }
-
-  .mobilePreview {
-    width: 11rem;
+  .phoneScreen {
+    min-height: 22.8rem;
   }
 
   .steps {
@@ -727,6 +686,24 @@
     grid-template-columns: 1fr auto;
     align-items: start;
     justify-content: space-between;
+  }
+}
+
+@media (min-width: 90rem) {
+  .hero {
+    padding: 2.85rem 0 1.55rem;
+  }
+
+  .heroLayout {
+    gap: 1.7rem;
+  }
+
+  .phonePreview {
+    width: 16.85rem;
+  }
+
+  .phoneScreen {
+    min-height: 25.2rem;
   }
 }
 
