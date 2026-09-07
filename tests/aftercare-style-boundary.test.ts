@@ -145,6 +145,13 @@ describe("aftercare style boundary", () => {
     expect(styles).toContain("text-align: center");
     expect(styles).toContain("0.42fr 0.58fr");
     expect(styles).not.toContain("100vh");
+    expect(styles).toContain("100svh");
+    expect(tokens).toContain("--mk-interact-duration");
+    expect(tokens).toContain("ease-out");
+    expect(styles).toContain("translateY(-1.5px)");
+    expect(styles).toMatch(/\.primary:active\s*\{[^}]*translateY\(0\)/);
+    expect(styles).toMatch(/\.secondary:active\s*\{[^}]*translateY\(0\)/);
+    expect(styles).toContain(":focus-visible");
     expect(styles).not.toContain("perspective");
     expect(styles).not.toContain("rotateY");
     expect(styles).not.toContain(".desktopPreview");
@@ -155,7 +162,13 @@ describe("aftercare style boundary", () => {
     expect(wave).toContain("feGaussianBlur");
     expect(preview).not.toMatch(/['"]use client['"]/);
     expect(preview).toContain('aria-hidden="true"');
-    expect(preview).toContain("phonePreview");
+    expect(preview).toContain("PhoneShell");
+    expect(preview).toContain("PhoneScreen");
+    expect(preview).toContain("ProductPreviewScreen");
+    expect(preview).toContain("phoneShell");
+    expect(preview).not.toContain("phonePreview");
+    expect(preview).not.toContain("<video");
+    expect(preview).not.toContain("ProductDemoVideo");
     expect(preview).not.toContain("desktopPreview");
     expect(preview).not.toContain("Dental Implant");
     expect(preview).not.toContain("Root Canal");

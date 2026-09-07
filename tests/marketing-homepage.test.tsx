@@ -54,8 +54,11 @@ describe("marketing homepage", () => {
     expect(html).toContain("heroBody");
     expect(html).toContain("heroActions");
     expect(html).toContain("heroLower");
+    expect(html).toContain("heroFrame");
     expect(html).toContain("deviceStage");
-    expect(html).toContain("phonePreview");
+    expect(html).toContain("phoneShell");
+    expect(html).toContain("phoneScreen");
+    expect(html).not.toContain("phonePreview");
     expect(html).not.toContain("desktopPreview");
     expect(html).not.toContain("mobilePreview");
     expect(html).not.toContain("Recovery guides");

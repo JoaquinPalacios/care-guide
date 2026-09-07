@@ -108,55 +108,58 @@ export default async function MarketingHomePage() {
           aria-labelledby="marketing-hero"
           data-mk-chapter="hero"
         >
-          <MarketingReveal.Hero>
-            <div className={`${styles.inner} ${styles.heroLayout}`}>
-              <div className={styles.heroTitleBlock}>
-                <MarketingReveal.Item>
-                  <p className={`${styles.eyebrow} ${styles.heroEyebrow}`}>
-                    Aftercare platform
-                  </p>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item>
-                  <h1 id="marketing-hero" className={styles.heroTitle}>
-                    Aftercare that still feels like your clinic.
-                  </h1>
-                </MarketingReveal.Item>
-              </div>
-              <div className={styles.heroLower}>
-                <div className={styles.heroSupport}>
+          <div className={styles.heroFrame}>
+            <MarketingReveal.Hero>
+              <div className={`${styles.inner} ${styles.heroLayout}`}>
+                <div className={styles.heroTitleBlock}>
                   <MarketingReveal.Item>
-                    <p className={`${styles.lede} ${styles.heroBody}`}>
-                      Turn approved post-treatment instructions into branded,
-                      mobile-first pages patients can reopen whenever they need
-                      them. No app. No login. No PDF to hunt down.
+                    <p className={`${styles.eyebrow} ${styles.heroEyebrow}`}>
+                      Aftercare platform
                     </p>
                   </MarketingReveal.Item>
                   <MarketingReveal.Item>
-                    <div className={`${styles.actions} ${styles.heroActions}`}>
-                      <a
-                        className={`${styles.button} ${styles.primary}`}
-                        href={demoHref}
-                      >
-                        View the clinic demo
-                      </a>
-                      <Link
-                        className={`${styles.button} ${styles.secondary}`}
-                        href="#how-it-works"
-                      >
-                        See how it works
-                      </Link>
-                    </div>
+                    <h1 id="marketing-hero" className={styles.heroTitle}>
+                      Aftercare that still feels like your clinic.
+                    </h1>
                   </MarketingReveal.Item>
                 </div>
-                <MarketingReveal.Preview>
-                  <MarketingProductPreview />
-                </MarketingReveal.Preview>
+                <div className={styles.heroLower}>
+                  <div className={styles.heroSupport}>
+                    <MarketingReveal.Item>
+                      <p className={`${styles.lede} ${styles.heroBody}`}>
+                        Turn approved post-treatment instructions into branded,
+                        mobile-first pages patients can reopen whenever they
+                        need them. No app. No login. No PDF to hunt down.
+                      </p>
+                    </MarketingReveal.Item>
+                    <MarketingReveal.Item>
+                      <div
+                        className={`${styles.actions} ${styles.heroActions}`}
+                      >
+                        <a
+                          className={`${styles.button} ${styles.primary}`}
+                          href={demoHref}
+                        >
+                          View the clinic demo
+                        </a>
+                        <Link
+                          className={`${styles.button} ${styles.secondary}`}
+                          href="#how-it-works"
+                        >
+                          See how it works
+                        </Link>
+                      </div>
+                    </MarketingReveal.Item>
+                  </div>
+                  <MarketingReveal.Preview>
+                    <MarketingProductPreview />
+                  </MarketingReveal.Preview>
+                </div>
               </div>
-            </div>
-          </MarketingReveal.Hero>
+            </MarketingReveal.Hero>
+          </div>
+          <MarketingWave />
         </section>
-
-        <MarketingWave />
 
         <div className={styles.marketingSoft} data-mk-chapter="soft">
           <section className={styles.band} aria-labelledby="problem-heading">

@@ -32,6 +32,8 @@
   --mk-wave-periwinkle: light-dark(#7c8cff, #a6b8ff);
   --mk-wave-cyan: light-dark(#67c5d6, #7ec8e6);
   --mk-wave-glow-opacity: light-dark(0.26, 0.42);
+  --mk-interact-duration: 180ms;
+  --mk-interact-ease: ease-out;
 }
 
 html[data-theme-mode="light"] {
@@ -95,6 +97,13 @@ body {
   background: transparent;
   color: var(--mk-muted);
   cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    transform var(--mk-interact-duration) var(--mk-interact-ease),
+    background-color var(--mk-interact-duration) var(--mk-interact-ease),
+    color var(--mk-interact-duration) var(--mk-interact-ease),
+    border-color var(--mk-interact-duration) var(--mk-interact-ease),
+    box-shadow var(--mk-interact-duration) var(--mk-interact-ease);
 }
 
 .mtcBtn svg {
@@ -102,10 +111,28 @@ body {
   height: 1rem;
 }
 
-.mtcBtn:hover,
+.mtcBtn:hover {
+  color: var(--mk-ink);
+  border-color: color-mix(in srgb, var(--mk-ink) 42%, var(--mk-line));
+  background: color-mix(in srgb, var(--mk-ink) 5%, transparent);
+}
+
 .mtcBtn:focus-visible {
   color: var(--mk-ink);
-  border-color: var(--mk-ink);
+  outline: 2.5px solid var(--mk-focus);
+  outline-offset: 3px;
+}
+
+.mtcBtn:active {
+  color: var(--mk-ink);
+  background: color-mix(in srgb, var(--mk-ink) 8%, transparent);
+  transform: translateY(0);
+}
+
+.mtcBtn[aria-expanded="true"] {
+  color: var(--mk-ink);
+  border-color: color-mix(in srgb, var(--mk-brand) 55%, var(--mk-line));
+  background: color-mix(in srgb, var(--mk-brand) 10%, transparent);
 }
 
 .mtcMenu {
@@ -136,6 +163,9 @@ body {
   font-weight: 650;
   text-align: left;
   cursor: pointer;
+  transition:
+    background-color var(--mk-interact-duration) var(--mk-interact-ease),
+    color var(--mk-interact-duration) var(--mk-interact-ease);
 }
 
 .mtcOption:hover,
@@ -154,6 +184,16 @@ body {
     opacity: 1;
     transform: none;
     animation: none;
+  }
+
+  .mtcBtn,
+  .mtcOption {
+    transition: none;
+  }
+
+  .mtcBtn:hover,
+  .mtcBtn:active {
+    transform: none;
   }
 }
 
@@ -178,6 +218,7 @@ html[data-mk-motion="enhance"] .mkReveal[data-mk-pending] {
 
 .mkWave {
   display: block;
+  flex-shrink: 0;
   overflow: visible;
   background: var(--mk-hero);
   color: var(--mk-soft);

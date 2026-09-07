@@ -505,3 +505,49 @@ No `marketing-product-preview` client chunk.
 ### Tenant CSS / JS
 
 Unchanged from 1F.5. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.
+
+## After Phase 1F.7 (hero spacing and CSS interactions)
+
+Measured 2026-09-07 against `cursor/aftercare-phase-1e-hardening` after Phase 1F.7. Production `next start` on port 4173. Next.js 16.3.3 / Turbopack. No new dependency. No Motion change. No marketing Client Component added for the phone shell, CTA states, or planned demo video.
+
+### Future product-preview media
+
+The hero phone stays a static Server Component. A later pass may play a short loop **inside** `PhoneScreen`:
+
+- Preferred: WebM + MP4 fallback, `autoplay muted loop playsInline`, poster / static fallback
+- Rejected: GIF (larger, worse quality, no playback control)
+
+Do not add the video, a video dependency, or a Client Component until that pass.
+
+### Marketing CSS
+
+Interaction tokens, CTA/nav/theme states, a larger phone shell, and hero spacing grew the marketing stylesheets.
+
+- `00m6kwx3do-7f.css` — marketing base, including `.mtc` and `--mk-interact-duration` (5,295 raw / 1,497 gzip / 1,328 Brotli)
+- `3wlgpaj9etdp8.css` — `marketing.module.css` (15,076 raw / 3,171 gzip / 2,743 Brotli)
+
+| Metric         |   1F.6 |       1F.7 |      Delta |
+| -------------- | -----: | ---------: | ---------: |
+| CSS raw        | 16,257 | **20,371** | **+4,114** |
+| CSS gzip -9    |  4,032 |  **4,668** |   **+636** |
+| CSS Brotli q11 |  3,491 |  **4,071** |   **+580** |
+| Tailwind       |     no |         no |          — |
+
+Source CSS before this pass: `marketing.css` 4,051 + `marketing.module.css` 11,461 = **15,512**. After: 5,319 + 14,579 = **19,898** (**+4,386**).
+
+### Marketing JavaScript
+
+Phone preview, wave, and CTA states remain Server Components / CSS. Marketing client JS is unchanged from 1F.6 (theme control + existing LazyMotion island). **Hero-attributed client JS added: 0.**
+
+Motion chunks on marketing, unchanged:
+
+| Chunk              | Role                                            |    Raw |
+| ------------------ | ----------------------------------------------- | -----: |
+| `2nc761jkoferc.js` | Marketing experience + theme menu               | 22,702 |
+| `01t426ne8zhgx.js` | Motion runtime (`motion/react-m`, `LazyMotion`) | 39,519 |
+
+No `marketing-product-preview` client chunk.
+
+### Tenant CSS / JS
+
+Unchanged from 1F.6. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.
