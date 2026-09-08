@@ -433,7 +433,7 @@ test.describe("marketing homepage", () => {
     await page.locator("#preview").scrollIntoViewIfNeeded();
     await expect(
       page.getByRole("heading", {
-        name: "See a branded aftercare home, not a staff console",
+        name: "See what patients actually receive",
       })
     ).toBeVisible();
     await page.screenshot({

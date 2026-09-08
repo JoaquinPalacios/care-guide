@@ -302,18 +302,16 @@ export default async function MarketingHomePage() {
             <MarketingReveal.Group>
               <div className={styles.inner}>
                 <MarketingReveal.Item>
-                  <p className={styles.eyebrow}>Brand directions</p>
+                  <p className={styles.eyebrow}>Brand flexibility</p>
                 </MarketingReveal.Item>
                 <MarketingReveal.Item>
-                  <h2 id="brand-heading">
+                  <h2 id="brand-heading" className={styles.sectionTitle}>
                     One product, many practice identities
                   </h2>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item>
                   <p className={styles.copy}>
-                    Tenant pages keep the clinic&apos;s colours. The{" "}
-                    {PRODUCT_NAME} marketing brand stays separate, so a green
-                    dental practice does not inherit a platform look.
+                    Choose a visual tone that feels at home with your practice
+                    while the patient experience stays consistent and easy to
+                    read.
                   </p>
                 </MarketingReveal.Item>
                 <MarketingReveal.Item>
@@ -322,20 +320,23 @@ export default async function MarketingHomePage() {
                       className={`${styles.brandCard} ${styles.brandTeal}`}
                     >
                       <h3>Riverside Dental Demo</h3>
-                      <p>Warm clinical teal for a general dental practice.</p>
+                      <p>
+                        Calm clinical teal for a modern general dental practice.
+                      </p>
                     </article>
                     <article
                       className={`${styles.brandCard} ${styles.brandNavy}`}
                     >
                       <h3>Specialist oral surgery</h3>
-                      <p>Ink and navy for a calmer specialist presence.</p>
+                      <p>Ink and navy for a quieter specialist tone.</p>
                     </article>
                     <article
                       className={`${styles.brandCard} ${styles.brandWarm}`}
                     >
-                      <h3>Family practice</h3>
+                      <h3>Family dental</h3>
                       <p>
-                        A warmer accent when the clinic wants a softer welcome.
+                        A warmer palette for a softer, more approachable
+                        welcome.
                       </p>
                     </article>
                   </div>
@@ -357,14 +358,14 @@ export default async function MarketingHomePage() {
                   </MarketingReveal.Item>
                   <MarketingReveal.Item>
                     <h2 id="preview-heading">
-                      See a branded aftercare home, not a staff console
+                      See what patients actually receive
                     </h2>
                   </MarketingReveal.Item>
                   <MarketingReveal.Item>
                     <p className={styles.copy}>
-                      The Riverside Dental Demo tenant shows the patient
-                      experience: a practice header, post-treatment
-                      instructions, and a published Tooth Extraction guide.
+                      The Riverside Dental Demo shows the patient experience:
+                      clinic branding, post-treatment instructions, and a
+                      published Tooth Extraction guide.
                     </p>
                   </MarketingReveal.Item>
                   <MarketingReveal.Item>
@@ -405,9 +406,9 @@ export default async function MarketingHomePage() {
                   </MarketingReveal.Item>
                   <MarketingReveal.Item>
                     <p className={styles.lede}>
-                      {PRODUCT_NAME} is in early development. We&apos;re looking
-                      for clinics to help shape the first commercial release.
-                      Pricing is not locked.
+                      {PRODUCT_NAME} is in early development. We&apos;re working
+                      with a small number of clinics to help shape the first
+                      commercial release.
                     </p>
                   </MarketingReveal.Item>
                   <MarketingReveal.Item>
@@ -419,13 +420,6 @@ export default async function MarketingHomePage() {
                         View the clinic demo
                       </a>
                     </div>
-                  </MarketingReveal.Item>
-                  <MarketingReveal.Item>
-                    <p className={styles.fine}>
-                      {PRODUCT_NAME} is the current provisional commercial name
-                      for this aftercare product. Lead capture is not on this
-                      page yet.
-                    </p>
                   </MarketingReveal.Item>
                 </div>
                 <MarketingReveal.Item>
@@ -462,7 +456,7 @@ export default async function MarketingHomePage() {
             <div className={styles.footerBrand}>
               <p className={styles.footerName}>{PRODUCT_NAME}</p>
               <p className={styles.footerTag}>
-                Branded aftercare patients can revisit.
+                Clinic-branded aftercare patients can revisit.
               </p>
             </div>
             <nav className={styles.footerNav} aria-label="Footer">

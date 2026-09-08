@@ -763,3 +763,36 @@ Early Access markup, secondary fill, and footer atmosphere remain Server Compone
 ### Tenant CSS / JS
 
 Unchanged from 1F.12. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.
+
+## After Phase 1F.14 (brand flexibility, theme radial fill, footer spacing)
+
+Measured 2026-09-09 against `cursor/aftercare-phase-1e-hardening` after Phase 1F.14. Production `next start` on port 4173. Next.js 16.3.4 / Turbopack. Direct stable dependency refresh. No Motion entrance choreography. No scroll-linked background. No new marketing Client Component. No font files added.
+
+### Marketing CSS
+
+Brand Flexibility cards, theme-trigger radial fill tokens, and footer atmosphere containment added a small amount of CSS. Public copy changes are markup-only.
+
+- `1qfjnjfd-d6cs.css` — marketing base, including theme-fill and brand-card radius tokens (7,498 raw / 2,079 gzip / 1,863 Brotli)
+- `0oox5e3si80fi.css` — `marketing.module.css` (34,519 raw / 6,237 gzip / 5,455 Brotli)
+
+| Metric         |  1F.13 |      1F.14 |    Delta |
+| -------------- | -----: | ---------: | -------: |
+| CSS raw        | 41,425 | **42,017** | **+592** |
+| CSS gzip -9    |  8,114 |  **8,316** | **+202** |
+| CSS Brotli q11 |  7,123 |  **7,318** | **+195** |
+| Tailwind       |     no |         no |        — |
+
+Source CSS: `marketing.css` 7,959 + `marketing.module.css` 33,287 = **41,246** vs 1F.13 **40,497** (**+749**). No Tailwind. No CSS-in-JS. **0 font bytes.**
+
+### Marketing JavaScript
+
+Theme trigger hover is CSS on the existing AppearanceMenu island. **New marketing client JS added: 0.**
+
+| Chunk              | Role                                            |    Raw |
+| ------------------ | ----------------------------------------------- | -----: |
+| `1slkl-e5d1g1x.js` | Marketing experience + theme menu               | 22,831 |
+| `23ezo7tr8pa6u.js` | Motion runtime (`motion/react-m`, `LazyMotion`) | 39,519 |
+
+### Tenant CSS / JS
+
+Tenant CSS source was not modified in 1F.14. Playwright still enforces ≤ 9,538 raw on tenant routes when the local database is reachable. No Motion on tenant. Staff still loads Tailwind.

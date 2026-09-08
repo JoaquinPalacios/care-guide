@@ -66,11 +66,7 @@
   content: "";
   position: absolute;
   z-index: 0;
-  left: 0;
-  right: 0;
-  top: 0;
-  width: 100%;
-  height: 16rem;
+  inset: 0;
   pointer-events: none;
   background:
     radial-gradient(
@@ -905,6 +901,10 @@
   text-wrap: pretty;
 }
 
+.sectionTitle + .copy {
+  margin-top: 0.8rem;
+}
+
 .processJourney {
   --process-node: 1.5rem;
   --process-gap: 1.15rem;
@@ -1018,8 +1018,7 @@
 
 .processCard h3,
 .pillarCard h3,
-.customCopy h3,
-.brandCard h3 {
+.customCopy h3 {
   margin: 0 0 0.35rem;
   font-size: 1.08rem;
   letter-spacing: -0.03em;
@@ -1427,8 +1426,12 @@
 }
 
 .brandCard {
-  padding: 1.1rem 1.15rem 1.2rem;
-  min-height: 8.5rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1.15rem 1.2rem 1.25rem;
+  border: 1px solid color-mix(in srgb, #ffffff 18%, transparent);
+  border-radius: var(--mk-brand-card-radius);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 8%);
 }
 
 .brandTeal {
@@ -1446,8 +1449,16 @@
   color: #fff8f2;
 }
 
+.brandCard h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.08rem;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+}
+
 .brandCard p {
   margin: 0;
+  line-height: 1.45;
 }
 
 .ctaBlock {
@@ -1518,15 +1529,9 @@
   letter-spacing: -0.02em;
 }
 
-.fine {
-  margin: 1.15rem 0 0;
-  color: var(--mk-muted);
-  font-size: 0.88rem;
-  max-width: 36rem;
-}
-
 .footer {
-  padding: 0 0 2.6rem;
+  padding: 0 0
+    calc(var(--mk-footer-pad-bottom) + env(safe-area-inset-bottom, 0px));
   color: var(--mk-muted);
   font-size: 0.9rem;
 }
@@ -1814,7 +1819,12 @@
   }
 
   .brandGrid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  .brandCard {
+    height: 100%;
   }
 
   .earlyAccessLayout {

@@ -1155,7 +1155,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     await waitForSectionReveal(section);
     await expect(
       section.getByRole("heading", {
-        name: "See a branded aftercare home, not a staff console",
+        name: "See what patients actually receive",
       })
     ).toBeVisible();
     await expect(
@@ -1173,7 +1173,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     await expect(
       page.getByRole("heading", { name: "Brand directions" })
     ).toHaveCount(0);
-    await expect(page.getByText("Brand directions")).toBeVisible();
+    await expect(page.getByText("Brand flexibility")).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "Riverside Dental Demo" })
     ).toBeVisible();
@@ -1287,6 +1287,446 @@ test.describe("Phase 1F.11 story clarity", () => {
     await page.locator('[data-mk-chapter="hero"]').screenshot({
       path: "test-results/artifacts/phase-1f12-hero-1440-light.png",
     });
+  });
+
+  test("brand flexibility uses major-section type and equal desktop cards", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showStaticScheme(page, "light");
+    await waitForHeroReveal(page);
+
+    const section = page.locator('[aria-labelledby="brand-heading"]');
+    await scrollSectionIntoView(page, '[aria-labelledby="brand-heading"]');
+    await waitForSectionReveal(section);
+    await expect(section.getByText("Brand flexibility")).toBeVisible();
+    await expect(
+      section.getByRole("heading", {
+        name: "One product, many practice identities",
+      })
+    ).toBeVisible();
+    await expect(
+      section.getByText("marketing brand stays separate", { exact: false })
+    ).toHaveCount(0);
+    await expect(section.getByText("Family dental")).toBeVisible();
+    await expect(section.getByText("Family practice")).toHaveCount(0);
+
+    const desktop = await section.evaluate((root) => {
+      const heading = root.querySelector("#brand-heading");
+      const whyHeading = document.querySelector("#why-heading");
+      const previewHeading = document.querySelector("#preview-heading");
+      const cards = [...root.querySelectorAll("article")];
+      if (
+        !(heading instanceof HTMLElement) ||
+        !(whyHeading instanceof HTMLElement) ||
+        cards.length !== 3
+      ) {
+        return null;
+      }
+      const headingSize = Number.parseFloat(getComputedStyle(heading).fontSize);
+      const whySize = Number.parseFloat(getComputedStyle(whyHeading).fontSize);
+      const previewSize = previewHeading
+        ? Number.parseFloat(getComputedStyle(previewHeading).fontSize)
+        : headingSize;
+      const heights = cards.map((card) =>
+        Math.round(card.getBoundingClientRect().height)
+      );
+      const titleTops = cards.map((card) => {
+        const title = card.querySelector("h3");
+        return title ? Math.round(title.getBoundingClientRect().top) : 0;
+      });
+      const copyTops = cards.map((card) => {
+        const copy = card.querySelector("p");
+        return copy ? Math.round(copy.getBoundingClientRect().top) : 0;
+      });
+      const radii = cards.map((card) => getComputedStyle(card).borderRadius);
+      const boxShadows = cards.map((card) => getComputedStyle(card).boxShadow);
+      return {
+        headingSize,
+        whySize,
+        previewSize,
+        heightSpread: Math.max(...heights) - Math.min(...heights),
+        titleSpread: Math.max(...titleTops) - Math.min(...titleTops),
+        copySpread: Math.max(...copyTops) - Math.min(...copyTops),
+        radius: radii[0],
+        sameRadius: radii.every((radius) => radius === radii[0]),
+        hasOuterShadow: boxShadows.some(
+          (shadow) => shadow !== "none" && !shadow.includes("inset")
+        ),
+        contrast: cards.map((card) => {
+          const styles = getComputedStyle(card);
+          return { color: styles.color, background: styles.backgroundColor };
+        }),
+      };
+    });
+
+    expect(desktop).not.toBeNull();
+    expect(Math.abs(desktop!.headingSize - desktop!.whySize)).toBeLessThan(1);
+    expect(Math.abs(desktop!.headingSize - desktop!.previewSize)).toBeLessThan(
+      1
+    );
+    expect(desktop!.heightSpread).toBeLessThanOrEqual(2);
+    expect(desktop!.titleSpread).toBeLessThanOrEqual(2);
+    expect(desktop!.copySpread).toBeLessThanOrEqual(2);
+    expect(desktop!.sameRadius).toBe(true);
+    expect(Number.parseFloat(desktop!.radius)).toBeGreaterThanOrEqual(14);
+    expect(Number.parseFloat(desktop!.radius)).toBeLessThanOrEqual(16);
+    expect(desktop!.hasOuterShadow).toBe(false);
+    for (const card of desktop!.contrast) {
+      expect(
+        Math.abs(
+          relativeLuminance(card.color) - relativeLuminance(card.background)
+        )
+      ).toBeGreaterThan(0.4);
+    }
+
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f14-brand-1440-light.png",
+    });
+    await showStaticScheme(page, "dark");
+    await waitForSectionReveal(section);
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f14-brand-1440-dark.png",
+    });
+
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await showStaticScheme(page, "light");
+    await scrollSectionIntoView(page, '[aria-labelledby="brand-heading"]');
+    await waitForSectionReveal(section);
+    const layout1280 = await section.evaluate((root) => {
+      const cards = [...root.querySelectorAll("article")];
+      const heights = cards.map((card) =>
+        Math.round(card.getBoundingClientRect().height)
+      );
+      const titleTops = cards.map((card) => {
+        const title = card.querySelector("h3");
+        return title ? Math.round(title.getBoundingClientRect().top) : 0;
+      });
+      return {
+        heightSpread: Math.max(...heights) - Math.min(...heights),
+        titleSpread: Math.max(...titleTops) - Math.min(...titleTops),
+      };
+    });
+    expect(layout1280.heightSpread).toBeLessThanOrEqual(2);
+    expect(layout1280.titleSpread).toBeLessThanOrEqual(2);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await showStaticScheme(page, "light");
+    await scrollSectionIntoView(page, '[aria-labelledby="brand-heading"]');
+    await waitForSectionReveal(section);
+    const mobile = await section.evaluate((root) => {
+      const cards = [...root.querySelectorAll("article")];
+      if (cards.length !== 3) {
+        return null;
+      }
+      const first = cards[0].getBoundingClientRect();
+      const second = cards[1].getBoundingClientRect();
+      const heights = cards.map((card) =>
+        Math.round(card.getBoundingClientRect().height)
+      );
+      return {
+        stacked: second.top > first.bottom - 8,
+        heightSpread: Math.max(...heights) - Math.min(...heights),
+      };
+    });
+    expect(mobile).not.toBeNull();
+    expect(mobile!.stacked).toBe(true);
+    await expectNoHorizontalOverflow(page);
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f14-brand-390-light.png",
+    });
+    await showStaticScheme(page, "dark");
+    await waitForSectionReveal(section);
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f14-brand-390-dark.png",
+    });
+  });
+
+  test("theme trigger fills radially from the centre without moving the icon", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+    await waitForHeroReveal(page);
+
+    const trigger = page.getByRole("button", { name: /Change colour theme/ });
+    const rest = await trigger.evaluate((element) => {
+      const fill = getComputedStyle(element, "::before");
+      const icon = element.querySelector("svg");
+      return {
+        transform: getComputedStyle(element).transform,
+        iconTransform: icon ? getComputedStyle(icon).transform : "missing",
+        fillTransform: fill.transform,
+        origin: fill.transformOrigin,
+        duration: fill.transitionDuration,
+        radius: getComputedStyle(element).borderRadius,
+      };
+    });
+    expect(
+      rest.transform === "none" || rest.transform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+    expect(
+      rest.iconTransform === "none" ||
+        rest.iconTransform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+    expect(rest.fillTransform).toMatch(/matrix\(0,\s*0,\s*0,\s*0/);
+    expect(rest.origin).toMatch(/center|22/);
+    expect(rest.duration).not.toBe("0s");
+    await trigger.screenshot({
+      path: "test-results/artifacts/phase-1f14-theme-default-light.png",
+    });
+
+    await trigger.hover();
+    await expect
+      .poll(async () =>
+        trigger.evaluate(
+          (element) => getComputedStyle(element, "::before").transform
+        )
+      )
+      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
+    const hover = await trigger.evaluate((element) => {
+      const icon = element.querySelector("svg");
+      return {
+        transform: getComputedStyle(element).transform,
+        iconTransform: icon ? getComputedStyle(icon).transform : "missing",
+      };
+    });
+    expect(
+      hover.transform === "none" ||
+        hover.transform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+    expect(
+      hover.iconTransform === "none" ||
+        hover.iconTransform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+    await trigger.screenshot({
+      path: "test-results/artifacts/phase-1f14-theme-hover-light.png",
+    });
+
+    await page.mouse.move(0, 0);
+    await expect
+      .poll(async () =>
+        trigger.evaluate(
+          (element) => getComputedStyle(element, "::before").transform
+        )
+      )
+      .toMatch(/matrix\(0,\s*0,\s*0,\s*0/);
+
+    await trigger.focus();
+    await expect
+      .poll(async () =>
+        trigger.evaluate(
+          (element) => getComputedStyle(element, "::before").transform
+        )
+      )
+      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
+    const focusOutline = await trigger.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).outlineWidth)
+    );
+    expect(focusOutline).toBeGreaterThanOrEqual(2);
+    await trigger.screenshot({
+      path: "test-results/artifacts/phase-1f14-theme-focus-light.png",
+    });
+
+    await trigger.click();
+    await expect(
+      page.getByRole("menu", { name: "Colour theme" })
+    ).toBeVisible();
+    await expect
+      .poll(async () =>
+        trigger.evaluate(
+          (element) => getComputedStyle(element, "::before").transform
+        )
+      )
+      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
+    await page.screenshot({
+      path: "test-results/artifacts/phase-1f14-theme-open-light.png",
+    });
+    await page.keyboard.press("Escape");
+
+    await showMarketingScheme(page, "dark");
+    await trigger.hover();
+    await expect
+      .poll(async () =>
+        trigger.evaluate(
+          (element) => getComputedStyle(element, "::before").transform
+        )
+      )
+      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
+    await trigger.screenshot({
+      path: "test-results/artifacts/phase-1f14-theme-hover-dark.png",
+    });
+    await trigger.click();
+    await page.screenshot({
+      path: "test-results/artifacts/phase-1f14-theme-open-dark.png",
+    });
+    await page.keyboard.press("Escape");
+  });
+
+  test("theme trigger reduced motion applies the fill immediately", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "light" });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showStaticScheme(page, "light");
+    await waitForHeroReveal(page);
+
+    const trigger = page.getByRole("button", { name: /Change colour theme/ });
+    const reduced = await trigger.evaluate((element) => {
+      const fill = getComputedStyle(element, "::before");
+      return {
+        duration: fill.transitionDuration,
+        transform: getComputedStyle(element).transform,
+      };
+    });
+    expect(reduced.duration === "0s" || reduced.duration === "0ms").toBe(true);
+    expect(
+      reduced.transform === "none" ||
+        reduced.transform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+
+    await trigger.hover();
+    const hoverReduced = await trigger.evaluate((element) => {
+      const fill = getComputedStyle(element, "::before");
+      const icon = element.querySelector("svg");
+      return {
+        fillTransform: fill.transform,
+        transform: getComputedStyle(element).transform,
+        iconTransform: icon ? getComputedStyle(icon).transform : "missing",
+        outline: Number.parseFloat(getComputedStyle(element).outlineWidth),
+      };
+    });
+    expect(hoverReduced.fillTransform).toMatch(/matrix\(1,\s*0,\s*0,\s*1|none/);
+    expect(
+      hoverReduced.transform === "none" ||
+        hoverReduced.transform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+    expect(
+      hoverReduced.iconTransform === "none" ||
+        hoverReduced.iconTransform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+
+    await trigger.focus();
+    const focusWidth = await trigger.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).outlineWidth)
+    );
+    expect(focusWidth).toBeGreaterThanOrEqual(2);
+  });
+
+  test("footer copyright sits within documented bottom padding", async ({
+    page,
+  }) => {
+    for (const width of [1440, 390] as const) {
+      await page.setViewportSize({
+        width,
+        height: width === 1440 ? 900 : 844,
+      });
+      await page.goto(marketingUrl("/"), { waitUntil: "load" });
+      await showStaticScheme(page, "light");
+      await waitForHeroReveal(page);
+      await page.evaluate(() => {
+        document.querySelector("footer")?.scrollIntoView({
+          block: "end",
+          behavior: "instant",
+        });
+      });
+
+      const geometry = await page.evaluate(() => {
+        const footer = document.querySelector("footer");
+        const copy = footer?.querySelector('[class*="footerCopy"]');
+        if (
+          !(footer instanceof HTMLElement) ||
+          !(copy instanceof HTMLElement)
+        ) {
+          return null;
+        }
+        const footerBox = footer.getBoundingClientRect();
+        const copyBox = copy.getBoundingClientRect();
+        const styles = getComputedStyle(footer);
+        const glow = getComputedStyle(footer, "::before");
+        const scrollY = window.scrollY;
+        const documentBottom = Math.max(
+          document.documentElement.scrollHeight,
+          document.body.scrollHeight
+        );
+        return {
+          gap: Math.round(documentBottom - (copyBox.bottom + scrollY)),
+          paddingBottom: Number.parseFloat(styles.paddingBottom),
+          footerHeight: Math.round(footerBox.height),
+          glowHeight: Number.parseFloat(glow.height),
+          glowPosition: glow.position,
+          glowPointer: glow.pointerEvents,
+        };
+      });
+
+      expect(geometry).not.toBeNull();
+      expect(geometry!.glowPosition).toBe("absolute");
+      expect(geometry!.glowPointer).toBe("none");
+      expect(geometry!.glowHeight).toBeLessThanOrEqual(
+        geometry!.footerHeight + 1
+      );
+      expect(geometry!.gap).toBeGreaterThanOrEqual(geometry!.paddingBottom - 6);
+      expect(geometry!.gap).toBeLessThanOrEqual(geometry!.paddingBottom + 24);
+      expect(geometry!.paddingBottom).toBeGreaterThanOrEqual(32);
+      expect(geometry!.paddingBottom).toBeLessThanOrEqual(56);
+
+      await page.screenshot({
+        path: `test-results/artifacts/phase-1f14-footer-end-${width}-light.png`,
+        fullPage: false,
+      });
+      await showStaticScheme(page, "dark");
+      await page.evaluate(() => {
+        document.querySelector("footer")?.scrollIntoView({
+          block: "end",
+          behavior: "instant",
+        });
+      });
+      await page.screenshot({
+        path: `test-results/artifacts/phase-1f14-footer-end-${width}-dark.png`,
+        fullPage: false,
+      });
+    }
+  });
+
+  test("public copy no longer includes internal roadmap language", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showStaticScheme(page, "light");
+    await waitForHeroReveal(page);
+
+    await expect(page.getByText("provisional commercial name")).toHaveCount(0);
+    await expect(
+      page.getByText("Lead capture is not on this page yet.")
+    ).toHaveCount(0);
+    await expect(page.getByText("Pricing is not locked.")).toHaveCount(0);
+    await expect(page.getByText("not in this release")).toHaveCount(0);
+    await expect(page.getByText("arbitrary CSS")).toHaveCount(0);
+    await expect(page.getByText("phone-sized layout")).toHaveCount(0);
+    await expect(
+      page.getByText("Patients receive a stable URL they can save")
+    ).toBeVisible();
+    await expect(
+      page.getByText("designed for clear reading on a phone")
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        "Keep approved content consistent across every published guide."
+      )
+    ).toBeVisible();
+    await expect(
+      page.getByText("controlled choices that keep every guide consistent")
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "See what patients actually receive" })
+    ).toBeVisible();
+    await expect(
+      page.getByText("Clinic-branded aftercare patients can revisit.")
+    ).toBeVisible();
   });
 
   test("marketing storytelling remains accessible in light and dark", async ({

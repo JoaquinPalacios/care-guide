@@ -19,14 +19,14 @@ const STEPS = [
     index: "Step 3",
     node: "03",
     title: "Share a durable link",
-    copy: "Patients receive a URL they can save. Designed for QR handoff later — not a dashboard in this release.",
+    copy: "Patients receive a stable URL they can save and reopen whenever they need it.",
     visual: "link",
   },
   {
     index: "Step 4",
     node: "04",
     title: "Patient revisits anytime",
-    copy: "The same instructions stay available after the appointment, on a phone-sized layout.",
+    copy: "The same instructions stay available after the appointment, designed for clear reading on a phone.",
     visual: "revisit",
   },
 ] as const;

@@ -22,8 +22,8 @@ export function MarketingPatientPreview() {
         </div>
       </div>
       <p className={styles.previewCaption}>
-        A calm clinic resource page — no login, no feed, just the recovery
-        information patients need.
+        No login, no feed — just the recovery information patients need, with
+        the practice still one tap away.
       </p>
     </div>
   );

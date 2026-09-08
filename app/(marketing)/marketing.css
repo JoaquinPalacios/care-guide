@@ -61,6 +61,12 @@
   --mk-card: light-dark(#ffffff, #171b24);
   --mk-card-line: light-dark(color-mix(in srgb, #0a0d14 8%, #ece8df), #2c3342);
   --mk-card-radius: 1.2rem;
+  --mk-brand-card-radius: 1rem;
+  --mk-theme-fill: light-dark(
+    color-mix(in srgb, #cfd6ff 30%, transparent),
+    color-mix(in srgb, #7c8cff 16%, #171c28)
+  );
+  --mk-footer-pad-bottom: 2.6rem;
   --mk-card-shadow: light-dark(
     0 1px 0 rgb(10 13 20 / 3.5%),
     0 1px 0 rgb(255 255 255 / 3%)
@@ -118,6 +124,8 @@ body {
 }
 
 .mtcBtn {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -125,6 +133,7 @@ body {
   height: 2.75rem;
   margin: 0;
   padding: 0;
+  overflow: hidden;
   border: 1px solid var(--mk-line);
   border-radius: 999px;
   background: transparent;
@@ -133,38 +142,53 @@ body {
   touch-action: manipulation;
   anchor-name: --mk-theme-trigger;
   transition:
-    background-color var(--mk-interact-duration) var(--mk-interact-ease),
     color var(--mk-interact-duration) var(--mk-interact-ease),
-    border-color var(--mk-interact-duration) var(--mk-interact-ease),
-    box-shadow var(--mk-interact-duration) var(--mk-interact-ease);
+    border-color var(--mk-interact-duration) var(--mk-interact-ease);
+}
+
+.mtcBtn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: var(--mk-theme-fill);
+  transform: scale(0);
+  transform-origin: center;
+  transition: transform var(--mk-interact-duration) var(--mk-interact-ease);
 }
 
 .mtcBtn svg {
+  position: relative;
+  z-index: 1;
   width: 1rem;
   height: 1rem;
+  transform: none;
 }
 
-.mtcBtn:hover {
+.mtcBtn:hover,
+.mtcBtn:focus-visible,
+.mtcBtn:active {
   color: var(--mk-ink);
   border-color: color-mix(in srgb, var(--mk-ink) 42%, var(--mk-line));
-  background: color-mix(in srgb, var(--mk-ink) 5%, transparent);
+}
+
+.mtcBtn:hover::before,
+.mtcBtn:focus-visible::before,
+.mtcBtn:active::before,
+.mtcBtn[aria-expanded="true"]::before {
+  transform: scale(1);
 }
 
 .mtcBtn:focus-visible {
-  color: var(--mk-ink);
   outline: 2.5px solid var(--mk-focus);
   outline-offset: 3px;
-}
-
-.mtcBtn:active {
-  color: var(--mk-ink);
-  background: color-mix(in srgb, var(--mk-ink) 8%, transparent);
 }
 
 .mtcBtn[aria-expanded="true"] {
   color: var(--mk-ink);
   border-color: color-mix(in srgb, var(--mk-brand) 55%, var(--mk-line));
-  background: color-mix(in srgb, var(--mk-brand) 10%, transparent);
 }
 
 .mtcMenu {
@@ -279,6 +303,7 @@ body {
   }
 
   .mtcBtn,
+  .mtcBtn::before,
   .mtcOption {
     transition: none;
   }

@@ -8,7 +8,7 @@ const PILLARS = [
     points: [
       "Primary and accent colours stay with the practice.",
       "Instruction wording and theme follow clinic settings.",
-      "Corners and chrome use controlled presets, not arbitrary CSS.",
+      "Corners and chrome use controlled presets that stay consistent.",
     ],
   },
   {
@@ -28,7 +28,7 @@ const PILLARS = [
     points: [
       "Turn on only the guides that match the care provided.",
       "Reuse approved content across visits.",
-      "Designed for QR handoff and operator admin later — not in this release.",
+      "Keep approved content consistent across every published guide.",
     ],
   },
 ] as const;
@@ -58,7 +58,8 @@ export function MarketingPillars() {
         <div className={styles.customCopy}>
           <h3>Controlled customisation</h3>
           <p>
-            Fit the patient&apos;s page to the clinic without arbitrary CSS.
+            Fit the patient page to the clinic with controlled choices that keep
+            every guide consistent and readable.
           </p>
         </div>
         <div className={styles.customGroup} aria-hidden="true">

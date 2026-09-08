@@ -31,7 +31,6 @@ describe("marketing homepage", () => {
 
     expect(html).toContain("Aftercare Guide");
     expect(html).toContain("Aftercare platform");
-    expect(html).not.toContain("Clinic-branded aftercare");
     expect(html).not.toContain("THE AFTERCARE PLATFORM");
     expect(html).toContain("Aftercare that still feels like your clinic.");
     expect(html).toContain("always leave with clarity.");
@@ -57,8 +56,9 @@ describe("marketing homepage", () => {
     expect(html).toContain("data-mk-product-canvas");
     expect(html).toContain("data-mk-patient-preview");
     expect(html).toContain("Patient view");
-    expect(html).toContain("Brand directions");
-    expect(html).toContain("no login, no feed");
+    expect(html).toContain("Brand flexibility");
+    expect(html).not.toContain("Brand directions");
+    expect(html).toContain("No login, no feed");
     expect(html).toContain("riverside.[your-domain]/extraction");
     expect(html).toContain("Call the practice");
     expect(html).toContain("Dental Implant");
@@ -76,13 +76,23 @@ describe("marketing homepage", () => {
     expect(html).toContain("Clinic branding");
     expect(html).toContain("Patient handoff");
     expect(html).toContain("early development");
-    expect(html).toContain("Lead capture is not on this page yet.");
+    expect(html).toContain("small number of clinics");
+    expect(html).not.toContain("Lead capture is not on this page yet.");
+    expect(html).not.toContain("provisional commercial name");
+    expect(html).not.toContain("Pricing is not locked.");
+    expect(html).not.toContain("not a dashboard in this release");
+    expect(html).not.toContain("not in this release");
+    expect(html).not.toContain("arbitrary CSS");
+    expect(html).not.toContain("phone-sized layout");
     expect(html).not.toContain("Open staff sign in");
-    expect(html).not.toContain("operator admin is not in this release");
     expect(html).not.toContain("Request access");
     expect(html).not.toContain("Contact us");
     expect(html).toContain("Change colour theme");
-    expect(html).toContain("Branded aftercare patients can revisit.");
+    expect(html).toContain("Clinic-branded aftercare patients can revisit.");
+    expect(html).toContain("See what patients actually receive");
+    expect(html).toContain("Family dental");
+    expect(html).not.toContain("Family practice");
+    expect(html).toContain("Choose a visual tone that feels at home");
     expect(html).toContain("Staff sign in");
     expect(html.match(/Staff sign in/g)).toHaveLength(2);
     expect(html).toContain("footerSeparator");
