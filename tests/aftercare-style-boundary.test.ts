@@ -149,6 +149,7 @@ describe("aftercare style boundary", () => {
     expect(tokens).toContain("--mk-interact-duration");
     expect(tokens).toContain("--mk-section-pad-y");
     expect(tokens).toContain("--mk-chapter-pad-y");
+    expect(tokens).toContain("--mk-card");
     expect(tokens).toContain("clamp(4rem, 6vw, 6rem)");
     expect(tokens).toContain("clamp(6rem, 8vw, 8rem)");
     expect(styles).not.toContain("3.6rem");
@@ -177,6 +178,10 @@ describe("aftercare style boundary", () => {
     expect(wave).toContain('focusable="false"');
     expect(wave).toContain("linearGradient");
     expect(wave).toContain("feGaussianBlur");
+    expect(styles).toContain("processJourney");
+    expect(styles).toContain("processRail");
+    expect(styles).toContain("bentoGrid");
+    expect(styles).toContain("bentoCard");
     expect(preview).not.toMatch(/['"]use client['"]/);
     expect(preview).toContain('aria-hidden="true"');
     expect(preview).toContain("PhoneShell");

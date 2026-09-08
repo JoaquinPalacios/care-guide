@@ -643,52 +643,377 @@
   line-height: 1.15;
 }
 
-.steps {
+.sectionTitle {
+  margin: 0;
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  max-width: 18ch;
+  text-wrap: pretty;
+}
+
+.processJourney {
+  position: relative;
+  margin-top: 1.75rem;
+  overflow-x: clip;
+}
+
+.processRail {
+  position: absolute;
+  z-index: 0;
+  left: 0.72rem;
+  top: 0.72rem;
+  bottom: 1.35rem;
+  width: 2px;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    var(--mk-rail),
+    var(--mk-rail-end),
+    var(--mk-rail)
+  );
+  box-shadow: 0 0 12px color-mix(in srgb, var(--mk-rail) 42%, transparent);
+}
+
+.processList {
+  position: relative;
+  z-index: 1;
   display: grid;
-  gap: 1.2rem;
-  margin: 1.4rem 0 0;
+  gap: 1.15rem;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.step {
-  max-width: 18rem;
+.processStep {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  column-gap: 0.9rem;
+  align-items: start;
 }
 
-.stepIndex {
-  display: block;
-  margin-bottom: 0.5rem;
+.processTrack {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  min-height: 1.5rem;
+}
+
+.processNode {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--mk-rail) 55%, var(--mk-line));
+  background: var(--mk-soft);
   color: var(--mk-brand);
-  font-size: 0.78rem;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.processArrow {
+  display: none;
+}
+
+.processCard,
+.bentoCard {
+  min-width: 0;
+  padding: 1.2rem 1.15rem 1.25rem;
+  border: 1px solid var(--mk-card-line);
+  border-radius: var(--mk-card-radius);
+  background: var(--mk-card);
+  box-shadow: var(--mk-card-shadow);
+}
+
+.processIndex {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--mk-brand);
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.step h3,
-.reasons h3,
+.processCard h3,
+.bentoCard h3,
 .brandCard h3 {
   margin: 0 0 0.35rem;
   font-size: 1.08rem;
   letter-spacing: -0.03em;
 }
 
-.step p,
-.reasons p {
+.processCard p,
+.bentoCard p {
   margin: 0;
   color: var(--mk-muted);
 }
 
-.reasons {
-  display: grid;
-  gap: 1.4rem 2rem;
-  margin: 1.5rem 0 0;
-  padding: 0;
-  list-style: none;
+.bentoCard p {
+  max-width: 36rem;
 }
 
-.reasons li {
-  max-width: 28rem;
+.bentoSmall p,
+.bentoReading p {
+  font-size: 0.95rem;
+}
+
+.microVisual {
+  display: grid;
+  gap: 0.32rem;
+  margin-bottom: 0.9rem;
+  pointer-events: none;
+}
+
+.microBrand,
+.radiusRow,
+.themeChips,
+.clinicMarkRow,
+.microTimeline,
+.microCustom {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.guideBar,
+.guideRow,
+.typeLine {
+  display: block;
+  height: 0.48rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mk-ink) 8%, var(--mk-card));
+}
+
+.guideBar {
+  width: 100%;
+}
+
+.guideBarMid {
+  width: 84%;
+}
+
+.guideBarShort {
+  width: 68%;
+  opacity: 0.72;
+}
+
+.guideRow {
+  display: flex;
+  align-items: center;
+  height: auto;
+  min-height: 1.45rem;
+  padding: 0 0.55rem;
+  border-radius: 0.45rem;
+  background: color-mix(in srgb, var(--mk-ink) 4.5%, var(--mk-card));
+  color: var(--mk-ink);
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.guideRowQuiet {
+  color: var(--mk-muted);
+}
+
+.swatch,
+.radiusSample {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex-shrink: 0;
+}
+
+.swatch {
+  border-radius: 999px;
+}
+
+.swatchTeal {
+  background: #0f766e;
+}
+
+.swatchNavy {
+  background: #15233b;
+}
+
+.swatchWarm {
+  background: #7a3b1e;
+}
+
+.swatchPrimary {
+  background: var(--mk-brand-strong);
+}
+
+.swatchAccent {
+  background: var(--mk-rail-end);
+}
+
+.radiusSample {
+  margin-left: 0.15rem;
+  border-radius: 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--mk-ink) 16%, transparent);
+  background: color-mix(in srgb, var(--mk-brand) 12%, var(--mk-card));
+}
+
+.urlStrip {
+  display: inline-flex;
+  max-width: 100%;
+  min-height: 1.55rem;
+  padding: 0.2rem 0.55rem;
+  overflow: hidden;
+  border-radius: 0.45rem;
+  border: 1px solid var(--mk-card-line);
+  background: color-mix(in srgb, var(--mk-ink) 3.5%, var(--mk-card));
+  color: var(--mk-ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.timelineDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mk-brand) 35%, var(--mk-card));
+}
+
+.timelineDotCurrent {
+  width: 0.62rem;
+  height: 0.62rem;
+  background: var(--mk-brand);
+}
+
+.timelineDotDone {
+  background: var(--mk-rail-end);
+}
+
+.timelineRule {
+  width: 1.15rem;
+  height: 1px;
+  background: color-mix(in srgb, var(--mk-brand) 35%, var(--mk-line));
+}
+
+.clinicMark {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 0.22rem;
+  background: #0f766e;
+}
+
+.clinicName {
+  color: var(--mk-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.phoneOutline {
+  display: grid;
+  gap: 0.28rem;
+  width: 4.4rem;
+  padding: 0.55rem 0.45rem 0.6rem;
+  border: 1px solid var(--mk-card-line);
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--mk-ink) 2.5%, var(--mk-card));
+}
+
+.typeLine {
+  width: 100%;
+  height: 0.28rem;
+}
+
+.typeLineShort {
+  width: 58%;
+}
+
+.typeLineMid {
+  width: 76%;
+}
+
+.contactChip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.7rem;
+  padding: 0 0.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mk-brand) 12%, var(--mk-card));
+  color: var(--mk-brand);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.radiusChip,
+.themeChip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.4rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--mk-card-line);
+  background: color-mix(in srgb, var(--mk-ink) 3%, var(--mk-card));
+  color: var(--mk-muted);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.radiusSharp {
+  border-radius: 0.12rem;
+}
+
+.radiusMedium {
+  border-radius: 0.4rem;
+}
+
+.radiusSoft {
+  border-radius: 999px;
+}
+
+.themeChip {
+  border-radius: 999px;
+}
+
+.themeChipCurrent {
+  border-color: color-mix(in srgb, var(--mk-brand) 40%, var(--mk-card-line));
+  background: color-mix(in srgb, var(--mk-brand) 12%, var(--mk-card));
+  color: var(--mk-ink);
+}
+
+.bentoGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+  margin-top: 1.75rem;
+}
+
+.bentoLarge,
+.bentoReading,
+.bentoSmall,
+.bentoLibrary,
+.bentoWide {
+  min-width: 0;
+}
+
+.bentoLarge {
+  padding: 1.35rem 1.25rem 1.4rem;
+}
+
+.bentoWide {
+  padding: 1.25rem 1.2rem 1.3rem;
+}
+
+.microPhone {
+  justify-items: start;
 }
 
 .brandGrid {
@@ -841,6 +1166,19 @@
   }
 }
 
+@media (min-width: 24.375rem) and (max-width: 63.99rem) {
+  .bentoGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .bentoLarge,
+  .bentoReading,
+  .bentoLibrary,
+  .bentoWide {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (min-width: 64rem) {
   .problemGrid,
   .productGrid,
@@ -896,12 +1234,114 @@
     padding: 1.5rem 0.76rem 0.8rem;
   }
 
-  .steps {
-    grid-template-columns: repeat(4, 1fr);
+  .processRail {
+    left: 12.5%;
+    right: 12.5%;
+    top: 0.72rem;
+    bottom: auto;
+    width: auto;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      var(--mk-rail),
+      var(--mk-rail-end),
+      var(--mk-rail)
+    );
   }
 
-  .reasons {
-    grid-template-columns: repeat(2, 1fr);
+  .processList {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0 1.15rem;
+  }
+
+  .processStep {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .processTrack {
+    height: 1.5rem;
+    margin-bottom: 1.05rem;
+  }
+
+  .processTrack::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 1.5rem;
+    width: 1px;
+    height: 1.05rem;
+    background: color-mix(in srgb, var(--mk-rail) 42%, transparent);
+  }
+
+  .processArrow {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 1.15rem);
+    width: 0.42rem;
+    height: 0.42rem;
+    border-right: 1.5px solid color-mix(in srgb, var(--mk-rail-end) 80%, #fff);
+    border-top: 1.5px solid color-mix(in srgb, var(--mk-rail-end) 80%, #fff);
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  .processStep:last-child .processArrow {
+    display: none;
+  }
+
+  .processCard {
+    padding: 1.25rem 1.15rem 1.3rem;
+  }
+
+  .bentoGrid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .bentoLarge {
+    grid-column: span 4;
+    padding: 1.5rem 1.45rem 1.55rem;
+  }
+
+  .bentoReading {
+    grid-column: span 2;
+  }
+
+  .bentoSmall {
+    grid-column: span 2;
+  }
+
+  .bentoLibrary {
+    grid-column: span 2;
+  }
+
+  .bentoWide {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(12rem, 20rem) minmax(0, 1fr);
+    grid-template-areas:
+      "visual title"
+      "visual copy";
+    column-gap: 1.5rem;
+    row-gap: 0.25rem;
+    align-items: center;
+    padding: 1.3rem 1.5rem 1.35rem;
+  }
+
+  .bentoWide .microVisual {
+    grid-area: visual;
+    margin-bottom: 0;
+  }
+
+  .bentoWide h3 {
+    grid-area: title;
+    margin-bottom: 0;
+  }
+
+  .bentoWide p {
+    grid-area: copy;
   }
 
   .brandGrid {

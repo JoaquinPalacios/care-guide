@@ -14,6 +14,8 @@ describe("AppearanceMenu", () => {
     expect(html).toContain("System");
     expect(html).toContain("Light");
     expect(html).toContain("Dark");
+    expect(html).toContain("mtcOptionIcon");
+    expect(html).toContain("mtcOptionLabel");
     expect(html).not.toContain('type="radio"');
     expect(html).not.toContain("<fieldset");
     expect(html).not.toContain("System | Light | Dark");

@@ -8,6 +8,8 @@ import {
   MarketingRevealItem,
   MarketingRevealPreview,
 } from "@/app/(marketing)/components/marketing-experience";
+import { MarketingBento } from "@/app/(marketing)/components/marketing-bento";
+import { MarketingProcess } from "@/app/(marketing)/components/marketing-process";
 import { MarketingProductPreview } from "@/app/(marketing)/components/marketing-product-preview";
 import { MarketingThemeControl } from "@/app/(marketing)/components/marketing-theme-control";
 import { MarketingWave } from "@/app/(marketing)/components/marketing-wave";
@@ -241,46 +243,12 @@ export default async function MarketingHomePage() {
                   <p className={styles.eyebrow}>How it works</p>
                 </MarketingReveal.Item>
                 <MarketingReveal.Item>
-                  <h2 id="how-heading">
+                  <h2 id="how-heading" className={styles.sectionTitle}>
                     From approved guidance to a page patients keep
                   </h2>
                 </MarketingReveal.Item>
                 <MarketingReveal.Item>
-                  <ol className={styles.steps}>
-                    <li className={styles.step}>
-                      <span className={styles.stepIndex}>Step 1</span>
-                      <h3>Select guides</h3>
-                      <p>
-                        The clinic enables the recovery guides that match the
-                        care it provides.
-                      </p>
-                    </li>
-                    <li className={styles.step}>
-                      <span className={styles.stepIndex}>Step 2</span>
-                      <h3>Apply clinic brand</h3>
-                      <p>
-                        Colour, logo, terminology, and a controlled visual tone
-                        make the pages feel like the practice.
-                      </p>
-                    </li>
-                    <li className={styles.step}>
-                      <span className={styles.stepIndex}>Step 3</span>
-                      <h3>Share a durable link</h3>
-                      <p>
-                        Patients receive a URL they can save. Designed for QR
-                        handoff; QR tooling is next, not a dashboard in this
-                        release.
-                      </p>
-                    </li>
-                    <li className={styles.step}>
-                      <span className={styles.stepIndex}>Step 4</span>
-                      <h3>Patient revisits anytime</h3>
-                      <p>
-                        The same instructions stay available after the
-                        appointment, on a phone-sized layout.
-                      </p>
-                    </li>
-                  </ol>
+                  <MarketingProcess />
                 </MarketingReveal.Item>
               </div>
             </MarketingReveal.Group>
@@ -293,56 +261,12 @@ export default async function MarketingHomePage() {
                   <p className={styles.eyebrow}>Why clinics use it</p>
                 </MarketingReveal.Item>
                 <MarketingReveal.Item>
-                  <h2 id="why-heading">
+                  <h2 id="why-heading" className={styles.sectionTitle}>
                     Clinic-first aftercare, built for rereading
                   </h2>
                 </MarketingReveal.Item>
                 <MarketingReveal.Item>
-                  <ul className={styles.reasons}>
-                    <li>
-                      <h3>Clinic-first presence</h3>
-                      <p>
-                        Patients see the practice name, colours, and contact
-                        details — not a generic platform dashboard.
-                      </p>
-                    </li>
-                    <li>
-                      <h3>Mobile reading</h3>
-                      <p>
-                        Typography, spacing, and actions are designed for a
-                        phone at home, not a waiting-room printout.
-                      </p>
-                    </li>
-                    <li>
-                      <h3>Durable URLs</h3>
-                      <p>
-                        Guides live at stable addresses the clinic can share by
-                        link now, and later attach to a QR-ready handoff.
-                      </p>
-                    </li>
-                    <li>
-                      <h3>Practice contact</h3>
-                      <p>
-                        Call the practice from the same page as the
-                        instructions, plus a distinct urgent-help block.
-                      </p>
-                    </li>
-                    <li>
-                      <h3>Controlled customisation</h3>
-                      <p>
-                        Clinics choose colour, accent, surface tone, radius,
-                        terminology, and theme policy. Arbitrary CSS is not part
-                        of the model.
-                      </p>
-                    </li>
-                    <li>
-                      <h3>Managed guide library</h3>
-                      <p>
-                        Practices enable reviewed recovery guides rather than
-                        assembling a website from scratch.
-                      </p>
-                    </li>
-                  </ul>
+                  <MarketingBento />
                 </MarketingReveal.Item>
               </div>
             </MarketingReveal.Group>

@@ -631,3 +631,38 @@ No `marketing-product-preview` client chunk.
 ### Tenant CSS / JS
 
 Unchanged from 1F.8. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.
+
+## After Phase 1F.10 (process rail, feature bento, theme popover)
+
+Measured 2026-09-08 against `cursor/aftercare-phase-1e-hardening` after Phase 1F.10. Production `next start` on port 4173. Next.js 16.3.3 / Turbopack. No new dependency. No Motion change. No new marketing Client Component.
+
+### Marketing CSS
+
+Process rail, step/bento card surfaces, and product-native micro-visuals grew the marketing stylesheets. Shared `--mk-card*` / `--mk-rail*` tokens keep the new surfaces from becoming six bespoke card implementations.
+
+- `0iro1ii8bt4zl.css` — marketing base, including restored `.mtc` popover (6,880 raw / 1,903 gzip / 1,704 Brotli)
+- `0um3lkhos3n5j.css` — `marketing.module.css` (25,522 raw / 4,960 gzip / 4,317 Brotli)
+
+| Metric         |   1F.9 |      1F.10 |      Delta |
+| -------------- | -----: | ---------: | ---------: |
+| CSS raw        | 22,604 | **32,402** | **+9,798** |
+| CSS gzip -9    |  5,158 |  **6,863** | **+1,705** |
+| CSS Brotli q11 |  4,477 |  **6,021** | **+1,544** |
+| Tailwind       |     no |         no |          — |
+
+Source CSS before this pass: `marketing.css` 5,543 + `marketing.module.css` 16,394 = **21,937**. After: 7,082 + 24,228 = **31,310** (**+9,373**).
+
+### Marketing JavaScript
+
+Process and bento remain Server Components. Theme popover still uses the existing `AppearanceMenu` client boundary (icons + checkmark markup only). **New marketing client JS added: 0.** Motion chunk hash unchanged:
+
+| Chunk              | Role                                            |    Raw |
+| ------------------ | ----------------------------------------------- | -----: |
+| `3uq-mei83ku8e.js` | Marketing experience + theme menu               | 23,381 |
+| `01t426ne8zhgx.js` | Motion runtime (`motion/react-m`, `LazyMotion`) | 39,519 |
+
+Theme-menu chunk delta vs 1F.9 (`22,702`): **+679** from inline SVG option glyphs. No `marketing-process` or `marketing-bento` client chunk.
+
+### Tenant CSS / JS
+
+Unchanged from 1F.9. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.
