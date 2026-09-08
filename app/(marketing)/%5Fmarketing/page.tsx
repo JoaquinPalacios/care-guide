@@ -93,10 +93,18 @@ export default async function MarketingHomePage() {
             {PRODUCT_NAME}
           </Link>
           <nav className={styles.nav} aria-label="Marketing">
-            <Link href="#how-it-works">How it works</Link>
-            <Link href="#preview">Clinic preview</Link>
-            <Link href="#early-access">Early access</Link>
-            <a href={staffHref}>Staff sign in</a>
+            <Link className={styles.navAnchor} href="#how-it-works">
+              How it works
+            </Link>
+            <Link className={styles.navAnchor} href="#preview">
+              Clinic preview
+            </Link>
+            <Link className={styles.navAnchor} href="#early-access">
+              Early access
+            </Link>
+            <a className={styles.navStaff} href={staffHref}>
+              Staff sign in
+            </a>
             <MarketingThemeControl />
           </nav>
         </div>

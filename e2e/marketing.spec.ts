@@ -201,14 +201,38 @@ test.describe("marketing homepage", () => {
         "/marketing/iphone-frame.webp"
       );
       await expect(
-        hero.locator('[class*="deviceStage"]').getByText("Recovery guide")
+        hero.locator('[class*="deviceStage"]').getByText("Your recovery")
       ).toBeVisible();
       await expect(
         hero.locator('[class*="deviceStage"]').getByText("Tooth Extraction")
       ).toBeVisible();
       await expect(
+        hero
+          .locator('[class*="deviceStage"]')
+          .getByText("Step-by-step guidance after treatment.")
+      ).toBeVisible();
+      await expect(
+        hero
+          .locator('[class*="deviceStage"]')
+          .getByText("Immediate care", { exact: true })
+      ).toBeVisible();
+      await expect(
         hero.locator('[class*="deviceStage"]').getByText("Healing check")
       ).toBeVisible();
+      await expect(
+        hero.locator('[class*="deviceStage"]').getByText("Need help?")
+      ).toBeVisible();
+      await expect(
+        hero
+          .locator('[class*="deviceStage"]')
+          .getByText("Call Riverside Dental →")
+      ).toBeVisible();
+      await expect(
+        page.getByRole("link", { name: "Call Riverside Dental →" })
+      ).toHaveCount(0);
+      await expect(
+        hero.locator('[class*="deviceStage"]').getByText(/book/i)
+      ).toHaveCount(0);
       await expect(
         page.getByRole("heading", { name: "Tooth Extraction" })
       ).toHaveCount(0);
@@ -276,8 +300,15 @@ test.describe("marketing homepage", () => {
         );
       }
 
+      const phoneCanvas = await hero
+        .locator('[class*="phoneScreen"]')
+        .evaluate((element) => getComputedStyle(element).backgroundColor);
+      expect(phoneCanvas, `${shot.scheme} phone canvas`).toMatch(
+        /rgb\(\s*255,\s*255,\s*255/
+      );
+
       await page.screenshot({
-        path: `test-results/artifacts/phase-1f8-hero-${shot.width}-${shot.scheme}.png`,
+        path: `test-results/artifacts/phase-1f9-hero-${shot.width}-${shot.scheme}.png`,
       });
       await expectNoHorizontalOverflow(page);
     }
@@ -289,7 +320,7 @@ test.describe("marketing homepage", () => {
     await waitForHeroReveal(page);
     await expectNoHorizontalOverflow(page);
     await page.screenshot({
-      path: "test-results/artifacts/phase-1f8-hero-360-light.png",
+      path: "test-results/artifacts/phase-1f9-hero-360-light.png",
     });
 
     await page.setViewportSize({ width: 1280, height: 800 });
@@ -598,5 +629,157 @@ test.describe("marketing homepage", () => {
     await page.screenshot({
       path: "test-results/artifacts/phase-1f7-theme-focus.png",
     });
+  });
+
+  test("simplifies mobile marketing navigation and keeps desktop anchors", async ({
+    page,
+  }) => {
+    const headerNav = page.getByRole("navigation", { name: "Marketing" });
+    const footerNav = page.getByRole("navigation", { name: "Footer" });
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+    await waitForHeroReveal(page);
+
+    await expect(
+      headerNav.getByRole("link", { name: "How it works" })
+    ).toBeVisible();
+    await expect(
+      headerNav.getByRole("link", { name: "Clinic preview" })
+    ).toBeVisible();
+    await expect(
+      headerNav.getByRole("link", { name: "Early access" })
+    ).toBeVisible();
+    await expect(
+      headerNav.getByRole("link", { name: "Staff sign in" })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Change colour theme/ })
+    ).toBeVisible();
+
+    const desktopBand = page.locator('[aria-labelledby="product-heading"]');
+    const desktopPadding = await desktopBand.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).paddingTop)
+    );
+    expect(desktopPadding).toBeGreaterThanOrEqual(64);
+    expect(desktopPadding).toBeLessThanOrEqual(96);
+
+    await page
+      .locator('[aria-labelledby="why-heading"]')
+      .scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: "test-results/artifacts/phase-1f9-sections-1440-light.png",
+      fullPage: true,
+    });
+
+    for (const width of [390, 360] as const) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.reload({ waitUntil: "load" });
+      await showMarketingScheme(page, "light");
+      await waitForHeroReveal(page);
+
+      await expect(
+        headerNav.getByRole("link", { name: "How it works" })
+      ).toHaveCount(0);
+      await expect(
+        headerNav.getByRole("link", { name: "Clinic preview" })
+      ).toHaveCount(0);
+      await expect(
+        headerNav.getByRole("link", { name: "Early access" })
+      ).toHaveCount(0);
+      await expect(
+        headerNav.getByRole("link", {
+          name: "How it works",
+          includeHidden: true,
+        })
+      ).toBeHidden();
+      await expect(
+        headerNav.getByRole("link", { name: "Staff sign in" })
+      ).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: /Change colour theme/ })
+      ).toBeVisible();
+      await expect(
+        footerNav.getByRole("link", { name: "How it works" })
+      ).toBeVisible();
+
+      const wordmark = page.getByRole("banner").getByRole("link", {
+        name: "Aftercare Guide",
+      });
+      await expect(wordmark).toBeVisible();
+      const wordmarkBox = await wordmark.evaluate((element) => {
+        const styles = getComputedStyle(element);
+        return {
+          whiteSpace: styles.whiteSpace,
+          height: Math.round(element.getBoundingClientRect().height),
+          width: Math.round(element.getBoundingClientRect().width),
+        };
+      });
+      expect(wordmarkBox.whiteSpace).toBe("nowrap");
+      expect(wordmarkBox.height).toBeLessThanOrEqual(36);
+
+      const staffBox = await headerNav
+        .getByRole("link", { name: "Staff sign in" })
+        .evaluate((element) => {
+          const box = element.getBoundingClientRect();
+          return { width: box.width, height: box.height };
+        });
+      const themeBox = await page
+        .getByRole("button", { name: /Change colour theme/ })
+        .evaluate((element) => {
+          const box = element.getBoundingClientRect();
+          return { width: box.width, height: box.height };
+        });
+      expect(staffBox.height).toBeGreaterThanOrEqual(44);
+      expect(themeBox.width).toBeGreaterThanOrEqual(44);
+      expect(themeBox.height).toBeGreaterThanOrEqual(44);
+
+      const focusedNames: string[] = [];
+      await page.locator("body").click({ position: { x: 8, y: 8 } });
+      for (let index = 0; index < 8; index += 1) {
+        await page.keyboard.press("Tab");
+        const label = await page.evaluate(() => {
+          const active = document.activeElement;
+          if (!(active instanceof HTMLElement)) {
+            return "";
+          }
+          return (
+            active.getAttribute("aria-label") ||
+            active.textContent?.trim().slice(0, 48) ||
+            ""
+          );
+        });
+        if (label) {
+          focusedNames.push(label);
+        }
+      }
+      expect(focusedNames).not.toContain("How it works");
+      expect(focusedNames).not.toContain("Clinic preview");
+      expect(focusedNames).not.toContain("Early access");
+      expect(focusedNames.join(" ")).toMatch(/Staff sign in|Change colour/);
+      await expect(page.getByRole("button", { name: /menu/i })).toHaveCount(0);
+
+      await page.screenshot({
+        path: `test-results/artifacts/phase-1f9-header-${width}-light.png`,
+      });
+    }
+
+    const mobileBand = page.locator('[aria-labelledby="product-heading"]');
+    const mobilePadding = await mobileBand.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).paddingTop)
+    );
+    expect(mobilePadding).toBeGreaterThanOrEqual(64);
+    expect(mobilePadding).toBeLessThan(80);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page
+      .locator('[aria-labelledby="why-heading"]')
+      .scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: "test-results/artifacts/phase-1f9-sections-390-light.png",
+      fullPage: true,
+    });
+    await expectNoHorizontalOverflow(page);
   });
 });

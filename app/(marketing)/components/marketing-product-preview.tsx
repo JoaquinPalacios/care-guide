@@ -3,7 +3,11 @@ import type { ReactNode } from "react";
 import styles from "../marketing.module.css";
 
 const PHONE_STAGES = [
-  { period: "First few hours", title: "Immediate care" },
+  {
+    period: "First few hours",
+    title: "Immediate care",
+    summary: "Follow the clinic's immediate care notes and take it easy.",
+  },
   { period: "Days 2–3", title: "Early recovery" },
   { period: "Days 4–7", title: "Healing check" },
 ] as const;
@@ -26,7 +30,7 @@ const IPHONE_FRAME = {
  *
  * Later, compose a short WebM + MP4 loop inside PhoneScreen
  * (autoplay, muted, loop, playsInline, poster). Do not use GIF.
- * See docs/product/WORKING-MEMORY.md (Phase 1F.8).
+ * See docs/product/WORKING-MEMORY.md (Phase 1F.9).
  */
 export function MarketingProductPreview() {
   return (
@@ -70,16 +74,38 @@ function ProductPreviewScreen() {
         <span className={styles.phoneMark} />
         Riverside Dental Demo
       </div>
-      <p className={styles.phoneTitle}>Tooth Extraction</p>
       <p className={styles.phoneKicker}>Post-treatment instructions</p>
-      <p className={styles.phoneRecovery}>Recovery guide</p>
+      <p className={styles.phoneTitle}>Tooth Extraction</p>
+      <div className={styles.phoneRecovery}>
+        <p className={styles.phoneRecoveryTitle}>Your recovery</p>
+        <p className={styles.phoneRecoveryLede}>
+          Step-by-step guidance after treatment.
+        </p>
+      </div>
       <div className={styles.phoneTimeline}>
-        {PHONE_STAGES.map((stage) => (
-          <div key={stage.period} className={styles.phoneStage}>
-            <p className={styles.phonePeriod}>{stage.period}</p>
-            <p className={styles.phoneStageTitle}>{stage.title}</p>
-          </div>
-        ))}
+        {PHONE_STAGES.map((stage, index) => {
+          const current = index === 0;
+          return (
+            <div
+              key={stage.period}
+              className={
+                current
+                  ? `${styles.phoneStage} ${styles.phoneStageCurrent}`
+                  : `${styles.phoneStage} ${styles.phoneStageUpcoming}`
+              }
+            >
+              <p className={styles.phonePeriod}>{stage.period}</p>
+              <p className={styles.phoneStageTitle}>{stage.title}</p>
+              {current && "summary" in stage ? (
+                <p className={styles.phoneStageSummary}>{stage.summary}</p>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+      <div className={styles.phoneHelp}>
+        <p className={styles.phoneHelpLabel}>Need help?</p>
+        <p className={styles.phoneHelpAction}>Call Riverside Dental →</p>
       </div>
     </>
   );

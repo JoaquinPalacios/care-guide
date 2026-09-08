@@ -147,6 +147,16 @@ describe("aftercare style boundary", () => {
     expect(styles).not.toContain("100vh");
     expect(styles).toContain("100svh");
     expect(tokens).toContain("--mk-interact-duration");
+    expect(tokens).toContain("--mk-section-pad-y");
+    expect(tokens).toContain("--mk-chapter-pad-y");
+    expect(tokens).toContain("clamp(4rem, 6vw, 6rem)");
+    expect(tokens).toContain("clamp(6rem, 8vw, 8rem)");
+    expect(styles).not.toContain("3.6rem");
+    expect(styles).not.toContain("3.25rem");
+    expect(styles).toContain("a.navAnchor");
+    expect(styles).toContain("phoneStageCurrent");
+    expect(styles).toContain("phoneHelp");
+    expect(styles).toContain("color-scheme: light");
     expect(tokens).toContain("--mk-hero-glow");
     expect(tokens).toContain("--mk-hero-bloom");
     expect(tokens).toContain("--mk-hero-mist");
@@ -189,6 +199,10 @@ describe("aftercare style boundary", () => {
     expect(preview).toContain('fetchPriority="low"');
     expect(preview).not.toContain("<button");
     expect(preview).not.toContain("<a ");
+    expect(preview).toContain("Your recovery");
+    expect(preview).toContain("Need help?");
+    expect(preview).toContain("Call Riverside Dental");
+    expect(preview).not.toContain("Book an appointment");
   });
 
   it("keeps patient Client Components isolated to theme control and marketing Motion to marketing", () => {

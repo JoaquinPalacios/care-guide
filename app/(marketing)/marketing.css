@@ -38,6 +38,8 @@
   --mk-wave-glow-opacity: light-dark(0.3, 0.52);
   --mk-interact-duration: 180ms;
   --mk-interact-ease: ease-out;
+  --mk-section-pad-y: clamp(4rem, 6vw, 6rem);
+  --mk-chapter-pad-y: clamp(6rem, 8vw, 8rem);
 }
 
 html[data-theme-mode="light"] {
@@ -92,8 +94,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
   margin: 0;
   padding: 0;
   border: 1px solid var(--mk-line);
@@ -155,7 +157,7 @@ body {
 .mtcOption {
   display: flex;
   width: 100%;
-  min-height: 2.1rem;
+  min-height: 2.75rem;
   margin: 0;
   padding: 0 0.7rem;
   border: 0;

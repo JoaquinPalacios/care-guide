@@ -67,7 +67,13 @@ describe("marketing homepage", () => {
     expect(html).not.toContain("desktopPreview");
     expect(html).not.toContain("mobilePreview");
     expect(html).not.toContain("Recovery guides");
-    expect(html).toContain("Recovery guide");
+    expect(html).not.toContain("Recovery guide");
+    expect(html).toContain("Your recovery");
+    expect(html).toContain("Step-by-step guidance after treatment.");
+    expect(html).toContain("Need help?");
+    expect(html).toContain("Call Riverside Dental");
+    expect(html).toContain("navAnchor");
+    expect(html).toContain("navStaff");
     expect(html).toContain("Tooth Extraction");
     expect(html).toContain("Post-treatment instructions");
     expect(html).not.toContain("Dental Implant");
