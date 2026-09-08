@@ -44,7 +44,7 @@ export function MarketingProcess() {
         <span className={styles.processRailMark} />
       </span>
       <ol className={styles.processList}>
-        {STEPS.map((step) => (
+        {STEPS.map((step, index) => (
           <li
             key={step.node}
             className={styles.processStep}
@@ -61,6 +61,16 @@ export function MarketingProcess() {
               <h3>{step.title}</h3>
               <p>{step.copy}</p>
             </div>
+            {index < STEPS.length - 1 ? (
+              <span
+                className={styles.processConnector}
+                data-mk-process-connector=""
+                aria-hidden="true"
+              >
+                <span className={styles.processConnectorLine} />
+                <span className={styles.processConnectorArrow} />
+              </span>
+            ) : null}
           </li>
         ))}
       </ol>

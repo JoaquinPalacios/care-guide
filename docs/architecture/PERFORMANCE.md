@@ -796,3 +796,27 @@ Theme trigger hover is CSS on the existing AppearanceMenu island. **New marketin
 ### Tenant CSS / JS
 
 Tenant CSS source was not modified in 1F.14. Playwright still enforces ≤ 9,538 raw on tenant routes when the local database is reachable. No Motion on tenant. Staff still loads Tailwind.
+
+## After Phase 1F.15 (mobile storytelling)
+
+Measured 2026-09-09 against `cursor/aftercare-phase-1e-hardening` after Phase 1F.15. Production `next start` on port 4173. Next.js 16.3.4 / Turbopack. No Motion entrance choreography. No new marketing Client Component.
+
+### Marketing CSS
+
+Product grid areas, stacked-card process connectors (replacing the unused mobile left rail), and 64px mobile top padding on Brand Flexibility / Early Access.
+
+- `1qfjnjfd-d6cs.css` — marketing base, unchanged from 1F.14 (7,498 raw / 2,079 gzip / 1,863 Brotli)
+- `3cs149tpt5hh3.css` — `marketing.module.css` (35,171 raw / 6,306 gzip / 5,501 Brotli)
+
+| Metric         |  1F.14 |      1F.15 |    Delta |
+| -------------- | -----: | ---------: | -------: |
+| CSS raw        | 42,017 | **42,669** | **+652** |
+| CSS gzip -9    |  8,316 |  **8,385** |  **+69** |
+| CSS Brotli q11 |  7,318 |  **7,364** |  **+46** |
+| Tailwind       |     no |         no |        — |
+
+Source CSS: `marketing.css` 7,959 + `marketing.module.css` 33,868 = **41,827** vs 1F.14 **41,246** (**+581**). No Tailwind. No CSS-in-JS. **0 font bytes.** **New marketing client JS added: 0.**
+
+### Tenant CSS / JS
+
+Tenant CSS source was not modified in 1F.15. Playwright still enforces ≤ 9,538 raw on tenant routes when the local database is reachable. No Motion on tenant. Staff still loads Tailwind.

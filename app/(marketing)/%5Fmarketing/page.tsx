@@ -232,10 +232,7 @@ export default async function MarketingHomePage() {
           <section className={styles.band} aria-labelledby="product-heading">
             <MarketingReveal.Group>
               <div className={`${styles.inner} ${styles.productGrid}`}>
-                <MarketingReveal.Item>
-                  <MarketingProductAssembly />
-                </MarketingReveal.Item>
-                <div className={styles.productCopy}>
+                <div className={styles.productCopy} data-mk-product-copy="">
                   <MarketingReveal.Item>
                     <p className={styles.eyebrow}>The product</p>
                   </MarketingReveal.Item>
@@ -250,6 +247,11 @@ export default async function MarketingHomePage() {
                       aftercare home. Patients reopen the same instructions in
                       the practice&apos;s look — without creating an account.
                     </p>
+                  </MarketingReveal.Item>
+                </div>
+                <div className={styles.productVisual} data-mk-product-visual="">
+                  <MarketingReveal.Item>
+                    <MarketingProductAssembly />
                   </MarketingReveal.Item>
                 </div>
               </div>

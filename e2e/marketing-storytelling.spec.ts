@@ -324,6 +324,16 @@ test.describe("Phase 1F.11 story clarity", () => {
     expect(desktopLayout!.labelSpread).toBeLessThanOrEqual(2);
     expect(desktopLayout!.titleSpread).toBeLessThanOrEqual(2);
     expect(desktopLayout!.cardCursor).not.toBe("pointer");
+    await expect(section.locator("[data-mk-process-connector]")).toHaveCount(3);
+    await expect
+      .poll(async () =>
+        section
+          .locator("[data-mk-process-connector]")
+          .evaluateAll((nodes) =>
+            nodes.every((node) => getComputedStyle(node).display === "none")
+          )
+      )
+      .toBe(true);
 
     const firstCard = section.locator("[data-mk-process-card]").first();
     const restTransform = await firstCard.evaluate(
@@ -340,6 +350,9 @@ test.describe("Phase 1F.11 story clarity", () => {
     });
     await section.screenshot({
       path: "test-results/artifacts/phase-1f12-process-1440-light.png",
+    });
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f15-process-1440-light.png",
     });
 
     await showStaticScheme(page, "dark");
@@ -386,53 +399,79 @@ test.describe("Phase 1F.11 story clarity", () => {
     await showStaticScheme(page, "light");
     await scrollSectionIntoView(page, "#how-it-works");
     await waitForSectionReveal(section);
+    await expect(section.getByText("Step 1")).toBeVisible();
+    await expect(
+      section.locator('[class*="processNode"]').first()
+    ).toBeHidden();
+    await expect(section.locator("[data-mk-process-connector]")).toHaveCount(3);
     const mobileLayout = await section.evaluate((root) => {
       const items = [...root.querySelectorAll("li")];
       const rail = root.querySelector("[data-mk-process-rail]");
+      const cards = [
+        ...root.querySelectorAll('[class*="processCard"]'),
+      ] as HTMLElement[];
+      const connectors = [
+        ...root.querySelectorAll("[data-mk-process-connector]"),
+      ] as HTMLElement[];
       const nodes = [
         ...root.querySelectorAll('[class*="processNode"]'),
       ] as HTMLElement[];
-      if (items.length !== 4 || !rail || nodes.length !== 4) {
+      if (items.length !== 4 || !rail || cards.length !== 4) {
         return null;
       }
       const first = items[0].getBoundingClientRect();
       const second = items[1].getBoundingClientRect();
-      const railBox = rail.getBoundingClientRect();
-      const firstNode = nodes[0].getBoundingClientRect();
-      const lastNode = nodes[3].getBoundingClientRect();
+      const inner = (root.querySelector('[class*="inner"]') ??
+        root) as HTMLElement;
+      const innerBox = inner.getBoundingClientRect();
+      const cardBoxes = cards.map((card) => card.getBoundingClientRect());
+      const gaps = cardBoxes
+        .slice(0, -1)
+        .map((box, index) => Math.round(cardBoxes[index + 1].top - box.bottom));
       return {
         stacked: second.top > first.bottom - 8,
-        railHeight: Math.round(railBox.height),
-        railWidth: Math.round(railBox.width),
-        firstNodeOnRail:
-          Math.abs(
-            firstNode.left +
-              firstNode.width / 2 -
-              (railBox.left + railBox.width / 2)
-          ) <= 8 &&
-          Math.abs(firstNode.top + firstNode.height / 2 - railBox.top) <= 8,
-        lastNodeOnRail:
-          Math.abs(
-            lastNode.left +
-              lastNode.width / 2 -
-              (railBox.left + railBox.width / 2)
-          ) <= 8 && lastNode.top + lastNode.height / 2 <= railBox.bottom + 8,
+        railDisplay: getComputedStyle(rail).display,
+        connectorDisplay: connectors.map(
+          (node) => getComputedStyle(node).display
+        ),
+        nodeBoxes: nodes.map((node) => node.getClientRects().length),
+        minCardWidthShare: Math.min(
+          ...cardBoxes.map((box) => box.width / innerBox.width)
+        ),
+        maxGap: Math.max(...gaps),
+        minGap: Math.min(...gaps),
+        overlaps: cardBoxes.some((box, index) => {
+          const next = cardBoxes[index + 1];
+          return Boolean(next && box.bottom > next.top + 1);
+        }),
+        flexGrow: cards.map((card) => getComputedStyle(card).flexGrow),
       };
     });
     expect(mobileLayout).not.toBeNull();
     expect(mobileLayout!.stacked).toBe(true);
-    expect(mobileLayout!.railHeight).toBeGreaterThan(mobileLayout!.railWidth);
-    expect(mobileLayout!.firstNodeOnRail).toBe(true);
-    expect(mobileLayout!.lastNodeOnRail).toBe(true);
+    expect(mobileLayout!.railDisplay).toBe("none");
+    expect(mobileLayout!.connectorDisplay).toEqual(["flex", "flex", "flex"]);
+    expect(mobileLayout!.nodeBoxes.every((count) => count === 0)).toBe(true);
+    expect(mobileLayout!.minCardWidthShare).toBeGreaterThan(0.92);
+    expect(mobileLayout!.overlaps).toBe(false);
+    expect(mobileLayout!.maxGap).toBeLessThan(40);
+    expect(mobileLayout!.minGap).toBeGreaterThan(8);
+    expect(mobileLayout!.flexGrow.every((value) => value === "0")).toBe(true);
     await expectNoHorizontalOverflow(page);
     await section.screenshot({
       path: "test-results/artifacts/phase-1f11-process-390-light.png",
+    });
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f15-process-390-light.png",
     });
 
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
     await section.screenshot({
       path: "test-results/artifacts/phase-1f11-process-390-dark.png",
+    });
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f15-process-390-dark.png",
     });
   });
 
@@ -459,6 +498,37 @@ test.describe("Phase 1F.11 story clarity", () => {
     await expect(
       section.getByRole("heading", { name: "Simple to operate" })
     ).toBeVisible();
+    await expect(
+      section.getByText("Your name, colours and terminology stay front")
+    ).toBeVisible();
+    await expect(section.getByText("Controlled brand choices")).toBeVisible();
+    await expect(section.getByText("Clinic-first presentation")).toBeVisible();
+    await expect(
+      section.getByText("Clear aftercare designed to be reopened on a phone.")
+    ).toBeVisible();
+    await expect(section.getByText("Durable link")).toBeVisible();
+    await expect(section.getByText("Practice contact nearby")).toBeVisible();
+    await expect(
+      section.getByText(
+        "Enable reviewed guides instead of building pages from scratch."
+      )
+    ).toBeVisible();
+    await expect(section.getByText("Choose relevant guides")).toBeVisible();
+    await expect(section.getByText("Keep content consistent")).toBeVisible();
+    await expect(section.getByText("not a generic platform shell")).toHaveCount(
+      0
+    );
+    await expect(
+      section.getByText(
+        "Keep approved content consistent across every published guide."
+      )
+    ).toHaveCount(0);
+    const pointCounts = await section.evaluate((root) =>
+      [...root.querySelectorAll("[data-mk-pillar]")].map(
+        (card) => card.querySelectorAll("li").length
+      )
+    );
+    expect(pointCounts).toEqual([2, 2, 2]);
     await expect(
       section.getByRole("heading", { name: "Controlled customisation" })
     ).toBeVisible();
@@ -546,6 +616,9 @@ test.describe("Phase 1F.11 story clarity", () => {
     await section.screenshot({
       path: "test-results/artifacts/phase-1f12-pillars-1440-light.png",
     });
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f15-pillars-1440-light.png",
+    });
 
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
@@ -577,11 +650,17 @@ test.describe("Phase 1F.11 story clarity", () => {
     await section.screenshot({
       path: "test-results/artifacts/phase-1f12-pillars-390-light.png",
     });
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f15-pillars-390-light.png",
+    });
 
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
     await section.screenshot({
       path: "test-results/artifacts/phase-1f12-pillars-390-dark.png",
+    });
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f15-pillars-390-dark.png",
     });
   });
 
@@ -635,6 +714,40 @@ test.describe("Phase 1F.11 story clarity", () => {
       product.getByRole("link", { name: "Tooth Extraction" })
     ).toHaveCount(0);
 
+    const productOrder = await product.evaluate((root) => {
+      const copy = root.querySelector("[data-mk-product-copy]");
+      const visual = root.querySelector("[data-mk-product-visual]");
+      const canvas = root.querySelector("[data-mk-product-canvas]");
+      if (
+        !(copy instanceof HTMLElement) ||
+        !(visual instanceof HTMLElement) ||
+        !(canvas instanceof HTMLElement)
+      ) {
+        return null;
+      }
+      const copyBox = copy.getBoundingClientRect();
+      const visualBox = visual.getBoundingClientRect();
+      return {
+        copyBeforeCanvas:
+          copy.compareDocumentPosition(canvas) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+        visualLeftOfCopy: visualBox.right < copyBox.left + 24,
+        copyRightOfVisual: copyBox.left > visualBox.right - 24,
+        visualWidth: Math.round(visualBox.width),
+        visualHeight: Math.round(visualBox.height),
+        canvasWidth: Math.round(canvas.getBoundingClientRect().width),
+        canvasHeight: Math.round(canvas.getBoundingClientRect().height),
+      };
+    });
+    expect(productOrder).not.toBeNull();
+    expect(productOrder!.copyBeforeCanvas).toBeTruthy();
+    expect(productOrder!.visualLeftOfCopy).toBe(true);
+    expect(productOrder!.copyRightOfVisual).toBe(true);
+    expect(productOrder!.visualWidth).toBeGreaterThan(280);
+    expect(productOrder!.visualHeight).toBeGreaterThan(280);
+    expect(productOrder!.canvasWidth).toBeGreaterThan(280);
+    expect(productOrder!.canvasHeight).toBeGreaterThan(280);
+
     const problemLayout = await problem.evaluate((root) => {
       const eyebrow = root.querySelector('[class*="eyebrow"]');
       const heading = root.querySelector("h2");
@@ -659,6 +772,11 @@ test.describe("Phase 1F.11 story clarity", () => {
     await page.screenshot({
       path: "test-results/artifacts/phase-1f12-problem-product-1440-light.png",
     });
+    await scrollSectionIntoView(page, '[aria-labelledby="product-heading"]');
+    await waitForSectionReveal(product);
+    await product.locator('[class*="productGrid"]').screenshot({
+      path: "test-results/artifacts/phase-1f15-product-1440-light.png",
+    });
     await showStaticScheme(page, "dark");
     await page.screenshot({
       path: "test-results/artifacts/phase-1f12-problem-product-1440-dark.png",
@@ -680,6 +798,25 @@ test.describe("Phase 1F.11 story clarity", () => {
       );
     });
     expect(mobileProblem).toBe(true);
+    await scrollSectionIntoView(page, '[aria-labelledby="product-heading"]');
+    await waitForSectionReveal(product);
+    const mobileProduct = await product.evaluate((root) => {
+      const copy = root.querySelector("[data-mk-product-copy]");
+      const visual = root.querySelector("[data-mk-product-visual]");
+      if (!(copy instanceof HTMLElement) || !(visual instanceof HTMLElement)) {
+        return null;
+      }
+      const copyBox = copy.getBoundingClientRect();
+      const visualBox = visual.getBoundingClientRect();
+      return {
+        copyAboveVisual: visualBox.top > copyBox.bottom - 4,
+        gap: Math.round(visualBox.top - copyBox.bottom),
+      };
+    });
+    expect(mobileProduct).not.toBeNull();
+    expect(mobileProduct!.copyAboveVisual).toBe(true);
+    expect(mobileProduct!.gap).toBeGreaterThanOrEqual(24);
+    expect(mobileProduct!.gap).toBeLessThanOrEqual(48);
     await expectNoHorizontalOverflow(page);
     await problem.screenshot({
       path: "test-results/artifacts/phase-1f12-problem-390-light.png",
@@ -687,12 +824,18 @@ test.describe("Phase 1F.11 story clarity", () => {
     await product.screenshot({
       path: "test-results/artifacts/phase-1f12-product-390-light.png",
     });
+    await product.screenshot({
+      path: "test-results/artifacts/phase-1f15-product-390-light.png",
+    });
     await showStaticScheme(page, "dark");
     await problem.screenshot({
       path: "test-results/artifacts/phase-1f12-problem-390-dark.png",
     });
     await product.screenshot({
       path: "test-results/artifacts/phase-1f12-product-390-dark.png",
+    });
+    await product.screenshot({
+      path: "test-results/artifacts/phase-1f15-product-390-dark.png",
     });
   });
 
@@ -762,6 +905,9 @@ test.describe("Phase 1F.11 story clarity", () => {
         primaryShare: primaryBox.width / layoutBox.width,
         partnerShare: partnerBox.width / layoutBox.width,
         stacked: partnerBox.top > primaryBox.bottom - 8,
+        paddingTop: Math.round(
+          Number.parseFloat(getComputedStyle(root).paddingTop)
+        ),
       };
     });
     expect(desktopLayout).not.toBeNull();
@@ -771,6 +917,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     expect(desktopLayout!.primaryShare).toBeLessThan(0.68);
     expect(desktopLayout!.partnerShare).toBeGreaterThan(0.28);
     expect(desktopLayout!.partnerShare).toBeLessThan(0.5);
+    expect(desktopLayout!.paddingTop).toBeGreaterThanOrEqual(96);
 
     await section.screenshot({
       path: "test-results/artifacts/phase-1f13-early-access-1440-light.png",
@@ -804,14 +951,30 @@ test.describe("Phase 1F.11 story clarity", () => {
     expect(mobileLayout).not.toBeNull();
     expect(mobileLayout!.stacked).toBe(true);
     expect(mobileLayout!.sideBySide).toBe(false);
+    const mobilePadding = await section.evaluate((root) => {
+      const styles = getComputedStyle(root);
+      return {
+        paddingTop: Math.round(Number.parseFloat(styles.paddingTop)),
+        paddingBottom: Math.round(Number.parseFloat(styles.paddingBottom)),
+      };
+    });
+    expect(mobilePadding.paddingTop).toBe(64);
+    expect(mobilePadding.paddingBottom).toBeGreaterThanOrEqual(28);
+    expect(mobilePadding.paddingBottom).toBeLessThanOrEqual(48);
     await expectNoHorizontalOverflow(page);
     await section.screenshot({
       path: "test-results/artifacts/phase-1f13-early-access-390-light.png",
+    });
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f15-early-access-390-light.png",
     });
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
     await section.screenshot({
       path: "test-results/artifacts/phase-1f13-early-access-390-dark.png",
+    });
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f15-early-access-390-dark.png",
     });
   });
 
@@ -1346,6 +1509,9 @@ test.describe("Phase 1F.11 story clarity", () => {
         headingSize,
         whySize,
         previewSize,
+        paddingTop: Math.round(
+          Number.parseFloat(getComputedStyle(root).paddingTop)
+        ),
         heightSpread: Math.max(...heights) - Math.min(...heights),
         titleSpread: Math.max(...titleTops) - Math.min(...titleTops),
         copySpread: Math.max(...copyTops) - Math.min(...copyTops),
@@ -1373,6 +1539,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     expect(Number.parseFloat(desktop!.radius)).toBeGreaterThanOrEqual(14);
     expect(Number.parseFloat(desktop!.radius)).toBeLessThanOrEqual(16);
     expect(desktop!.hasOuterShadow).toBe(false);
+    expect(desktop!.paddingTop).toBeGreaterThanOrEqual(96);
     for (const card of desktop!.contrast) {
       expect(
         Math.abs(
@@ -1383,6 +1550,9 @@ test.describe("Phase 1F.11 story clarity", () => {
 
     await section.screenshot({
       path: "test-results/artifacts/phase-1f14-brand-1440-light.png",
+    });
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f15-brand-1440-light.png",
     });
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
@@ -1428,18 +1598,34 @@ test.describe("Phase 1F.11 story clarity", () => {
       return {
         stacked: second.top > first.bottom - 8,
         heightSpread: Math.max(...heights) - Math.min(...heights),
+        paddingTop: Math.round(
+          Number.parseFloat(getComputedStyle(root).paddingTop)
+        ),
       };
     });
     expect(mobile).not.toBeNull();
     expect(mobile!.stacked).toBe(true);
+    expect(mobile!.paddingTop).toBe(64);
+    const problemPadding = await page
+      .locator('[aria-labelledby="problem-heading"]')
+      .evaluate((root) =>
+        Math.round(Number.parseFloat(getComputedStyle(root).paddingTop))
+      );
+    expect(problemPadding).toBeGreaterThanOrEqual(96);
     await expectNoHorizontalOverflow(page);
     await section.screenshot({
       path: "test-results/artifacts/phase-1f14-brand-390-light.png",
+    });
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f15-brand-390-light.png",
     });
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
     await section.screenshot({
       path: "test-results/artifacts/phase-1f14-brand-390-dark.png",
+    });
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f15-brand-390-dark.png",
     });
   });
 
@@ -1472,7 +1658,7 @@ test.describe("Phase 1F.11 story clarity", () => {
         rest.iconTransform === "matrix(1, 0, 0, 1, 0, 0)"
     ).toBe(true);
     expect(rest.fillTransform).toMatch(/matrix\(0,\s*0,\s*0,\s*0/);
-    expect(rest.origin).toMatch(/center|22/);
+    expect(rest.origin).toMatch(/center|21|22/);
     expect(rest.duration).not.toBe("0s");
     await trigger.screenshot({
       path: "test-results/artifacts/phase-1f14-theme-default-light.png",
@@ -1713,11 +1899,12 @@ test.describe("Phase 1F.11 story clarity", () => {
     await expect(
       page.getByText("designed for clear reading on a phone")
     ).toBeVisible();
+    await expect(page.getByText("Keep content consistent")).toBeVisible();
     await expect(
       page.getByText(
         "Keep approved content consistent across every published guide."
       )
-    ).toBeVisible();
+    ).toHaveCount(0);
     await expect(
       page.getByText("controlled choices that keep every guide consistent")
     ).toBeVisible();
@@ -1732,23 +1919,109 @@ test.describe("Phase 1F.11 story clarity", () => {
   test("marketing storytelling remains accessible in light and dark", async ({
     page,
   }) => {
+    for (const viewport of [
+      { width: 1440, height: 900 },
+      { width: 390, height: 844 },
+    ] as const) {
+      for (const scheme of ["light", "dark"] as const) {
+        await page.setViewportSize(viewport);
+        await page.goto(marketingUrl("/"), { waitUntil: "load" });
+        await showMarketingScheme(page, scheme);
+        await waitForHeroReveal(page);
+        await page.locator("#how-it-works").scrollIntoViewIfNeeded();
+        await expectNoSeriousAxeViolations(page, {
+          exclude: "[data-mk-pending]",
+        });
+        if (viewport.width === 1440) {
+          await page
+            .getByRole("button", { name: /Change colour theme/ })
+            .click();
+          await expect(
+            page.getByRole("menu", { name: "Colour theme" })
+          ).toBeVisible();
+          await expectNoSeriousAxeViolations(page, {
+            exclude: "[data-mk-pending]",
+          });
+          await page.keyboard.press("Escape");
+        }
+      }
+    }
+  });
+
+  test("captures 360 mobile storytelling screenshots", async ({ page }) => {
+    const headerNav = page.getByRole("navigation", { name: "Marketing" });
+
     for (const scheme of ["light", "dark"] as const) {
-      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.setViewportSize({ width: 360, height: 800 });
+      await page.emulateMedia({
+        colorScheme: scheme,
+        reducedMotion: "reduce",
+      });
       await page.goto(marketingUrl("/"), { waitUntil: "load" });
-      await showMarketingScheme(page, scheme);
+      await showStaticScheme(page, scheme);
       await waitForHeroReveal(page);
-      await page.locator("#how-it-works").scrollIntoViewIfNeeded();
-      await expectNoSeriousAxeViolations(page, {
-        exclude: "[data-mk-pending]",
-      });
-      await page.getByRole("button", { name: /Change colour theme/ }).click();
+
       await expect(
-        page.getByRole("menu", { name: "Colour theme" })
+        headerNav.getByRole("link", { name: "How it works" })
+      ).toHaveCount(0);
+      await expect(
+        headerNav.getByRole("link", { name: "Clinic preview" })
+      ).toHaveCount(0);
+      await expect(
+        headerNav.getByRole("link", { name: "Early access" })
+      ).toHaveCount(0);
+      await expect(
+        headerNav.getByRole("link", { name: "Staff sign in" })
       ).toBeVisible();
-      await expectNoSeriousAxeViolations(page, {
-        exclude: "[data-mk-pending]",
+
+      await scrollSectionIntoView(page, '[aria-labelledby="product-heading"]');
+      await waitForSectionReveal(
+        page.locator('[aria-labelledby="product-heading"]')
+      );
+      await page.locator('[aria-labelledby="product-heading"]').screenshot({
+        path: `test-results/artifacts/phase-1f15-product-360-${scheme}.png`,
       });
-      await page.keyboard.press("Escape");
+
+      await scrollSectionIntoView(page, "#how-it-works");
+      await waitForSectionReveal(page.locator("#how-it-works"));
+      await page.locator("#how-it-works").screenshot({
+        path: `test-results/artifacts/phase-1f15-process-360-${scheme}.png`,
+      });
+
+      await scrollSectionIntoView(page, '[aria-labelledby="why-heading"]');
+      await waitForSectionReveal(
+        page.locator('[aria-labelledby="why-heading"]')
+      );
+      await page.locator('[aria-labelledby="why-heading"]').screenshot({
+        path: `test-results/artifacts/phase-1f15-pillars-360-${scheme}.png`,
+      });
+
+      await scrollSectionIntoView(page, '[aria-labelledby="brand-heading"]');
+      await waitForSectionReveal(
+        page.locator('[aria-labelledby="brand-heading"]')
+      );
+      const brandPadding = await page
+        .locator('[aria-labelledby="brand-heading"]')
+        .evaluate((root) =>
+          Math.round(Number.parseFloat(getComputedStyle(root).paddingTop))
+        );
+      expect(brandPadding).toBe(64);
+      await page.locator('[aria-labelledby="brand-heading"]').screenshot({
+        path: `test-results/artifacts/phase-1f15-brand-360-${scheme}.png`,
+      });
+
+      await scrollSectionIntoView(page, "#early-access");
+      await waitForSectionReveal(page.locator("#early-access"));
+      const paddingTop = await page
+        .locator("#early-access")
+        .evaluate((root) =>
+          Math.round(Number.parseFloat(getComputedStyle(root).paddingTop))
+        );
+      expect(paddingTop).toBe(64);
+      await page.locator("#early-access").screenshot({
+        path: `test-results/artifacts/phase-1f15-early-access-360-${scheme}.png`,
+      });
+      await expectNoHorizontalOverflow(page);
     }
   });
 });

@@ -49,6 +49,27 @@ describe("marketing homepage", () => {
     expect(html).toContain("Looks like your clinic");
     expect(html).toContain("Built for patients");
     expect(html).toContain("Simple to operate");
+    expect(html).toContain("data-mk-product-copy");
+    expect(html).toContain("data-mk-product-visual");
+    expect(html).toContain("data-mk-process-connector");
+    expect(html.indexOf("data-mk-product-copy")).toBeLessThan(
+      html.indexOf("data-mk-product-canvas")
+    );
+    expect(html).toContain("Your name, colours and terminology stay front");
+    expect(html).toContain("Controlled brand choices");
+    expect(html).toContain("Clinic-first presentation");
+    expect(html).toContain("Clear aftercare designed to be reopened");
+    expect(html).toContain("Durable link");
+    expect(html).toContain("Practice contact nearby");
+    expect(html).toContain(
+      "Enable reviewed guides instead of building pages from scratch."
+    );
+    expect(html).toContain("Choose relevant guides");
+    expect(html).toContain("Keep content consistent");
+    expect(html).not.toContain("not a generic platform shell");
+    expect(html).not.toContain(
+      "Keep approved content consistent across every published guide."
+    );
     expect(html).toContain("Controlled customisation");
     expect(html).toContain("Approved guide");
     expect(html).toContain("Clinic brand");

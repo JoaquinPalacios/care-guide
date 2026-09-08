@@ -4,32 +4,20 @@ const PILLARS = [
   {
     key: "clinic",
     title: "Looks like your clinic",
-    copy: "Patients land on a clinic-first page — name, colours, terminology, and tone — not a generic platform shell.",
-    points: [
-      "Primary and accent colours stay with the practice.",
-      "Instruction wording and theme follow clinic settings.",
-      "Corners and chrome use controlled presets that stay consistent.",
-    ],
+    copy: "Your name, colours and terminology stay front and centre.",
+    points: ["Controlled brand choices", "Clinic-first presentation"],
   },
   {
     key: "patients",
     title: "Built for patients",
-    copy: "The page is meant to be reopened at home on a phone, with the same instructions and a way to reach the practice.",
-    points: [
-      "Type and spacing are sized for mobile reading.",
-      "Durable URLs stay available after the appointment.",
-      "Practice contact sits on the same aftercare page.",
-    ],
+    copy: "Clear aftercare designed to be reopened on a phone.",
+    points: ["Durable link", "Practice contact nearby"],
   },
   {
     key: "operate",
     title: "Simple to operate",
-    copy: "Clinics enable reviewed recovery guides instead of assembling a website from scratch.",
-    points: [
-      "Turn on only the guides that match the care provided.",
-      "Reuse approved content across visits.",
-      "Keep approved content consistent across every published guide.",
-    ],
+    copy: "Enable reviewed guides instead of building pages from scratch.",
+    points: ["Choose relevant guides", "Keep content consistent"],
   },
 ] as const;
 

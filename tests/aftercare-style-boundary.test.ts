@@ -217,6 +217,9 @@ describe("aftercare style boundary", () => {
     expect(styles).toContain("pillarCard");
     expect(styles).toContain("frictionList");
     expect(styles).toContain("productCanvas");
+    expect(styles).toContain("productVisual");
+    expect(styles).toContain("grid-template-areas");
+    expect(styles).toContain("processConnector");
     expect(styles).toContain("patientHomePreview");
     expect(styles).toContain("background: currentColor");
     expect(styles).not.toContain("productEquation");

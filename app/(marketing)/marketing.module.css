@@ -289,10 +289,18 @@
 }
 
 .problemGrid,
-.productGrid,
 .previewGrid {
   display: grid;
   gap: 2.2rem;
+}
+
+.productGrid {
+  display: grid;
+  grid-template-areas:
+    "copy"
+    "visual";
+  row-gap: 2.25rem;
+  column-gap: 2.2rem;
 }
 
 .eyebrow {
@@ -881,7 +889,13 @@
 }
 
 .productCopy {
+  grid-area: copy;
   max-width: 38rem;
+}
+
+.productVisual {
+  grid-area: visual;
+  min-width: 0;
 }
 
 .productCopy h2,
@@ -907,26 +921,13 @@
 
 .processJourney {
   --process-node: 1.5rem;
-  --process-gap: 1.15rem;
   position: relative;
   margin-top: 1.75rem;
 }
 
 .processRail {
-  position: absolute;
-  z-index: 0;
-  left: calc(var(--process-node) / 2);
-  top: calc(var(--process-node) / 2);
-  bottom: 1.2rem;
-  width: 2px;
-  transform: translateX(-1px);
+  display: none;
   pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    var(--mk-rail),
-    var(--mk-rail-end),
-    var(--mk-rail)
-  );
 }
 
 .processRailMark {
@@ -937,26 +938,45 @@
   position: relative;
   z-index: 1;
   display: grid;
-  gap: var(--process-gap);
+  gap: 0;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .processStep {
-  display: grid;
-  grid-template-columns: var(--process-node) minmax(0, 1fr);
-  column-gap: 0.9rem;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .processTrack {
-  position: relative;
+  display: none;
+}
+
+.processConnector {
   display: flex;
-  justify-content: center;
-  align-self: stretch;
-  width: 100%;
-  min-height: var(--process-node);
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  padding-block: 0.55rem 0.5rem;
+  pointer-events: none;
+}
+
+.processConnectorLine {
+  width: 1px;
+  height: 0.7rem;
+  background: linear-gradient(to bottom, var(--mk-rail), var(--mk-rail-end));
+}
+
+.processConnectorArrow {
+  width: 0.34rem;
+  height: 0.34rem;
+  margin-top: -0.1rem;
+  border-right: 1.25px solid var(--mk-rail-end);
+  border-bottom: 1.25px solid var(--mk-rail-end);
+  transform: rotate(45deg);
+  opacity: 0.75;
 }
 
 .processNode {
@@ -1007,7 +1027,7 @@
 
 .processIndex {
   display: block;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.5rem;
   color: var(--mk-brand);
   font-size: 0.72rem;
   font-weight: 700;
@@ -1624,6 +1644,11 @@
     display: none;
   }
 
+  .ctaBlock,
+  .marketingShowcase > .band:first-child {
+    padding-top: 4rem;
+  }
+
   .earlyAccessLayout {
     gap: 3.35rem;
   }
@@ -1670,6 +1695,7 @@
 
   .productGrid {
     grid-template-columns: 0.9fr 1.1fr;
+    grid-template-areas: "visual copy";
     align-items: center;
   }
 
@@ -1722,6 +1748,8 @@
 
   .processRail {
     display: flex;
+    position: absolute;
+    z-index: 0;
     align-items: center;
     justify-content: space-evenly;
     left: 12.5%;
@@ -1765,10 +1793,18 @@
   }
 
   .processTrack {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-self: stretch;
     width: 100%;
     height: var(--process-node);
+    min-height: var(--process-node);
     margin-bottom: 1.05rem;
-    justify-content: center;
+  }
+
+  .processConnector {
+    display: none;
   }
 
   .processTrack::after {
@@ -1786,6 +1822,10 @@
     height: 100%;
     margin-inline: 0.45rem;
     padding: 1.25rem 1.15rem 1.3rem;
+  }
+
+  .processIndex {
+    margin-bottom: 0.35rem;
   }
 
   .pillarGrid {

@@ -75,6 +75,11 @@ test.describe("marketing accessibility", () => {
       await expect(
         page.getByRole("button", { name: /Change colour theme/ })
       ).toBeVisible();
+
+      await page.setViewportSize({ width: 390, height: 844 });
+      await expectNoSeriousAxeViolations(page, {
+        exclude: "[data-mk-pending]",
+      });
     });
   }
 });
