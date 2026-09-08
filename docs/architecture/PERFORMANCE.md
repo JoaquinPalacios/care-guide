@@ -698,6 +698,39 @@ Process, pillars, problem/product, and closing remain Server Components. **New m
 
 Experience+theme chunk delta vs 1F.10 (`23,381`): **−552**. No `marketing-process` or `marketing-pillars` client chunk.
 
+## After Phase 1F.12 (design coherence and closing bookend)
+
+Measured 2026-09-08 against `cursor/aftercare-phase-1e-hardening` after Phase 1F.12. Production `next start` on port 4173. Next.js 16.3.3 / Turbopack. No new dependency. No Motion entrance choreography. No scroll-linked background. No new marketing Client Component.
+
+### Marketing CSS
+
+Replaced the product equation pills and disconnected Clinic Preview copy with a product assembly canvas, a patient-home preview, a four-column customisation strip, and a complementary closing atmosphere (top hairline + bottom-centre glow).
+
+- `3sxa93kgoqe6-.css` — marketing base (6,939 raw / 1,920 gzip / 1,701 Brotli)
+- `090-a5g4tk6p-.css` — `marketing.module.css` (31,803 raw / 5,818 gzip / 5,080 Brotli)
+
+| Metric         |  1F.11 |      1F.12 |      Delta |
+| -------------- | -----: | ---------: | ---------: |
+| CSS raw        | 32,848 | **38,742** | **+5,894** |
+| CSS gzip -9    |  6,899 |  **7,738** |   **+839** |
+| CSS Brotli q11 |  6,027 |  **6,781** |   **+754** |
+| Tailwind       |     no |         no |          — |
+
+Source CSS: `marketing.css` 7,167 + `marketing.module.css` 30,602 = **37,769** vs 1F.11 **31,942** (**+5,827**). Compiled payload grew because the assembly canvas, patient-home preview, and closing atmosphere added more CSS than the equation-pill removal saved. No Tailwind. No CSS-in-JS.
+
+### Marketing JavaScript
+
+Product assembly, patient preview, customisation strip, and closing atmosphere remain Server Components / static CSS. **New marketing client JS added: 0.** Experience and Motion chunk hashes unchanged from 1F.11:
+
+| Chunk              | Role                                            |    Raw |
+| ------------------ | ----------------------------------------------- | -----: |
+| `2i-nz_vmh463e.js` | Marketing experience + theme menu               | 22,829 |
+| `01t426ne8zhgx.js` | Motion runtime (`motion/react-m`, `LazyMotion`) | 39,519 |
+
+### Tenant CSS / JS
+
+Unchanged from 1F.11. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.
+
 ### Tenant CSS / JS
 
 Unchanged from 1F.10. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.

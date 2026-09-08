@@ -338,6 +338,9 @@ test.describe("Phase 1F.11 story clarity", () => {
     await section.screenshot({
       path: "test-results/artifacts/phase-1f11-process-1440-light.png",
     });
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f12-process-1440-light.png",
+    });
 
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
@@ -502,14 +505,52 @@ test.describe("Phase 1F.11 story clarity", () => {
     expect(desktopLayout!.widthSpread).toBeLessThanOrEqual(4);
     expect(desktopLayout!.pointerCards).toBe(0);
 
+    const stripLayout = await section.evaluate((root) => {
+      const strip = root.querySelector("[data-mk-custom-strip]");
+      if (!(strip instanceof HTMLElement)) {
+        return null;
+      }
+      const columns = getComputedStyle(strip).gridTemplateColumns.split(" ");
+      const groups = [...strip.children] as HTMLElement[];
+      if (groups.length !== 4) {
+        return null;
+      }
+      const widths = groups.map((node) =>
+        Math.round(node.getBoundingClientRect().width)
+      );
+      const centers = groups.map((node) => {
+        const box = node.getBoundingClientRect();
+        const stripBox = strip.getBoundingClientRect();
+        return Math.abs(
+          box.top + box.height / 2 - (stripBox.top + stripBox.height / 2)
+        );
+      });
+      return {
+        columns: columns.length,
+        introWidest: widths[0] > widths[1] && widths[0] > widths[2],
+        usesStrip: strip.getBoundingClientRect().width > 900,
+        verticalBalance: Math.max(...centers) <= 12,
+      };
+    });
+    expect(stripLayout).not.toBeNull();
+    expect(stripLayout!.columns).toBe(4);
+    expect(stripLayout!.introWidest).toBe(true);
+    expect(stripLayout!.usesStrip).toBe(true);
+    expect(stripLayout!.verticalBalance).toBe(true);
+    await expect(section.getByText("Brand", { exact: true })).toBeVisible();
+    await expect(section.getByText("Corners", { exact: true })).toBeVisible();
+    await expect(
+      section.getByText("Appearance", { exact: true })
+    ).toBeVisible();
+
     await section.screenshot({
-      path: "test-results/artifacts/phase-1f11-pillars-1440-light.png",
+      path: "test-results/artifacts/phase-1f12-pillars-1440-light.png",
     });
 
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
     await section.screenshot({
-      path: "test-results/artifacts/phase-1f11-pillars-1440-dark.png",
+      path: "test-results/artifacts/phase-1f12-pillars-1440-dark.png",
     });
 
     await page.setViewportSize({ width: 390, height: 844 });
@@ -534,13 +575,13 @@ test.describe("Phase 1F.11 story clarity", () => {
     expect(mobileLayout!.stacked).toBe(true);
     await expectNoHorizontalOverflow(page);
     await section.screenshot({
-      path: "test-results/artifacts/phase-1f11-pillars-390-light.png",
+      path: "test-results/artifacts/phase-1f12-pillars-390-light.png",
     });
 
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
     await section.screenshot({
-      path: "test-results/artifacts/phase-1f11-pillars-390-dark.png",
+      path: "test-results/artifacts/phase-1f12-pillars-390-dark.png",
     });
   });
 
@@ -580,32 +621,78 @@ test.describe("Phase 1F.11 story clarity", () => {
     ).toBeVisible();
     await expect(product.getByText("Approved guide")).toBeVisible();
     await expect(product.getByText("Clinic brand")).toBeVisible();
+    await expect(product.locator("[data-mk-product-canvas]")).toHaveAttribute(
+      "aria-hidden",
+      "true"
+    );
     await expect(
-      product.getByText("Patient aftercare page", { exact: true })
+      product.locator("[data-mk-product-canvas]").getByText("Riverside Dental")
+    ).toHaveCount(2);
+    await expect(
+      product.locator("[data-mk-product-canvas]").getByText("Tooth Extraction")
     ).toBeVisible();
+    await expect(
+      product.getByRole("link", { name: "Tooth Extraction" })
+    ).toHaveCount(0);
+
+    const problemLayout = await problem.evaluate((root) => {
+      const eyebrow = root.querySelector('[class*="eyebrow"]');
+      const heading = root.querySelector("h2");
+      const firstItem = root.querySelector("ol li");
+      if (!eyebrow || !heading || !firstItem) {
+        return null;
+      }
+      const eyebrowBox = eyebrow.getBoundingClientRect();
+      const headingBox = heading.getBoundingClientRect();
+      const itemBox = firstItem.getBoundingClientRect();
+      return {
+        headingBelowEyebrow: headingBox.top > eyebrowBox.bottom - 2,
+        itemAlignsWithHeading: Math.abs(itemBox.top - headingBox.top) <= 12,
+        itemNotWithEyebrow: itemBox.top > eyebrowBox.bottom + 8,
+      };
+    });
+    expect(problemLayout).not.toBeNull();
+    expect(problemLayout!.headingBelowEyebrow).toBe(true);
+    expect(problemLayout!.itemAlignsWithHeading).toBe(true);
+    expect(problemLayout!.itemNotWithEyebrow).toBe(true);
 
     await page.screenshot({
-      path: "test-results/artifacts/phase-1f11-problem-product-1440-light.png",
+      path: "test-results/artifacts/phase-1f12-problem-product-1440-light.png",
     });
     await showStaticScheme(page, "dark");
     await page.screenshot({
-      path: "test-results/artifacts/phase-1f11-problem-product-1440-dark.png",
+      path: "test-results/artifacts/phase-1f12-problem-product-1440-dark.png",
     });
 
     await page.setViewportSize({ width: 390, height: 844 });
     await showStaticScheme(page, "light");
     await scrollSectionIntoView(page, '[aria-labelledby="problem-heading"]');
     await waitForSectionReveal(problem);
+    const mobileProblem = await problem.evaluate((root) => {
+      const heading = root.querySelector("h2");
+      const firstItem = root.querySelector("ol li");
+      if (!heading || !firstItem) {
+        return null;
+      }
+      return (
+        firstItem.getBoundingClientRect().top >
+        heading.getBoundingClientRect().bottom - 4
+      );
+    });
+    expect(mobileProblem).toBe(true);
     await expectNoHorizontalOverflow(page);
     await problem.screenshot({
-      path: "test-results/artifacts/phase-1f11-problem-390-light.png",
+      path: "test-results/artifacts/phase-1f12-problem-390-light.png",
     });
     await product.screenshot({
-      path: "test-results/artifacts/phase-1f11-product-390-light.png",
+      path: "test-results/artifacts/phase-1f12-product-390-light.png",
     });
     await showStaticScheme(page, "dark");
     await problem.screenshot({
-      path: "test-results/artifacts/phase-1f11-problem-390-dark.png",
+      path: "test-results/artifacts/phase-1f12-problem-390-dark.png",
+    });
+    await product.screenshot({
+      path: "test-results/artifacts/phase-1f12-product-390-dark.png",
     });
   });
 
@@ -630,13 +717,22 @@ test.describe("Phase 1F.11 story clarity", () => {
       const closingBg = getComputedStyle(closing).backgroundColor;
       const footerBg = getComputedStyle(footer).backgroundColor;
       const heading = closing.querySelector("h2");
-      const pageBg = getComputedStyle(document.body).backgroundColor;
+      const hairline = getComputedStyle(closing, "::before");
+      const closingGlow = getComputedStyle(closing, "::after");
+      const footerGlow = getComputedStyle(footer, "::after");
       return {
         closingBg,
         footerBg,
         headingColor: heading ? getComputedStyle(heading).color : "",
         hasBlend: Boolean(document.querySelector('[class*="blendTo"]')),
         chapterWash: document.querySelector("[data-chapter]") !== null,
+        hasFooterWave: Boolean(footer.querySelector(".mkWave")),
+        hairlineHeight: hairline.height,
+        hairlineImage: hairline.backgroundImage,
+        closingGlowImage: closingGlow.backgroundImage,
+        footerGlowImage: footerGlow.backgroundImage,
+        closingGlowBottom: closingGlow.bottom,
+        footerGlowBottom: footerGlow.bottom,
       };
     });
     expect(lightClosing).not.toBeNull();
@@ -645,8 +741,15 @@ test.describe("Phase 1F.11 story clarity", () => {
     expect(relativeLuminance(lightClosing!.headingColor)).toBeLessThan(0.35);
     expect(lightClosing!.hasBlend).toBe(false);
     expect(lightClosing!.chapterWash).toBe(false);
+    expect(lightClosing!.hasFooterWave).toBe(false);
+    expect(lightClosing!.hairlineHeight).toBe("1px");
+    expect(lightClosing!.hairlineImage).toMatch(/linear-gradient/i);
+    expect(lightClosing!.closingGlowImage).toMatch(/radial-gradient/i);
+    expect(lightClosing!.footerGlowImage).toMatch(/radial-gradient/i);
+    expect(lightClosing!.closingGlowBottom).toBe("0px");
+    expect(lightClosing!.footerGlowBottom).toBe("0px");
     await page.screenshot({
-      path: "test-results/artifacts/phase-1f11-closing-1440-light.png",
+      path: "test-results/artifacts/phase-1f12-closing-1440-light.png",
     });
 
     await showStaticScheme(page, "dark");
@@ -671,7 +774,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     expect(relativeLuminance(darkClosing!.footerBg)).toBeLessThan(0.18);
     expect(relativeLuminance(darkClosing!.headingColor)).toBeGreaterThan(0.7);
     await page.screenshot({
-      path: "test-results/artifacts/phase-1f11-closing-1440-dark.png",
+      path: "test-results/artifacts/phase-1f12-closing-1440-dark.png",
     });
 
     await page.setViewportSize({ width: 390, height: 844 });
@@ -679,11 +782,11 @@ test.describe("Phase 1F.11 story clarity", () => {
     await scrollSectionIntoView(page, "#early-access");
     await expectNoHorizontalOverflow(page);
     await page.locator("#early-access").screenshot({
-      path: "test-results/artifacts/phase-1f11-closing-390-light.png",
+      path: "test-results/artifacts/phase-1f12-closing-390-light.png",
     });
     await showStaticScheme(page, "dark");
     await page.locator("footer").screenshot({
-      path: "test-results/artifacts/phase-1f11-closing-390-dark.png",
+      path: "test-results/artifacts/phase-1f12-closing-390-dark.png",
     });
   });
 
@@ -726,6 +829,16 @@ test.describe("Phase 1F.11 story clarity", () => {
       )
       .toMatch(/matrix\(1,\s*0,\s*0,\s*1|none/);
 
+    const hoverColors = await howItWorks.evaluate((element) => {
+      const styles = getComputedStyle(element);
+      const after = getComputedStyle(element, "::after");
+      return {
+        color: styles.color,
+        underline: after.backgroundColor,
+      };
+    });
+    expect(hoverColors.underline).toBe(hoverColors.color);
+
     const footerLink = page
       .getByRole("navigation", { name: "Footer" })
       .getByRole("link", { name: "Early access" });
@@ -734,9 +847,14 @@ test.describe("Phase 1F.11 story clarity", () => {
       const after = getComputedStyle(element, "::after");
       const originX = Number.parseFloat(after.transformOrigin);
       const width = element.getBoundingClientRect().width;
-      return Math.abs(originX - width / 2) <= 2;
+      return {
+        centered: Math.abs(originX - width / 2) <= 2,
+        underline: after.backgroundColor,
+        color: getComputedStyle(element).color,
+      };
     });
-    expect(footerAfter).toBe(true);
+    expect(footerAfter.centered).toBe(true);
+    expect(footerAfter.underline).toBe(footerAfter.color);
 
     const primary = page
       .getByRole("link", { name: "View the clinic demo" })
@@ -749,6 +867,106 @@ test.describe("Phase 1F.11 story clarity", () => {
       primaryTransform === "none" ||
         primaryTransform === "matrix(1, 0, 0, 1, 0, 0)"
     ).toBe(true);
+    const secondary = page.getByRole("link", { name: "See how it works" });
+    await secondary.hover();
+    const secondaryTransform = await secondary.evaluate(
+      (element) => getComputedStyle(element).transform
+    );
+    expect(
+      secondaryTransform === "none" ||
+        secondaryTransform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+  });
+
+  test("clinic preview uses a patient-home panel instead of loose copy", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showStaticScheme(page, "light");
+    await waitForHeroReveal(page);
+
+    const section = page.locator("#preview");
+    await scrollSectionIntoView(page, "#preview");
+    await waitForSectionReveal(section);
+    await expect(
+      section.getByRole("heading", {
+        name: "See a branded aftercare home, not a staff console",
+      })
+    ).toBeVisible();
+    await expect(
+      section.getByRole("link", { name: "Open Riverside Dental Demo" })
+    ).toBeVisible();
+    await expect(section.getByText("Patient view")).toBeVisible();
+    await expect(section.locator("[data-mk-patient-preview]")).toHaveAttribute(
+      "aria-hidden",
+      "true"
+    );
+    await expect(
+      section.getByText("no login, no feed", { exact: false })
+    ).toBeVisible();
+    await expect(section.getByText("Not a login. Not a feed.")).toHaveCount(0);
+    await expect(
+      page.getByRole("heading", { name: "Brand directions" })
+    ).toHaveCount(0);
+    await expect(page.getByText("Brand directions")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Riverside Dental Demo" })
+    ).toBeVisible();
+    await expect(
+      section.getByRole("link", { name: "Tooth Extraction" })
+    ).toHaveCount(0);
+    await expect(
+      section.getByRole("link", { name: "Call the practice" })
+    ).toHaveCount(0);
+
+    const desktopLayout = await section.evaluate((root) => {
+      const preview = root.querySelector("[data-mk-patient-preview]");
+      const caption = root.querySelector('[class*="previewCaption"]');
+      const copy = root.querySelector('[class*="previewCopy"]');
+      if (
+        !(preview instanceof HTMLElement) ||
+        !(caption instanceof HTMLElement) ||
+        !(copy instanceof HTMLElement)
+      ) {
+        return null;
+      }
+      const previewBox = preview.getBoundingClientRect();
+      const captionBox = caption.getBoundingClientRect();
+      const copyBox = copy.getBoundingClientRect();
+      return {
+        previewRightOfCopy: previewBox.left > copyBox.right - 24,
+        captionBelowPreview: captionBox.top > previewBox.bottom - 8,
+        phoneCount: root.querySelectorAll('[class*="phoneShell"]').length,
+      };
+    });
+    expect(desktopLayout).not.toBeNull();
+    expect(desktopLayout!.previewRightOfCopy).toBe(true);
+    expect(desktopLayout!.captionBelowPreview).toBe(true);
+    expect(desktopLayout!.phoneCount).toBe(0);
+
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f12-preview-1440-light.png",
+    });
+    await showStaticScheme(page, "dark");
+    await waitForSectionReveal(section);
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f12-preview-1440-dark.png",
+    });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await showStaticScheme(page, "light");
+    await scrollSectionIntoView(page, "#preview");
+    await waitForSectionReveal(section);
+    await expectNoHorizontalOverflow(page);
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f12-preview-390-light.png",
+    });
+    await showStaticScheme(page, "dark");
+    await waitForSectionReveal(section);
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f12-preview-390-dark.png",
+    });
   });
 
   test("keeps the approved hero composition unchanged", async ({ page }) => {
@@ -802,6 +1020,9 @@ test.describe("Phase 1F.11 story clarity", () => {
       })
     ).toBeVisible();
     await expect(page.getByText("Aftercare platform").first()).toBeVisible();
+    await page.locator('[data-mk-chapter="hero"]').screenshot({
+      path: "test-results/artifacts/phase-1f12-hero-1440-light.png",
+    });
   });
 
   test("marketing storytelling remains accessible in light and dark", async ({

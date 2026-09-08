@@ -8,8 +8,80 @@
 }
 
 .marketingClosing {
+  position: relative;
+  isolation: isolate;
   background: var(--mk-closing);
   color: var(--mk-ink);
+}
+
+.marketingClosing[data-mk-chapter="closing"]::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 3%,
+    var(--mk-wave-periwinkle) 30%,
+    var(--mk-wave-cyan) 50%,
+    var(--mk-wave-periwinkle) 70%,
+    transparent 97%
+  );
+  opacity: light-dark(0.38, 0.52);
+}
+
+.marketingClosing[data-mk-chapter="closing"]::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 18rem;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      70% 90% at 50% 100%,
+      var(--mk-closing-glow),
+      transparent 74%
+    ),
+    radial-gradient(
+      40% 55% at 50% 100%,
+      var(--mk-closing-mist),
+      transparent 70%
+    );
+}
+
+.footer.marketingClosing {
+  overflow: hidden;
+}
+
+.footer.marketingClosing::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 28rem;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      68% 86% at 50% 100%,
+      var(--mk-closing-glow),
+      transparent 74%
+    ),
+    radial-gradient(
+      38% 48% at 50% 100%,
+      var(--mk-closing-mist),
+      transparent 70%
+    );
 }
 
 .marketingSoft {
@@ -94,6 +166,11 @@
   transition: color var(--mk-interact-duration) var(--mk-interact-ease);
 }
 
+.textLink:hover,
+.textLink:focus-visible {
+  color: var(--mk-ink);
+}
+
 .textLink::after {
   content: "";
   position: absolute;
@@ -102,7 +179,7 @@
   bottom: 0.12em;
   height: 1px;
   pointer-events: none;
-  background: var(--mk-brand);
+  background: currentColor;
   transform: scaleX(0);
   transform-origin: center;
   transition: transform var(--mk-interact-duration) var(--mk-interact-ease);
@@ -267,9 +344,9 @@
 }
 
 .primary:hover {
-  background: color-mix(in srgb, var(--mk-brand-strong) 82%, var(--mk-ink));
-  box-shadow: 0 8px 18px
-    color-mix(in srgb, var(--mk-brand-strong) 26%, transparent);
+  background: var(--mk-brand-hover);
+  box-shadow: 0 6px 16px
+    color-mix(in srgb, var(--mk-brand-strong) 22%, transparent);
 }
 
 .primary:focus-visible {
@@ -278,7 +355,7 @@
 }
 
 .primary:active {
-  background: color-mix(in srgb, var(--mk-brand-strong) 76%, var(--mk-ink));
+  background: var(--mk-brand-active);
   box-shadow: 0 1px 0 color-mix(in srgb, #0a0d14 10%, transparent);
 }
 
@@ -299,7 +376,7 @@
 }
 
 .secondary:active {
-  border-color: color-mix(in srgb, var(--mk-ink) 28%, var(--mk-line));
+  border-color: color-mix(in srgb, var(--mk-ink) 48%, var(--mk-line));
   background: color-mix(in srgb, var(--mk-ink) 8%, transparent);
 }
 
@@ -610,46 +687,170 @@
   max-width: 32rem;
 }
 
-.productEquation {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.45rem;
-  max-width: 22rem;
-}
-
-.equationTerm,
-.equationResult {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2rem;
-  padding: 0.25rem 0.75rem;
+.productCanvas {
+  display: grid;
+  justify-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  min-height: 18.5rem;
+  padding: 1.35rem 1.2rem 1.4rem;
   border: 1px solid var(--mk-card-line);
-  border-radius: 999px;
-  background: var(--mk-card);
-  font-size: 0.82rem;
+  border-radius: 1.15rem;
+  background:
+    radial-gradient(
+      82% 64% at 18% 12%,
+      light-dark(
+        color-mix(in srgb, #cfd6ff 18%, transparent),
+        color-mix(in srgb, #7c8cff 10%, transparent)
+      ),
+      transparent 72%
+    ),
+    radial-gradient(
+      70% 52% at 88% 92%,
+      light-dark(
+        color-mix(in srgb, #b5ebf1 10%, transparent),
+        color-mix(in srgb, #5ec8e0 9%, transparent)
+      ),
+      transparent 74%
+    ),
+    light-dark(#f3f4fa, #141822);
+}
+
+.productInputs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.productFragment,
+.productResult {
+  min-width: 0;
+  padding: 0.8rem 0.85rem 0.9rem;
+  border: 1px solid var(--mk-card-line);
+  border-radius: 0.85rem;
+  background: light-dark(#ffffff, #1a1f2a);
+  box-shadow: var(--mk-card-shadow);
+}
+
+.productFragment {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+}
+
+.productFragmentLabel {
+  margin: 0 0 0.15rem;
+  color: var(--mk-muted);
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.equationResult {
-  border-color: color-mix(in srgb, var(--mk-brand) 40%, var(--mk-line));
-  color: var(--mk-brand);
-}
-
-.equationJoin {
-  padding-left: 0.85rem;
+.productPlus {
+  align-self: center;
   color: var(--mk-rail);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 650;
   line-height: 1;
 }
 
-.equationArrow {
+.productClinicName,
+.productResultClinic {
+  margin: 0;
+  color: #0f766e;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.productSwatchRow,
+.customSwatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.7rem;
+}
+
+.productSwatchItem,
+.customSwatchItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  color: var(--mk-muted);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.swatchClinicAccent {
+  background: #14b8a6;
+}
+
+.productMerge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.12rem;
+}
+
+.productMergeLine {
   width: 1px;
   height: 1.15rem;
-  margin-left: 1.35rem;
   background: linear-gradient(to bottom, var(--mk-rail), var(--mk-rail-end));
+}
+
+.productMergeArrow {
+  width: 0.34rem;
+  height: 0.34rem;
+  margin-top: -0.12rem;
+  border-right: 1.25px solid var(--mk-rail-end);
+  border-bottom: 1.25px solid var(--mk-rail-end);
+  transform: rotate(45deg);
+  opacity: 0.85;
+}
+
+.productResult {
+  width: 100%;
+  max-width: 22.5rem;
+  background: #ffffff;
+  color: #0a0d14;
+  color-scheme: light;
+}
+
+.productResultTerm,
+.patientHomeTerm {
+  margin: 0.15rem 0 0.7rem;
+  color: light-dark(#0f766e, #14b8a6);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.productResultGuide,
+.patientHomeGuide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid color-mix(in srgb, #0f766e 18%, var(--mk-card-line));
+  border-radius: 0.55rem;
+  background: light-dark(#ffffff, #f7faf9);
+  color: #0a0d14;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.productResultArrow,
+.patientHomeArrow {
+  color: #0f766e;
+  font-weight: 700;
 }
 
 .productCopy {
@@ -810,8 +1011,7 @@
 .radiusRow,
 .themeChips,
 .clinicMarkRow,
-.microTimeline,
-.customPreview {
+.microTimeline {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -1116,7 +1316,77 @@
 
 .customStrip {
   display: grid;
-  gap: 1rem;
+  gap: 1.15rem;
+}
+
+.customGroup {
+  display: grid;
+  gap: 0.55rem;
+  align-content: center;
+}
+
+.customLabel {
+  margin: 0;
+  color: var(--mk-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.previewStage {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 26rem;
+}
+
+.patientHomePreview {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.patientViewKicker {
+  margin: 0;
+  color: var(--mk-brand);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.patientHomeCard {
+  padding: 1.15rem 1.15rem 1.05rem;
+  border: 1px solid color-mix(in srgb, #0f766e 16%, var(--mk-card-line));
+  border-radius: 0.9rem;
+  background: #ffffff;
+  color: #0a0d14;
+  box-shadow: var(--mk-card-shadow);
+  color-scheme: light;
+}
+
+.patientHomeClinic {
+  margin: 0;
+  color: #0a0d14;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+.patientHomeContact {
+  margin: 0.85rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, #0f766e 18%, #ecece8);
+  color: #0f766e;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.previewCaption {
+  margin: 0;
+  color: var(--mk-muted);
+  font-size: 0.95rem;
+  max-width: 28rem;
 }
 
 .brandGrid {
@@ -1150,6 +1420,8 @@
 }
 
 .ctaBlock {
+  position: relative;
+  z-index: 1;
   padding: var(--mk-chapter-pad-y) 0 2.25rem;
 }
 
@@ -1168,16 +1440,22 @@
 }
 
 .footer {
-  padding: 0 0 2rem;
+  padding: 0 0 2.6rem;
   color: var(--mk-muted);
   font-size: 0.9rem;
+}
+
+.footerInner,
+.footerCopy {
+  position: relative;
+  z-index: 1;
 }
 
 .footerInner {
   display: grid;
   gap: 1.25rem;
   padding-top: 1.35rem;
-  border-top: 1px solid var(--mk-line);
+  border-top: 1px solid color-mix(in srgb, var(--mk-line) 70%, transparent);
 }
 
 .footerBrand {
@@ -1240,6 +1518,15 @@
 
   .nav a.navAnchor {
     display: none;
+  }
+
+  .productInputs {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+  }
+
+  .productPlus {
+    justify-self: center;
   }
 
   .phoneScreen {
@@ -1404,9 +1691,23 @@
   }
 
   .customStrip {
-    grid-template-columns: minmax(14rem, 22rem) minmax(0, 1fr);
+    grid-template-columns:
+      minmax(12rem, 1.35fr)
+      minmax(7rem, 0.7fr)
+      minmax(9.5rem, 0.85fr)
+      minmax(8.5rem, 0.8fr);
     align-items: center;
-    column-gap: 1.5rem;
+    column-gap: 1.35rem;
+  }
+
+  .productCanvas {
+    min-height: 22.5rem;
+    padding: 1.55rem 1.4rem 1.65rem;
+  }
+
+  .productResult,
+  .previewStage {
+    max-width: none;
   }
 
   .brandGrid {

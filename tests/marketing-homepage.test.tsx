@@ -53,7 +53,12 @@ describe("marketing homepage", () => {
     expect(html).toContain("Controlled customisation");
     expect(html).toContain("Approved guide");
     expect(html).toContain("Clinic brand");
-    expect(html).toContain("Patient aftercare page");
+    expect(html).toContain("A branded patient aftercare page");
+    expect(html).toContain("data-mk-product-canvas");
+    expect(html).toContain("data-mk-patient-preview");
+    expect(html).toContain("Patient view");
+    expect(html).toContain("Brand directions");
+    expect(html).toContain("no login, no feed");
     expect(html).toContain("riverside.[your-domain]/extraction");
     expect(html).toContain("Call the practice");
     expect(html).toContain("Dental Implant");
@@ -127,6 +132,7 @@ describe("marketing homepage", () => {
     expect(html).toContain("marketingSoft");
     expect(html).toContain("marketingShowcase");
     expect(html).toContain("marketingClosing");
+    expect(html).not.toContain("productEquation");
     expect(html).not.toContain("blendToShowcase");
     expect(html).not.toContain("blendToClosing");
     expect(html).not.toContain("surfaceBase");

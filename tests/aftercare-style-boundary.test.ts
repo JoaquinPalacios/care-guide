@@ -167,6 +167,8 @@ describe("aftercare style boundary", () => {
     expect(tokens).toContain("--mk-hero-glow");
     expect(tokens).toContain("--mk-hero-bloom");
     expect(tokens).toContain("--mk-hero-mist");
+    expect(tokens).toContain("--mk-brand-hover");
+    expect(tokens).toContain("--mk-closing-glow");
     expect(styles).toContain("phoneFrame");
     expect(styles).not.toContain(".phoneBezel");
     expect(styles).not.toContain(".phoneIsland");
@@ -197,7 +199,10 @@ describe("aftercare style boundary", () => {
     expect(styles).toContain("pillarGrid");
     expect(styles).toContain("pillarCard");
     expect(styles).toContain("frictionList");
-    expect(styles).toContain("productEquation");
+    expect(styles).toContain("productCanvas");
+    expect(styles).toContain("patientHomePreview");
+    expect(styles).toContain("background: currentColor");
+    expect(styles).not.toContain("productEquation");
     expect(styles).not.toContain("bentoGrid");
     expect(styles).not.toContain("bentoCard");
     expect(preview).not.toMatch(/['"]use client['"]/);

@@ -8,8 +8,10 @@ import {
   MarketingRevealItem,
   MarketingRevealPreview,
 } from "@/app/(marketing)/components/marketing-experience";
+import { MarketingPatientPreview } from "@/app/(marketing)/components/marketing-patient-preview";
 import { MarketingPillars } from "@/app/(marketing)/components/marketing-pillars";
 import { MarketingProcess } from "@/app/(marketing)/components/marketing-process";
+import { MarketingProductAssembly } from "@/app/(marketing)/components/marketing-product-assembly";
 import { MarketingProductPreview } from "@/app/(marketing)/components/marketing-product-preview";
 import { MarketingThemeControl } from "@/app/(marketing)/components/marketing-theme-control";
 import { MarketingWave } from "@/app/(marketing)/components/marketing-wave";
@@ -186,40 +188,43 @@ export default async function MarketingHomePage() {
         <div className={styles.marketingSoft} data-mk-chapter="soft">
           <section className={styles.band} aria-labelledby="problem-heading">
             <MarketingReveal.Group>
-              <div className={`${styles.inner} ${styles.problemGrid}`}>
+              <div className={styles.inner}>
                 <MarketingReveal.Item>
-                  <div>
-                    <p className={styles.eyebrow}>The problem</p>
+                  <p className={styles.eyebrow}>The problem</p>
+                </MarketingReveal.Item>
+                <div className={styles.problemGrid}>
+                  <MarketingReveal.Item>
                     <h2 id="problem-heading" className={styles.problemTitle}>
                       Patients leave with instructions. They don&apos;t always
                       leave with clarity.
                     </h2>
-                  </div>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item>
-                  <ol className={styles.frictionList}>
-                    <li className={styles.frictionItem}>
-                      <span className={styles.frictionIndex}>01</span>
-                      <p>
-                        Verbal advice is easy to forget once the appointment
-                        ends.
-                      </p>
-                    </li>
-                    <li className={styles.frictionItem}>
-                      <span className={styles.frictionIndex}>02</span>
-                      <p>
-                        Paper is easy to lose, and PDFs are awkward to reopen on
-                        a phone.
-                      </p>
-                    </li>
-                    <li className={styles.frictionItem}>
-                      <span className={styles.frictionIndex}>03</span>
-                      <p>
-                        Generic handouts weaken the clinic&apos;s own identity.
-                      </p>
-                    </li>
-                  </ol>
-                </MarketingReveal.Item>
+                  </MarketingReveal.Item>
+                  <MarketingReveal.Item>
+                    <ol className={styles.frictionList}>
+                      <li className={styles.frictionItem}>
+                        <span className={styles.frictionIndex}>01</span>
+                        <p>
+                          Verbal advice is easy to forget once the appointment
+                          ends.
+                        </p>
+                      </li>
+                      <li className={styles.frictionItem}>
+                        <span className={styles.frictionIndex}>02</span>
+                        <p>
+                          Paper is easy to lose, and PDFs are awkward to reopen
+                          on a phone.
+                        </p>
+                      </li>
+                      <li className={styles.frictionItem}>
+                        <span className={styles.frictionIndex}>03</span>
+                        <p>
+                          Generic handouts weaken the clinic&apos;s own
+                          identity.
+                        </p>
+                      </li>
+                    </ol>
+                  </MarketingReveal.Item>
+                </div>
               </div>
             </MarketingReveal.Group>
           </section>
@@ -228,15 +233,7 @@ export default async function MarketingHomePage() {
             <MarketingReveal.Group>
               <div className={`${styles.inner} ${styles.productGrid}`}>
                 <MarketingReveal.Item>
-                  <div className={styles.productEquation} aria-hidden="true">
-                    <span className={styles.equationTerm}>Approved guide</span>
-                    <span className={styles.equationJoin}>+</span>
-                    <span className={styles.equationTerm}>Clinic brand</span>
-                    <span className={styles.equationArrow} />
-                    <span className={styles.equationResult}>
-                      Patient aftercare page
-                    </span>
-                  </div>
+                  <MarketingProductAssembly />
                 </MarketingReveal.Item>
                 <div className={styles.productCopy}>
                   <MarketingReveal.Item>
@@ -305,7 +302,7 @@ export default async function MarketingHomePage() {
             <MarketingReveal.Group>
               <div className={styles.inner}>
                 <MarketingReveal.Item>
-                  <p className={styles.eyebrow}>Branding</p>
+                  <p className={styles.eyebrow}>Brand directions</p>
                 </MarketingReveal.Item>
                 <MarketingReveal.Item>
                   <h2 id="brand-heading">
@@ -382,11 +379,7 @@ export default async function MarketingHomePage() {
                   </MarketingReveal.Item>
                 </div>
                 <MarketingReveal.Item>
-                  <p className={styles.copy}>
-                    A calm clinic resource page. Not a login. Not a feed. Just
-                    the recovery information the practice wants patients to
-                    keep.
-                  </p>
+                  <MarketingPatientPreview />
                 </MarketingReveal.Item>
               </div>
             </MarketingReveal.Group>

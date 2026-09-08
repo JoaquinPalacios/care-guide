@@ -61,11 +61,21 @@ export function MarketingPillars() {
             Fit the patient&apos;s page to the clinic without arbitrary CSS.
           </p>
         </div>
-        <div className={styles.customPreview} aria-hidden="true">
-          <div className={styles.microBrand}>
-            <span className={`${styles.swatch} ${styles.swatchPrimary}`} />
-            <span className={`${styles.swatch} ${styles.swatchAccent}`} />
+        <div className={styles.customGroup} aria-hidden="true">
+          <p className={styles.customLabel}>Brand</p>
+          <div className={styles.customSwatches}>
+            <span className={styles.customSwatchItem}>
+              <span className={`${styles.swatch} ${styles.swatchPrimary}`} />
+              Primary
+            </span>
+            <span className={styles.customSwatchItem}>
+              <span className={`${styles.swatch} ${styles.swatchAccent}`} />
+              Accent
+            </span>
           </div>
+        </div>
+        <div className={styles.customGroup} aria-hidden="true">
+          <p className={styles.customLabel}>Corners</p>
           <div className={styles.radiusRow}>
             <span className={`${styles.radiusChip} ${styles.radiusSharp}`}>
               Sharp
@@ -77,6 +87,9 @@ export function MarketingPillars() {
               Soft
             </span>
           </div>
+        </div>
+        <div className={styles.customGroup} aria-hidden="true">
+          <p className={styles.customLabel}>Appearance</p>
           <div className={styles.themeChips}>
             <span className={styles.themeChip}>Light</span>
             <span className={styles.themeChip}>Dark</span>

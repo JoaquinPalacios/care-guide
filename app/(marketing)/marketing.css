@@ -10,7 +10,17 @@
   --mk-muted: light-dark(#5c6573, #98a2b3);
   --mk-brand: light-dark(#3b4bd1, #a6b8ff);
   --mk-brand-strong: light-dark(#3b4bd1, #7c8cff);
+  --mk-brand-hover: light-dark(#3342c6, #93a4ff);
+  --mk-brand-active: light-dark(#2d3bb8, #8496f4);
   --mk-on-brand: light-dark(#ffffff, #0a0d14);
+  --mk-closing-glow: light-dark(
+    color-mix(in srgb, #cfd6ff 13%, transparent),
+    color-mix(in srgb, #2c46c4 30%, transparent)
+  );
+  --mk-closing-mist: light-dark(
+    color-mix(in srgb, #b5ebf1 8%, transparent),
+    color-mix(in srgb, #5ec8e0 13%, transparent)
+  );
   --mk-line: light-dark(#e4dfd6, #2a3140);
   --mk-focus: light-dark(#3b4bd1, #a6b8ff);
   --mk-hero-glow: light-dark(
