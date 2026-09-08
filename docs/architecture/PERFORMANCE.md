@@ -731,6 +731,35 @@ Product assembly, patient preview, customisation strip, and closing atmosphere r
 
 Unchanged from 1F.11. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.
 
+## After Phase 1F.13 (early access composition and footer separator light)
+
+Measured 2026-09-08 against `cursor/aftercare-phase-1e-hardening` after Phase 1F.13. Production `next start` on port 4173. Next.js 16.3.3 / Turbopack. No new dependency. No Motion entrance choreography. No scroll-linked background. No new marketing Client Component.
+
+### Marketing CSS
+
+Replaced the Early Access one-column close and the bottom-centre footer glow with a ~58/42 conversion / design-partner layout, a centre-out secondary CTA fill, and a right-biased separator light source. Old footer `::after` bloom rules were removed.
+
+- `13ryw6c_uwla7.css` — marketing base, including secondary-fill and closing-light tokens (7,208 raw / 1,957 gzip / 1,739 Brotli)
+- `21qumm2dexteh.css` — `marketing.module.css` (34,217 raw / 6,157 gzip / 5,384 Brotli)
+
+| Metric         |  1F.12 |      1F.13 |      Delta |
+| -------------- | -----: | ---------: | ---------: |
+| CSS raw        | 38,742 | **41,425** | **+2,683** |
+| CSS gzip -9    |  7,738 |  **8,114** |   **+376** |
+| CSS Brotli q11 |  6,781 |  **7,123** |   **+342** |
+| Tailwind       |     no |         no |          — |
+
+Source CSS: `marketing.css` 7,550 + `marketing.module.css` 32,947 = **40,497** vs 1F.12 **37,769** (**+2,728**). Compiled payload grew with the design-partner column and separator atmosphere; removing the duplicated bottom-centre footer glow kept the increase modest. No Tailwind. No CSS-in-JS.
+
+### Marketing JavaScript
+
+Early Access markup, secondary fill, and footer atmosphere remain Server Components / static CSS. **New marketing client JS added: 0.** Experience and Motion chunk hashes unchanged from 1F.12:
+
+| Chunk              | Role                                            |    Raw |
+| ------------------ | ----------------------------------------------- | -----: |
+| `2i-nz_vmh463e.js` | Marketing experience + theme menu               | 22,829 |
+| `01t426ne8zhgx.js` | Motion runtime (`motion/react-m`, `LazyMotion`) | 39,519 |
+
 ### Tenant CSS / JS
 
-Unchanged from 1F.10. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.
+Unchanged from 1F.12. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.

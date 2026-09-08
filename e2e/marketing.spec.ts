@@ -528,6 +528,11 @@ test.describe("marketing homepage", () => {
     });
 
     await primary.hover();
+    await expect
+      .poll(async () =>
+        primary.evaluate((element) => getComputedStyle(element).backgroundColor)
+      )
+      .not.toBe(restPrimary.background);
     const hoverPrimary = await primary.evaluate((element) => {
       const styles = getComputedStyle(element);
       return {
@@ -547,6 +552,13 @@ test.describe("marketing homepage", () => {
     });
 
     await secondary.hover();
+    await expect
+      .poll(async () =>
+        secondary.evaluate(
+          (element) => getComputedStyle(element, "::before").transform
+        )
+      )
+      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
     const hoverSecondary = await secondary.evaluate(
       (element) => getComputedStyle(element).transform
     );
@@ -554,7 +566,7 @@ test.describe("marketing homepage", () => {
       hoverSecondary === "none" || hoverSecondary === "matrix(1, 0, 0, 1, 0, 0)"
     ).toBe(true);
     await page.screenshot({
-      path: "test-results/artifacts/phase-1f7-secondary-hover.png",
+      path: "test-results/artifacts/phase-1f13-secondary-hover-hero.png",
     });
 
     const navRestColor = await howItWorks.evaluate(
@@ -746,23 +758,35 @@ test.describe("marketing homepage", () => {
         await page.keyboard.press("Tab");
         const label = await page.evaluate(() => {
           const active = document.activeElement;
+          const headerNav = document.querySelector(
+            'nav[aria-label="Marketing"]'
+          );
           if (!(active instanceof HTMLElement)) {
             return "";
           }
-          return (
+          const inHeader = Boolean(
+            headerNav instanceof HTMLElement && headerNav.contains(active)
+          );
+          const text =
             active.getAttribute("aria-label") ||
             active.textContent?.trim().slice(0, 48) ||
-            ""
-          );
+            "";
+          return JSON.stringify({ inHeader, text });
         });
         if (label) {
           focusedNames.push(label);
         }
       }
-      expect(focusedNames).not.toContain("How it works");
-      expect(focusedNames).not.toContain("Clinic preview");
-      expect(focusedNames).not.toContain("Early access");
-      expect(focusedNames.join(" ")).toMatch(/Staff sign in|Change colour/);
+      const headerLabels = focusedNames
+        .map(
+          (entry) => JSON.parse(entry) as { inHeader: boolean; text: string }
+        )
+        .filter((entry) => entry.inHeader)
+        .map((entry) => entry.text);
+      expect(headerLabels).not.toContain("How it works");
+      expect(headerLabels).not.toContain("Clinic preview");
+      expect(headerLabels).not.toContain("Early access");
+      expect(headerLabels.join(" ")).toMatch(/Staff sign in|Change colour/);
       await expect(page.getByRole("button", { name: /menu/i })).toHaveCount(0);
 
       await page.screenshot({

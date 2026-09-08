@@ -696,7 +696,126 @@ test.describe("Phase 1F.11 story clarity", () => {
     });
   });
 
-  test("light closing stays light and dark closing stays dark", async ({
+  test("early access uses a split layout and demo-only prospect CTA", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showStaticScheme(page, "light");
+    await waitForHeroReveal(page);
+    await scrollSectionIntoView(page, "#early-access");
+
+    const section = page.locator("#early-access");
+    await expect(
+      section.getByRole("heading", {
+        name: "Talk to us about a design-partner clinic",
+      })
+    ).toBeVisible();
+    await expect(section.getByText("Early access")).toBeVisible();
+    await expect(section.getByText("Design partner")).toBeVisible();
+    await expect(
+      section.getByRole("heading", { name: "What we'll validate together" })
+    ).toBeVisible();
+    await expect(section.getByText("Guide setup")).toBeVisible();
+    await expect(section.getByText("Clinic branding")).toBeVisible();
+    await expect(section.getByText("Patient handoff")).toBeVisible();
+    await expect(
+      section.getByRole("link", { name: "View the clinic demo" })
+    ).toBeVisible();
+    await waitForSectionReveal(section);
+    await expect(
+      section.getByRole("link", { name: "Open staff sign in" })
+    ).toHaveCount(0);
+    await expect(
+      section.getByRole("link", { name: "Staff sign in" })
+    ).toHaveCount(0);
+    await expect(
+      section.getByRole("link", { name: "Request access" })
+    ).toHaveCount(0);
+    await expect(section.getByText("operator admin")).toHaveCount(0);
+
+    const headerStaff = page
+      .getByRole("navigation", { name: "Marketing" })
+      .getByRole("link", { name: "Staff sign in" });
+    const footerStaff = page
+      .getByRole("navigation", { name: "Footer" })
+      .getByRole("link", { name: "Staff sign in" });
+    await expect(headerStaff).toBeVisible();
+    await expect(footerStaff).toBeVisible();
+
+    const desktopLayout = await section.evaluate((root) => {
+      const layout = root.querySelector('[class*="earlyAccessLayout"]');
+      const primary = root.querySelector('[class*="earlyAccessPrimary"]');
+      const partner = root.querySelector('[class*="earlyAccessPartner"]');
+      if (
+        !(layout instanceof HTMLElement) ||
+        !(primary instanceof HTMLElement) ||
+        !(partner instanceof HTMLElement)
+      ) {
+        return null;
+      }
+      const layoutBox = layout.getBoundingClientRect();
+      const primaryBox = primary.getBoundingClientRect();
+      const partnerBox = partner.getBoundingClientRect();
+      return {
+        sideBySide: partnerBox.left > primaryBox.right - 24,
+        primaryShare: primaryBox.width / layoutBox.width,
+        partnerShare: partnerBox.width / layoutBox.width,
+        stacked: partnerBox.top > primaryBox.bottom - 8,
+      };
+    });
+    expect(desktopLayout).not.toBeNull();
+    expect(desktopLayout!.sideBySide).toBe(true);
+    expect(desktopLayout!.stacked).toBe(false);
+    expect(desktopLayout!.primaryShare).toBeGreaterThan(0.5);
+    expect(desktopLayout!.primaryShare).toBeLessThan(0.68);
+    expect(desktopLayout!.partnerShare).toBeGreaterThan(0.28);
+    expect(desktopLayout!.partnerShare).toBeLessThan(0.5);
+
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f13-early-access-1440-light.png",
+    });
+    await showStaticScheme(page, "dark");
+    await waitForSectionReveal(section);
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f13-early-access-1440-dark.png",
+    });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await showStaticScheme(page, "light");
+    await scrollSectionIntoView(page, "#early-access");
+    await waitForSectionReveal(section);
+    const mobileLayout = await section.evaluate((root) => {
+      const primary = root.querySelector('[class*="earlyAccessPrimary"]');
+      const partner = root.querySelector('[class*="earlyAccessPartner"]');
+      if (
+        !(primary instanceof HTMLElement) ||
+        !(partner instanceof HTMLElement)
+      ) {
+        return null;
+      }
+      const primaryBox = primary.getBoundingClientRect();
+      const partnerBox = partner.getBoundingClientRect();
+      return {
+        stacked: partnerBox.top >= primaryBox.bottom - 2,
+        sideBySide: partnerBox.left > primaryBox.right - 8,
+      };
+    });
+    expect(mobileLayout).not.toBeNull();
+    expect(mobileLayout!.stacked).toBe(true);
+    expect(mobileLayout!.sideBySide).toBe(false);
+    await expectNoHorizontalOverflow(page);
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f13-early-access-390-light.png",
+    });
+    await showStaticScheme(page, "dark");
+    await waitForSectionReveal(section);
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f13-early-access-390-dark.png",
+    });
+  });
+
+  test("closing atmosphere uses a right-biased footer separator light", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -708,9 +827,11 @@ test.describe("Phase 1F.11 story clarity", () => {
     const lightClosing = await page.evaluate(() => {
       const closing = document.querySelector('[data-mk-chapter="closing"]');
       const footer = document.querySelector("footer");
+      const separator = footer?.querySelector('[class*="footerSeparator"]');
       if (
         !(closing instanceof HTMLElement) ||
-        !(footer instanceof HTMLElement)
+        !(footer instanceof HTMLElement) ||
+        !(separator instanceof HTMLElement)
       ) {
         return null;
       }
@@ -719,7 +840,8 @@ test.describe("Phase 1F.11 story clarity", () => {
       const heading = closing.querySelector("h2");
       const hairline = getComputedStyle(closing, "::before");
       const closingGlow = getComputedStyle(closing, "::after");
-      const footerGlow = getComputedStyle(footer, "::after");
+      const footerGlow = getComputedStyle(footer, "::before");
+      const footerAfter = getComputedStyle(footer, "::after");
       return {
         closingBg,
         footerBg,
@@ -731,8 +853,16 @@ test.describe("Phase 1F.11 story clarity", () => {
         hairlineImage: hairline.backgroundImage,
         closingGlowImage: closingGlow.backgroundImage,
         footerGlowImage: footerGlow.backgroundImage,
+        footerAfterImage: footerAfter.backgroundImage,
         closingGlowBottom: closingGlow.bottom,
-        footerGlowBottom: footerGlow.bottom,
+        footerGlowTop: footerGlow.top,
+        separatorHeight: getComputedStyle(separator).height,
+        separatorImage: getComputedStyle(separator).backgroundImage,
+        usesBlur:
+          `${closingGlow.filter} ${footerGlow.filter}`.includes("blur(") ||
+          `${closingGlow.backdropFilter} ${footerGlow.backdropFilter}`.includes(
+            "blur"
+          ),
       };
     });
     expect(lightClosing).not.toBeNull();
@@ -745,11 +875,29 @@ test.describe("Phase 1F.11 story clarity", () => {
     expect(lightClosing!.hairlineHeight).toBe("1px");
     expect(lightClosing!.hairlineImage).toMatch(/linear-gradient/i);
     expect(lightClosing!.closingGlowImage).toMatch(/radial-gradient/i);
+    expect(lightClosing!.closingGlowImage).toMatch(/82%/);
     expect(lightClosing!.footerGlowImage).toMatch(/radial-gradient/i);
+    expect(lightClosing!.footerGlowImage).toMatch(/82%/);
+    expect(lightClosing!.footerAfterImage === "none").toBe(true);
     expect(lightClosing!.closingGlowBottom).toBe("0px");
-    expect(lightClosing!.footerGlowBottom).toBe("0px");
+    expect(lightClosing!.footerGlowTop).toBe("0px");
+    expect(lightClosing!.separatorHeight).toBe("1px");
+    expect(lightClosing!.separatorImage).toMatch(/linear-gradient/i);
+    expect(lightClosing!.usesBlur).toBe(false);
+    await page.evaluate(() => {
+      document.querySelector("footer")?.scrollIntoView({
+        block: "end",
+        behavior: "instant",
+      });
+    });
+    await expect
+      .poll(async () => {
+        const box = await page.locator("footer").boundingBox();
+        return box ? box.y + box.height : -1;
+      })
+      .toBeGreaterThan(48);
     await page.screenshot({
-      path: "test-results/artifacts/phase-1f12-closing-1440-light.png",
+      path: "test-results/artifacts/phase-1f13-closing-1440-light.png",
     });
 
     await showStaticScheme(page, "dark");
@@ -773,20 +921,26 @@ test.describe("Phase 1F.11 story clarity", () => {
     expect(relativeLuminance(darkClosing!.closingBg)).toBeLessThan(0.18);
     expect(relativeLuminance(darkClosing!.footerBg)).toBeLessThan(0.18);
     expect(relativeLuminance(darkClosing!.headingColor)).toBeGreaterThan(0.7);
+    await page.evaluate(() => {
+      document.querySelector("footer")?.scrollIntoView({
+        block: "end",
+        behavior: "instant",
+      });
+    });
     await page.screenshot({
-      path: "test-results/artifacts/phase-1f12-closing-1440-dark.png",
+      path: "test-results/artifacts/phase-1f13-closing-1440-dark.png",
     });
 
     await page.setViewportSize({ width: 390, height: 844 });
     await showStaticScheme(page, "light");
     await scrollSectionIntoView(page, "#early-access");
     await expectNoHorizontalOverflow(page);
-    await page.locator("#early-access").screenshot({
-      path: "test-results/artifacts/phase-1f12-closing-390-light.png",
+    await page.locator("footer").screenshot({
+      path: "test-results/artifacts/phase-1f13-closing-390-light.png",
     });
     await showStaticScheme(page, "dark");
     await page.locator("footer").screenshot({
-      path: "test-results/artifacts/phase-1f12-closing-390-dark.png",
+      path: "test-results/artifacts/phase-1f13-closing-390-dark.png",
     });
   });
 
@@ -868,14 +1022,124 @@ test.describe("Phase 1F.11 story clarity", () => {
         primaryTransform === "matrix(1, 0, 0, 1, 0, 0)"
     ).toBe(true);
     const secondary = page.getByRole("link", { name: "See how it works" });
+    const restFill = await secondary.evaluate((element) => {
+      const fill = getComputedStyle(element, "::before");
+      return {
+        transform: fill.transform,
+        originCentered:
+          fill.transformOrigin.includes("center") ||
+          Math.abs(
+            Number.parseFloat(fill.transformOrigin) -
+              element.getBoundingClientRect().width / 2
+          ) <= 2,
+        zIndex: fill.zIndex,
+      };
+    });
+    expect(restFill.originCentered).toBe(true);
+    expect(restFill.transform).toMatch(/matrix\(0,\s*0,\s*0,\s*1|scaleX\(0\)/);
+    expect(Number.parseInt(restFill.zIndex, 10)).toBeLessThan(0);
+
+    await secondary.screenshot({
+      path: "test-results/artifacts/phase-1f13-secondary-default.png",
+    });
     await secondary.hover();
-    const secondaryTransform = await secondary.evaluate(
+    await expect
+      .poll(async () =>
+        secondary.evaluate(
+          (element) => getComputedStyle(element, "::before").transform
+        )
+      )
+      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
+    const hoverFill = await secondary.evaluate(
       (element) => getComputedStyle(element).transform
     );
     expect(
-      secondaryTransform === "none" ||
-        secondaryTransform === "matrix(1, 0, 0, 1, 0, 0)"
+      hoverFill === "none" || hoverFill === "matrix(1, 0, 0, 1, 0, 0)"
     ).toBe(true);
+    await secondary.screenshot({
+      path: "test-results/artifacts/phase-1f13-secondary-hover.png",
+    });
+
+    await page.mouse.move(0, 0);
+    await expect
+      .poll(async () =>
+        secondary.evaluate(
+          (element) => getComputedStyle(element, "::before").transform
+        )
+      )
+      .toMatch(/matrix\(0,\s*0,\s*0,\s*1|scaleX\(0\)/);
+
+    await secondary.focus();
+    await expect
+      .poll(async () =>
+        secondary.evaluate(
+          (element) => getComputedStyle(element, "::before").transform
+        )
+      )
+      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
+    await secondary.screenshot({
+      path: "test-results/artifacts/phase-1f13-secondary-focus.png",
+    });
+
+    await secondary.hover();
+    await page.mouse.down();
+    await expect
+      .poll(async () =>
+        secondary.evaluate(
+          (element) => getComputedStyle(element, "::before").transform
+        )
+      )
+      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
+    const activeTransform = await secondary.evaluate(
+      (element) => getComputedStyle(element).transform
+    );
+    expect(
+      activeTransform === "none" ||
+        activeTransform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+    await secondary.screenshot({
+      path: "test-results/artifacts/phase-1f13-secondary-active.png",
+    });
+    await page.mouse.up();
+  });
+
+  test("reduced-motion secondary CTA fills immediately without moving", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "light" });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showStaticScheme(page, "light");
+    await waitForHeroReveal(page);
+
+    const secondary = page.getByRole("link", { name: "See how it works" });
+    const reduced = await secondary.evaluate((element) => {
+      const fill = getComputedStyle(element, "::before");
+      return {
+        duration: fill.transitionDuration,
+        transform: getComputedStyle(element).transform,
+      };
+    });
+    expect(reduced.duration === "0s" || reduced.duration === "0ms").toBe(true);
+    expect(
+      reduced.transform === "none" ||
+        reduced.transform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+
+    await secondary.hover();
+    const hoverReduced = await secondary.evaluate((element) => {
+      const styles = getComputedStyle(element);
+      const fill = getComputedStyle(element, "::before");
+      return {
+        transform: styles.transform,
+        fillTransform: fill.transform,
+      };
+    });
+    expect(
+      hoverReduced.transform === "none" ||
+        hoverReduced.transform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+    expect(hoverReduced.fillTransform).toMatch(/matrix\(1,\s*0,\s*0,\s*1|none/);
   });
 
   test("clinic preview uses a patient-home panel instead of loose copy", async ({

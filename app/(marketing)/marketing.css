@@ -14,12 +14,24 @@
   --mk-brand-active: light-dark(#2d3bb8, #8496f4);
   --mk-on-brand: light-dark(#ffffff, #0a0d14);
   --mk-closing-glow: light-dark(
-    color-mix(in srgb, #cfd6ff 13%, transparent),
-    color-mix(in srgb, #2c46c4 30%, transparent)
+    color-mix(in srgb, #cfd6ff 12%, transparent),
+    color-mix(in srgb, #3d58d6 32%, transparent)
   );
   --mk-closing-mist: light-dark(
     color-mix(in srgb, #b5ebf1 8%, transparent),
-    color-mix(in srgb, #5ec8e0 13%, transparent)
+    color-mix(in srgb, #5ec8e0 16%, transparent)
+  );
+  --mk-closing-cobalt: light-dark(
+    transparent,
+    color-mix(in srgb, #2c46c4 22%, transparent)
+  );
+  --mk-secondary-fill: light-dark(
+    color-mix(in srgb, #cfd6ff 22%, transparent),
+    color-mix(in srgb, #7c8cff 14%, #141822)
+  );
+  --mk-secondary-fill-active: light-dark(
+    color-mix(in srgb, #cfd6ff 32%, transparent),
+    color-mix(in srgb, #7c8cff 20%, #171c28)
   );
   --mk-line: light-dark(#e4dfd6, #2a3140);
   --mk-focus: light-dark(#3b4bd1, #a6b8ff);

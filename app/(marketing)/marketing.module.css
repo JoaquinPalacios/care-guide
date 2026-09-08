@@ -46,41 +46,47 @@
   pointer-events: none;
   background:
     radial-gradient(
-      70% 90% at 50% 100%,
+      ellipse 46% 88% at 82% 100%,
       var(--mk-closing-glow),
       transparent 74%
     ),
     radial-gradient(
-      40% 55% at 50% 100%,
+      ellipse 22% 48% at 82% 100%,
       var(--mk-closing-mist),
       transparent 70%
+    ),
+    radial-gradient(
+      ellipse 30% 58% at 82% 100%,
+      var(--mk-closing-cobalt),
+      transparent 72%
     );
 }
 
-.footer.marketingClosing {
-  overflow: hidden;
-}
-
-.footer.marketingClosing::after {
+.footer.marketingClosing::before {
   content: "";
   position: absolute;
   z-index: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  top: 0;
   width: 100%;
-  height: 28rem;
+  height: 16rem;
   pointer-events: none;
   background:
     radial-gradient(
-      68% 86% at 50% 100%,
+      ellipse 46% 88% at 82% 0%,
       var(--mk-closing-glow),
       transparent 74%
     ),
     radial-gradient(
-      38% 48% at 50% 100%,
+      ellipse 22% 48% at 82% 0%,
       var(--mk-closing-mist),
       transparent 70%
+    ),
+    radial-gradient(
+      ellipse 30% 58% at 82% 0%,
+      var(--mk-closing-cobalt),
+      transparent 72%
     );
 }
 
@@ -360,14 +366,34 @@
 }
 
 .secondary {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   border: 1px solid var(--mk-line);
   color: var(--mk-ink);
   background: transparent;
 }
 
+.secondary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--mk-secondary-fill);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--mk-interact-duration) var(--mk-interact-ease);
+}
+
 .secondary:hover {
   border-color: color-mix(in srgb, var(--mk-ink) 42%, var(--mk-line));
-  background: color-mix(in srgb, var(--mk-ink) 5%, transparent);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--mk-ink) 7%, transparent);
+}
+
+.secondary:hover::before,
+.secondary:focus-visible::before {
+  transform: scaleX(1);
 }
 
 .secondary:focus-visible {
@@ -377,7 +403,12 @@
 
 .secondary:active {
   border-color: color-mix(in srgb, var(--mk-ink) 48%, var(--mk-line));
-  background: color-mix(in srgb, var(--mk-ink) 8%, transparent);
+  box-shadow: none;
+}
+
+.secondary:active::before {
+  transform: scaleX(1);
+  background: var(--mk-secondary-fill-active);
 }
 
 .deviceStage {
@@ -1425,18 +1456,73 @@
   padding: var(--mk-chapter-pad-y) 0 2.25rem;
 }
 
+.earlyAccessLayout {
+  display: grid;
+  gap: 2.75rem;
+}
+
+.earlyAccessPrimary .lede {
+  max-width: 36rem;
+}
+
 .ctaBlock h2 {
   margin: 0 0 0.8rem;
   font-size: clamp(1.8rem, 3.6vw, 2.8rem);
   letter-spacing: -0.045em;
   max-width: 16ch;
+  text-wrap: pretty;
+}
+
+.partnerTitle {
+  margin: 0;
+  font-size: 1.28rem;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+
+.partnerList {
+  margin: 1.15rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.partnerItem {
+  display: grid;
+  grid-template-columns: 1.7rem minmax(0, 1fr);
+  column-gap: 0.85rem;
+  align-items: baseline;
+  padding: 0.78rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--mk-line) 78%, transparent);
+}
+
+.partnerItem:last-child {
+  border-bottom: 1px solid color-mix(in srgb, var(--mk-line) 78%, transparent);
+}
+
+.partnerIndex {
+  color: color-mix(in srgb, var(--mk-brand) 72%, var(--mk-rail-end));
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.55;
+}
+
+.partnerItem p {
+  margin: 0;
+  color: var(--mk-ink);
+  font-size: 1.02rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
 }
 
 .fine {
   margin: 1.15rem 0 0;
   color: var(--mk-muted);
   font-size: 0.88rem;
-  max-width: 40rem;
+  max-width: 36rem;
 }
 
 .footer {
@@ -1445,17 +1531,30 @@
   font-size: 0.9rem;
 }
 
+.footerSeparator,
 .footerInner,
 .footerCopy {
   position: relative;
   z-index: 1;
 }
 
+.footerSeparator {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--mk-line) 82%, transparent) 0%,
+    color-mix(in srgb, var(--mk-line) 70%, transparent) 48%,
+    color-mix(in srgb, var(--mk-wave-periwinkle) 78%, var(--mk-line)) 76%,
+    var(--mk-wave-cyan) 84%,
+    color-mix(in srgb, var(--mk-line) 22%, transparent) 100%
+  );
+  opacity: light-dark(0.82, 0.92);
+}
+
 .footerInner {
   display: grid;
   gap: 1.25rem;
   padding-top: 1.35rem;
-  border-top: 1px solid color-mix(in srgb, var(--mk-line) 70%, transparent);
 }
 
 .footerBrand {
@@ -1518,6 +1617,10 @@
 
   .nav a.navAnchor {
     display: none;
+  }
+
+  .earlyAccessLayout {
+    gap: 3.35rem;
   }
 
   .productInputs {
@@ -1714,6 +1817,16 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
+  .earlyAccessLayout {
+    grid-template-columns: minmax(0, 1.16fr) minmax(0, 0.84fr);
+    column-gap: 4.25rem;
+    align-items: start;
+  }
+
+  .earlyAccessPartner {
+    padding-top: 0.15rem;
+  }
+
   .footerInner {
     grid-template-columns: 1fr auto;
     align-items: start;
@@ -1742,6 +1855,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .button,
+  .secondary::before,
   .textLink,
   .textLink::after {
     transition: none;

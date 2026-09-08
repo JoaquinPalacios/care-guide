@@ -393,43 +393,62 @@ export default async function MarketingHomePage() {
             aria-labelledby="cta-heading"
           >
             <MarketingReveal.Group>
-              <div className={styles.inner}>
+              <div className={`${styles.inner} ${styles.earlyAccessLayout}`}>
+                <div className={styles.earlyAccessPrimary}>
+                  <MarketingReveal.Item>
+                    <p className={styles.eyebrow}>Early access</p>
+                  </MarketingReveal.Item>
+                  <MarketingReveal.Item>
+                    <h2 id="cta-heading">
+                      Talk to us about a design-partner clinic
+                    </h2>
+                  </MarketingReveal.Item>
+                  <MarketingReveal.Item>
+                    <p className={styles.lede}>
+                      {PRODUCT_NAME} is in early development. We&apos;re looking
+                      for clinics to help shape the first commercial release.
+                      Pricing is not locked.
+                    </p>
+                  </MarketingReveal.Item>
+                  <MarketingReveal.Item>
+                    <div className={styles.actions}>
+                      <a
+                        className={`${styles.button} ${styles.primary}`}
+                        href={demoHref}
+                      >
+                        View the clinic demo
+                      </a>
+                    </div>
+                  </MarketingReveal.Item>
+                  <MarketingReveal.Item>
+                    <p className={styles.fine}>
+                      {PRODUCT_NAME} is the current provisional commercial name
+                      for this aftercare product. Lead capture is not on this
+                      page yet.
+                    </p>
+                  </MarketingReveal.Item>
+                </div>
                 <MarketingReveal.Item>
-                  <p className={styles.eyebrow}>Early access</p>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item>
-                  <h2 id="cta-heading">
-                    Talk to us about a design-partner clinic
-                  </h2>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item>
-                  <p className={styles.lede}>
-                    This is an early product. Pricing is not locked, and
-                    operator admin is not in this release. Start with the public
-                    demo, then continue the conversation from there.
-                  </p>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item>
-                  <div className={styles.actions}>
-                    <a
-                      className={`${styles.button} ${styles.primary}`}
-                      href={demoHref}
-                    >
-                      View the clinic demo
-                    </a>
-                    <a
-                      className={`${styles.button} ${styles.secondary}`}
-                      href={staffHref}
-                    >
-                      Open staff sign in
-                    </a>
+                  <div className={styles.earlyAccessPartner}>
+                    <p className={styles.eyebrow}>Design partner</p>
+                    <h3 className={styles.partnerTitle}>
+                      What we&apos;ll validate together
+                    </h3>
+                    <ol className={styles.partnerList}>
+                      <li className={styles.partnerItem}>
+                        <span className={styles.partnerIndex}>01</span>
+                        <p>Guide setup</p>
+                      </li>
+                      <li className={styles.partnerItem}>
+                        <span className={styles.partnerIndex}>02</span>
+                        <p>Clinic branding</p>
+                      </li>
+                      <li className={styles.partnerItem}>
+                        <span className={styles.partnerIndex}>03</span>
+                        <p>Patient handoff</p>
+                      </li>
+                    </ol>
                   </div>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item>
-                  <p className={styles.fine}>
-                    {PRODUCT_NAME} is the current provisional commercial name
-                    for this aftercare product.
-                  </p>
                 </MarketingReveal.Item>
               </div>
             </MarketingReveal.Group>
@@ -437,29 +456,30 @@ export default async function MarketingHomePage() {
         </div>
       </main>
       <footer className={`${styles.footer} ${styles.marketingClosing}`}>
-        <div className={`${styles.inner} ${styles.footerInner}`}>
-          <div className={styles.footerBrand}>
-            <p className={styles.footerName}>{PRODUCT_NAME}</p>
-            <p className={styles.footerTag}>
-              Branded aftercare patients can revisit.
-            </p>
-          </div>
-          <nav className={styles.footerNav} aria-label="Footer">
-            <Link className={styles.textLink} href="#how-it-works">
-              How it works
-            </Link>
-            <Link className={styles.textLink} href="#preview">
-              Clinic preview
-            </Link>
-            <Link className={styles.textLink} href="#early-access">
-              Early access
-            </Link>
-            <a className={styles.textLink} href={staffHref}>
-              Staff sign in
-            </a>
-          </nav>
-        </div>
         <div className={styles.inner}>
+          <div className={styles.footerSeparator} aria-hidden="true" />
+          <div className={styles.footerInner}>
+            <div className={styles.footerBrand}>
+              <p className={styles.footerName}>{PRODUCT_NAME}</p>
+              <p className={styles.footerTag}>
+                Branded aftercare patients can revisit.
+              </p>
+            </div>
+            <nav className={styles.footerNav} aria-label="Footer">
+              <Link className={styles.textLink} href="#how-it-works">
+                How it works
+              </Link>
+              <Link className={styles.textLink} href="#preview">
+                Clinic preview
+              </Link>
+              <Link className={styles.textLink} href="#early-access">
+                Early access
+              </Link>
+              <a className={styles.textLink} href={staffHref}>
+                Staff sign in
+              </a>
+            </nav>
+          </div>
           <p className={styles.footerCopy}>
             © {new Date().getFullYear()} {PRODUCT_NAME}
           </p>

@@ -169,7 +169,21 @@ describe("aftercare style boundary", () => {
     expect(tokens).toContain("--mk-hero-mist");
     expect(tokens).toContain("--mk-brand-hover");
     expect(tokens).toContain("--mk-closing-glow");
+    expect(tokens).toContain("--mk-closing-cobalt");
+    expect(tokens).toContain("--mk-secondary-fill");
+    expect(tokens).toContain("--mk-secondary-fill-active");
     expect(styles).toContain("phoneFrame");
+    expect(styles).toContain(".secondary::before");
+    expect(styles).toContain("earlyAccessLayout");
+    expect(styles).toContain("partnerList");
+    expect(styles).toContain("footerSeparator");
+    expect(styles).toContain("at 82% 100%");
+    expect(styles).toContain("at 82% 0%");
+    expect(styles).not.toMatch(
+      /\.marketingClosing\[data-mk-chapter="closing"\]::after[\s\S]*?at 50% 100%/
+    );
+    expect(styles).not.toContain("filter: blur(");
+    expect(styles).not.toContain("backdrop-filter");
     expect(styles).not.toContain(".phoneBezel");
     expect(styles).not.toContain(".phoneIsland");
     expect(styles).not.toContain(".phoneGlass");
@@ -177,8 +191,11 @@ describe("aftercare style boundary", () => {
     expect(styles).not.toContain("translateY(-1.5px)");
     expect(styles).not.toMatch(/\.primary:hover\s*\{[^}]*transform/);
     expect(styles).not.toMatch(/\.secondary:hover\s*\{[^}]*transform/);
+    expect(styles).not.toMatch(/\.secondary::before\s*\{[^}]*scaleX\(1\)/);
     expect(styles).not.toMatch(/\.primary:active\s*\{[^}]*transform/);
     expect(styles).not.toMatch(/\.secondary:active\s*\{[^}]*transform/);
+    expect(styles).not.toMatch(/\.secondary:hover\s*\{[^}]*translate/);
+    expect(styles).not.toMatch(/\.secondary:active\s*\{[^}]*translate/);
     expect(styles).toContain("scaleX(0)");
     expect(styles).toContain("transform-origin: center");
     expect(styles).toContain(".textLink");
