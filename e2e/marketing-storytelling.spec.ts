@@ -1,7 +1,10 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { expectNoSeriousAxeViolations } from "./helpers/axe";
-import { expectNoHorizontalOverflow } from "./helpers/layout";
+import {
+  expectNoHorizontalOverflow,
+  relativeLuminance,
+} from "./helpers/layout";
 import { marketingUrl } from "./helpers/origins";
 
 async function waitForPhoneFrame(page: Page): Promise<void> {
@@ -125,7 +128,7 @@ async function openThemeMenu(page: Page) {
   return { trigger, menu };
 }
 
-test.describe("Phase 1F.10 premium storytelling", () => {
+test.describe("Phase 1F.11 story clarity", () => {
   test("theme popover is compact, anchored, and labelled in light and dark", async ({
     page,
   }) => {
@@ -247,26 +250,59 @@ test.describe("Phase 1F.10 premium storytelling", () => {
       const list = root.querySelector("ol");
       const items = [...root.querySelectorAll("li")];
       const rail = root.querySelector("[data-mk-process-rail]");
+      const nodes = [
+        ...root.querySelectorAll('[class*="processNode"]'),
+      ] as HTMLElement[];
       const cards = [
-        ...root.querySelectorAll(
-          '[data-mk-process-card] [class*="processCard"]'
-        ),
-      ];
-      if (!list || !rail || items.length !== 4) {
+        ...root.querySelectorAll('[class*="processCard"]'),
+      ] as HTMLElement[];
+      const labels = [
+        ...root.querySelectorAll('[class*="processIndex"]'),
+      ] as HTMLElement[];
+      const titles = [...root.querySelectorAll("h3")] as HTMLElement[];
+      if (!list || !rail || items.length !== 4 || nodes.length !== 4) {
         return null;
       }
       const listStyles = getComputedStyle(list);
       const railBox = rail.getBoundingClientRect();
       const first = items[0].getBoundingClientRect();
       const second = items[1].getBoundingClientRect();
+      const firstNode = nodes[0].getBoundingClientRect();
+      const lastNode = nodes[3].getBoundingClientRect();
+      const cardHeights = cards.map((card) =>
+        Math.round(card.getBoundingClientRect().height)
+      );
+      const labelTops = labels.map((label) =>
+        Math.round(label.getBoundingClientRect().top)
+      );
+      const titleTops = titles.map((title) =>
+        Math.round(title.getBoundingClientRect().top)
+      );
       const cardCursor = cards[0]
         ? getComputedStyle(cards[0]).cursor
         : "unknown";
+      const firstCenter = firstNode.left + firstNode.width / 2;
+      const lastCenter = lastNode.left + lastNode.width / 2;
       return {
         columns: listStyles.gridTemplateColumns.split(" ").length,
         horizontal: second.left > first.right - 8,
         railWidth: Math.round(railBox.width),
         railHeight: Math.round(railBox.height),
+        firstDelta: Math.round(firstCenter - railBox.left),
+        lastDelta: Math.round(lastCenter - railBox.right),
+        firstNodeOnRail: Math.abs(firstCenter - railBox.left) <= 10,
+        lastNodeOnRail: Math.abs(lastCenter - railBox.right) <= 10,
+        nodesOnRailY: nodes.every((node) => {
+          const box = node.getBoundingClientRect();
+          return (
+            Math.abs(
+              box.top + box.height / 2 - (railBox.top + railBox.height / 2)
+            ) <= 8
+          );
+        }),
+        cardHeightSpread: Math.max(...cardHeights) - Math.min(...cardHeights),
+        labelSpread: Math.max(...labelTops) - Math.min(...labelTops),
+        titleSpread: Math.max(...titleTops) - Math.min(...titleTops),
         cardCursor,
       };
     });
@@ -275,6 +311,18 @@ test.describe("Phase 1F.10 premium storytelling", () => {
     expect(desktopLayout!.columns).toBe(4);
     expect(desktopLayout!.horizontal).toBe(true);
     expect(desktopLayout!.railWidth).toBeGreaterThan(desktopLayout!.railHeight);
+    expect(
+      desktopLayout!.firstNodeOnRail,
+      `first node delta ${desktopLayout!.firstDelta}px`
+    ).toBe(true);
+    expect(
+      desktopLayout!.lastNodeOnRail,
+      `last node delta ${desktopLayout!.lastDelta}px`
+    ).toBe(true);
+    expect(desktopLayout!.nodesOnRailY).toBe(true);
+    expect(desktopLayout!.cardHeightSpread).toBeLessThanOrEqual(2);
+    expect(desktopLayout!.labelSpread).toBeLessThanOrEqual(2);
+    expect(desktopLayout!.titleSpread).toBeLessThanOrEqual(2);
     expect(desktopLayout!.cardCursor).not.toBe("pointer");
 
     const firstCard = section.locator("[data-mk-process-card]").first();
@@ -287,15 +335,49 @@ test.describe("Phase 1F.10 premium storytelling", () => {
     );
     expect(hoverTransform).toBe(restTransform);
 
-    await page.screenshot({
-      path: "test-results/artifacts/phase-1f10-process-1440-light.png",
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f11-process-1440-light.png",
     });
 
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
-    await page.screenshot({
-      path: "test-results/artifacts/phase-1f10-process-1440-dark.png",
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f11-process-1440-dark.png",
     });
+
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await showStaticScheme(page, "light");
+    await scrollSectionIntoView(page, "#how-it-works");
+    await waitForSectionReveal(section);
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f11-process-1280-light.png",
+    });
+    const layout1280 = await section.evaluate((root) => {
+      const cards = [
+        ...root.querySelectorAll('[class*="processCard"]'),
+      ] as HTMLElement[];
+      const labels = [
+        ...root.querySelectorAll('[class*="processIndex"]'),
+      ] as HTMLElement[];
+      const titles = [...root.querySelectorAll("h3")] as HTMLElement[];
+      const heights = cards.map((card) =>
+        Math.round(card.getBoundingClientRect().height)
+      );
+      const labelTops = labels.map((label) =>
+        Math.round(label.getBoundingClientRect().top)
+      );
+      const titleTops = titles.map((title) =>
+        Math.round(title.getBoundingClientRect().top)
+      );
+      return {
+        cardHeightSpread: Math.max(...heights) - Math.min(...heights),
+        labelSpread: Math.max(...labelTops) - Math.min(...labelTops),
+        titleSpread: Math.max(...titleTops) - Math.min(...titleTops),
+      };
+    });
+    expect(layout1280.cardHeightSpread).toBeLessThanOrEqual(2);
+    expect(layout1280.labelSpread).toBeLessThanOrEqual(2);
+    expect(layout1280.titleSpread).toBeLessThanOrEqual(2);
 
     await page.setViewportSize({ width: 390, height: 844 });
     await showStaticScheme(page, "light");
@@ -304,34 +386,54 @@ test.describe("Phase 1F.10 premium storytelling", () => {
     const mobileLayout = await section.evaluate((root) => {
       const items = [...root.querySelectorAll("li")];
       const rail = root.querySelector("[data-mk-process-rail]");
-      if (items.length !== 4 || !rail) {
+      const nodes = [
+        ...root.querySelectorAll('[class*="processNode"]'),
+      ] as HTMLElement[];
+      if (items.length !== 4 || !rail || nodes.length !== 4) {
         return null;
       }
       const first = items[0].getBoundingClientRect();
       const second = items[1].getBoundingClientRect();
       const railBox = rail.getBoundingClientRect();
+      const firstNode = nodes[0].getBoundingClientRect();
+      const lastNode = nodes[3].getBoundingClientRect();
       return {
         stacked: second.top > first.bottom - 8,
         railHeight: Math.round(railBox.height),
         railWidth: Math.round(railBox.width),
+        firstNodeOnRail:
+          Math.abs(
+            firstNode.left +
+              firstNode.width / 2 -
+              (railBox.left + railBox.width / 2)
+          ) <= 8 &&
+          Math.abs(firstNode.top + firstNode.height / 2 - railBox.top) <= 8,
+        lastNodeOnRail:
+          Math.abs(
+            lastNode.left +
+              lastNode.width / 2 -
+              (railBox.left + railBox.width / 2)
+          ) <= 8 && lastNode.top + lastNode.height / 2 <= railBox.bottom + 8,
       };
     });
     expect(mobileLayout).not.toBeNull();
     expect(mobileLayout!.stacked).toBe(true);
     expect(mobileLayout!.railHeight).toBeGreaterThan(mobileLayout!.railWidth);
+    expect(mobileLayout!.firstNodeOnRail).toBe(true);
+    expect(mobileLayout!.lastNodeOnRail).toBe(true);
     await expectNoHorizontalOverflow(page);
     await section.screenshot({
-      path: "test-results/artifacts/phase-1f10-process-390-light.png",
+      path: "test-results/artifacts/phase-1f11-process-390-light.png",
     });
 
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
     await section.screenshot({
-      path: "test-results/artifacts/phase-1f10-process-390-dark.png",
+      path: "test-results/artifacts/phase-1f11-process-390-dark.png",
     });
   });
 
-  test("why-clinics uses an asymmetric bento with product-native previews", async ({
+  test("why-clinics uses three benefit pillars and a customisation strip", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -342,10 +444,17 @@ test.describe("Phase 1F.10 premium storytelling", () => {
     const section = page.locator('[aria-labelledby="why-heading"]');
     await scrollSectionIntoView(page, '[aria-labelledby="why-heading"]');
     await waitForSectionReveal(section);
-    const cards = section.locator("[data-mk-bento-card]");
-    await expect(cards).toHaveCount(6);
+    const cards = section.locator("[data-mk-pillar]");
+    await expect(cards).toHaveCount(3);
+    await expect(section.locator("[data-mk-bento-card]")).toHaveCount(0);
     await expect(
-      section.getByRole("heading", { name: "Clinic-first presence" })
+      section.getByRole("heading", { name: "Looks like your clinic" })
+    ).toBeVisible();
+    await expect(
+      section.getByRole("heading", { name: "Built for patients" })
+    ).toBeVisible();
+    await expect(
+      section.getByRole("heading", { name: "Simple to operate" })
     ).toBeVisible();
     await expect(
       section.getByRole("heading", { name: "Controlled customisation" })
@@ -366,71 +475,280 @@ test.describe("Phase 1F.10 premium storytelling", () => {
       section.getByRole("heading", { name: "Tooth Extraction" })
     ).toHaveCount(0);
 
-    const desktopSpans = await section.evaluate((root) => {
-      const nodes = [
-        ...root.querySelectorAll<HTMLElement>("[data-mk-bento-card]"),
-      ];
-      const unique = new Set(
-        nodes.map((node) => Math.round(node.getBoundingClientRect().width))
+    const desktopLayout = await section.evaluate((root) => {
+      const nodes = [...root.querySelectorAll<HTMLElement>("[data-mk-pillar]")];
+      const grid = root.querySelector(
+        "[data-mk-pillars] [class*='pillarGrid']"
+      );
+      if (!grid || nodes.length !== 3) {
+        return null;
+      }
+      const widths = nodes.map((node) =>
+        Math.round(node.getBoundingClientRect().width)
+      );
+      const heights = nodes.map((node) =>
+        Math.round(node.getBoundingClientRect().height)
       );
       const cursors = nodes.map((node) => getComputedStyle(node).cursor);
-      const columns = getComputedStyle(
-        root.querySelector("[data-mk-bento]") as HTMLElement
-      ).gridTemplateColumns.split(" ").length;
       return {
-        uniqueWidths: unique.size,
-        columns,
+        columns: getComputedStyle(grid).gridTemplateColumns.split(" ").length,
+        widthSpread: Math.max(...widths) - Math.min(...widths),
+        heightSpread: Math.max(...heights) - Math.min(...heights),
         pointerCards: cursors.filter((cursor) => cursor === "pointer").length,
       };
     });
-    expect(desktopSpans.columns).toBe(6);
-    expect(desktopSpans.uniqueWidths).toBeGreaterThanOrEqual(3);
-    expect(desktopSpans.pointerCards).toBe(0);
+    expect(desktopLayout).not.toBeNull();
+    expect(desktopLayout!.columns).toBe(3);
+    expect(desktopLayout!.widthSpread).toBeLessThanOrEqual(4);
+    expect(desktopLayout!.pointerCards).toBe(0);
 
-    await page.screenshot({
-      path: "test-results/artifacts/phase-1f10-bento-1440-light.png",
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f11-pillars-1440-light.png",
     });
 
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
-    await page.screenshot({
-      path: "test-results/artifacts/phase-1f10-bento-1440-dark.png",
+    await section.screenshot({
+      path: "test-results/artifacts/phase-1f11-pillars-1440-dark.png",
     });
 
     await page.setViewportSize({ width: 390, height: 844 });
     await showStaticScheme(page, "light");
     await scrollSectionIntoView(page, '[aria-labelledby="why-heading"]');
     await waitForSectionReveal(section);
-    const mobileSpans = await section.evaluate((root) => {
-      const grid = root.querySelector("[data-mk-bento]");
-      const nodes = [
-        ...root.querySelectorAll<HTMLElement>("[data-mk-bento-card]"),
-      ];
-      if (!grid) {
+    const mobileLayout = await section.evaluate((root) => {
+      const grid = root.querySelector("[class*='pillarGrid']");
+      const nodes = [...root.querySelectorAll<HTMLElement>("[data-mk-pillar]")];
+      if (!grid || nodes.length !== 3) {
         return null;
       }
-      const widths = nodes.map((node) =>
-        Math.round(node.getBoundingClientRect().width)
-      );
+      const first = nodes[0].getBoundingClientRect();
+      const second = nodes[1].getBoundingClientRect();
       return {
         columns: getComputedStyle(grid).gridTemplateColumns.split(" ").length,
-        minWidth: Math.min(...widths),
-        maxWidth: Math.max(...widths),
+        stacked: second.top > first.bottom - 8,
       };
     });
-    expect(mobileSpans).not.toBeNull();
-    expect(mobileSpans!.columns).toBeLessThanOrEqual(2);
-    expect(mobileSpans!.minWidth).toBeGreaterThan(140);
+    expect(mobileLayout).not.toBeNull();
+    expect(mobileLayout!.columns).toBe(1);
+    expect(mobileLayout!.stacked).toBe(true);
     await expectNoHorizontalOverflow(page);
     await section.screenshot({
-      path: "test-results/artifacts/phase-1f10-bento-390-light.png",
+      path: "test-results/artifacts/phase-1f11-pillars-390-light.png",
     });
 
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
     await section.screenshot({
-      path: "test-results/artifacts/phase-1f10-bento-390-dark.png",
+      path: "test-results/artifacts/phase-1f11-pillars-390-dark.png",
     });
+  });
+
+  test("problem and product stay editorial with a product equation", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showStaticScheme(page, "light");
+    await waitForHeroReveal(page);
+
+    const problem = page.locator('[aria-labelledby="problem-heading"]');
+    await scrollSectionIntoView(page, '[aria-labelledby="problem-heading"]');
+    await waitForSectionReveal(problem);
+    await expect(
+      problem.getByRole("heading", {
+        name: "Patients leave with instructions. They don't always leave with clarity.",
+      })
+    ).toBeVisible();
+    await expect(problem.getByText("01")).toBeVisible();
+    await expect(problem.getByText("02")).toBeVisible();
+    await expect(problem.getByText("03")).toBeVisible();
+    await expect(problem.locator("ol li")).toHaveCount(3);
+    await expect(
+      problem.getByText("Verbal advice is easy to forget")
+    ).toBeVisible();
+    await expect(problem.getByText("PDFs are awkward to reopen")).toBeVisible();
+    await expect(
+      problem.getByText("Generic handouts weaken the clinic")
+    ).toBeVisible();
+
+    const product = page.locator('[aria-labelledby="product-heading"]');
+    await expect(
+      product.getByRole("heading", {
+        name: "A branded patient aftercare page that stays available.",
+      })
+    ).toBeVisible();
+    await expect(product.getByText("Approved guide")).toBeVisible();
+    await expect(product.getByText("Clinic brand")).toBeVisible();
+    await expect(
+      product.getByText("Patient aftercare page", { exact: true })
+    ).toBeVisible();
+
+    await page.screenshot({
+      path: "test-results/artifacts/phase-1f11-problem-product-1440-light.png",
+    });
+    await showStaticScheme(page, "dark");
+    await page.screenshot({
+      path: "test-results/artifacts/phase-1f11-problem-product-1440-dark.png",
+    });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await showStaticScheme(page, "light");
+    await scrollSectionIntoView(page, '[aria-labelledby="problem-heading"]');
+    await waitForSectionReveal(problem);
+    await expectNoHorizontalOverflow(page);
+    await problem.screenshot({
+      path: "test-results/artifacts/phase-1f11-problem-390-light.png",
+    });
+    await product.screenshot({
+      path: "test-results/artifacts/phase-1f11-product-390-light.png",
+    });
+    await showStaticScheme(page, "dark");
+    await problem.screenshot({
+      path: "test-results/artifacts/phase-1f11-problem-390-dark.png",
+    });
+  });
+
+  test("light closing stays light and dark closing stays dark", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showStaticScheme(page, "light");
+    await waitForHeroReveal(page);
+    await scrollSectionIntoView(page, "#early-access");
+
+    const lightClosing = await page.evaluate(() => {
+      const closing = document.querySelector('[data-mk-chapter="closing"]');
+      const footer = document.querySelector("footer");
+      if (
+        !(closing instanceof HTMLElement) ||
+        !(footer instanceof HTMLElement)
+      ) {
+        return null;
+      }
+      const closingBg = getComputedStyle(closing).backgroundColor;
+      const footerBg = getComputedStyle(footer).backgroundColor;
+      const heading = closing.querySelector("h2");
+      const pageBg = getComputedStyle(document.body).backgroundColor;
+      return {
+        closingBg,
+        footerBg,
+        headingColor: heading ? getComputedStyle(heading).color : "",
+        hasBlend: Boolean(document.querySelector('[class*="blendTo"]')),
+        chapterWash: document.querySelector("[data-chapter]") !== null,
+      };
+    });
+    expect(lightClosing).not.toBeNull();
+    expect(relativeLuminance(lightClosing!.closingBg)).toBeGreaterThan(0.7);
+    expect(relativeLuminance(lightClosing!.footerBg)).toBeGreaterThan(0.7);
+    expect(relativeLuminance(lightClosing!.headingColor)).toBeLessThan(0.35);
+    expect(lightClosing!.hasBlend).toBe(false);
+    expect(lightClosing!.chapterWash).toBe(false);
+    await page.screenshot({
+      path: "test-results/artifacts/phase-1f11-closing-1440-light.png",
+    });
+
+    await showStaticScheme(page, "dark");
+    const darkClosing = await page.evaluate(() => {
+      const closing = document.querySelector('[data-mk-chapter="closing"]');
+      const footer = document.querySelector("footer");
+      if (
+        !(closing instanceof HTMLElement) ||
+        !(footer instanceof HTMLElement)
+      ) {
+        return null;
+      }
+      const heading = closing.querySelector("h2");
+      return {
+        closingBg: getComputedStyle(closing).backgroundColor,
+        footerBg: getComputedStyle(footer).backgroundColor,
+        headingColor: heading ? getComputedStyle(heading).color : "",
+      };
+    });
+    expect(darkClosing).not.toBeNull();
+    expect(relativeLuminance(darkClosing!.closingBg)).toBeLessThan(0.18);
+    expect(relativeLuminance(darkClosing!.footerBg)).toBeLessThan(0.18);
+    expect(relativeLuminance(darkClosing!.headingColor)).toBeGreaterThan(0.7);
+    await page.screenshot({
+      path: "test-results/artifacts/phase-1f11-closing-1440-dark.png",
+    });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await showStaticScheme(page, "light");
+    await scrollSectionIntoView(page, "#early-access");
+    await expectNoHorizontalOverflow(page);
+    await page.locator("#early-access").screenshot({
+      path: "test-results/artifacts/phase-1f11-closing-390-light.png",
+    });
+    await showStaticScheme(page, "dark");
+    await page.locator("footer").screenshot({
+      path: "test-results/artifacts/phase-1f11-closing-390-dark.png",
+    });
+  });
+
+  test("nav links use a centre-out underline and buttons do not lift", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+    await waitForHeroReveal(page);
+
+    const howItWorks = page
+      .getByRole("navigation", { name: "Marketing" })
+      .getByRole("link", { name: "How it works" });
+    const underline = await howItWorks.evaluate((element) => {
+      const after = getComputedStyle(element, "::after");
+      const origin = after.transformOrigin.split(" ");
+      const box = element.getBoundingClientRect();
+      return {
+        content: after.content,
+        transform: after.transform,
+        originX: Number.parseFloat(origin[0] ?? ""),
+        originCentered:
+          Math.abs(Number.parseFloat(origin[0] ?? "") - box.width / 2) <= 2,
+        decoration: getComputedStyle(element).textDecorationLine,
+      };
+    });
+    expect(underline.content).not.toBe("none");
+    expect(underline.decoration === "none" || underline.decoration === "").toBe(
+      true
+    );
+    expect(underline.originCentered).toBe(true);
+
+    await howItWorks.hover();
+    await expect
+      .poll(async () =>
+        howItWorks.evaluate(
+          (element) => getComputedStyle(element, "::after").transform
+        )
+      )
+      .toMatch(/matrix\(1,\s*0,\s*0,\s*1|none/);
+
+    const footerLink = page
+      .getByRole("navigation", { name: "Footer" })
+      .getByRole("link", { name: "Early access" });
+    await footerLink.scrollIntoViewIfNeeded();
+    const footerAfter = await footerLink.evaluate((element) => {
+      const after = getComputedStyle(element, "::after");
+      const originX = Number.parseFloat(after.transformOrigin);
+      const width = element.getBoundingClientRect().width;
+      return Math.abs(originX - width / 2) <= 2;
+    });
+    expect(footerAfter).toBe(true);
+
+    const primary = page
+      .getByRole("link", { name: "View the clinic demo" })
+      .first();
+    await primary.hover();
+    const primaryTransform = await primary.evaluate(
+      (element) => getComputedStyle(element).transform
+    );
+    expect(
+      primaryTransform === "none" ||
+        primaryTransform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
   });
 
   test("keeps the approved hero composition unchanged", async ({ page }) => {

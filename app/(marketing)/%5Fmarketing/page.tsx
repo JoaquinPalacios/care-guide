@@ -8,7 +8,7 @@ import {
   MarketingRevealItem,
   MarketingRevealPreview,
 } from "@/app/(marketing)/components/marketing-experience";
-import { MarketingBento } from "@/app/(marketing)/components/marketing-bento";
+import { MarketingPillars } from "@/app/(marketing)/components/marketing-pillars";
 import { MarketingProcess } from "@/app/(marketing)/components/marketing-process";
 import { MarketingProductPreview } from "@/app/(marketing)/components/marketing-product-preview";
 import { MarketingThemeControl } from "@/app/(marketing)/components/marketing-theme-control";
@@ -95,16 +95,28 @@ export default async function MarketingHomePage() {
             {PRODUCT_NAME}
           </Link>
           <nav className={styles.nav} aria-label="Marketing">
-            <Link className={styles.navAnchor} href="#how-it-works">
+            <Link
+              className={`${styles.navAnchor} ${styles.textLink}`}
+              href="#how-it-works"
+            >
               How it works
             </Link>
-            <Link className={styles.navAnchor} href="#preview">
+            <Link
+              className={`${styles.navAnchor} ${styles.textLink}`}
+              href="#preview"
+            >
               Clinic preview
             </Link>
-            <Link className={styles.navAnchor} href="#early-access">
+            <Link
+              className={`${styles.navAnchor} ${styles.textLink}`}
+              href="#early-access"
+            >
               Early access
             </Link>
-            <a className={styles.navStaff} href={staffHref}>
+            <a
+              className={`${styles.navStaff} ${styles.textLink}`}
+              href={staffHref}
+            >
               Staff sign in
             </a>
             <MarketingThemeControl />
@@ -185,24 +197,28 @@ export default async function MarketingHomePage() {
                   </div>
                 </MarketingReveal.Item>
                 <MarketingReveal.Item>
-                  <ul className={styles.problemList}>
-                    <li>
-                      Verbal advice is easy to forget once the appointment ends.
+                  <ol className={styles.frictionList}>
+                    <li className={styles.frictionItem}>
+                      <span className={styles.frictionIndex}>01</span>
+                      <p>
+                        Verbal advice is easy to forget once the appointment
+                        ends.
+                      </p>
                     </li>
-                    <li>Paper is easy to lose between the chair and home.</li>
-                    <li>PDFs are awkward to reopen on a phone.</li>
-                    <li>
-                      Generic handouts weaken the clinic&apos;s own identity.
+                    <li className={styles.frictionItem}>
+                      <span className={styles.frictionIndex}>02</span>
+                      <p>
+                        Paper is easy to lose, and PDFs are awkward to reopen on
+                        a phone.
+                      </p>
                     </li>
-                    <li>
-                      Patients often need the same instructions again days
-                      later.
+                    <li className={styles.frictionItem}>
+                      <span className={styles.frictionIndex}>03</span>
+                      <p>
+                        Generic handouts weaken the clinic&apos;s own identity.
+                      </p>
                     </li>
-                    <li>
-                      Unclear aftercare creates avoidable calls and follow-up
-                      questions.
-                    </li>
-                  </ul>
+                  </ol>
                 </MarketingReveal.Item>
               </div>
             </MarketingReveal.Group>
@@ -211,6 +227,17 @@ export default async function MarketingHomePage() {
           <section className={styles.band} aria-labelledby="product-heading">
             <MarketingReveal.Group>
               <div className={`${styles.inner} ${styles.productGrid}`}>
+                <MarketingReveal.Item>
+                  <div className={styles.productEquation} aria-hidden="true">
+                    <span className={styles.equationTerm}>Approved guide</span>
+                    <span className={styles.equationJoin}>+</span>
+                    <span className={styles.equationTerm}>Clinic brand</span>
+                    <span className={styles.equationArrow} />
+                    <span className={styles.equationResult}>
+                      Patient aftercare page
+                    </span>
+                  </div>
+                </MarketingReveal.Item>
                 <div className={styles.productCopy}>
                   <MarketingReveal.Item>
                     <p className={styles.eyebrow}>The product</p>
@@ -266,14 +293,12 @@ export default async function MarketingHomePage() {
                   </h2>
                 </MarketingReveal.Item>
                 <MarketingReveal.Item>
-                  <MarketingBento />
+                  <MarketingPillars />
                 </MarketingReveal.Item>
               </div>
             </MarketingReveal.Group>
           </section>
         </div>
-
-        <div className={styles.blendToShowcase} aria-hidden="true" />
 
         <div className={styles.marketingShowcase} data-mk-chapter="showcase">
           <section className={styles.band} aria-labelledby="brand-heading">
@@ -368,8 +393,6 @@ export default async function MarketingHomePage() {
           </section>
         </div>
 
-        <div className={styles.blendToClosing} aria-hidden="true" />
-
         <div className={styles.marketingClosing} data-mk-chapter="closing">
           <section
             id="early-access"
@@ -429,10 +452,18 @@ export default async function MarketingHomePage() {
             </p>
           </div>
           <nav className={styles.footerNav} aria-label="Footer">
-            <Link href="#how-it-works">How it works</Link>
-            <Link href="#preview">Clinic preview</Link>
-            <Link href="#early-access">Early access</Link>
-            <a href={staffHref}>Staff sign in</a>
+            <Link className={styles.textLink} href="#how-it-works">
+              How it works
+            </Link>
+            <Link className={styles.textLink} href="#preview">
+              Clinic preview
+            </Link>
+            <Link className={styles.textLink} href="#early-access">
+              Early access
+            </Link>
+            <a className={styles.textLink} href={staffHref}>
+              Staff sign in
+            </a>
           </nav>
         </div>
         <div className={styles.inner}>

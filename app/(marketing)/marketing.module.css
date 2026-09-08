@@ -1,20 +1,5 @@
 .page {
   min-height: 100%;
-  --mk-chapter-bg: var(--mk-hero);
-  background-color: var(--mk-chapter-bg);
-  transition: background-color 0.8s ease;
-}
-
-.page[data-chapter="soft"] {
-  --mk-chapter-bg: var(--mk-soft);
-}
-
-.page[data-chapter="showcase"] {
-  --mk-chapter-bg: var(--mk-showcase);
-}
-
-.page[data-chapter="closing"] {
-  --mk-chapter-bg: var(--mk-closing);
 }
 
 .marketingBase {
@@ -24,14 +9,7 @@
 
 .marketingClosing {
   background: var(--mk-closing);
-  color: var(--mk-on-dark);
-  --mk-ink: var(--mk-on-dark);
-  --mk-muted: var(--mk-muted-on-dark);
-  --mk-line: var(--mk-line-on-dark);
-  --mk-brand: #a6b8ff;
-  --mk-brand-strong: #7c8cff;
-  --mk-on-brand: #0a0d14;
-  --mk-surface: #151a24;
+  color: var(--mk-ink);
 }
 
 .marketingSoft {
@@ -92,48 +70,51 @@
 }
 
 .nav a {
-  position: relative;
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
   color: var(--mk-muted);
-  text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
-  transition: color var(--mk-interact-duration) var(--mk-interact-ease);
 }
 
 .navStaff {
   white-space: nowrap;
 }
 
-.nav a::after {
+.nav a:hover,
+.nav a:focus-visible,
+.nav a:active {
+  color: var(--mk-ink);
+}
+
+.textLink {
+  position: relative;
+  text-decoration: none;
+  transition: color var(--mk-interact-duration) var(--mk-interact-ease);
+}
+
+.textLink::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -0.18rem;
+  bottom: 0.12em;
   height: 1px;
-  background: currentColor;
-  opacity: 0;
   pointer-events: none;
-  transition: opacity var(--mk-interact-duration) var(--mk-interact-ease);
+  background: var(--mk-brand);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--mk-interact-duration) var(--mk-interact-ease);
 }
 
-.nav a:hover {
-  color: var(--mk-ink);
+.nav a.textLink::after {
+  bottom: 0.72rem;
 }
 
-.nav a:hover::after {
-  opacity: 0.42;
-}
-
-.nav a:focus-visible {
-  color: var(--mk-ink);
-}
-
-.nav a:active {
-  color: var(--mk-ink);
+.textLink:hover::after,
+.textLink:focus-visible::after {
+  transform: scaleX(1);
 }
 
 .hero {
@@ -273,7 +254,6 @@
   text-decoration: none;
   touch-action: manipulation;
   transition:
-    transform var(--mk-interact-duration) var(--mk-interact-ease),
     background-color var(--mk-interact-duration) var(--mk-interact-ease),
     color var(--mk-interact-duration) var(--mk-interact-ease),
     border-color var(--mk-interact-duration) var(--mk-interact-ease),
@@ -287,10 +267,9 @@
 }
 
 .primary:hover {
-  background: color-mix(in srgb, var(--mk-brand-strong) 88%, var(--mk-ink));
+  background: color-mix(in srgb, var(--mk-brand-strong) 82%, var(--mk-ink));
   box-shadow: 0 8px 18px
     color-mix(in srgb, var(--mk-brand-strong) 26%, transparent);
-  transform: translateY(-1.5px);
 }
 
 .primary:focus-visible {
@@ -299,9 +278,8 @@
 }
 
 .primary:active {
-  background: color-mix(in srgb, var(--mk-brand-strong) 82%, var(--mk-ink));
+  background: color-mix(in srgb, var(--mk-brand-strong) 76%, var(--mk-ink));
   box-shadow: 0 1px 0 color-mix(in srgb, #0a0d14 10%, transparent);
-  transform: translateY(0);
 }
 
 .secondary {
@@ -311,9 +289,8 @@
 }
 
 .secondary:hover {
-  border-color: color-mix(in srgb, var(--mk-ink) 28%, var(--mk-line));
-  background: color-mix(in srgb, var(--mk-ink) 4%, transparent);
-  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--mk-ink) 42%, var(--mk-line));
+  background: color-mix(in srgb, var(--mk-ink) 5%, transparent);
 }
 
 .secondary:focus-visible {
@@ -322,9 +299,8 @@
 }
 
 .secondary:active {
-  border-color: color-mix(in srgb, var(--mk-ink) 22%, var(--mk-line));
-  background: color-mix(in srgb, var(--mk-ink) 6%, transparent);
-  transform: translateY(0);
+  border-color: color-mix(in srgb, var(--mk-ink) 28%, var(--mk-line));
+  background: color-mix(in srgb, var(--mk-ink) 8%, transparent);
 }
 
 .deviceStage {
@@ -594,20 +570,6 @@
   padding-top: var(--mk-chapter-pad-y);
 }
 
-.blendToShowcase,
-.blendToClosing {
-  height: 4rem;
-  pointer-events: none;
-}
-
-.blendToShowcase {
-  background: linear-gradient(to bottom, var(--mk-soft), var(--mk-showcase));
-}
-
-.blendToClosing {
-  background: linear-gradient(to bottom, var(--mk-showcase), var(--mk-closing));
-}
-
 .problemTitle {
   margin: 0;
   font-size: clamp(1.8rem, 4vw, 3rem);
@@ -616,19 +578,78 @@
   max-width: 16ch;
 }
 
-.problemList {
+.frictionList {
   margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 0.85rem;
+  gap: 1.45rem;
 }
 
-.problemList li {
-  padding-left: 1rem;
-  border-left: 2px solid var(--mk-brand);
+.frictionItem {
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 1fr);
+  column-gap: 0.85rem;
+  align-items: start;
+}
+
+.frictionIndex {
+  color: var(--mk-brand);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.55;
+}
+
+.frictionItem p {
+  margin: 0;
+  padding-left: 0.85rem;
+  border-left: 1.5px solid var(--mk-brand);
   color: var(--mk-muted);
-  max-width: 38rem;
+  max-width: 32rem;
+}
+
+.productEquation {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+  max-width: 22rem;
+}
+
+.equationTerm,
+.equationResult {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--mk-card-line);
+  border-radius: 999px;
+  background: var(--mk-card);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.equationResult {
+  border-color: color-mix(in srgb, var(--mk-brand) 40%, var(--mk-line));
+  color: var(--mk-brand);
+}
+
+.equationJoin {
+  padding-left: 0.85rem;
+  color: var(--mk-rail);
+  font-size: 0.95rem;
+  font-weight: 650;
+  line-height: 1;
+}
+
+.equationArrow {
+  width: 1px;
+  height: 1.15rem;
+  margin-left: 1.35rem;
+  background: linear-gradient(to bottom, var(--mk-rail), var(--mk-rail-end));
 }
 
 .productCopy {
@@ -653,18 +674,20 @@
 }
 
 .processJourney {
+  --process-node: 1.5rem;
+  --process-gap: 1.15rem;
   position: relative;
   margin-top: 1.75rem;
-  overflow-x: clip;
 }
 
 .processRail {
   position: absolute;
   z-index: 0;
-  left: 0.72rem;
-  top: 0.72rem;
-  bottom: 1.35rem;
+  left: calc(var(--process-node) / 2);
+  top: calc(var(--process-node) / 2);
+  bottom: 1.2rem;
   width: 2px;
+  transform: translateX(-1px);
   pointer-events: none;
   background: linear-gradient(
     to bottom,
@@ -672,14 +695,17 @@
     var(--mk-rail-end),
     var(--mk-rail)
   );
-  box-shadow: 0 0 12px color-mix(in srgb, var(--mk-rail) 42%, transparent);
+}
+
+.processRailMark {
+  display: none;
 }
 
 .processList {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 1.15rem;
+  gap: var(--process-gap);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -687,7 +713,7 @@
 
 .processStep {
   display: grid;
-  grid-template-columns: 1.5rem minmax(0, 1fr);
+  grid-template-columns: var(--process-node) minmax(0, 1fr);
   column-gap: 0.9rem;
   align-items: start;
 }
@@ -696,7 +722,9 @@
   position: relative;
   display: flex;
   justify-content: center;
-  min-height: 1.5rem;
+  align-self: stretch;
+  width: 100%;
+  min-height: var(--process-node);
 }
 
 .processNode {
@@ -704,8 +732,8 @@
   z-index: 1;
   display: grid;
   place-items: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: var(--process-node);
+  height: var(--process-node);
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--mk-rail) 55%, var(--mk-line));
   background: var(--mk-soft);
@@ -716,18 +744,33 @@
   font-variant-numeric: tabular-nums;
 }
 
-.processArrow {
-  display: none;
-}
-
 .processCard,
-.bentoCard {
+.pillarCard,
+.customStrip {
   min-width: 0;
   padding: 1.2rem 1.15rem 1.25rem;
   border: 1px solid var(--mk-card-line);
   border-radius: var(--mk-card-radius);
   background: var(--mk-card);
   box-shadow: var(--mk-card-shadow);
+}
+
+.processCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.processVisual {
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  flex-shrink: 0;
+}
+
+.processVisual .microVisual {
+  width: 100%;
+  margin: 0;
 }
 
 .processIndex {
@@ -738,10 +781,12 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .processCard h3,
-.bentoCard h3,
+.pillarCard h3,
+.customCopy h3,
 .brandCard h3 {
   margin: 0 0 0.35rem;
   font-size: 1.08rem;
@@ -749,24 +794,15 @@
 }
 
 .processCard p,
-.bentoCard p {
+.pillarCard p,
+.customCopy p {
   margin: 0;
   color: var(--mk-muted);
-}
-
-.bentoCard p {
-  max-width: 36rem;
-}
-
-.bentoSmall p,
-.bentoReading p {
-  font-size: 0.95rem;
 }
 
 .microVisual {
   display: grid;
   gap: 0.32rem;
-  margin-bottom: 0.9rem;
   pointer-events: none;
 }
 
@@ -775,7 +811,7 @@
 .themeChips,
 .clinicMarkRow,
 .microTimeline,
-.microCustom {
+.customPreview {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -807,6 +843,7 @@
 .guideRow {
   display: flex;
   align-items: center;
+  gap: 0.4rem;
   height: auto;
   min-height: 1.45rem;
   padding: 0 0.55rem;
@@ -816,6 +853,14 @@
   font-size: 0.72rem;
   font-weight: 650;
   letter-spacing: -0.01em;
+}
+
+.guideCheck {
+  width: 0.48rem;
+  height: 0.48rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--mk-brand);
 }
 
 .guideRowQuiet {
@@ -916,6 +961,27 @@
   letter-spacing: -0.03em;
 }
 
+.termHint {
+  margin: 0;
+  color: var(--mk-muted);
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.radiusExamples {
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
+}
+
+.radiusExamples span {
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--mk-ink) 16%, transparent);
+  background: color-mix(in srgb, var(--mk-brand) 10%, var(--mk-card));
+}
+
 .phoneOutline {
   display: grid;
   gap: 0.28rem;
@@ -924,6 +990,7 @@
   border: 1px solid var(--mk-card-line);
   border-radius: 0.7rem;
   background: color-mix(in srgb, var(--mk-ink) 2.5%, var(--mk-card));
+  flex-shrink: 0;
 }
 
 .typeLine {
@@ -989,31 +1056,67 @@
   color: var(--mk-ink);
 }
 
-.bentoGrid {
+.pillarStack {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.85rem;
+  gap: 1rem;
   margin-top: 1.75rem;
 }
 
-.bentoLarge,
-.bentoReading,
-.bentoSmall,
-.bentoLibrary,
-.bentoWide {
+.pillarGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.pillarCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.pillarVisual {
+  height: 6.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.32rem;
+  margin-bottom: 0.95rem;
+  pointer-events: none;
+}
+
+.pillarPoints {
+  margin: 0.85rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.pillarPoints li {
+  padding-left: 0.75rem;
+  border-left: 1.5px solid color-mix(in srgb, var(--mk-brand) 55%, transparent);
+  color: var(--mk-muted);
+  font-size: 0.92rem;
+}
+
+.patientPreview {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.patientHints {
+  display: grid;
+  gap: 0.35rem;
   min-width: 0;
 }
 
-.bentoLarge {
-  padding: 1.35rem 1.25rem 1.4rem;
+.previewTimeline {
+  margin-top: 0.15rem;
 }
 
-.bentoWide {
-  padding: 1.25rem 1.2rem 1.3rem;
-}
-
-.microPhone {
-  justify-items: start;
+.customStrip {
+  display: grid;
+  gap: 1rem;
 }
 
 .brandGrid {
@@ -1047,7 +1150,7 @@
 }
 
 .ctaBlock {
-  padding: var(--mk-chapter-pad-y) 0 var(--mk-section-pad-y);
+  padding: var(--mk-chapter-pad-y) 0 2.25rem;
 }
 
 .ctaBlock h2 {
@@ -1065,14 +1168,16 @@
 }
 
 .footer {
-  padding: 0 0 1.7rem;
+  padding: 0 0 2rem;
   color: var(--mk-muted);
   font-size: 0.9rem;
 }
 
 .footerInner {
   display: grid;
-  gap: 1.4rem;
+  gap: 1.25rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid var(--mk-line);
 }
 
 .footerBrand {
@@ -1097,11 +1202,8 @@
 }
 
 .footerNav a {
-  position: relative;
   color: var(--mk-muted);
   font-weight: 600;
-  text-decoration: none;
-  transition: color var(--mk-interact-duration) var(--mk-interact-ease);
 }
 
 .footerNav a:hover,
@@ -1110,9 +1212,7 @@
 }
 
 .footerCopy {
-  margin: 0.4rem 0 0;
-  padding-top: 1.1rem;
-  border-top: 1px solid var(--mk-line);
+  margin: 1rem 0 0;
   font-size: 0.82rem;
 }
 
@@ -1166,24 +1266,15 @@
   }
 }
 
-@media (min-width: 24.375rem) and (max-width: 63.99rem) {
-  .bentoGrid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .bentoLarge,
-  .bentoReading,
-  .bentoLibrary,
-  .bentoWide {
-    grid-column: 1 / -1;
-  }
-}
-
 @media (min-width: 64rem) {
   .problemGrid,
-  .productGrid,
   .previewGrid {
     grid-template-columns: 1.05fr 0.95fr;
+    align-items: start;
+  }
+
+  .productGrid {
+    grid-template-columns: 0.9fr 1.1fr;
     align-items: center;
   }
 
@@ -1235,12 +1326,17 @@
   }
 
   .processRail {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
     left: 12.5%;
     right: 12.5%;
-    top: 0.72rem;
+    top: calc(var(--process-node) / 2 - 1px);
     bottom: auto;
     width: auto;
     height: 2px;
+    transform: none;
+    overflow: visible;
     background: linear-gradient(
       to right,
       var(--mk-rail),
@@ -1249,99 +1345,68 @@
     );
   }
 
+  .processRailMark {
+    display: block;
+    width: 0.34rem;
+    height: 0.34rem;
+    flex-shrink: 0;
+    border-top: 1.25px solid var(--mk-rail-end);
+    border-right: 1.25px solid var(--mk-rail-end);
+    transform: rotate(45deg);
+    opacity: 0.7;
+  }
+
   .processList {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0 1.15rem;
+    gap: 0;
+    align-items: stretch;
   }
 
   .processStep {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    height: 100%;
   }
 
   .processTrack {
-    height: 1.5rem;
+    width: 100%;
+    height: var(--process-node);
     margin-bottom: 1.05rem;
+    justify-content: center;
   }
 
   .processTrack::after {
     content: "";
     position: absolute;
     left: 50%;
-    top: 1.5rem;
+    top: var(--process-node);
     width: 1px;
     height: 1.05rem;
     background: color-mix(in srgb, var(--mk-rail) 42%, transparent);
   }
 
-  .processArrow {
-    display: block;
-    position: absolute;
-    top: 50%;
-    left: calc(50% + 1.15rem);
-    width: 0.42rem;
-    height: 0.42rem;
-    border-right: 1.5px solid color-mix(in srgb, var(--mk-rail-end) 80%, #fff);
-    border-top: 1.5px solid color-mix(in srgb, var(--mk-rail-end) 80%, #fff);
-    transform: translateY(-50%) rotate(45deg);
-  }
-
-  .processStep:last-child .processArrow {
-    display: none;
-  }
-
   .processCard {
+    flex: 1 1 auto;
+    height: 100%;
+    margin-inline: 0.45rem;
     padding: 1.25rem 1.15rem 1.3rem;
   }
 
-  .bentoGrid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 1rem;
+  .pillarGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
   }
 
-  .bentoLarge {
-    grid-column: span 4;
-    padding: 1.5rem 1.45rem 1.55rem;
+  .pillarCard,
+  .customStrip {
+    padding: 1.4rem 1.3rem 1.45rem;
   }
 
-  .bentoReading {
-    grid-column: span 2;
-  }
-
-  .bentoSmall {
-    grid-column: span 2;
-  }
-
-  .bentoLibrary {
-    grid-column: span 2;
-  }
-
-  .bentoWide {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: minmax(12rem, 20rem) minmax(0, 1fr);
-    grid-template-areas:
-      "visual title"
-      "visual copy";
-    column-gap: 1.5rem;
-    row-gap: 0.25rem;
+  .customStrip {
+    grid-template-columns: minmax(14rem, 22rem) minmax(0, 1fr);
     align-items: center;
-    padding: 1.3rem 1.5rem 1.35rem;
-  }
-
-  .bentoWide .microVisual {
-    grid-area: visual;
-    margin-bottom: 0;
-  }
-
-  .bentoWide h3 {
-    grid-area: title;
-    margin-bottom: 0;
-  }
-
-  .bentoWide p {
-    grid-area: copy;
+    column-gap: 1.5rem;
   }
 
   .brandGrid {
@@ -1375,21 +1440,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .page {
-    transition: none;
-  }
-
   .button,
-  .nav a,
-  .nav a::after,
-  .footerNav a {
+  .textLink,
+  .textLink::after {
     transition: none;
-  }
-
-  .primary:hover,
-  .primary:active,
-  .secondary:hover,
-  .secondary:active {
-    transform: none;
   }
 }

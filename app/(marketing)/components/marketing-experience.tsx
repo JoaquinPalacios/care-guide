@@ -2,7 +2,7 @@
 
 import { LazyMotion, MotionConfig, useReducedMotion } from "motion/react";
 import * as m from "motion/react-m";
-import { type ReactNode, useEffect, useRef } from "react";
+import { type ReactNode, useRef } from "react";
 
 import {
   HERO_PREVIEW_VARIANTS,
@@ -91,54 +91,10 @@ export function MarketingExperience({
   className: string;
   children: ReactNode;
 }) {
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) {
-      return;
-    }
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
-
-    const chapters = [
-      ...root.querySelectorAll<HTMLElement>("[data-mk-chapter]"),
-    ];
-    if (chapters.length === 0) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        const chapter = visible?.target.getAttribute("data-mk-chapter");
-        if (chapter) {
-          root.dataset.chapter = chapter;
-        }
-      },
-      {
-        threshold: [0.18, 0.32, 0.5],
-        rootMargin: "-12% 0px -45% 0px",
-      }
-    );
-
-    for (const chapter of chapters) {
-      observer.observe(chapter);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <LazyMotion features={loadFeatures} strict>
       <MotionConfig reducedMotion="user">
-        <div ref={rootRef} className={className} data-chapter="hero">
-          {children}
-        </div>
+        <div className={className}>{children}</div>
       </MotionConfig>
     </LazyMotion>
   );

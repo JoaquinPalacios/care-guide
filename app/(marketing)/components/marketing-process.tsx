@@ -38,7 +38,11 @@ export function MarketingProcess() {
         className={styles.processRail}
         data-mk-process-rail=""
         aria-hidden="true"
-      />
+      >
+        <span className={styles.processRailMark} />
+        <span className={styles.processRailMark} />
+        <span className={styles.processRailMark} />
+      </span>
       <ol className={styles.processList}>
         {STEPS.map((step) => (
           <li
@@ -48,10 +52,11 @@ export function MarketingProcess() {
           >
             <div className={styles.processTrack} aria-hidden="true">
               <span className={styles.processNode}>{step.node}</span>
-              <span className={styles.processArrow} />
             </div>
             <div className={styles.processCard}>
-              <ProcessVisual kind={step.visual} />
+              <div className={styles.processVisual}>
+                <ProcessVisual kind={step.visual} />
+              </div>
               <span className={styles.processIndex}>{step.index}</span>
               <h3>{step.title}</h3>
               <p>{step.copy}</p>

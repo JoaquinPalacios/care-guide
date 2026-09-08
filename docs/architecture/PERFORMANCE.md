@@ -666,3 +666,38 @@ Theme-menu chunk delta vs 1F.9 (`22,702`): **+679** from inline SVG option glyph
 ### Tenant CSS / JS
 
 Unchanged from 1F.9. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.
+
+## After Phase 1F.11 (story clarity and interaction rhythm)
+
+Measured 2026-09-08 against `cursor/aftercare-phase-1e-hardening` after Phase 1F.11. Production `next start` on port 4173. Next.js 16.3.3 / Turbopack. No new dependency. No Motion entrance choreography. Chapter-wash observer removed. No new marketing Client Component.
+
+### Marketing CSS
+
+Replaced the six-item bento, blend gradients, and `--mk-chapter-bg` scroll wash with three benefit pillars, an editorial problem/product pair, a connected process rail, and a theme-aware light closing. Shared card/rail tokens kept the new surfaces from becoming one-off implementations.
+
+- `0bw7doqwpg1ub.css` — marketing base (6,596 raw / 1,867 gzip / 1,652 Brotli)
+- `2yo61e4ccybri.css` — `marketing.module.css` (26,252 raw / 5,032 gzip / 4,375 Brotli)
+
+| Metric         |  1F.10 |      1F.11 |    Delta |
+| -------------- | -----: | ---------: | -------: |
+| CSS raw        | 32,402 | **32,848** | **+446** |
+| CSS gzip -9    |  6,863 |  **6,899** |  **+36** |
+| CSS Brotli q11 |  6,021 |  **6,027** |   **+6** |
+| Tailwind       |     no |         no |        — |
+
+Source CSS: `marketing.css` 6,794 + `marketing.module.css` 25,148 = **31,942** vs 1F.10 **31,310** (**+632**). The compiled payload grew slightly because the three-pillar + equation + underline work replaced more CSS than the bento/blend/wash removal saved. No Tailwind. No CSS-in-JS.
+
+### Marketing JavaScript
+
+Process, pillars, problem/product, and closing remain Server Components. **New marketing client JS added: 0.** Removing the chapter-wash `IntersectionObserver` slightly reduced the existing marketing experience chunk. Motion chunk hash unchanged:
+
+| Chunk              | Role                                            |    Raw |
+| ------------------ | ----------------------------------------------- | -----: |
+| `2i-nz_vmh463e.js` | Marketing experience + theme menu               | 22,829 |
+| `01t426ne8zhgx.js` | Motion runtime (`motion/react-m`, `LazyMotion`) | 39,519 |
+
+Experience+theme chunk delta vs 1F.10 (`23,381`): **−552**. No `marketing-process` or `marketing-pillars` client chunk.
+
+### Tenant CSS / JS
+
+Unchanged from 1F.10. Tenant CSS files remain `2m5gc51ajgv8t.css` (3,025 raw) and `1_n81f590gcs4.css` (6,513 raw), **9,538** raw total. Playwright still enforces ≤ 9,538. No Motion on tenant. Staff still loads Tailwind.

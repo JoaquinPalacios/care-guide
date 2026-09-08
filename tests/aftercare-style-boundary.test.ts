@@ -134,9 +134,15 @@ describe("aftercare style boundary", () => {
     const hero = tokens.match(
       /--mk-hero:\s*light-dark\((#[0-9a-fA-F]{3,8}),\s*(#[0-9a-fA-F]{3,8})\)/
     );
-    expect(hero).not.toBeNull();
-    expect(hexLuminance(hero![1])).toBeGreaterThan(0.85);
-    expect(hexLuminance(hero![2])).toBeLessThan(0.12);
+    const closing = tokens.match(
+      /--mk-closing:\s*light-dark\((#[0-9a-fA-F]{3,8}),\s*(#[0-9a-fA-F]{3,8})\)/
+    );
+    expect(closing).not.toBeNull();
+    expect(hexLuminance(closing![1])).toBeGreaterThan(0.7);
+    expect(hexLuminance(closing![2])).toBeLessThan(0.12);
+    expect(styles).not.toMatch(
+      /\.marketingClosing[^{]*\{[^}]*--mk-ink:\s*var\(--mk-on-dark\)/
+    );
 
     expect(styles).not.toMatch(
       /\.marketingBase[^{]*\{[^}]*color:\s*var\(--mk-on-dark\)/
@@ -166,9 +172,16 @@ describe("aftercare style boundary", () => {
     expect(styles).not.toContain(".phoneIsland");
     expect(styles).not.toContain(".phoneGlass");
     expect(tokens).toContain("ease-out");
-    expect(styles).toContain("translateY(-1.5px)");
-    expect(styles).toMatch(/\.primary:active\s*\{[^}]*translateY\(0\)/);
-    expect(styles).toMatch(/\.secondary:active\s*\{[^}]*translateY\(0\)/);
+    expect(styles).not.toContain("translateY(-1.5px)");
+    expect(styles).not.toMatch(/\.primary:hover\s*\{[^}]*transform/);
+    expect(styles).not.toMatch(/\.secondary:hover\s*\{[^}]*transform/);
+    expect(styles).not.toMatch(/\.primary:active\s*\{[^}]*transform/);
+    expect(styles).not.toMatch(/\.secondary:active\s*\{[^}]*transform/);
+    expect(styles).toContain("scaleX(0)");
+    expect(styles).toContain("transform-origin: center");
+    expect(styles).toContain(".textLink");
+    expect(styles).not.toContain("blendToShowcase");
+    expect(styles).not.toContain("--mk-chapter-bg");
     expect(styles).toContain(":focus-visible");
     expect(styles).not.toContain("perspective");
     expect(styles).not.toContain("rotateY");
@@ -180,8 +193,13 @@ describe("aftercare style boundary", () => {
     expect(wave).toContain("feGaussianBlur");
     expect(styles).toContain("processJourney");
     expect(styles).toContain("processRail");
-    expect(styles).toContain("bentoGrid");
-    expect(styles).toContain("bentoCard");
+    expect(styles).toContain("processVisual");
+    expect(styles).toContain("pillarGrid");
+    expect(styles).toContain("pillarCard");
+    expect(styles).toContain("frictionList");
+    expect(styles).toContain("productEquation");
+    expect(styles).not.toContain("bentoGrid");
+    expect(styles).not.toContain("bentoCard");
     expect(preview).not.toMatch(/['"]use client['"]/);
     expect(preview).toContain('aria-hidden="true"');
     expect(preview).toContain("PhoneShell");
@@ -261,6 +279,12 @@ describe("aftercare style boundary", () => {
     expect(read("app/(marketing)/components/marketing-experience.tsx")).toMatch(
       /['"]use client['"]/
     );
+    expect(
+      read("app/(marketing)/components/marketing-experience.tsx")
+    ).not.toContain("IntersectionObserver");
+    expect(
+      read("app/(marketing)/components/marketing-experience.tsx")
+    ).not.toContain("data-chapter");
     expect(read("app/(aftercare)/components/guide-list.tsx")).not.toMatch(
       /['"]use client['"]/
     );

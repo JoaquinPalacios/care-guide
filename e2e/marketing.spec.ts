@@ -536,7 +536,10 @@ test.describe("marketing homepage", () => {
         background: styles.backgroundColor,
       };
     });
-    expect(hoverPrimary.transform).not.toBe("none");
+    expect(
+      hoverPrimary.transform === "none" ||
+        hoverPrimary.transform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
     expect(hoverPrimary.boxShadow).not.toBe(restPrimary.boxShadow);
     expect(hoverPrimary.background).not.toBe(restPrimary.background);
     await page.screenshot({
@@ -547,7 +550,9 @@ test.describe("marketing homepage", () => {
     const hoverSecondary = await secondary.evaluate(
       (element) => getComputedStyle(element).transform
     );
-    expect(hoverSecondary).not.toBe("none");
+    expect(
+      hoverSecondary === "none" || hoverSecondary === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
     await page.screenshot({
       path: "test-results/artifacts/phase-1f7-secondary-hover.png",
     });
