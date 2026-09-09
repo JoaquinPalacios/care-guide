@@ -18,6 +18,7 @@ import { MarketingThemeControl } from "@/app/(marketing)/components/marketing-th
 import { MarketingWave } from "@/app/(marketing)/components/marketing-wave";
 import { DEMO_AFTERCARE_TENANT_SLUG } from "@/lib/aftercare/demo-tenant";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
+import { editorialRevealDelay } from "@/lib/marketing/reveal-timing";
 import { labeledPublicUrl } from "@/lib/tenancy/public-url";
 import { getRootDomain } from "@/lib/tenancy/root-domain";
 
@@ -225,7 +226,7 @@ export default async function MarketingHomePage() {
                   <p className={styles.eyebrow}>The problem</p>
                 </MarketingReveal.Item>
                 <div className={styles.problemGrid}>
-                  <MarketingReveal.Item delay={0.07}>
+                  <MarketingReveal.Item delay={editorialRevealDelay(1)}>
                     <h2 id="problem-heading" className={styles.problemTitle}>
                       Patients leave with instructions. They don&apos;t always
                       leave with clarity.
@@ -258,12 +259,12 @@ export default async function MarketingHomePage() {
                   <MarketingReveal.Item delay={0}>
                     <p className={styles.eyebrow}>The product</p>
                   </MarketingReveal.Item>
-                  <MarketingReveal.Item delay={0.07}>
+                  <MarketingReveal.Item delay={editorialRevealDelay(1)}>
                     <h2 id="product-heading">
                       A branded patient aftercare page that stays available.
                     </h2>
                   </MarketingReveal.Item>
-                  <MarketingReveal.Item delay={0.14}>
+                  <MarketingReveal.Item delay={editorialRevealDelay(2)}>
                     <p className={styles.copy}>
                       {PRODUCT_NAME} gives each practice a durable, clinic-first
                       aftercare home. Patients reopen the same instructions in
@@ -288,7 +289,7 @@ export default async function MarketingHomePage() {
                 <MarketingReveal.Item delay={0}>
                   <p className={styles.eyebrow}>How it works</p>
                 </MarketingReveal.Item>
-                <MarketingReveal.Item delay={0.07}>
+                <MarketingReveal.Item delay={editorialRevealDelay(1)}>
                   <h2 id="how-heading" className={styles.sectionTitle}>
                     From approved guidance to a page patients keep
                   </h2>
@@ -304,7 +305,7 @@ export default async function MarketingHomePage() {
                 <MarketingReveal.Item delay={0}>
                   <p className={styles.eyebrow}>Why clinics use it</p>
                 </MarketingReveal.Item>
-                <MarketingReveal.Item delay={0.07}>
+                <MarketingReveal.Item delay={editorialRevealDelay(1)}>
                   <h2 id="why-heading" className={styles.sectionTitle}>
                     Clinic-first aftercare, built for rereading
                   </h2>
@@ -322,12 +323,12 @@ export default async function MarketingHomePage() {
                 <MarketingReveal.Item delay={0}>
                   <p className={styles.eyebrow}>Brand flexibility</p>
                 </MarketingReveal.Item>
-                <MarketingReveal.Item delay={0.07}>
+                <MarketingReveal.Item delay={editorialRevealDelay(1)}>
                   <h2 id="brand-heading" className={styles.sectionTitle}>
                     One product, many practice identities
                   </h2>
                 </MarketingReveal.Item>
-                <MarketingReveal.Item delay={0.14}>
+                <MarketingReveal.Item delay={editorialRevealDelay(2)}>
                   <p className={styles.copy}>
                     Choose a visual tone that feels at home with your practice
                     while the patient experience stays consistent and easy to
@@ -365,19 +366,19 @@ export default async function MarketingHomePage() {
                   <MarketingReveal.Item delay={0}>
                     <p className={styles.eyebrow}>Clinic preview</p>
                   </MarketingReveal.Item>
-                  <MarketingReveal.Item delay={0.07}>
+                  <MarketingReveal.Item delay={editorialRevealDelay(1)}>
                     <h2 id="preview-heading">
                       See what patients actually receive
                     </h2>
                   </MarketingReveal.Item>
-                  <MarketingReveal.Item delay={0.14}>
+                  <MarketingReveal.Item delay={editorialRevealDelay(2)}>
                     <p className={styles.copy}>
                       The Riverside Dental Demo shows the patient experience:
                       clinic branding, post-treatment instructions, and a
                       published Tooth Extraction guide.
                     </p>
                   </MarketingReveal.Item>
-                  <MarketingReveal.Item delay={0.21}>
+                  <MarketingReveal.Item delay={editorialRevealDelay(3)}>
                     <div className={styles.actions}>
                       <a
                         className={`${styles.button} ${styles.primary}`}
@@ -388,7 +389,7 @@ export default async function MarketingHomePage() {
                     </div>
                   </MarketingReveal.Item>
                 </div>
-                <MarketingReveal.Item delay={0.28} preview>
+                <MarketingReveal.Item delay={editorialRevealDelay(4)} preview>
                   <MarketingPatientPreview />
                 </MarketingReveal.Item>
               </div>
@@ -416,7 +417,7 @@ export default async function MarketingHomePage() {
                     </p>
                   </MarketingReveal.Item>
                 </div>
-                <MarketingReveal.Item delay={0.07}>
+                <MarketingReveal.Item delay={editorialRevealDelay(1)}>
                   <div className={styles.closingCtaAction}>
                     <a
                       className={`${styles.button} ${styles.primary}`}

@@ -99,6 +99,11 @@ describe("aftercare style boundary", () => {
     expect(styles).toMatch(/\.guideLink\s*\{[^}]*box-shadow/);
     expect(styles).not.toMatch(/\.timelineItem\s*\{[^}]*box-shadow/);
     expect(styles).not.toMatch(/\.timelineItem\s*\{[^}]*border-radius/);
+    expect(styles).not.toContain(".checkIn");
+    expect(styles).toMatch(/\.footer\s*\{[^}]*text-align:\s*center/);
+    expect(styles).toMatch(/\.attribution\s*\{[^}]*text-align:\s*center/);
+    expect(styles).toContain("timelineSeparator");
+    expect(styles).toContain("timelineRail");
   });
 
   it("reduces marketing to four chapter surfaces", () => {

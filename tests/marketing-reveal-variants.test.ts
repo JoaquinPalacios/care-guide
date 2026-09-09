@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  cardRevealDelay,
-  cardRevealItemVariants,
+  CARD_REVEAL_DURATION,
   CARD_REVEAL_STAGGER,
   CARD_REVEAL_STAGGER_MAX,
+  cardRevealDelay,
+  cardRevealItemVariants,
   delayedRevealItemVariants,
+  EDITORIAL_REVEAL_DURATION,
   EDITORIAL_REVEAL_STEP,
+  editorialRevealDelay,
   HERO_PREVIEW_VARIANTS,
   MARKETING_REVEAL_MARGIN,
   MARKETING_REVEAL_VIEWPORT,
@@ -22,17 +25,22 @@ import {
 } from "@/lib/marketing/reveal-variants";
 
 describe("marketing reveal variants", () => {
-  it("keeps shared timing restrained and uses per-item delays for sections", () => {
-    expect(REVEAL_STAGGER).toBeGreaterThanOrEqual(0.07);
-    expect(REVEAL_STAGGER).toBeLessThanOrEqual(0.1);
-    expect(EDITORIAL_REVEAL_STEP).toBe(0.07);
+  it("slows editorial and card reveals slightly without going theatrical", () => {
+    expect(REVEAL_STAGGER).toBe(0.09);
+    expect(EDITORIAL_REVEAL_STEP).toBe(0.09);
+    expect(editorialRevealDelay(1)).toBe(0.09);
+    expect(editorialRevealDelay(2)).toBe(0.18);
     expect(revealContainerVariants.visible).toEqual({});
-    expect(REVEAL_ITEM_DURATION).toBeGreaterThanOrEqual(0.45);
-    expect(REVEAL_ITEM_DURATION).toBeLessThanOrEqual(0.55);
-    expect(REVEAL_EASE).toBe("easeOut");
-    const delayed = delayedRevealItemVariants.visible(0.07);
-    expect(delayed.transition.delay).toBe(0.07);
-    expect(delayed.transition.duration).toBe(REVEAL_ITEM_DURATION);
+    expect(EDITORIAL_REVEAL_DURATION).toBe(0.62);
+    expect(EDITORIAL_REVEAL_DURATION).toBeLessThanOrEqual(0.65);
+    expect(CARD_REVEAL_DURATION).toBeGreaterThanOrEqual(0.56);
+    expect(CARD_REVEAL_DURATION).toBeLessThanOrEqual(0.58);
+    expect(REVEAL_ITEM_DURATION).toBe(EDITORIAL_REVEAL_DURATION);
+    expect(REVEAL_EASE).toEqual([0.22, 1, 0.36, 1]);
+    const delayed = delayedRevealItemVariants.visible(0.09);
+    expect(delayed.transition.delay).toBe(0.09);
+    expect(delayed.transition.duration).toBe(EDITORIAL_REVEAL_DURATION);
+    expect(delayed.transition.ease).toEqual(REVEAL_EASE);
   });
 
   it("moves items a small distance rather than a theatrical drop", () => {
@@ -44,7 +52,7 @@ describe("marketing reveal variants", () => {
     expect(REVEAL_Y).toBeLessThanOrEqual(18);
     expect(visible.opacity).toBe(1);
     expect(visible.transform).toBe("translateY(0px)");
-    expect(visible.transition.duration).toBe(REVEAL_ITEM_DURATION);
+    expect(visible.transition.duration).toBe(EDITORIAL_REVEAL_DURATION);
     expect(visible.transition.type).toBe("tween");
   });
 
@@ -55,7 +63,7 @@ describe("marketing reveal variants", () => {
     expect(hidden.transform).toContain("translateY(20px)");
     expect(hidden.transform).toContain("scale(0.985)");
     expect(visible.transform).toBe("translateY(0px) scale(1)");
-    expect(visible.transition.ease).toBe(REVEAL_EASE);
+    expect(visible.transition.ease).toEqual(REVEAL_EASE);
     expect(visible.transition.type).toBe("tween");
   });
 
@@ -68,8 +76,8 @@ describe("marketing reveal variants", () => {
   });
 
   it("staggers independent cards without a long cascade", () => {
-    expect(CARD_REVEAL_STAGGER).toBeGreaterThanOrEqual(0.06);
-    expect(CARD_REVEAL_STAGGER).toBeLessThanOrEqual(0.08);
+    expect(CARD_REVEAL_STAGGER).toBe(0.08);
+    expect(CARD_REVEAL_STAGGER_MAX).toBe(0.28);
     expect(cardRevealDelay(0)).toBe(0);
     expect(cardRevealDelay(1)).toBe(CARD_REVEAL_STAGGER);
     expect(cardRevealDelay(3)).toBeLessThanOrEqual(CARD_REVEAL_STAGGER_MAX);
@@ -78,6 +86,9 @@ describe("marketing reveal variants", () => {
       `translateY(${REVEAL_Y_CARD}px)`
     );
     expect(REVEAL_Y_CARD).toBe(16);
+    expect(cardRevealItemVariants.visible(0).transition.duration).toBe(
+      CARD_REVEAL_DURATION
+    );
   });
 
   it("keeps the hero stagger while later sections orchestrate with explicit delays", () => {

@@ -98,8 +98,7 @@ export function patientSpecificJs(
       url.includes("app/%28aftercare%29") ||
       /patient[-.]/i.test(url) ||
       body.includes("data-demo-view") ||
-      body.includes("Demo response") ||
-      body.includes("How are you feeling today?") ||
+      body.includes("Print / Save PDF") ||
       body.includes("Change colour theme") ||
       body.includes("ptcBtn")
     );
@@ -127,8 +126,7 @@ export function patientDemoJs(assets: AssetMeasurement[]): AssetMeasurement[] {
     return (
       /patient-demo-experience|print-trigger/i.test(url) ||
       body.includes("data-demo-view") ||
-      body.includes("Demo response") ||
-      body.includes("How are you feeling today?")
+      body.includes("Print / Save PDF")
     );
   });
 }
@@ -158,7 +156,7 @@ export function expectCssWithinPhase1Budget(css: AssetMeasurement[]): void {
   const gzip = sumMetric(css, "gzip");
   const brotli = sumMetric(css, "brotli");
 
-  // Phase 1G: demo nav, Today/Timeline/Check-in, and print styles.
+  // Phase 1G.1: demo nav, Today/Timeline, print document, no Check-in.
   // Review if tenant CSS grows well beyond the last measured payload.
   expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(16_384);
   expect(gzip, `CSS gzip ${gzip}`).toBeLessThanOrEqual(4_500);

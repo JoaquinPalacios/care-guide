@@ -153,8 +153,12 @@ body {
   outline-offset: 3px;
 }
 
-.aftercareTheme:has([data-print-care-plan]) .patientThemeSlot {
+.aftercareTheme:has([data-print-guide]) .patientThemeSlot {
   display: none;
+}
+
+@page {
+  margin: 16mm 14mm;
 }
 
 @media print {

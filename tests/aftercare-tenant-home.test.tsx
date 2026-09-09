@@ -135,6 +135,9 @@ describe("tenant homepage", () => {
     expect(html).not.toContain("Book an appointment");
     expect(html).toContain("DEMO: call the clinic or emergency services.");
     expect(html).toContain("Powered by Aftercare Guide");
+    expect(html).toContain("<footer");
+    expect(html).not.toMatch(/Aftercare Guide pricing/i);
+    expect(html).not.toContain("Contact Aftercare Guide");
     expect(html).toContain("Interactive demo");
     expect(html).toContain("Sample content only");
     expect(html).toContain("Not clinical advice");
@@ -176,6 +179,7 @@ describe("tenant homepage", () => {
     expect(html).not.toContain("Book an appointment");
     expect(html).not.toContain("If you need urgent help");
     expect(html).not.toContain("Powered by Aftercare Guide");
+    expect(html).not.toContain("<footer");
     expect(html).not.toContain("<img");
   });
 

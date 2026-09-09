@@ -3,12 +3,15 @@
 - **Status:** Accepted
 - **Date:** 2026-09-09
 - **PRD:** [../product/PRD.md](../product/PRD.md) §§10.3–10.5, 18.2–18.4
+- **Roadmap:** [../product/POST-LAUNCH-ROADMAP.md](../product/POST-LAUNCH-ROADMAP.md)
 
 ## Context
 
-Phase 1G prototypes a day-aware patient demo (Today / Timeline / optional Check-in / printable care plan) on the fictional `demodental` tenant. The current public guide is a published, anonymous document. A future real product needs a started recovery that can answer “what matters today?” without coupling aftercare to the parked chairside product.
+The current public aftercare page is a published, anonymous document. A future real product needs a started recovery that can answer “what matters today?” without coupling aftercare to the parked chairside product.
 
 `ProcedureSession` is a live, in-clinic walkthrough with rooms, doctors, PIN/display tokens, and stage transitions. Reusing it for aftercare would encode the wrong lifecycle, the wrong identity model, and the wrong privacy boundary.
+
+Phase 1G/1G.1 keeps a day-aware **demo fixture** (Today / Timeline / printable recovery guide) on the fictional `demodental` tenant. Check-in is **not** part of the launch product. The generic `/extraction` guide does not know a real patient's treatment day.
 
 ## Decision
 
@@ -23,7 +26,7 @@ GuideTemplate
 
 A future **RecoveryPlan** (also called CarePlanInstance in product conversation) is a new aftercare record. It is **not** `ProcedureSession`. It must not reuse chairside session tables, tokens, or stage machines.
 
-Proposed RecoveryPlan fields (not implemented in this phase):
+Proposed RecoveryPlan fields (not implemented):
 
 | Field                               | Purpose                                                                                         |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------- |
@@ -41,29 +44,37 @@ Derived (not stored as clinical truth):
 RecoveryPlan
   → Today resolver
   → Timeline (earlier / current / upcoming)
-  → printable care plan / PDF
-  → optional Check-ins (premium)
+  → printable recovery guide / PDF
+  → optional Check-ins (premium, post-launch)
 ```
 
-Phase 1G computes Today/Timeline from an **explicit demo fixture** (`simulatedDay`, `recoveryWindowDays`) plus composed `RECOVERY_TIMELINE` sections. It does not persist RecoveryPlan.
+The current Today/Timeline demo computes from an **explicit fixture** (`simulatedDay`, `recoveryWindowDays`) plus composed `RECOVERY_TIMELINE` sections. It does not persist RecoveryPlan.
+
+Before Today is sold as a real per-patient capability, a real anonymous RecoveryPlan / share-link domain must exist.
 
 Do **not** add: patient name, DOB, PIN, patient account, medication records, appointments, or health-data writes in this phase.
 
 ## Check-in commercial boundary
 
-Persisted check-ins are a **premium / add-on** capability. The Phase 1G interaction is demo-only, client-local, discarded on refresh, and must not write to the database, an API, localStorage, or analytics.
+Persisted check-ins are a **premium / add-on** (or higher Connected / Recovery tier) capability and are **POST-LAUNCH**. Current production launch contains no persisted patient check-ins and no Check-in UI.
 
 A real implementation will require all of:
 
-- RecoveryPlan / plan token
-- health-information handling
+- RecoveryPlan persistence
+- opaque patient / recovery token
+- patient-reported health information handling
 - retention and deletion policy
-- tenant access controls
-- audit / event model
+- tenant isolation
+- audit / event history
 - clinic dashboard
-- a clear non-emergency-monitoring contract
+- alerts / notifications only if explicitly added later
+- explicit non-emergency-monitoring wording
+- operational expectations
+- security / privacy review
 
-Feature availability should be gateable per clinic/plan (`enabled` / `disabled`). When disabled, Check-in is omitted from navigation. Phase 1G uses a demo config flag only.
+Feature availability should be gateable per clinic/plan (`enabled` / `disabled`). When disabled, Check-in is omitted from navigation.
+
+See [POST-LAUNCH-ROADMAP.md](../product/POST-LAUNCH-ROADMAP.md).
 
 ## Accessibility ownership
 
@@ -73,14 +84,14 @@ Feature availability should be gateable per clinic/plan (`enabled` / `disabled`)
 
 A clinic must not be able to disable a user’s `prefers-reduced-motion` preference. Density controls are not in this phase.
 
-## Printable care plan
+## Printable recovery guide
 
-Print derives from the **same composed guide document** as the web guide. Phase 1G uses print-optimised HTML and `@media print` (browser Print / Save as PDF). Do not add a PDF library until a commercial workflow requires server-generated files.
+Print derives from the **same composed GuideDocument** as the web guide. Launch uses print-oriented HTML and `@media print` (browser Print / Save as PDF). Do not add a PDF library until a commercial workflow requires server-generated files. Do not call the launch output a patient-specific Care Plan.
 
 ## Consequences
 
 - Aftercare loaders and patient UI remain free of `ProcedureSession`.
-- Demo check-in cannot become accidental PHI storage.
+- Launch cannot accidentally store PHI through a demo Check-in.
 - Later PDF generation, if added, must still start from the resolved guide, not a second copy of clinical text.
 
 ## Notes for later implementation

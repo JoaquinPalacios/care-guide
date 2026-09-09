@@ -1539,6 +1539,27 @@ test.describe("Phase 1F.11 story clarity", () => {
     const section = page.locator('[aria-labelledby="brand-heading"]');
     await scrollSectionIntoView(page, '[aria-labelledby="brand-heading"]');
     await waitForSectionReveal(section);
+    await expect
+      .poll(async () =>
+        section.evaluate((element) => {
+          const cards = [
+            ...element.querySelectorAll<HTMLElement>("[data-mk-card]"),
+          ];
+          if (cards.length === 0) {
+            return false;
+          }
+          return cards.every((card) => {
+            const styles = getComputedStyle(card);
+            const transform = styles.transform;
+            const translateY =
+              transform === "none"
+                ? 0
+                : Number(transform.split(", ").at(5)?.replace(")", "") ?? 0);
+            return styles.opacity === "1" && Math.abs(translateY) < 0.75;
+          });
+        })
+      )
+      .toBe(true);
     await expect(section.getByText("Brand flexibility")).toBeVisible();
     await expect(
       section.getByRole("heading", {

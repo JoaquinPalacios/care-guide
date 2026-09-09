@@ -1,14 +1,32 @@
 import { stagger } from "motion";
 
-export const REVEAL_Y = 14;
-export const REVEAL_Y_CARD = 16;
-export const REVEAL_Y_PREVIEW = 10;
-export const REVEAL_STAGGER = 0.085;
-export const REVEAL_ITEM_DURATION = 0.52;
-export const REVEAL_EASE = "easeOut" as const;
-export const EDITORIAL_REVEAL_STEP = 0.07;
-export const CARD_REVEAL_STAGGER = 0.07;
-export const CARD_REVEAL_STAGGER_MAX = 0.25;
+import {
+  CARD_REVEAL_DURATION,
+  EDITORIAL_REVEAL_DURATION,
+  REVEAL_EASE,
+  REVEAL_STAGGER,
+  REVEAL_Y,
+  REVEAL_Y_CARD,
+  REVEAL_Y_PREVIEW,
+} from "@/lib/marketing/reveal-timing";
+
+export {
+  CARD_REVEAL_DURATION,
+  CARD_REVEAL_STAGGER,
+  CARD_REVEAL_STAGGER_MAX,
+  cardRevealDelay,
+  EDITORIAL_REVEAL_DURATION,
+  EDITORIAL_REVEAL_STEP,
+  editorialRevealDelay,
+  REVEAL_EASE,
+  REVEAL_STAGGER,
+  REVEAL_Y,
+  REVEAL_Y_CARD,
+  REVEAL_Y_PREVIEW,
+} from "@/lib/marketing/reveal-timing";
+
+/** @deprecated Prefer EDITORIAL_REVEAL_DURATION. Kept for existing test aliases. */
+export const REVEAL_ITEM_DURATION = EDITORIAL_REVEAL_DURATION;
 
 /** SSR / desktop fallback. Runtime observers use `marketingRevealMargin`. */
 export const MARKETING_REVEAL_MARGIN = "9999px 0px -200px 0px" as const;
@@ -19,10 +37,6 @@ export const MARKETING_REVEAL_VIEWPORT = {
 } as const;
 
 export const REVEAL_VIEWPORT = MARKETING_REVEAL_VIEWPORT;
-
-export function cardRevealDelay(index: number): number {
-  return Math.min(index * CARD_REVEAL_STAGGER, CARD_REVEAL_STAGGER_MAX);
-}
 
 export const HERO_VIEWPORT = {
   once: true,
@@ -54,7 +68,7 @@ export const revealItemVariants = {
     transform: "translateY(0px)",
     transition: {
       type: "tween" as const,
-      duration: REVEAL_ITEM_DURATION,
+      duration: EDITORIAL_REVEAL_DURATION,
       ease: REVEAL_EASE,
     },
   },
@@ -70,7 +84,7 @@ export const delayedRevealItemVariants = {
     transform: "translateY(0px)",
     transition: {
       type: "tween" as const,
-      duration: REVEAL_ITEM_DURATION,
+      duration: EDITORIAL_REVEAL_DURATION,
       ease: REVEAL_EASE,
       delay,
     },
@@ -87,7 +101,7 @@ export const cardRevealItemVariants = {
     transform: "translateY(0px)",
     transition: {
       type: "tween" as const,
-      duration: REVEAL_ITEM_DURATION,
+      duration: CARD_REVEAL_DURATION,
       ease: REVEAL_EASE,
       delay,
     },
@@ -104,7 +118,7 @@ export const nodeRevealItemVariants = {
     transform: "scale(1)",
     transition: {
       type: "tween" as const,
-      duration: REVEAL_ITEM_DURATION,
+      duration: CARD_REVEAL_DURATION,
       ease: REVEAL_EASE,
       delay,
     },
@@ -121,7 +135,7 @@ export const railRevealVariants = {
     transform: "scaleX(1)",
     transition: {
       type: "tween" as const,
-      duration: REVEAL_ITEM_DURATION,
+      duration: CARD_REVEAL_DURATION,
       ease: REVEAL_EASE,
       delay,
     },
@@ -138,7 +152,7 @@ export const HERO_PREVIEW_VARIANTS = {
     transform: "translateY(0px) scale(1)",
     transition: {
       type: "tween" as const,
-      duration: 0.62,
+      duration: EDITORIAL_REVEAL_DURATION,
       ease: REVEAL_EASE,
     },
   },
@@ -154,7 +168,7 @@ export const previewRevealVariants = {
     transform: "translateY(0px) scale(1)",
     transition: {
       type: "tween" as const,
-      duration: REVEAL_ITEM_DURATION,
+      duration: EDITORIAL_REVEAL_DURATION,
       ease: REVEAL_EASE,
       delay,
     },

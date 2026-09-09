@@ -35,6 +35,7 @@ describe("resolvePracticeChrome", () => {
     );
     expect(chrome.showCareGuideAttribution).toBe(true);
     expect(chrome.showDemoNotice).toBe(true);
+    expect(chrome.addressText).toBeNull();
     expect(chrome.instructionTerminology).toBe("AFTERCARE");
     expect(chrome.instructionsLabel).toBe("Aftercare instructions");
     expect(chrome.themeMode).toBe("SYSTEM");
@@ -65,6 +66,7 @@ describe("resolvePracticeChrome", () => {
     expect(chrome.bookingHref).toBeNull();
     expect(chrome.contactHref).toBeNull();
     expect(chrome.emergencyInstructions).toBeNull();
+    expect(chrome.addressText).toBeNull();
     expect(chrome.showCareGuideAttribution).toBe(false);
     expect(chrome.showDemoNotice).toBe(false);
   });
@@ -81,6 +83,25 @@ describe("resolvePracticeChrome", () => {
     expect(chrome.showDemoNotice).toBe(false);
     expect(chrome.instructionTerminology).toBe("AFTERCARE");
     expect(chrome.allowPatientThemeToggle).toBe(false);
+    expect(chrome.addressText).toBeNull();
+  });
+
+  it("formats clinic address for printable contact details", () => {
+    const chrome = resolvePracticeChrome({
+      slug: "demodental",
+      name: "Rivers Care Demo Clinic",
+      profile: {
+        ...PROFILE,
+        addressLine1: "12 Riverside Demo Street",
+        city: "Sydney",
+        region: "NSW",
+        postalCode: "2000",
+      },
+    });
+
+    expect(chrome.addressText).toBe(
+      "12 Riverside Demo Street, Sydney NSW 2000"
+    );
   });
 
   it("maps clinic terminology, theme policy, and the patient toggle flag", () => {

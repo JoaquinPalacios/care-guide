@@ -42,4 +42,21 @@ describe("Phase 1 aftercare product boundary", () => {
     expect(source).not.toContain("@/lib/prisma");
     expect(source).not.toContain("getClinicBySlug");
   });
+
+  it("does not ship Check-in in the launch patient product", () => {
+    const files = [
+      ...sourceFiles("app/(aftercare)"),
+      ...sourceFiles("lib/aftercare"),
+    ];
+
+    expect(files.length).toBeGreaterThan(10);
+
+    for (const file of files) {
+      const source = readFileSync(file, "utf8");
+      expect(source, file).not.toMatch(/Check-in/);
+      expect(source, file).not.toMatch(/DEMO_CHECK_IN/);
+      expect(source, file).not.toMatch(/checkInEnabled/);
+      expect(source, file).not.toMatch(/How are you feeling today/);
+    }
+  });
 });

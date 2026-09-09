@@ -933,3 +933,52 @@ Source CSS: `aftercare.css` 3,119 + `patient.module.css` 10,814 = **13,933**. Ex
 | Print       | `PrintTrigger`          | `0ni5wwxckjh5j.js` | 3,531 |     862 |    736 |
 
 The demo island loads on the extraction guide only, not the tenant homepage. Guide body (Today copy, timeline stages, print document) stays Server Components. **No Motion on tenant.** Check-in is React state in that island; it does not add fetch or storage code.
+
+## After Phase 1G.1 (launch-scope cleanup)
+
+Measured 2026-09-09 against `cursor/aftercare-phase-1e-hardening` after Phase 1G.1. Production `next start` / Turbopack. No new production dependency. No PDF library. No Motion on tenant. No Tailwind on tenant.
+
+### Marketing reveal JavaScript
+
+Viewport thresholds unchanged (mobile ~-80px, desktop ~-200px). Duration/stagger constants only.
+
+| Chunk              | Role                        |    Raw | gzip -9 | Brotli |
+| ------------------ | --------------------------- | -----: | ------: | -----: |
+| `2i_mql2g3r9k3.js` | Marketing experience island | 36,142 |   9,248 |  8,100 |
+
+| Metric            |     1G |       1G.1 |   Delta |
+| ----------------- | -----: | ---------: | ------: |
+| Experience island | 36,194 | **36,142** | **-52** |
+
+Motion runtime is unchanged except shared timing constants (editorial 620ms / 90ms, cards 570ms / 80ms cap 280ms, cubic-bezier(.22, 1, .36, 1)).
+
+### Tenant CSS
+
+Loaded on tenant home and `/extraction`:
+
+- `01omn9m33zwll.css` — aftercare base (3,214 raw / 1,055 gzip / 891 Brotli)
+- `21zvuijpwgvvc.css` — `patient.module.css` (12,990 raw / 2,619 gzip / 2,244 Brotli)
+
+| Metric         |     1G |       1G.1 |      Delta |
+| -------------- | -----: | ---------: | ---------: |
+| CSS raw        | 15,114 | **16,204** | **+1,090** |
+| CSS gzip -9    |  3,495 |  **3,674** |   **+179** |
+| CSS Brotli q11 |  2,969 |  **3,135** |   **+166** |
+| Tailwind       |     no |         no |          — |
+
+Source CSS: `aftercare.css` 3,147 + `patient.module.css` 11,715 = **14,862**. Extra payload is timeline rail/separators, centred footer, and print-document styles after Check-in CSS was removed. Playwright still enforces **≤ 16,384 raw / 4,500 gzip / 4,000 Brotli**. **0 font bytes.**
+
+### Tenant JavaScript (patient-specific islands)
+
+| Route       | Island                  | Chunk              |   Raw | gzip -9 | Brotli |
+| ----------- | ----------------------- | ------------------ | ----: | ------: | -----: |
+| Tenant home | `PatientThemeControl`   | `2ibiesqh06nb6.js` | 3,564 |   1,421 |  1,226 |
+| Guide       | `PatientDemoExperience` | `34ktv_zrm9y9y.js` | 4,818 |   1,352 |  1,189 |
+| Print       | `PrintTrigger`          | `33b_s4j7mlbl9.js` | 3,613 |     867 |    742 |
+
+| Metric                    |    1G |      1G.1 |      Delta |
+| ------------------------- | ----: | --------: | ---------: |
+| Patient demo island raw   | 6,768 | **4,818** | **-1,950** |
+| Patient client components |     3 |     **3** |      **0** |
+
+Client islands remain theme control, Today/Timeline demo nav, and print trigger. Check-in form/state was removed from `PatientDemoExperience`. Guide body stays Server Components. **No Motion on tenant.**

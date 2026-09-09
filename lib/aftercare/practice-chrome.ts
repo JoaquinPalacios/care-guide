@@ -18,6 +18,11 @@ export interface PracticeChromeProfile {
   displayName: string;
   logoUrl: string | null;
   phone: string | null;
+  addressLine1?: string | null;
+  addressLine2?: string | null;
+  city?: string | null;
+  region?: string | null;
+  postalCode?: string | null;
   bookingUrl: string | null;
   contactUrl: string | null;
   emergencyInstructions: string | null;
@@ -32,6 +37,7 @@ export interface PracticeChrome {
   logoSrc: string | null;
   phoneDisplay: string | null;
   phoneHref: string | null;
+  addressText: string | null;
   bookingHref: string | null;
   contactHref: string | null;
   emergencyInstructions: string | null;
@@ -57,6 +63,7 @@ export function resolvePracticeChrome(input: {
     logoSrc: toSafeLogoSrc(profile?.logoUrl ?? null),
     phoneDisplay,
     phoneHref: toTelHref(phoneDisplay),
+    addressText: formatPracticeAddress(profile),
     bookingHref: toSafeHttpHref(profile?.bookingUrl ?? null),
     contactHref: toSafeHttpHref(profile?.contactUrl ?? null),
     emergencyInstructions,
@@ -73,6 +80,28 @@ export function resolvePracticeChrome(input: {
 
 export function hasPracticeContact(chrome: PracticeChrome): boolean {
   return Boolean(
-    chrome.phoneHref || chrome.contactHref || chrome.emergencyInstructions
+    chrome.phoneHref ||
+    chrome.contactHref ||
+    chrome.emergencyInstructions ||
+    chrome.addressText
   );
+}
+
+export function formatPracticeAddress(
+  profile: PracticeChromeProfile | null | undefined
+): string | null {
+  if (!profile) {
+    return null;
+  }
+
+  const street = [profile.addressLine1, profile.addressLine2]
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value));
+  const locality = [profile.city, profile.region, profile.postalCode]
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value))
+    .join(" ");
+  const parts = locality ? [...street, locality] : street;
+
+  return parts.length > 0 ? parts.join(", ") : null;
 }

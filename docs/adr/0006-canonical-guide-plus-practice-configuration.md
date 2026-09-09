@@ -14,7 +14,7 @@ Content is health-related. Collapsing canonical text and practice edits into one
 
 Care Guide owns reusable **canonical Guide Templates**.
 
-A practice **enables** templates relevant to its services, optionally records **Practice Additions** and **Practice Overrides**, then **previews** and **publishes** a **Practice Guide**.
+A practice **enables** templates relevant to its services, optionally records **Practice Additions** and **Practice Overrides**, may later create a **custom guide**, then **previews** and **publishes** a **Practice Guide** pinned to a canonical revision.
 
 Canonical content, practice additions, and practice overrides remain conceptually distinguishable in the system of record even though the patient sees one composed page.
 
@@ -22,11 +22,13 @@ Disabled or unpublished guides must not appear publicly.
 
 The same canonical guide can be enabled by multiple practices, each with its own configuration.
 
+An update to a canonical template must **never** silently mutate a clinic's already-approved / published patient guide. See [ADR 0010](0010-practice-guides-explicitly-pin-canonical-revisions.md).
+
 ## Consequences
 
 - Library + enablement is the core commercial mechanic.
 - Publishing, not merely editing, controls patient visibility.
-- Future template updates need a defined rollout policy (open decision OD-4 in the PRD).
+- Canonical template updates cannot silently rewrite live patient pages (ADR 0010). Rollout _UX_ remains OD-4.
 
 ## Notes for later implementation
 

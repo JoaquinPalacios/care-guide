@@ -62,6 +62,30 @@ const SECTIONS = [
     periodLabel: null,
     provenance: "canonical" as const,
   },
+  {
+    key: "warning-signs",
+    kind: "WARNING_SIGNS" as const,
+    title: "Warning signs",
+    body: "Contact the practice if bleeding does not slow.",
+    periodLabel: null,
+    provenance: "canonical" as const,
+  },
+  {
+    key: "emergency",
+    kind: "EMERGENCY" as const,
+    title: "When this is urgent",
+    body: "Seek urgent help for difficulty breathing.",
+    periodLabel: null,
+    provenance: "canonical" as const,
+  },
+  {
+    key: "weekend-contact",
+    kind: "CUSTOM" as const,
+    title: "Weekend contact",
+    body: "Practice addition: local weekend information.",
+    periodLabel: null,
+    provenance: "practice_addition" as const,
+  },
 ];
 
 const DOCUMENT = {
@@ -110,7 +134,7 @@ const DOCUMENT = {
   sections: SECTIONS,
 };
 
-describe("printable care plan", () => {
+describe("printable recovery guide", () => {
   beforeEach(() => {
     getPublishedPracticeGuide.mockReset();
     notFound.mockClear();
@@ -142,17 +166,51 @@ describe("printable care plan", () => {
     expect(print).toContain("Follow the stages in order.");
     expect(print).toContain("Immediate care");
     expect(print).toContain("Keep the site still.");
+    expect(print).toContain("What&#x27;s normal");
+    expect(print).toContain("Mild swelling can be expected.");
+    expect(print).toContain("Warning signs");
+    expect(print).toContain("When this is urgent");
+    expect(print).toContain("Weekend contact");
+    expect(print).toContain("12 Riverside Demo Street");
+    expect(print).toContain("Phone 02 5550 0100");
     expect(print).toContain("SAMPLE / NOT CLINICAL ADVICE");
     expect(print).toContain("Powered by Aftercare Guide");
+    expect(print).toContain("Print / Save PDF");
+    expect(print).not.toContain("Care Plan");
     expect(print).not.toContain('role="tablist"');
     expect(print).not.toContain("Check-in");
     expect(print).not.toContain("How are you feeling today?");
     expect(print).not.toContain("Change colour theme");
-    expect(print).toContain("data-print-care-plan");
+    expect(print).toContain("data-print-guide");
+    expect(print).not.toContain("data-print-care-plan");
     expect(print).not.toContain("date of birth");
     expect(print).not.toContain("PIN");
     expect(print).not.toContain("patient name");
     expect(web).toContain("Leave the site undisturbed today.");
     expect(print).toContain("Leave the site undisturbed today.");
+    expect(web).toContain("Print / Save PDF");
+    expect(web).not.toContain("Check-in");
+  });
+
+  it("omits attribution from print when the clinic disables it", async () => {
+    getPublishedPracticeGuide.mockResolvedValue({
+      ...DOCUMENT,
+      profile: {
+        ...DOCUMENT.profile,
+        showCareGuideAttribution: false,
+      },
+    });
+
+    const print = renderToStaticMarkup(
+      await PrintPage({
+        params: Promise.resolve({
+          tenant: "demodental",
+          guideSlug: "extraction",
+        }),
+      })
+    );
+
+    expect(print).not.toContain("Powered by Aftercare Guide");
+    expect(print).not.toContain("<footer");
   });
 });

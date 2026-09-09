@@ -4,9 +4,7 @@ import { GuideTimeline } from "@/app/(aftercare)/components/guide-timeline";
 import { PatientDemoExperience } from "@/app/(aftercare)/components/patient-demo-experience";
 import { PatientPage } from "@/app/(aftercare)/components/patient-page";
 import {
-  DEMO_CHECK_IN_ENABLED,
   DEMO_RECOVERY_FIXTURE,
-  isDemoCheckInEnabled,
   isDemoPatientExperienceEnabled,
 } from "@/lib/aftercare/demo-tenant";
 import {
@@ -98,7 +96,6 @@ export default async function TenantGuidePage({
       </header>
       {demoEnabled ? (
         <PatientDemoExperience
-          checkInEnabled={isDemoCheckInEnabled(DEMO_CHECK_IN_ENABLED)}
           printHref={printHref}
           today={
             recovery.hasTimeline ? (

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { PrintCarePlan } from "@/app/(aftercare)/components/print-care-plan";
+import { PrintableGuide } from "@/app/(aftercare)/components/print-care-plan";
 import { isDemoPatientExperienceEnabled } from "@/lib/aftercare/demo-tenant";
 import { getPublishedPracticeGuide } from "@/lib/aftercare/get-published-practice-guide";
 import { instructionLabel } from "@/lib/aftercare/instruction-terminology";
@@ -29,15 +29,15 @@ export async function generateMetadata({
   if (!document) {
     return aftercarePageMetadata({
       title: instructionLabel(null),
-      description: "Printable aftercare care plan.",
+      description: "Printable aftercare recovery guide.",
     });
   }
 
   const displayName = document.profile?.displayName ?? document.clinic.name;
 
   return aftercarePageMetadata({
-    title: `${document.template.title} care plan · ${displayName}`,
-    description: `Printable ${document.template.title} care plan from ${displayName}.`,
+    title: `${document.template.title} recovery guide · ${displayName}`,
+    description: `Printable ${document.template.title} recovery guide from ${displayName}.`,
     canonicalUrl: await publicTenantCanonicalUrl(
       `/${document.practiceGuide.publicSlug}/print`
     ),
@@ -65,7 +65,7 @@ export default async function TenantGuidePrintPage({
 
   return (
     <div className={styles.shell}>
-      <PrintCarePlan
+      <PrintableGuide
         chrome={chrome}
         procedureTitle={document.template.title}
         instructionsLabel={chrome.instructionsLabel}

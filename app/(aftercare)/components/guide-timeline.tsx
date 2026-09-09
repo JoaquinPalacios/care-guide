@@ -25,29 +25,34 @@ export function GuideTimeline({
     return null;
   }
 
+  const lastIndex = sections.length - 1;
+
   return (
     <section className={styles.timeline} aria-labelledby={headingId}>
       <h2 id={headingId} className={styles.sectionTitle}>
         {heading}
       </h2>
       <ol className={styles.timelineList}>
-        {sections.map((section) => {
+        {sections.map((section, index) => {
           const headingKey = `section-${section.key}`;
           const period = section.periodLabel;
           const status = stageStatusByKey?.[section.key];
+          const isLast = index === lastIndex;
 
           return (
             <li
               key={section.key}
               className={styles.timelineItem}
               data-status={status}
+              data-timeline-stage=""
             >
               {period ? (
                 <p className={styles.timelinePeriod}>{period}</p>
               ) : (
                 <p className={styles.timelinePeriod} aria-hidden="true" />
               )}
-              <div>
+              <span className={styles.timelineRail} aria-hidden="true" />
+              <div className={styles.timelineContent}>
                 <h3 id={headingKey} className={styles.sectionTitle}>
                   {status ? (
                     <span className={styles.vh}>{STATUS_LABEL[status]}. </span>
@@ -59,11 +64,23 @@ export function GuideTimeline({
                     {STATUS_LABEL[status]}
                   </p>
                 ) : null}
-                {sectionBodyParagraphs(section.body).map((paragraph, index) => (
-                  <p key={`${section.key}-${index}`} className={styles.body}>
-                    {paragraph}
-                  </p>
-                ))}
+                {sectionBodyParagraphs(section.body).map(
+                  (paragraph, bodyIndex) => (
+                    <p
+                      key={`${section.key}-${bodyIndex}`}
+                      className={styles.body}
+                    >
+                      {paragraph}
+                    </p>
+                  )
+                )}
+                {isLast ? null : (
+                  <div
+                    className={styles.timelineSeparator}
+                    aria-hidden="true"
+                    data-timeline-separator=""
+                  />
+                )}
               </div>
             </li>
           );

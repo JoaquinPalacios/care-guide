@@ -5,17 +5,17 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-09 (Phase 1G interactive recovery demo prototype + final marketing reveal threshold)
+Last updated: 2026-09-09 (Phase 1G.1 launch-scope cleanup: Check-in removed, print/timeline/footer, marketing reveal slowed)
 
 ---
 
 ## Product direction vs current implementation
 
-|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                      |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** through **1F.16 / reveal timing** + **Phase 1G interactive patient demo prototype** (Today / Timeline / demo-only Check-in / printable care plan). Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. The demo check-in is not persisted and must not be treated as PHI. |
-| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                       |
+|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                                                    |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** through **1F.16 / reveal timing** + **Phase 1G interactive patient demo** (Today / Timeline / printable recovery guide) + **Phase 1G.1 launch-scope cleanup**. Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. Check-in is post-launch only — see [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md). |
+| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 Do not claim QR codes, operator aftercare admin, or analytics exist until they are built. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented. Phase 1E added Playwright + axe browser acceptance; it did not add product features.
 
@@ -50,6 +50,7 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 | 1F.16   | COMPLETE — MOTION CHOREOGRAPHY READY FOR JOAQUÍN REVIEW        |
 | 1F.10vt | COMPLETE — VIEWPORT REVEAL TIMING READY FOR JOAQUÍN REVIEW     |
 | 1G      | COMPLETE — INTERACTIVE RECOVERY DEMO READY FOR JOAQUÍN REVIEW  |
+| 1G.1    | COMPLETE — LAUNCH-SCOPE CLEANUP                                |
 | 2+      | Not started                                                    |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
@@ -525,23 +526,40 @@ See [PERFORMANCE.md](../architecture/PERFORMANCE.md) for the reveal-timing bundl
 
 ## Phase 1G (implemented)
 
-Interactive recovery **demo prototype** on `demodental` only. No Phase 2. No persisted RecoveryPlan. No `ProcedureSession`. No patient PII.
+Interactive recovery **demo** on `demodental` only. No Phase 2. No persisted RecoveryPlan. No `ProcedureSession`. No patient PII.
 
-| Area             | Behaviour                                                                                                                                                                                                                           |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Demo banner      | One banner: “Interactive demo” / “Sample content only · Not clinical advice · Changes aren't saved”. Seed copy no longer repeats DEMO CONTENT ONLY / practice-override implementation language.                                     |
-| Navigation       | Today / Timeline / Check-in tabs + Print / Care Plan. Mobile tabs scroll. Check-in omitted when the demo flag is false.                                                                                                             |
-| Today            | Default view. Explicit fixture **Day 1 of 7**. Resolver maps simulated day → current/next `RECOVERY_TIMELINE` stage + progress. Not `Date.now()`.                                                                                   |
-| Timeline         | Existing stages with earlier / current / upcoming. Not clinical “completed”.                                                                                                                                                        |
-| Check-in         | Demo-only feeling + optional note. React state only. No database, API, localStorage, or analytics. Refresh clears it. Premium/add-on for a real implementation — [ADR 0015](../adr/0015-recovery-plan-is-not-procedure-session.md). |
-| Print            | `/extraction/print` plus `@media print`. Same `GuideDocument` / composed sections as the web guide. Browser Print / Save as PDF. No PDF library.                                                                                    |
-| Client island    | `PatientDemoExperience` (tabs + check-in) + existing `PatientThemeControl` + tiny `PrintTrigger`. Guide body stays Server Components.                                                                                               |
-| Marketing reveal | Responsive IO margin: mobile ~**-80px**, desktop/large ~**-200px**, tablet interpolated. Duration 520ms and editorial stagger unchanged.                                                                                            |
-| Performance      | Tenant CSS **15,114** raw (budget 16,384). Demo island **6,768** raw on the extraction guide only. Theme control remains on home. No Motion on tenant. See [PERFORMANCE.md](../architecture/PERFORMANCE.md).                        |
+Phase 1G.1 removed Check-in from the launch product. Check-ins remain documented as post-launch premium/add-on work.
+
+| Area             | Behaviour                                                                                                                                                                                       |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Demo banner      | One banner: “Interactive demo” / “Sample content only · Not clinical advice · Changes aren't saved”. Seed copy no longer repeats DEMO CONTENT ONLY / practice-override implementation language. |
+| Navigation       | Today / Timeline tabs + Print / Save PDF. Mobile tabs scroll. Check-in is absent from launch UI.                                                                                                |
+| Today            | Default view. Explicit fixture **Day 1 of 7**. Resolver maps simulated day → current/next `RECOVERY_TIMELINE` stage + progress. Not `Date.now()`. Not a real per-patient treatment day.         |
+| Timeline         | Existing stages with earlier / current / upcoming. Subtle content-column separators between stages. Continuous clinic-accent rail. Not clinical “completed”.                                    |
+| Print            | `/extraction/print` plus `@media print`. Same `GuideDocument` / composed sections as the web guide. Browser Print / Save as PDF. No PDF library. Not a patient-specific Care Plan.              |
+| Client island    | `PatientDemoExperience` (Today / Timeline) + existing `PatientThemeControl` + tiny `PrintTrigger`. Guide body stays Server Components.                                                          |
+| Marketing reveal | Responsive IO margin: mobile ~**-80px**, desktop/large ~**-200px**, tablet interpolated. Editorial ~620ms / 90ms stagger; cards ~570ms / 80ms (cap 280ms). cubic-bezier(.22, 1, .36, 1).        |
+| Attribution      | “Powered by Aftercare Guide” in a centred document-flow footer when `showCareGuideAttribution` is true.                                                                                         |
+| Performance      | Tenant CSS **16,204** raw (budget 16,384). Demo island **4,818** raw (−1,950 vs 1G). Theme control unchanged. No Motion on tenant. See [PERFORMANCE.md](../architecture/PERFORMANCE.md).        |
 
 Local URLs unchanged, plus:
 
-- `http://demodental.localhost:3000/extraction/print` — printable care plan
+- `http://demodental.localhost:3000/extraction/print` — printable recovery guide
+
+---
+
+## Phase 1G.1 (implemented)
+
+Launch-scope cleanup. No Phase 2. No persisted RecoveryPlan. No platform Contact/Pricing pages.
+
+| Change           | Result                                                                                                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Marketing reveal | Same viewport thresholds. Slightly slower / calmer choreography.                                                                                        |
+| Check-in         | Removed from tenant/demo UI, client island, CSS, and current-product tests. Preserved in [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md).              |
+| Timeline         | Subtle 1px separators in the content column; rail stays continuous.                                                                                     |
+| Footer           | Centred, muted, not sticky. Hidden when attribution is disabled.                                                                                        |
+| Print            | Dedicated print document from the same GuideDocument. Button copy is **Print / Save PDF**.                                                              |
+| Template model   | Documented canonical → enable → override → addition → custom → preview → publish/pin. Canonical updates never silently mutate a published clinic guide. |
 
 ---
 
@@ -612,9 +630,9 @@ Pacific Dental appears in the PRD only as a **conceptual** hostname example (`pa
 
 ## Phase 1 remainder (not started)
 
-Phase 1 is technically ready for **local visual/device acceptance**. Do not merge to `feature/aftercare-phase-1` or `main` until that happens.
+Phase 1G.1 is the launch-scope cleanup for the current aftercare branch. Commercial MVP is after Phase 3 (see PRD §19 and §22). Do not begin Phase 2 from this branch.
 
-Commercial MVP is after Phase 3 (see PRD §19 and §22). Do not begin Phase 2 from this branch.
+See [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md) for Check-ins, RecoveryPlan, dental template candidates, and future verticals.
 
 ---
 
@@ -636,11 +654,12 @@ This temporarily means we do not have the same TypeScript-aware ESLint rule cove
 
 ## Documentation files
 
-| File                               | Role                                                                            |
-| ---------------------------------- | ------------------------------------------------------------------------------- |
-| `docs/README.md`                   | Docs index                                                                      |
-| `docs/product/PRD.md`              | PRD v1.0                                                                        |
-| `docs/product/WORKING-MEMORY.md`   | This file                                                                       |
-| `docs/adr/*.md`                    | Architecture decisions 0001–0015                                                |
-| `docs/architecture/PERFORMANCE.md` | Patient CSS/JS measurement contract, Phase 1E budget, and 1F.4 Motion isolation |
-| `README.md`                        | Repo entry; direction vs implementation                                         |
+| File                                  | Role                                                                            |
+| ------------------------------------- | ------------------------------------------------------------------------------- |
+| `docs/README.md`                      | Docs index                                                                      |
+| `docs/product/PRD.md`                 | PRD v1.0                                                                        |
+| `docs/product/WORKING-MEMORY.md`      | This file                                                                       |
+| `docs/product/POST-LAUNCH-ROADMAP.md` | Post-launch Check-ins, RecoveryPlan, templates, verticals                       |
+| `docs/adr/*.md`                       | Architecture decisions 0001–0015                                                |
+| `docs/architecture/PERFORMANCE.md`    | Patient CSS/JS measurement contract, Phase 1E budget, and 1F.4 Motion isolation |
+| `README.md`                           | Repo entry; direction vs implementation                                         |

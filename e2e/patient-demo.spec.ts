@@ -27,9 +27,10 @@ test.describe("interactive recovery demo", () => {
     await expect(
       page.getByRole("tabpanel", { name: "Today" }).getByText("Day 1 of 7")
     ).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Check-in" })).toHaveCount(0);
   });
 
-  test("Today, Timeline, Check-in, and Print stay keyboard accessible", async ({
+  test("Today, Timeline, and Print stay keyboard accessible", async ({
     page,
   }) => {
     await page.goto(EXTRACTION, { waitUntil: "load" });
@@ -43,19 +44,16 @@ test.describe("interactive recovery demo", () => {
       page.getByRole("heading", { name: "Recovery overview" })
     ).toBeVisible();
     await page.keyboard.press("ArrowRight");
-    await expect(page.getByRole("tab", { name: "Check-in" })).toBeFocused();
-    await expect(
-      page.getByRole("heading", { name: "How are you feeling today?" })
-    ).toBeVisible();
-    await expect(page.getByRole("radio", { name: "Good" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Today" })).toBeFocused();
+    await expect(page.getByRole("tab", { name: "Check-in" })).toHaveCount(0);
 
-    await page.getByRole("link", { name: "Print / Care Plan" }).click();
+    await page.getByRole("link", { name: "Print / Save PDF" }).click();
     await expectPublicTenantUrl(page, PRINT);
     await expect(page.getByText("SAMPLE / NOT CLINICAL ADVICE")).toBeVisible();
     await expect(page.getByRole("tab")).toHaveCount(0);
   });
 
-  test("check-in stays local, is not persisted, and clears on refresh", async ({
+  test("does not keep Check-in UI, storage, or write logic", async ({
     page,
   }) => {
     const networkWrites: string[] = [];
@@ -67,15 +65,11 @@ test.describe("interactive recovery demo", () => {
     });
 
     await page.goto(EXTRACTION, { waitUntil: "load" });
-    await page.getByRole("tab", { name: "Check-in" }).click();
-    await page.getByRole("radio", { name: "Good" }).check();
-    await page
-      .getByLabel("Anything you'd like your clinic to know?")
-      .fill("Demo note that must not be saved.");
-    await page.getByRole("button", { name: "Save demo response" }).click();
+    await expect(page.getByRole("tab", { name: "Check-in" })).toHaveCount(0);
     await expect(
-      page.getByText("This demo response stays on this page only")
-    ).toBeVisible();
+      page.getByRole("heading", { name: "How are you feeling today?" })
+    ).toHaveCount(0);
+    await expect(page.getByRole("radio")).toHaveCount(0);
 
     const storage = await page.evaluate(() => ({
       local: Object.keys(localStorage),
@@ -87,13 +81,24 @@ test.describe("interactive recovery demo", () => {
       )
     ).toBe(false);
     expect(networkWrites).toEqual([]);
+  });
 
-    await page.reload({ waitUntil: "load" });
-    await page.getByRole("tab", { name: "Check-in" }).click();
-    await expect(page.getByRole("radio", { name: "Good" })).not.toBeChecked();
+  test("timeline separators sit between stages and not after the last", async ({
+    page,
+  }) => {
+    await page.goto(EXTRACTION, { waitUntil: "load" });
+    await page.getByRole("tab", { name: "Timeline" }).click();
+
+    const stages = page.locator("[data-timeline-stage]");
+    const separators = page.locator("[data-timeline-separator]");
+    const stageCount = await stages.count();
+
+    expect(stageCount).toBeGreaterThan(1);
+    await expect(separators).toHaveCount(stageCount - 1);
     await expect(
-      page.getByLabel("Anything you'd like your clinic to know?")
-    ).toHaveValue("");
+      stages.last().locator("[data-timeline-separator]")
+    ).toHaveCount(0);
+    await expect(page.locator("[class*='timelineRail']").first()).toBeVisible();
   });
 
   test("print view uses the resolved guide and hides interactive chrome", async ({
@@ -106,6 +111,7 @@ test.describe("interactive recovery demo", () => {
     await expect(page.getByText("First few hours")).toBeVisible();
     await expect(page.getByText("Leave the site undisturbed")).toBeVisible();
     await expect(page.getByText("Weekend contact")).toBeVisible();
+    await expect(page.getByText("What's normal")).toBeVisible();
     await expect(page.getByText("SAMPLE / NOT CLINICAL ADVICE")).toBeVisible();
     await expect(page.getByRole("tab")).toHaveCount(0);
     await expect(
@@ -114,6 +120,7 @@ test.describe("interactive recovery demo", () => {
     await expect(
       page.getByRole("heading", { name: "How are you feeling today?" })
     ).toHaveCount(0);
+    await expect(page.getByRole("tab", { name: "Check-in" })).toHaveCount(0);
     await expectNoLoginUi(page);
     const html = await page.content();
     expect(html).not.toMatch(/date of birth|dateOfBirth/i);
@@ -122,8 +129,30 @@ test.describe("interactive recovery demo", () => {
 
     await page.emulateMedia({ media: "print" });
     await expect(
-      page.getByRole("button", { name: "Print / Save as PDF" })
+      page.getByRole("button", { name: "Print / Save PDF" })
     ).toBeHidden();
+    await expect(
+      page.getByRole("link", { name: "Back to guide" })
+    ).toBeHidden();
+  });
+
+  test("attribution is a centred footer and disappears when disabled is not the demo case", async ({
+    page,
+  }) => {
+    await page.goto(EXTRACTION, { waitUntil: "load" });
+    const attribution = page.getByText("Powered by Aftercare Guide");
+    await expect(attribution).toBeVisible();
+    const footer = page.locator("footer").filter({
+      hasText: "Powered by Aftercare Guide",
+    });
+    await expect(footer).toBeVisible();
+    const alignment = await footer.evaluate((node) => {
+      const styles = getComputedStyle(node);
+      return { textAlign: styles.textAlign, position: styles.position };
+    });
+    expect(alignment.textAlign).toBe("center");
+    expect(alignment.position).not.toBe("sticky");
+    expect(alignment.position).not.toBe("fixed");
   });
 
   for (const colorScheme of ["light", "dark"] as const) {
@@ -135,8 +164,6 @@ test.describe("interactive recovery demo", () => {
       await page.goto(EXTRACTION, { waitUntil: "load" });
       await expectNoSeriousAxeViolations(page);
       await page.getByRole("tab", { name: "Timeline" }).click();
-      await expectNoSeriousAxeViolations(page);
-      await page.getByRole("tab", { name: "Check-in" }).click();
       await expectNoSeriousAxeViolations(page);
       await page.goto(PRINT, { waitUntil: "load" });
       await expectNoSeriousAxeViolations(page);
@@ -156,16 +183,20 @@ test.describe("interactive recovery demo", () => {
       path: "test-results/artifacts/demo-timeline-desktop-light.png",
       fullPage: true,
     });
-    await page.getByRole("tab", { name: "Check-in" }).click();
+    await page.locator("footer").scrollIntoViewIfNeeded();
     await page.screenshot({
-      path: "test-results/artifacts/demo-checkin-desktop-light.png",
-      fullPage: true,
+      path: "test-results/artifacts/demo-tenant-footer.png",
     });
 
     await page.emulateMedia({ colorScheme: "dark" });
     await page.getByRole("tab", { name: "Today" }).click();
     await page.screenshot({
       path: "test-results/artifacts/demo-today-desktop-dark.png",
+      fullPage: true,
+    });
+    await page.getByRole("tab", { name: "Timeline" }).click();
+    await page.screenshot({
+      path: "test-results/artifacts/demo-timeline-desktop-dark.png",
       fullPage: true,
     });
 
@@ -179,11 +210,6 @@ test.describe("interactive recovery demo", () => {
     await page.getByRole("tab", { name: "Timeline" }).click();
     await page.screenshot({
       path: "test-results/artifacts/demo-timeline-mobile-light.png",
-      fullPage: true,
-    });
-    await page.getByRole("tab", { name: "Check-in" }).click();
-    await page.screenshot({
-      path: "test-results/artifacts/demo-checkin-mobile-light.png",
       fullPage: true,
     });
 

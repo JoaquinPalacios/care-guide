@@ -8,17 +8,17 @@
 
 ## 1. Document status and version
 
-| Field | Value |
-| --- | --- |
-| Product | Care Guide |
-| Document | Product Requirements Document |
-| Version | 1.0 |
-| Codename / subtitle | Aftercare SaaS |
-| Status | **Authoritative product contract** |
-| Date | 2026-08-31 |
-| Phase covered by this document | Phase 0 — Product reset / architecture contract |
-| Implementation status of the aftercare product | **Not implemented.** This document specifies intended product behaviour. |
-| Supersedes | Informal assumption that Care Guide *is* the in-chair procedure-session / patient-display product currently in this repository |
+| Field                                          | Value                                                                                                                          |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Product                                        | Care Guide                                                                                                                     |
+| Document                                       | Product Requirements Document                                                                                                  |
+| Version                                        | 1.0                                                                                                                            |
+| Codename / subtitle                            | Aftercare SaaS                                                                                                                 |
+| Status                                         | **Authoritative product contract**                                                                                             |
+| Date                                           | 2026-08-31                                                                                                                     |
+| Phase covered by this document                 | Phase 0 — Product reset / architecture contract                                                                                |
+| Implementation status of the aftercare product | **Not implemented.** This document specifies intended product behaviour.                                                       |
+| Supersedes                                     | Informal assumption that Care Guide _is_ the in-chair procedure-session / patient-display product currently in this repository |
 
 This PRD is the authoritative product contract for subsequent implementation sessions.
 
@@ -86,7 +86,7 @@ After treatment, patients leave with incomplete, easy-to-lose, or hard-to-reread
 - clinic websites that are not designed as mobile aftercare artefacts;
 - one-off PDFs or SMS messages that are not maintained.
 
-Patients then search the open web, call the wrong number, or cannot tell which advice belongs to *their* provider. Practices lose a simple re-engagement path (call, contact, book) and have no visibility into whether aftercare materials are actually used.
+Patients then search the open web, call the wrong number, or cannot tell which advice belongs to _their_ provider. Practices lose a simple re-engagement path (call, contact, book) and have no visibility into whether aftercare materials are actually used.
 
 Care Guide addresses this as **infrastructure**: curated content, practice branding, durable URLs, QR distribution, publishing control, and anonymous usage visibility — operated as a B2B SaaS, starting with Dental.
 
@@ -100,11 +100,11 @@ The **practice** (clinic / healthcare provider organisation) is the paying custo
 
 `Clinic` is the likely tenant concept in this repository. In product language:
 
-| Term | Meaning |
-| --- | --- |
-| Practice / Clinic | The customer tenant |
-| Tenant | Architectural term for a practice account |
-| Location | A future concept; MVP may treat one clinic record as one location |
+| Term              | Meaning                                                           |
+| ----------------- | ----------------------------------------------------------------- |
+| Practice / Clinic | The customer tenant                                               |
+| Tenant            | Architectural term for a practice account                         |
+| Location          | A future concept; MVP may treat one clinic record as one location |
 
 Example customer (conceptual only): **Pacific Dental**, whose normal website might be `pacificdental.com.au`. Care Guide would give that practice a branded tenant presence such as `pacificdental.<platform-domain>`.
 
@@ -240,6 +240,8 @@ Dental
 
 Architecture and terminology must not make later specialties unnecessarily difficult (for example, avoid baking “tooth” or “oral” into generic domain names). Do **not** implement multiple verticals in the MVP.
 
+Physiotherapy is a later vertical. When that programme is explicit, the same guide/recovery model should fit recovery plans, home exercise guidance, staged rehabilitation, restrictions, progression milestones, later video, and clinic-specific instructions. Do not build those abstractions now.
+
 ### 8.3 Dental MVP library (planning set only)
 
 Do **not** author clinically authoritative instructions in implementation work unless a clinical governance process supplies them. Do **not** copy clinical guidance from arbitrary websites.
@@ -247,13 +249,16 @@ Do **not** author clinically authoritative instructions in implementation work u
 For product planning, a starter set sufficient to prove the library model may include:
 
 - Tooth Extraction
-- Wisdom Tooth Extraction
+- Wisdom Teeth Removal (also planned as Wisdom Tooth Extraction)
 - Dental Implant
-- Root Canal Treatment
-- Scaling & Root Planing
+- Root Canal
+- Scaling & Root Planing / Periodontal Deep Cleaning
+- Periodontal Surgery
 - Filling
 - Crown / Bridge
 - Teeth Whitening
+
+These are **roadmap / content-library candidates**. Do **not** seed clinically authoritative versions until a clinical governance process supplies them. Do **not** copy clinical guidance from arbitrary websites.
 
 The exact initial 3–5 guides for the first **technical** vertical slice may be decided later. Phase 1 only needs enough canonical content to prove the model end-to-end for one tenant.
 
@@ -342,6 +347,8 @@ Patient-facing pages must support practice-specific:
 
 The experience must primarily communicate the **practice** brand.
 
+Aftercare Guide **sales** Contact and Pricing belong only on the root marketing domain. Tenant hosts must not present platform sales contact or pricing. Tenant pages expose clinic contact, clinic phone, and clinic urgent / emergency instructions.
+
 ### 10.3 Curated aftercare-guide library
 
 Care Guide maintains canonical aftercare templates.
@@ -349,20 +356,26 @@ Care Guide maintains canonical aftercare templates.
 Conceptual pipeline:
 
 ```text
-Care Guide canonical guide
+canonical Aftercare Guide templates
         ↓
-Practice enables guide
+clinic enables a template
         ↓
-Optional practice additions / overrides
+clinic may override sections
         ↓
-Preview
+clinic may add local sections / information
         ↓
-Publish
+clinic may create its own custom guide
         ↓
-Public branded guide
+preview
+        ↓
+publish a pinned revision
+        ↓
+public branded guide
 ```
 
 Canonical Care Guide content and practice-specific customisations must remain conceptually distinguishable.
+
+An update to an Aftercare Guide canonical template must **never** silently mutate a clinic's already-approved / published patient guide. Practices pin a revision; adopting a newer canonical revision is an explicit operator action. See ADR 0010. Open decision OD-4 is about later rollout _UX_, not the pin invariant.
 
 Do **not** design aftercare content as procedure-session stages.
 
@@ -380,10 +393,10 @@ Care Guide supplies canonical content. Practices may customise appropriate conte
 
 The model must distinguish:
 
-| Concept | Meaning |
-| --- | --- |
-| Canonical content | Care Guide–owned reusable template content |
-| Practice addition | Practice-specific supplementary content layered onto the template |
+| Concept           | Meaning                                                                  |
+| ----------------- | ------------------------------------------------------------------------ |
+| Canonical content | Care Guide–owned reusable template content                               |
+| Practice addition | Practice-specific supplementary content layered onto the template        |
 | Practice override | Intentional replacement or customisation of a piece of canonical content |
 
 This distinction is required for future content governance. Do not collapse everything into a single untraceable text blob if a maintainable model can preserve provenance.
@@ -517,10 +530,10 @@ Care Guide
 
 Recommended conceptual split:
 
-| Host | Audience | Purpose |
-| --- | --- | --- |
-| `app.<platform-domain>` | Care Guide operators (and, later, clinic staff) | Administration |
-| `<tenant>.<platform-domain>` | Patients | Branded aftercare |
+| Host                         | Audience                                        | Purpose           |
+| ---------------------------- | ----------------------------------------------- | ----------------- |
+| `app.<platform-domain>`      | Care Guide operators (and, later, clinic staff) | Administration    |
+| `<tenant>.<platform-domain>` | Patients                                        | Branded aftercare |
 
 Patient-facing tenant hosts must **not** depend on Care Guide staff authentication. Staff cookies should remain isolated from tenant patient hosts where practical.
 
@@ -568,18 +581,18 @@ Only enabled **and** published guides are visible. Unpublished or disabled guide
 
 ### 12.1 Terminology (normative)
 
-| Term | Meaning |
-| --- | --- |
-| Care Guide | The platform / product |
-| Practice / Clinic | Customer tenant |
-| Tenant | Architectural term for a practice account |
-| Specialty | Dental, Physiotherapy, etc. |
-| Guide Template | Care Guide canonical aftercare content |
-| Practice Guide | A template enabled / configured for one practice |
-| Guide | Patient-facing published aftercare resource, when context is clear |
-| Practice Addition | Practice-specific supplementary content |
-| Practice Override | Intentional replacement / customisation of canonical content |
-| Tenant Hostname | `<tenant-slug>.<platform-domain>` |
+| Term              | Meaning                                                            |
+| ----------------- | ------------------------------------------------------------------ |
+| Care Guide        | The platform / product                                             |
+| Practice / Clinic | Customer tenant                                                    |
+| Tenant            | Architectural term for a practice account                          |
+| Specialty         | Dental, Physiotherapy, etc.                                        |
+| Guide Template    | Care Guide canonical aftercare content                             |
+| Practice Guide    | A template enabled / configured for one practice                   |
+| Guide             | Patient-facing published aftercare resource, when context is clear |
+| Practice Addition | Practice-specific supplementary content                            |
+| Practice Override | Intentional replacement / customisation of canonical content       |
+| Tenant Hostname   | `<tenant-slug>.<platform-domain>`                                  |
 
 Do **not** reuse `ProcedureTemplate` terminology for this domain merely because the parked schema already uses that name. Procedure sessions and aftercare guides are distinct concepts.
 
@@ -636,11 +649,11 @@ Different specialties may later require different section structures. The concep
 
 ### 12.4 Public URL contract
 
-| Surface | URL shape |
-| --- | --- |
-| Tenant aftercare home | `https://<tenant>.<platform-domain>/` |
+| Surface                  | URL shape                                         |
+| ------------------------ | ------------------------------------------------- |
+| Tenant aftercare home    | `https://<tenant>.<platform-domain>/`             |
 | Published practice guide | `https://<tenant>.<platform-domain>/<guide-slug>` |
-| Operator admin | `https://app.<platform-domain>/…` (conceptual) |
+| Operator admin           | `https://app.<platform-domain>/…` (conceptual)    |
 
 Guide slugs should be stable. Changing a public slug after distribution is a product event (broken QR codes and printed material), not a casual rename.
 
@@ -664,12 +677,12 @@ This is health-related content. The system must not be modelled like disposable 
 
 ### 13.1 Required concepts (product direction)
 
-| Concept | Meaning |
-| --- | --- |
-| Draft | Not patient-visible |
-| Published | Patient-visible at the durable URL (if also enabled for that practice) |
+| Concept            | Meaning                                                                      |
+| ------------------ | ---------------------------------------------------------------------------- |
+| Draft              | Not patient-visible                                                          |
+| Published          | Patient-visible at the durable URL (if also enabled for that practice)       |
 | Revision / version | A published (or publishable) snapshot has identity; history is not discarded |
-| Last reviewed | When the relevant content was last reviewed |
+| Last reviewed      | When the relevant content was last reviewed                                  |
 
 Publishing controls what patients see. Unpublishing removes or replaces public availability without pretending the previous content never existed in the system of record.
 
@@ -698,7 +711,7 @@ These future fields may exist in later schema work even if MVP UI does not expos
 
 ### 13.3 Canonical vs practice layers
 
-Updates to a canonical Guide Template must not silently and untraceably rewrite every practice’s published output without a defined publication/review path. The exact rollout policy (auto-draft vs notify vs require re-publish) is an open decision (§25); the architecture must make a policy *possible*.
+Updates to a canonical Guide Template must not silently and untraceably rewrite every practice’s published output without a defined publication/review path. The exact rollout policy (auto-draft vs notify vs require re-publish) is an open decision (§25); the architecture must make a policy _possible_.
 
 ---
 
@@ -708,22 +721,22 @@ Updates to a canonical Guide Template must not silently and untraceably rewrite 
 
 See §10.10. Restated as acceptance-oriented capabilities:
 
-| Capability | MVP |
-| --- | --- |
-| Create and manage a practice | Yes |
-| Assign / change tenant slug | Yes |
-| Configure branding | Yes |
-| Configure contact / emergency details | Yes |
-| Browse canonical library | Yes |
-| Enable / disable templates per practice | Yes |
-| Configure additions / overrides | Yes |
-| Preview composed guides | Yes |
-| Publish / unpublish | Yes |
-| Copy public URLs | Yes |
-| Obtain QR codes | Yes |
-| Inspect basic usage analytics | Yes |
-| Clinic self-service | **No** |
-| Billing / subscription automation | **No** |
+| Capability                              | MVP    |
+| --------------------------------------- | ------ |
+| Create and manage a practice            | Yes    |
+| Assign / change tenant slug             | Yes    |
+| Configure branding                      | Yes    |
+| Configure contact / emergency details   | Yes    |
+| Browse canonical library                | Yes    |
+| Enable / disable templates per practice | Yes    |
+| Configure additions / overrides         | Yes    |
+| Preview composed guides                 | Yes    |
+| Publish / unpublish                     | Yes    |
+| Copy public URLs                        | Yes    |
+| Obtain QR codes                         | Yes    |
+| Inspect basic usage analytics           | Yes    |
+| Clinic self-service                     | **No** |
+| Billing / subscription automation       | **No** |
 
 ### 14.2 Host and auth
 
@@ -795,7 +808,7 @@ Public aftercare is keyed by **practice + procedure guide**, not by patient.
 
 Patient-specific aftercare may be considered only in a much later phase, and only if product value justifies the privacy and compliance complexity. Do not design the MVP around it.
 
-### 16.3 Data Care Guide *does* hold
+### 16.3 Data Care Guide _does_ hold
 
 - practice/tenant configuration and branding;
 - canonical clinical-adjacent guide content (platform-owned);
@@ -919,16 +932,16 @@ Care Guide MVP is complete when a Care Guide operator can onboard at least two p
 
 ### 19.1 In scope (agreed ten capabilities)
 
-1. Branded practice subdomain  
-2. Practice branding / contact / emergency configuration  
-3. Curated aftercare-guide library  
-4. Selective procedure enablement  
-5. Practice additions / overrides  
-6. Permanent URLs + QR codes  
-7. Mobile-first patient presentation  
-8. Call / contact / booking CTAs  
-9. Basic usage analytics  
-10. Care Guide operator admin  
+1. Branded practice subdomain
+2. Practice branding / contact / emergency configuration
+3. Curated aftercare-guide library
+4. Selective procedure enablement
+5. Practice additions / overrides
+6. Permanent URLs + QR codes
+7. Mobile-first patient presentation
+8. Call / contact / booking CTAs
+9. Basic usage analytics
+10. Care Guide operator admin
 
 Plus:
 
@@ -940,12 +953,12 @@ Plus:
 
 ### 19.2 MVP delivery via phases
 
-| Phase | Outcome | Commercial MVP? |
-| --- | --- | --- |
-| 0 | This documentation / architecture contract | No |
-| 1 | One dental tenant technical vertical slice | No |
-| 2 | Operator admin operating product | No |
-| 3 | Remaining MVP hardening (QR, analytics, second tenant, isolation tests, production concerns) | **Yes, after Phase 3** |
+| Phase | Outcome                                                                                      | Commercial MVP?        |
+| ----- | -------------------------------------------------------------------------------------------- | ---------------------- |
+| 0     | This documentation / architecture contract                                                   | No                     |
+| 1     | One dental tenant technical vertical slice                                                   | No                     |
+| 2     | Operator admin operating product                                                             | No                     |
+| 3     | Remaining MVP hardening (QR, analytics, second tenant, isolation tests, production concerns) | **Yes, after Phase 3** |
 
 Phase 1 is a **technical vertical slice**, not the completed commercial MVP.
 
@@ -1160,20 +1173,20 @@ The existing chairside workflow may eventually become an optional Care Guide pro
 
 ## 24. Risks
 
-| Risk | Why it matters | Mitigation in this contract |
-| --- | --- | --- |
-| Chairside gravity | Implementers extend `ProcedureSession` / stages because that code exists | Explicit parking; aftercare must not depend on sessions; new domain model (ADR 0001, 0005, 0009) |
-| Terminology collision | `ProcedureTemplate` is mistaken for Guide Template | Distinct glossary; ban on reusing that name for aftercare |
-| Domain / hosting lock-in | Premature Vercel/Cloudflare/domain choices | Product requirements only; `<platform-domain>` placeholder |
-| Clinical copy liability | Invented or scraped aftercare instructions | No authoritative clinical authoring in Phase 0; no copying from arbitrary websites; governance concepts in §13 |
-| Real-brand misuse | Using Pacific Dental assets without permission | Conceptual examples only; fictional demo clinic |
-| Privacy scope creep | “Personalised aftercare” sneaks into MVP | Hard privacy boundary; no patient PII |
-| Over-building isolation | RLS / complex tenancy delays slice | App-level isolation acceptable for MVP |
-| Over-building verticals | Several specialties at once | Dental first |
-| Treating Phase 1 as commercial MVP | Shipping an incomplete operating product | Phases 1–3 distinguished; ten capabilities required for MVP |
-| Disposable-content modelling | Overwriting published clinical text | Version-aware publishing direction |
-| Patient UX copied from chairside display | Large-format session UI reused for phones | Separate UX requirement; mobile-first web |
-| Analytics identifying patients | Health-data over-collection | Anonymous usage only |
+| Risk                                     | Why it matters                                                           | Mitigation in this contract                                                                                    |
+| ---------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Chairside gravity                        | Implementers extend `ProcedureSession` / stages because that code exists | Explicit parking; aftercare must not depend on sessions; new domain model (ADR 0001, 0005, 0009)               |
+| Terminology collision                    | `ProcedureTemplate` is mistaken for Guide Template                       | Distinct glossary; ban on reusing that name for aftercare                                                      |
+| Domain / hosting lock-in                 | Premature Vercel/Cloudflare/domain choices                               | Product requirements only; `<platform-domain>` placeholder                                                     |
+| Clinical copy liability                  | Invented or scraped aftercare instructions                               | No authoritative clinical authoring in Phase 0; no copying from arbitrary websites; governance concepts in §13 |
+| Real-brand misuse                        | Using Pacific Dental assets without permission                           | Conceptual examples only; fictional demo clinic                                                                |
+| Privacy scope creep                      | “Personalised aftercare” sneaks into MVP                                 | Hard privacy boundary; no patient PII                                                                          |
+| Over-building isolation                  | RLS / complex tenancy delays slice                                       | App-level isolation acceptable for MVP                                                                         |
+| Over-building verticals                  | Several specialties at once                                              | Dental first                                                                                                   |
+| Treating Phase 1 as commercial MVP       | Shipping an incomplete operating product                                 | Phases 1–3 distinguished; ten capabilities required for MVP                                                    |
+| Disposable-content modelling             | Overwriting published clinical text                                      | Version-aware publishing direction                                                                             |
+| Patient UX copied from chairside display | Large-format session UI reused for phones                                | Separate UX requirement; mobile-first web                                                                      |
+| Analytics identifying patients           | Health-data over-collection                                              | Anonymous usage only                                                                                           |
 
 ---
 
@@ -1181,22 +1194,22 @@ The existing chairside workflow may eventually become an optional Care Guide pro
 
 These are intentionally unresolved in PRD v1.0. Implementation must not pretend they are closed.
 
-| ID | Decision | Notes |
-| --- | --- | --- |
-| OD-1 | Commercial `<platform-domain>` | Not selected. Never hard-code a guessed final domain. |
-| OD-2 | Hosting / DNS provider | Undecided. Do not lock the PRD to a vendor. |
-| OD-3 | Exact 3–5 guides for the first technical slice | Planning library exists; slice set can be chosen in Phase 1. |
-| OD-4 | Canonical-template update rollout policy | When Care Guide revises a template, do practices auto-draft, freeze until re-publish, or mix? Architecture must allow a policy. |
-| OD-5 | Operator identity model | Platform operator role vs reuse of clinic `ADMIN` membership for Care Guide staff. |
-| OD-6 | Public robots / SEO policy | Index tenant aftercare vs `noindex` during controlled testing. Phase 3. |
-| OD-7 | QR encoding details | Product requires a QR for the durable URL. Image format, print sizes, and whether a `?src=qr` (or similar) marker is used are implementation/product follow-ups. |
-| OD-8 | Analytics implementation | Vendor vs first-party; retention; dashboard density. Product metrics are defined; stack is not. |
-| OD-9 | Demo clinic naming for aftercare | Keep “Rivers Care Demo Clinic” or introduce another fictional aftercare demo. Must not impersonate Pacific Dental. |
-| OD-10 | Default language / locale | English assumed for Dental MVP unless later specified. |
-| OD-11 | Attribution copy and placement | Default “Powered by Care Guide”; visual treatment should stay small. Exact placement is design work. |
-| OD-12 | Whether unpublished guide URLs 404 or show a generic unavailable page | Must not show unpublished content. Exact empty/unavailable copy is open. |
-| OD-13 | Multi-location within one customer | Likely future plan dimension; MVP may be one `Clinic` = one tenant hostname. |
-| OD-14 | Legal / clinical disclaimer on patient pages | Likely needed; exact copy is not in this PRD. |
+| ID    | Decision                                                              | Notes                                                                                                                                                                                                   |
+| ----- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| OD-1  | Commercial `<platform-domain>`                                        | Not selected. Never hard-code a guessed final domain.                                                                                                                                                   |
+| OD-2  | Hosting / DNS provider                                                | Undecided. Do not lock the PRD to a vendor.                                                                                                                                                             |
+| OD-3  | Exact 3–5 guides for the first technical slice                        | Planning library exists; slice set can be chosen in Phase 1.                                                                                                                                            |
+| OD-4  | Canonical-template update rollout UX                                  | The pin invariant is closed: a library update must never silently mutate a published Practice Guide (ADR 0010). Remaining open: notify / auto-draft / freeze UX when a newer canonical revision exists. |
+| OD-5  | Operator identity model                                               | Platform operator role vs reuse of clinic `ADMIN` membership for Care Guide staff.                                                                                                                      |
+| OD-6  | Public robots / SEO policy                                            | Index tenant aftercare vs `noindex` during controlled testing. Phase 3.                                                                                                                                 |
+| OD-7  | QR encoding details                                                   | Product requires a QR for the durable URL. Image format, print sizes, and whether a `?src=qr` (or similar) marker is used are implementation/product follow-ups.                                        |
+| OD-8  | Analytics implementation                                              | Vendor vs first-party; retention; dashboard density. Product metrics are defined; stack is not.                                                                                                         |
+| OD-9  | Demo clinic naming for aftercare                                      | Keep “Rivers Care Demo Clinic” or introduce another fictional aftercare demo. Must not impersonate Pacific Dental.                                                                                      |
+| OD-10 | Default language / locale                                             | English assumed for Dental MVP unless later specified.                                                                                                                                                  |
+| OD-11 | Attribution copy and placement                                        | Default “Powered by Care Guide”; visual treatment should stay small. Exact placement is design work.                                                                                                    |
+| OD-12 | Whether unpublished guide URLs 404 or show a generic unavailable page | Must not show unpublished content. Exact empty/unavailable copy is open.                                                                                                                                |
+| OD-13 | Multi-location within one customer                                    | Likely future plan dimension; MVP may be one `Clinic` = one tenant hostname.                                                                                                                            |
+| OD-14 | Legal / clinical disclaimer on patient pages                          | Likely needed; exact copy is not in this PRD.                                                                                                                                                           |
 
 ---
 
@@ -1243,13 +1256,13 @@ A permanent aftercare guide is not a completed session.
 
 See §12.1. Additional parked-domain terms (do not use for aftercare modelling):
 
-| Parked term | Meaning in current code |
-| --- | --- |
-| `ProcedureSession` | In-chair live procedure instance |
-| `ProcedureTemplate` | Clinic-owned chairside walkthrough template |
+| Parked term              | Meaning in current code                        |
+| ------------------------ | ---------------------------------------------- |
+| `ProcedureSession`       | In-chair live procedure instance               |
+| `ProcedureTemplate`      | Clinic-owned chairside walkthrough template    |
 | `ProcedureStageTemplate` | Ordered in-chair stage with mode-specific copy |
-| `displayToken` | Secret-ish token for `/display/[token]` |
-| `aftercareUrl` | Optional external URL on a chairside template |
+| `displayToken`           | Secret-ish token for `/display/[token]`        |
+| `aftercareUrl`           | Optional external URL on a chairside template  |
 
 ## Appendix B — Example URLs (non-normative domain)
 

@@ -202,7 +202,11 @@ describe("tenant guide page", () => {
     expect(html).toContain("Sample content only");
     expect(html).toContain("Not clinical advice");
     expect(html).toContain('role="tablist"');
-    expect(html).toContain("Check-in");
+    expect(html).toContain("Today");
+    expect(html).toContain("Timeline");
+    expect(html).toContain("Print / Save PDF");
+    expect(html).not.toContain("Check-in");
+    expect(html).not.toContain("How are you feeling today?");
     expect(html).toContain("Powered by Aftercare Guide");
     expect(html).not.toContain("practice_override");
     expect(html).not.toContain("practice_addition");
