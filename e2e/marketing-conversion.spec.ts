@@ -40,10 +40,12 @@ test.describe("marketing conversion routes", () => {
     await expect(page.getByText("Custom pricing")).toBeVisible();
     await expect(page.getByText("Recommended")).toBeVisible();
     await expect(page.getByText("Coming after launch")).toBeVisible();
-    await page.locator("#later-heading").scrollIntoViewIfNeeded();
-    await expect(
-      page.getByRole("listitem", { name: "Patient check-ins" })
-    ).toBeVisible();
+    await expect(page.locator('[class*="laterList"]')).toContainText(
+      "Patient check-ins"
+    );
+    await expect(page.locator('[class*="planFeatures"]')).not.toContainText(
+      "Patient check-ins"
+    );
     await expect(
       page.getByRole("link", { name: "Request a demo" }).first()
     ).toHaveAttribute("href", "/contact");

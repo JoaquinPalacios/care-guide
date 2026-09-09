@@ -208,7 +208,6 @@ test.describe("Phase 1F.11 story clarity", () => {
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(marketingUrl("/"), { waitUntil: "load" });
-    await showMarketingScheme(page, "light");
     await waitForHeroReveal(page);
 
     const { trigger, menu } = await openThemeMenu(page);
