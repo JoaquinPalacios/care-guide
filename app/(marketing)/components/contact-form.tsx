@@ -20,12 +20,11 @@ import {
   CONTACT_FIELD_LIMITS,
   CONTACT_HONEYPOT_FIELD,
   LOCATION_COUNTS,
-  contactEnquirySchema,
-  contactFieldErrorsFromZod,
   readContactFormValues,
+  validateContactFormValues,
   type ContactEnquiryField,
   type ContactEnquiryFieldErrors,
-} from "@/lib/marketing/contact-enquiry";
+} from "@/lib/marketing/contact-fields";
 
 import styles from "../marketing.module.css";
 
@@ -90,14 +89,7 @@ export function ContactForm({ demoHref }: { demoHref: string }) {
   }, [state, fieldErrors]);
 
   function validateClient(formData: FormData): ContactEnquiryFieldErrors {
-    const parsed = contactEnquirySchema.safeParse(
-      readContactFormValues(formData)
-    );
-    if (parsed.success) {
-      return {};
-    }
-
-    return contactFieldErrorsFromZod(parsed.error);
+    return validateContactFormValues(readContactFormValues(formData));
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -125,7 +117,7 @@ export function ContactForm({ demoHref }: { demoHref: string }) {
         role="status"
         aria-live="polite"
       >
-        <h2 className={styles.contactSuccessTitle}>
+        <h2 id="contact-form-heading" className={styles.contactSuccessTitle}>
           Thanks — your enquiry has been sent.
         </h2>
         <p className={styles.copy}>
@@ -160,6 +152,9 @@ export function ContactForm({ demoHref }: { demoHref: string }) {
       onSubmit={handleSubmit}
       aria-describedby={formError ? summaryId : undefined}
     >
+      <h2 id="contact-form-heading" className={styles.contactFormTitle}>
+        Send an enquiry
+      </h2>
       {formError ? (
         <div
           ref={summaryRef}

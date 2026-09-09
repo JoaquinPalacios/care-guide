@@ -1012,10 +1012,32 @@ Pricing and contact do not add a second animation system. Contact adds a narrow 
 
 ## After marketing conversion polish
 
-Measured after calmer reveal constants, page heroes, heading spacing tokens, simplified nav, and the clinic enquiry form. Production `next start` / port 4173. Next.js 16.3.4 / Turbopack. Motion remains `motion@13.2.0`. Contact uses a Server Component page plus a narrow `ContactForm` client boundary and a server-only nodemailer adapter.
+Measured 2026-09-09 against `cursor/marketing-conversion-polish-7f34` on production `next start` / port 4173. Next.js 16.3.4 / Turbopack. Motion remains `motion@13.2.0`. Contact is a Server Component page plus a narrow `ContactForm` client island. Zod stays server-only (`contact-enquiry.ts`); the client validates with `contact-fields.ts`. Delivery is a server-only nodemailer adapter.
 
 Viewport thresholds are unchanged (mobile ~-80px, desktop ~-200px, tablet interpolated). Editorial reveal is **720ms / 110ms**. Cards are **650ms / 95ms**, cap **320ms**.
 
-Per-route CSS/JS numbers are captured by `e2e/marketing-conversion.spec.ts` (`marketing-conversion-performance.json`). Contact now includes a form chunk in addition to shared Motion + theme + site menu. No Tailwind. No second animation library. **No Motion on tenant.**
+### Shared marketing CSS
+
+Loaded on `/`, `/pricing`, and `/contact`:
+
+- `3krtqjbqgsf2y.css` — marketing base (8,531 raw / 2,235 gzip / 1,957 Brotli)
+- `2qt8ofonnis4z.css` — `marketing.module.css` including page heroes, spacing tokens, and the enquiry form (45,965 raw / 7,979 gzip / 6,889 Brotli)
+
+| Metric         | Marketing completion | Conversion polish |     Delta |
+| -------------- | -------------------: | ----------------: | --------: |
+| CSS raw        |               49,801 |        **54,496** |    +4,695 |
+| CSS gzip -9    |                9,401 |        **10,214** |      +813 |
+| CSS Brotli q11 |                8,239 |         **8,846** |      +607 |
+| Tailwind       |                   no |                no | unchanged |
+
+### Product client islands
+
+| Chunk              | Role                                        |    Raw | gzip -9 | Brotli |
+| ------------------ | ------------------------------------------- | -----: | ------: | -----: |
+| `00k0i2nogwbhn.js` | Motion experience + compact site menu       | 30,435 |   8,539 |  7,527 |
+| `17qg50x_rufn5.js` | Theme popover                               | 12,219 |   4,818 |  4,215 |
+| `0-i9vkpe7y6f8.js` | Contact form island (`useActionState` + UX) | 18,939 |   6,823 |  5,948 |
+
+Contact does **not** load the Zod runtime. Framework/React chunks are shared with other App Router routes and are not counted as product islands. Pricing and contact do not add a second animation library. **No Motion on tenant.** Tenant `/pricing` and `/contact` remain 404.
 
 See [MARKETING-CONTACT.md](MARKETING-CONTACT.md) for delivery configuration.

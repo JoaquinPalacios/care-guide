@@ -1,3 +1,5 @@
+import { mkdirSync, writeFileSync } from "node:fs";
+
 import { expect, test } from "@playwright/test";
 
 import { expectNoSeriousAxeViolations } from "./helpers/axe";
@@ -62,8 +64,11 @@ test.describe("marketing conversion routes", () => {
       "Bring your aftercare online without losing your clinic's identity."
     );
     await expect(
+      page.getByRole("heading", { name: "Send an enquiry" })
+    ).toBeVisible();
+    await expect(
       page.getByRole("link", { name: "View the clinic demo" })
-    ).toHaveAttribute("href", tenantUrl(DEMO_TENANT_SLUG, "/"));
+    ).toHaveCount(0);
     await expect(page.getByRole("link", { name: "See pricing" })).toHaveCount(
       0
     );
@@ -240,7 +245,7 @@ test.describe("marketing conversion routes", () => {
     await expect(
       page.getByText("Thanks — your enquiry has been sent.")
     ).toHaveCount(0);
-    await page.screenshot({
+    await page.locator("form").screenshot({
       path: "test-results/artifacts/contact-form-validation-1440.png",
     });
 
@@ -270,7 +275,7 @@ test.describe("marketing conversion routes", () => {
     await expect(
       page.getByRole("link", { name: "Pricing" }).last()
     ).toHaveAttribute("href", "/pricing");
-    await page.screenshot({
+    await page.getByRole("status").screenshot({
       path: "test-results/artifacts/contact-form-success-1440.png",
     });
   });
@@ -430,24 +435,56 @@ test.describe("marketing conversion routes", () => {
     expect(pricing.css.length).toBeGreaterThan(0);
     expect(contact.css.length).toBeGreaterThan(0);
 
+    const payload = {
+      pricing: {
+        cssRaw: pricing.css.reduce((sum, asset) => sum + asset.raw, 0),
+        cssGzip: pricing.css.reduce((sum, asset) => sum + asset.gzip, 0),
+        cssBrotli: pricing.css.reduce((sum, asset) => sum + asset.brotli, 0),
+        jsRaw: pricing.js.reduce((sum, asset) => sum + asset.raw, 0),
+        jsGzip: pricing.js.reduce((sum, asset) => sum + asset.gzip, 0),
+        jsBrotli: pricing.js.reduce((sum, asset) => sum + asset.brotli, 0),
+        cssUrls: pricing.css.map((asset) => ({
+          url: asset.url,
+          raw: asset.raw,
+          gzip: asset.gzip,
+          brotli: asset.brotli,
+        })),
+        jsUrls: pricing.js.map((asset) => ({
+          url: asset.url,
+          raw: asset.raw,
+          gzip: asset.gzip,
+          brotli: asset.brotli,
+        })),
+      },
+      contact: {
+        cssRaw: contact.css.reduce((sum, asset) => sum + asset.raw, 0),
+        cssGzip: contact.css.reduce((sum, asset) => sum + asset.gzip, 0),
+        cssBrotli: contact.css.reduce((sum, asset) => sum + asset.brotli, 0),
+        jsRaw: contact.js.reduce((sum, asset) => sum + asset.raw, 0),
+        jsGzip: contact.js.reduce((sum, asset) => sum + asset.gzip, 0),
+        jsBrotli: contact.js.reduce((sum, asset) => sum + asset.brotli, 0),
+        cssUrls: contact.css.map((asset) => ({
+          url: asset.url,
+          raw: asset.raw,
+          gzip: asset.gzip,
+          brotli: asset.brotli,
+        })),
+        jsUrls: contact.js.map((asset) => ({
+          url: asset.url,
+          raw: asset.raw,
+          gzip: asset.gzip,
+          brotli: asset.brotli,
+        })),
+      },
+    };
+    mkdirSync("test-results/artifacts", { recursive: true });
+    writeFileSync(
+      "test-results/artifacts/marketing-conversion-performance.json",
+      JSON.stringify(payload, null, 2)
+    );
     testInfo.attach("marketing-conversion-performance.json", {
       contentType: "application/json",
-      body: JSON.stringify(
-        {
-          pricing: {
-            cssRaw: pricing.css.reduce((sum, asset) => sum + asset.raw, 0),
-            jsRaw: pricing.js.reduce((sum, asset) => sum + asset.raw, 0),
-            jsUrls: pricing.js.map((asset) => asset.url),
-          },
-          contact: {
-            cssRaw: contact.css.reduce((sum, asset) => sum + asset.raw, 0),
-            jsRaw: contact.js.reduce((sum, asset) => sum + asset.raw, 0),
-            jsUrls: contact.js.map((asset) => asset.url),
-          },
-        },
-        null,
-        2
-      ),
+      body: JSON.stringify(payload, null, 2),
     });
   });
 });

@@ -364,5 +364,14 @@ describe("aftercare style boundary", () => {
     expect(read("app/(marketing)/components/contact-form.tsx")).toMatch(
       /['"]use client['"]/
     );
+    expect(read("app/(marketing)/components/contact-form.tsx")).toContain(
+      "contact-fields"
+    );
+    expect(read("app/(marketing)/components/contact-form.tsx")).not.toContain(
+      "contact-enquiry"
+    );
+    expect(read("app/(marketing)/components/contact-form.tsx")).not.toContain(
+      'from "zod"'
+    );
   });
 });

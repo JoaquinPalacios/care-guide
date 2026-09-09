@@ -8,6 +8,7 @@ import {
   isHoneypotTriggered,
   readContactFormValues,
   sanitizeHeaderValue,
+  validateContactFormValues,
 } from "@/lib/marketing/contact-enquiry";
 
 function formData(entries: Record<string, string>): FormData {
@@ -35,6 +36,20 @@ describe("contact enquiry schema", () => {
     expect(parsed.message).toBeNull();
     expect(parsed.locationCount).toBe("1");
     expect(isHoneypotTriggered(parsed)).toBe(false);
+  });
+
+  it("mirrors required-field errors without Zod on the client helper", () => {
+    const errors = validateContactFormValues({
+      ...valid,
+      fullName: "",
+      workEmail: "not-an-email",
+      clinicName: "",
+      locationCount: "",
+    });
+    expect(errors.fullName).toMatch(/full name/i);
+    expect(errors.workEmail).toMatch(/work email/i);
+    expect(errors.clinicName).toMatch(/practice or clinic/i);
+    expect(errors.locationCount).toMatch(/locations/i);
   });
 
   it("requires name, work email, clinic, and locations", () => {

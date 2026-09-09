@@ -52,11 +52,15 @@ Production delivery requires real `TO` / `FROM` values plus working SMTP credent
 
 Revisit rate limiting or CAPTCHA when real traffic warrants it.
 
+## Client boundary
+
+`app/(marketing)/components/contact-form.tsx` is the only Contact client island. Inline validation uses `lib/marketing/contact-fields.ts` (no Zod). Server validation still uses Zod in `contact-enquiry.ts` before the mailer runs.
+
 ## Architecture
 
 ```text
 ContactForm
   → submitMarketingContactAction
-  → ContactEnquiry (Zod)
+  → ContactEnquiry (Zod, server-only)
   → MarketingContactMailer (SMTP or memory)
 ```

@@ -1,18 +1,22 @@
 import { z } from "zod";
 
-export const LOCATION_COUNTS = ["1", "2-5", "6+"] as const;
-export type LocationCount = (typeof LOCATION_COUNTS)[number];
+import {
+  CONTACT_FIELD_LIMITS,
+  CONTACT_HONEYPOT_FIELD,
+  LOCATION_COUNTS,
+  type ContactEnquiryFieldErrors,
+} from "@/lib/marketing/contact-fields";
 
-export const CONTACT_HONEYPOT_FIELD = "website";
-
-export const CONTACT_FIELD_LIMITS = {
-  fullName: 120,
-  workEmail: 254,
-  clinicName: 160,
-  phone: 40,
-  message: 2000,
-  honeypot: 200,
-} as const;
+export {
+  CONTACT_FIELD_LIMITS,
+  CONTACT_HONEYPOT_FIELD,
+  LOCATION_COUNTS,
+  readContactFormValues,
+  validateContactFormValues,
+  type ContactEnquiryField,
+  type ContactEnquiryFieldErrors,
+  type LocationCount,
+} from "@/lib/marketing/contact-fields";
 
 const requiredText = (max: number, emptyMessage: string) =>
   z.string().trim().min(1, emptyMessage).max(max, "This value is too long.");
@@ -56,37 +60,6 @@ export const contactEnquirySchema = z.object({
 
 export type ContactEnquiryInput = z.input<typeof contactEnquirySchema>;
 export type ContactEnquiry = z.output<typeof contactEnquirySchema>;
-
-export type ContactEnquiryField =
-  | "fullName"
-  | "workEmail"
-  | "clinicName"
-  | "locationCount"
-  | "phone"
-  | "message";
-
-export type ContactEnquiryFieldErrors = Partial<
-  Record<ContactEnquiryField, string>
->;
-
-export function readContactFormValues(
-  formData: FormData
-): Record<string, string> {
-  const read = (name: string) => {
-    const value = formData.get(name);
-    return typeof value === "string" ? value : "";
-  };
-
-  return {
-    fullName: read("fullName"),
-    workEmail: read("workEmail"),
-    clinicName: read("clinicName"),
-    locationCount: read("locationCount"),
-    phone: read("phone"),
-    message: read("message"),
-    [CONTACT_HONEYPOT_FIELD]: read(CONTACT_HONEYPOT_FIELD),
-  };
-}
 
 export function contactFieldErrorsFromZod(
   error: z.ZodError

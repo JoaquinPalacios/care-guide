@@ -66,6 +66,24 @@ export async function measurePageAssets(
 
   try {
     await page.goto(url, { waitUntil: "load" });
+    const extraScriptUrls = await page.evaluate(() =>
+      [...document.querySelectorAll("script[src]")].map(
+        (script) => (script as HTMLScriptElement).src
+      )
+    );
+    for (const src of extraScriptUrls) {
+      if (jsBodies.has(src)) {
+        continue;
+      }
+      try {
+        const response = await page.request.get(src);
+        if (response.ok()) {
+          jsBodies.set(src, Buffer.from(await response.body()));
+        }
+      } catch {
+        // Ignore scripts that cannot be re-fetched.
+      }
+    }
   } finally {
     page.off("response", onResponse);
   }

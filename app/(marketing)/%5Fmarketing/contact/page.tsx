@@ -38,17 +38,6 @@ export default async function MarketingContactPage() {
             <div className={styles.inner}>
               <MarketingRevealGroup>
                 <MarketingRevealItem delay={0}>
-                  <h2
-                    id="contact-form-heading"
-                    className={styles.contactFormTitle}
-                  >
-                    Send an enquiry
-                  </h2>
-                </MarketingRevealItem>
-                <MarketingRevealItem
-                  delay={0.08}
-                  className={styles.headingFollow}
-                >
                   <ContactForm demoHref={demoHref} />
                 </MarketingRevealItem>
               </MarketingRevealGroup>
