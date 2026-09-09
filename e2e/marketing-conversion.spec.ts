@@ -43,9 +43,9 @@ test.describe("marketing conversion routes", () => {
     await expect(page.locator('[class*="laterList"]')).toContainText(
       "Patient check-ins"
     );
-    await expect(page.locator('[class*="planFeatures"]')).not.toContainText(
-      "Patient check-ins"
-    );
+    await expect(
+      page.locator('[class*="planFeatures"]', { hasText: "Patient check-ins" })
+    ).toHaveCount(0);
     await expect(
       page.getByRole("link", { name: "Request a demo" }).first()
     ).toHaveAttribute("href", "/contact");
