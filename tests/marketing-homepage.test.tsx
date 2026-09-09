@@ -94,7 +94,7 @@ describe("marketing homepage", () => {
     expect(html).toContain('href="/pricing"');
     expect(html).toContain("Pricing");
     expect(html).toContain(">Contact<");
-    expect(html).toContain("Open site menu");
+    expect(html).toContain("Site menu");
     expect(html).not.toContain("Early access");
     expect(html).not.toContain("earlyAccessLayout");
     expect(html).not.toContain("Design partner");

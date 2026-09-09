@@ -1782,6 +1782,7 @@
   border: 1px solid var(--mk-card-line);
   border-radius: var(--mk-card-radius);
   background: var(--mk-card);
+  color: var(--mk-ink);
   box-shadow: var(--mk-card-shadow);
 }
 
@@ -1906,6 +1907,7 @@
   border: 1px solid var(--mk-card-line);
   border-radius: var(--mk-card-radius);
   background: var(--mk-card);
+  color: var(--mk-ink);
 }
 
 .noteCard p,

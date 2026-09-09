@@ -721,9 +721,8 @@ test.describe("marketing homepage", () => {
         headerNav.getByRole("link", { name: "Early access" })
       ).toHaveCount(0);
       await expect(
-        headerNav.getByRole("link", {
-          name: "How it works",
-          includeHidden: true,
+        headerNav.locator('[class*="navAnchor"]').filter({
+          hasText: "How it works",
         })
       ).toBeHidden();
       await expect(
@@ -802,10 +801,10 @@ test.describe("marketing homepage", () => {
       expect(headerLabels).not.toContain("Clinic preview");
       expect(headerLabels).not.toContain("Early access");
       expect(headerLabels.join(" ")).toMatch(
-        /Staff sign in|Change colour|Open site menu/
+        /Staff sign in|Change colour|Site menu/
       );
       await expect(
-        page.getByRole("button", { name: "Open site menu" })
+        page.getByRole("button", { name: "Site menu" })
       ).toBeVisible();
 
       await page.screenshot({

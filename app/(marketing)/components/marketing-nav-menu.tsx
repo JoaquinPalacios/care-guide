@@ -66,7 +66,7 @@ export function MarketingNavMenu({ items }: { items: MarketingMenuItem[] }) {
         aria-haspopup="true"
         aria-expanded={open}
         aria-controls={menuId}
-        aria-label={open ? "Close site menu" : "Open site menu"}
+        aria-label="Site menu"
       >
         <span className={styles.navMenuGlyph} aria-hidden="true">
           <span />

@@ -40,7 +40,9 @@ test.describe("marketing conversion routes", () => {
     await expect(page.getByText("Custom pricing")).toBeVisible();
     await expect(page.getByText("Recommended")).toBeVisible();
     await expect(page.getByText("Coming after launch")).toBeVisible();
-    await expect(page.getByText("Patient check-ins")).toBeVisible();
+    await expect(
+      page.getByRole("listitem", { name: "Patient check-ins" })
+    ).toBeVisible();
     await expect(
       page.getByRole("link", { name: "Request a demo" }).first()
     ).toHaveAttribute("href", "/contact");
@@ -151,7 +153,7 @@ test.describe("marketing conversion routes", () => {
       0
     );
 
-    const menu = page.getByRole("button", { name: "Open site menu" });
+    const menu = page.getByRole("button", { name: "Site menu" });
     await expect(menu).toBeVisible();
     await menu.click();
     await expect(menu).toHaveAttribute("aria-expanded", "true");
@@ -168,7 +170,7 @@ test.describe("marketing conversion routes", () => {
 
     await page.setViewportSize({ width: 360, height: 800 });
     await page.goto(marketingUrl("/contact"), { waitUntil: "load" });
-    const contactMenu = page.getByRole("button", { name: "Open site menu" });
+    const contactMenu = page.getByRole("button", { name: "Site menu" });
     await contactMenu.click();
     await expect(
       page.getByRole("link", { name: "Contact", exact: true }).first()
@@ -251,21 +253,30 @@ test.describe("marketing conversion routes", () => {
     test(`pricing and contact have no serious axe violations in ${colorScheme}`, async ({
       page,
     }) => {
-      await page.emulateMedia({ colorScheme });
+      await page.emulateMedia({
+        colorScheme,
+        reducedMotion: "reduce",
+      });
       for (const pathname of ["/", "/pricing", "/contact"] as const) {
         await page.goto(marketingUrl(pathname), { waitUntil: "load" });
         await showMarketingScheme(page, colorScheme);
+        await page.evaluate(() => {
+          document.documentElement.setAttribute("data-mk-motion", "reduce");
+        });
         await expect(page.locator("h1")).toHaveCount(1);
         await expectNoSeriousAxeViolations(page, {
-          exclude: "[data-mk-pending]",
+          exclude: ["[data-mk-pending]", "[data-mk-pending] *"],
         });
       }
 
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(marketingUrl("/pricing"), { waitUntil: "load" });
       await showMarketingScheme(page, colorScheme);
+      await page.evaluate(() => {
+        document.documentElement.setAttribute("data-mk-motion", "reduce");
+      });
       await expectNoSeriousAxeViolations(page, {
-        exclude: "[data-mk-pending]",
+        exclude: ["[data-mk-pending]", "[data-mk-pending] *"],
       });
     });
   }
