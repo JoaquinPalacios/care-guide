@@ -9,7 +9,9 @@ export const REVEAL_EASE = "easeOut" as const;
 export const EDITORIAL_REVEAL_STEP = 0.07;
 export const CARD_REVEAL_STAGGER = 0.07;
 export const CARD_REVEAL_STAGGER_MAX = 0.25;
-export const MARKETING_REVEAL_MARGIN = "9999px 0px -100px 0px";
+
+/** SSR / desktop fallback. Runtime observers use `marketingRevealMargin`. */
+export const MARKETING_REVEAL_MARGIN = "9999px 0px -200px 0px" as const;
 
 export const MARKETING_REVEAL_VIEWPORT = {
   once: true,

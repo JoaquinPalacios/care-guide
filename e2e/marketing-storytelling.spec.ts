@@ -135,7 +135,7 @@ async function waitForRevealedMotion(root: Locator): Promise<void> {
           ...element.querySelectorAll<HTMLElement>(".mkReveal"),
         ].filter((node) => {
           const rect = node.getBoundingClientRect();
-          return rect.bottom > 80 && rect.top < window.innerHeight - 100;
+          return rect.bottom > 80 && rect.top < window.innerHeight - 200;
         });
         return (
           nodes.length > 0 &&
@@ -164,13 +164,30 @@ async function waitForSectionReveal(root: Locator): Promise<void> {
           return false;
         }
         const reveals = [
-          ...section.querySelectorAll<HTMLElement>(
-            ".mkReveal:not([data-mk-card])"
-          ),
-        ];
+          ...section.querySelectorAll<HTMLElement>(".mkReveal"),
+        ].filter((node) => {
+          if (node.hasAttribute("data-mk-entered")) {
+            return true;
+          }
+          const rect = node.getBoundingClientRect();
+          const inset = window.innerWidth >= 1024 ? 200 : 80;
+          return rect.bottom > 0 && rect.top < window.innerHeight - inset + 8;
+        });
         return (
           reveals.length > 0 &&
-          reveals.every((node) => getComputedStyle(node).opacity === "1")
+          reveals.every((node) => {
+            const styles = getComputedStyle(node);
+            const transform = styles.transform;
+            const translateY =
+              transform === "none"
+                ? 0
+                : Number(transform.split(", ").at(5)?.replace(")", "") ?? 0);
+            return (
+              styles.opacity === "1" &&
+              Math.abs(translateY) < 0.75 &&
+              !node.hasAttribute("data-mk-pending")
+            );
+          })
         );
       })
     )
@@ -1623,22 +1640,24 @@ test.describe("Phase 1F.11 story clarity", () => {
     await showStaticScheme(page, "light");
     await scrollSectionIntoView(page, '[aria-labelledby="brand-heading"]');
     await waitForSectionReveal(section);
-    const layout1280 = await section.evaluate((root) => {
-      const cards = [...root.querySelectorAll("article")];
-      const heights = cards.map((card) =>
-        Math.round(card.getBoundingClientRect().height)
-      );
-      const titleTops = cards.map((card) => {
-        const title = card.querySelector("h3");
-        return title ? Math.round(title.getBoundingClientRect().top) : 0;
-      });
-      return {
-        heightSpread: Math.max(...heights) - Math.min(...heights),
-        titleSpread: Math.max(...titleTops) - Math.min(...titleTops),
-      };
-    });
-    expect(layout1280.heightSpread).toBeLessThanOrEqual(2);
-    expect(layout1280.titleSpread).toBeLessThanOrEqual(2);
+    await expect
+      .poll(async () => {
+        return section.evaluate((root) => {
+          const cards = [...root.querySelectorAll("article")];
+          const heights = cards.map((card) =>
+            Math.round(card.getBoundingClientRect().height)
+          );
+          const titleTops = cards.map((card) => {
+            const title = card.querySelector("h3");
+            return title ? Math.round(title.getBoundingClientRect().top) : 0;
+          });
+          return (
+            Math.max(...heights) - Math.min(...heights) <= 2 &&
+            Math.max(...titleTops) - Math.min(...titleTops) <= 2
+          );
+        });
+      })
+      .toBe(true);
 
     await page.setViewportSize({ width: 390, height: 844 });
     await showStaticScheme(page, "light");
@@ -2205,7 +2224,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     ).toBeVisible();
   });
 
-  test("section copy waits until it is about 100px into view", async ({
+  test("section copy waits until it crosses the desktop reveal threshold", async ({
     page,
   }) => {
     for (const viewport of [
@@ -2228,7 +2247,7 @@ test.describe("Phase 1F.11 story clarity", () => {
       await placeTopFromViewportBottom(
         page,
         "#how-it-works [data-mk-section]",
-        140
+        240
       );
       await expect(headingGroup).toHaveAttribute("data-mk-entered", "");
       await expect(
@@ -2236,6 +2255,9 @@ test.describe("Phase 1F.11 story clarity", () => {
           name: "From approved guidance to a page patients keep",
         })
       ).toBeVisible();
+      await page.screenshot({
+        path: `test-results/artifacts/marketing-reveal-${viewport.width}x${viewport.height}.png`,
+      });
     }
   });
 
@@ -2261,7 +2283,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     await placeTopFromViewportBottom(
       page,
       "#how-it-works [data-mk-process-card][data-mk-card]",
-      140
+      240
     );
     await expect(cards.nth(0)).toHaveAttribute("data-mk-entered", "");
     await expect(cards.nth(3)).toHaveAttribute("data-mk-entered", "");
@@ -2316,6 +2338,9 @@ test.describe("Phase 1F.11 story clarity", () => {
         140
       );
       await expect(cards.nth(2)).toHaveAttribute("data-mk-entered", "");
+      await page.screenshot({
+        path: `test-results/artifacts/marketing-reveal-${viewport.width}x${viewport.height}.png`,
+      });
     });
   }
 });

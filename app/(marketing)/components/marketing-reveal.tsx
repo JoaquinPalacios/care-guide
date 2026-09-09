@@ -1,9 +1,15 @@
 "use client";
 
-import { useInView, useReducedMotion } from "motion/react";
+import {
+  useInView,
+  useReducedMotion,
+  type UseInViewOptions,
+} from "motion/react";
 import * as m from "motion/react-m";
-import { type ReactNode, useRef } from "react";
+import { type ReactNode, useMemo, useRef, useSyncExternalStore } from "react";
 
+import { MARKETING_SSR_VIEWPORT_WIDTH_PX } from "@/lib/marketing/breakpoints";
+import { marketingRevealMargin } from "@/lib/marketing/reveal-margin";
 import {
   cardRevealDelay,
   cardRevealItemVariants,
@@ -35,6 +41,37 @@ const MotionTag = {
   span: m.span,
 } as const;
 
+function subscribeViewportWidth(onStoreChange: () => void) {
+  window.addEventListener("resize", onStoreChange);
+  return () => window.removeEventListener("resize", onStoreChange);
+}
+
+function readViewportWidth() {
+  return window.innerWidth;
+}
+
+function useMarketingRevealViewport(): Pick<
+  UseInViewOptions,
+  "once" | "margin"
+> {
+  const width = useSyncExternalStore(
+    subscribeViewportWidth,
+    readViewportWidth,
+    () => MARKETING_SSR_VIEWPORT_WIDTH_PX
+  );
+  const margin = marketingRevealMargin(width) as NonNullable<
+    UseInViewOptions["margin"]
+  >;
+
+  return useMemo(
+    () => ({
+      once: true,
+      margin,
+    }),
+    [margin]
+  );
+}
+
 function clearPending(node: HTMLElement | null, definition: unknown) {
   if (definition === "visible") {
     node?.removeAttribute("data-mk-pending");
@@ -52,7 +89,8 @@ export function MarketingRevealGroup({
 }) {
   const reduced = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { ...viewport, once: true });
+  const revealViewport = useMarketingRevealViewport();
+  const inView = useInView(ref, revealViewport);
   const motionOn = reduced === false;
 
   return (
@@ -149,7 +187,8 @@ export function MarketingRevealCard({
 }) {
   const reduced = useReducedMotion();
   const ref = useRef<HTMLElement | null>(null);
-  const inView = useInView(ref, { ...MARKETING_REVEAL_VIEWPORT, once: true });
+  const revealViewport = useMarketingRevealViewport();
+  const inView = useInView(ref, revealViewport);
   const motionOn = reduced === false;
   const Tag = MotionTag[as];
   const classes = ["mkReveal", className].filter(Boolean).join(" ");

@@ -161,6 +161,7 @@ test.describe("marketing homepage", () => {
       { width: 1280, height: 800, scheme: "dark" },
       { width: 390, height: 844, scheme: "light" },
       { width: 390, height: 844, scheme: "dark" },
+      { width: 360, height: 800, scheme: "light" },
     ] as const;
 
     for (const shot of shots) {
@@ -694,6 +695,7 @@ test.describe("marketing homepage", () => {
     for (const width of [390, 360] as const) {
       await page.setViewportSize({ width, height: 844 });
       await page.reload({ waitUntil: "load" });
+      await page.evaluate(() => window.scrollTo(0, 0));
       await showMarketingScheme(page, "light");
       await waitForHeroReveal(page);
 

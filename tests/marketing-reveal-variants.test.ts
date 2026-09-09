@@ -59,11 +59,11 @@ describe("marketing reveal variants", () => {
     expect(visible.transition.type).toBe("tween");
   });
 
-  it("triggers once, about 100px after the viewport bottom edge", () => {
+  it("triggers once; SSR fallback uses the desktop bottom inset", () => {
     expect(MARKETING_REVEAL_VIEWPORT).toBe(REVEAL_VIEWPORT);
     expect(MARKETING_REVEAL_VIEWPORT.once).toBe(true);
-    expect(MARKETING_REVEAL_VIEWPORT.margin).toBe("9999px 0px -100px 0px");
-    expect(MARKETING_REVEAL_MARGIN).toBe("9999px 0px -100px 0px");
+    expect(MARKETING_REVEAL_VIEWPORT.margin).toBe("9999px 0px -200px 0px");
+    expect(MARKETING_REVEAL_MARGIN).toBe("9999px 0px -200px 0px");
     expect("amount" in MARKETING_REVEAL_VIEWPORT).toBe(false);
   });
 
