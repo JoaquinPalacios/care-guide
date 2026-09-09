@@ -22,7 +22,35 @@ test("records marketing scroll choreography", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(marketingUrl("/"), { waitUntil: "load" });
   await expectOneH1(page, "Aftercare that still feels like your clinic.");
-  await page.locator("#how-it-works").scrollIntoViewIfNeeded();
-  await page.locator("#preview").scrollIntoViewIfNeeded();
-  await page.locator("#early-access").scrollIntoViewIfNeeded();
+  const height = await page.evaluate(
+    () => document.documentElement.scrollHeight
+  );
+  for (let y = 0; y < height; y += 70) {
+    await page.mouse.wheel(0, 70);
+    await page.waitForTimeout(35);
+  }
+});
+
+test.describe("desktop marketing scroll video", () => {
+  test.use({
+    video: { mode: "on", size: { width: 1440, height: 900 } },
+    viewport: { width: 1440, height: 900 },
+  });
+
+  test("records full-page marketing scroll", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await expectOneH1(page, "Aftercare that still feels like your clinic.");
+    const height = await page.evaluate(
+      () => document.documentElement.scrollHeight
+    );
+    for (let y = 0; y < height; y += 80) {
+      await page.mouse.wheel(0, 80);
+      await page.waitForTimeout(40);
+    }
+    await page.mouse.wheel(0, -520);
+    await page.waitForTimeout(400);
+    await page.mouse.wheel(0, 520);
+    await page.waitForTimeout(400);
+  });
 });

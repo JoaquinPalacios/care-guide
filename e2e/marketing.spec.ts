@@ -440,13 +440,14 @@ test.describe("marketing homepage", () => {
       path: "test-results/artifacts/marketing-showcase-light.png",
     });
 
-    await page.getByRole("link", { name: "Early access" }).first().click();
-    await expect(page).toHaveURL(/#early-access$/);
+    await page.locator("#see-it").scrollIntoViewIfNeeded();
     await expect(
       page.getByRole("heading", {
-        name: "Talk to us about a design-partner clinic",
+        name: "See the patient experience for yourself.",
       })
     ).toBeVisible();
+    await expect(page.getByText("See it in practice")).toBeVisible();
+    await expect(page.getByText("Early access")).toHaveCount(0);
 
     const overflow = await page.evaluate(() => {
       return (
@@ -667,7 +668,7 @@ test.describe("marketing homepage", () => {
     ).toBeVisible();
     await expect(
       headerNav.getByRole("link", { name: "Early access" })
-    ).toBeVisible();
+    ).toHaveCount(0);
     await expect(
       headerNav.getByRole("link", { name: "Staff sign in" })
     ).toBeVisible();

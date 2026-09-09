@@ -29,6 +29,42 @@ const MarketingReveal = {
   Preview: MarketingRevealPreview,
 };
 
+const FRICTION = [
+  {
+    index: "01",
+    copy: "Verbal advice is easy to forget once the appointment ends.",
+  },
+  {
+    index: "02",
+    copy: "Paper is easy to lose, and PDFs are awkward to reopen on a phone.",
+  },
+  {
+    index: "03",
+    copy: "Generic handouts weaken the clinic's own identity.",
+  },
+] as const;
+
+const BRAND_CARDS = [
+  {
+    key: "riverside",
+    className: styles.brandTeal,
+    title: "Riverside Dental Demo",
+    copy: "Calm clinical teal for a modern general dental practice.",
+  },
+  {
+    key: "specialist",
+    className: styles.brandNavy,
+    title: "Specialist oral surgery",
+    copy: "Ink and navy for a quieter specialist tone.",
+  },
+  {
+    key: "family",
+    className: styles.brandWarm,
+    title: "Family dental",
+    copy: "A warmer palette for a softer, more approachable welcome.",
+  },
+] as const;
+
 async function marketingLinks(): Promise<{
   demoHref: string;
   staffHref: string;
@@ -109,12 +145,6 @@ export default async function MarketingHomePage() {
             >
               Clinic preview
             </Link>
-            <Link
-              className={`${styles.navAnchor} ${styles.textLink}`}
-              href="#early-access"
-            >
-              Early access
-            </Link>
             <a
               className={`${styles.navStaff} ${styles.textLink}`}
               href={staffHref}
@@ -189,41 +219,31 @@ export default async function MarketingHomePage() {
           <section className={styles.band} aria-labelledby="problem-heading">
             <MarketingReveal.Group>
               <div className={styles.inner}>
-                <MarketingReveal.Item>
+                <MarketingReveal.Item delay={0}>
                   <p className={styles.eyebrow}>The problem</p>
                 </MarketingReveal.Item>
                 <div className={styles.problemGrid}>
-                  <MarketingReveal.Item>
+                  <MarketingReveal.Item delay={0.07}>
                     <h2 id="problem-heading" className={styles.problemTitle}>
                       Patients leave with instructions. They don&apos;t always
                       leave with clarity.
                     </h2>
                   </MarketingReveal.Item>
-                  <MarketingReveal.Item>
-                    <ol className={styles.frictionList}>
-                      <li className={styles.frictionItem}>
-                        <span className={styles.frictionIndex}>01</span>
-                        <p>
-                          Verbal advice is easy to forget once the appointment
-                          ends.
-                        </p>
-                      </li>
-                      <li className={styles.frictionItem}>
-                        <span className={styles.frictionIndex}>02</span>
-                        <p>
-                          Paper is easy to lose, and PDFs are awkward to reopen
-                          on a phone.
-                        </p>
-                      </li>
-                      <li className={styles.frictionItem}>
-                        <span className={styles.frictionIndex}>03</span>
-                        <p>
-                          Generic handouts weaken the clinic&apos;s own
-                          identity.
-                        </p>
-                      </li>
-                    </ol>
-                  </MarketingReveal.Item>
+                  <ol className={styles.frictionList}>
+                    {FRICTION.map((item, index) => (
+                      <MarketingReveal.Item
+                        key={item.index}
+                        as="li"
+                        delay={0.15 + index * 0.065}
+                        className={styles.frictionItem}
+                      >
+                        <span className={styles.frictionIndex}>
+                          {item.index}
+                        </span>
+                        <p>{item.copy}</p>
+                      </MarketingReveal.Item>
+                    ))}
+                  </ol>
                 </div>
               </div>
             </MarketingReveal.Group>
@@ -233,15 +253,15 @@ export default async function MarketingHomePage() {
             <MarketingReveal.Group>
               <div className={`${styles.inner} ${styles.productGrid}`}>
                 <div className={styles.productCopy} data-mk-product-copy="">
-                  <MarketingReveal.Item>
+                  <MarketingReveal.Item delay={0}>
                     <p className={styles.eyebrow}>The product</p>
                   </MarketingReveal.Item>
-                  <MarketingReveal.Item>
+                  <MarketingReveal.Item delay={0.07}>
                     <h2 id="product-heading">
                       A branded patient aftercare page that stays available.
                     </h2>
                   </MarketingReveal.Item>
-                  <MarketingReveal.Item>
+                  <MarketingReveal.Item delay={0.14}>
                     <p className={styles.copy}>
                       {PRODUCT_NAME} gives each practice a durable, clinic-first
                       aftercare home. Patients reopen the same instructions in
@@ -250,9 +270,7 @@ export default async function MarketingHomePage() {
                   </MarketingReveal.Item>
                 </div>
                 <div className={styles.productVisual} data-mk-product-visual="">
-                  <MarketingReveal.Item>
-                    <MarketingProductAssembly />
-                  </MarketingReveal.Item>
+                  <MarketingProductAssembly />
                 </div>
               </div>
             </MarketingReveal.Group>
@@ -265,17 +283,15 @@ export default async function MarketingHomePage() {
           >
             <MarketingReveal.Group>
               <div className={styles.inner}>
-                <MarketingReveal.Item>
+                <MarketingReveal.Item delay={0}>
                   <p className={styles.eyebrow}>How it works</p>
                 </MarketingReveal.Item>
-                <MarketingReveal.Item>
+                <MarketingReveal.Item delay={0.07}>
                   <h2 id="how-heading" className={styles.sectionTitle}>
                     From approved guidance to a page patients keep
                   </h2>
                 </MarketingReveal.Item>
-                <MarketingReveal.Item>
-                  <MarketingProcess />
-                </MarketingReveal.Item>
+                <MarketingProcess />
               </div>
             </MarketingReveal.Group>
           </section>
@@ -283,17 +299,15 @@ export default async function MarketingHomePage() {
           <section className={styles.band} aria-labelledby="why-heading">
             <MarketingReveal.Group>
               <div className={styles.inner}>
-                <MarketingReveal.Item>
+                <MarketingReveal.Item delay={0}>
                   <p className={styles.eyebrow}>Why clinics use it</p>
                 </MarketingReveal.Item>
-                <MarketingReveal.Item>
+                <MarketingReveal.Item delay={0.07}>
                   <h2 id="why-heading" className={styles.sectionTitle}>
                     Clinic-first aftercare, built for rereading
                   </h2>
                 </MarketingReveal.Item>
-                <MarketingReveal.Item>
-                  <MarketingPillars />
-                </MarketingReveal.Item>
+                <MarketingPillars />
               </div>
             </MarketingReveal.Group>
           </section>
@@ -303,46 +317,37 @@ export default async function MarketingHomePage() {
           <section className={styles.band} aria-labelledby="brand-heading">
             <MarketingReveal.Group>
               <div className={styles.inner}>
-                <MarketingReveal.Item>
+                <MarketingReveal.Item delay={0}>
                   <p className={styles.eyebrow}>Brand flexibility</p>
                 </MarketingReveal.Item>
-                <MarketingReveal.Item>
+                <MarketingReveal.Item delay={0.07}>
                   <h2 id="brand-heading" className={styles.sectionTitle}>
                     One product, many practice identities
                   </h2>
+                </MarketingReveal.Item>
+                <MarketingReveal.Item delay={0.14}>
                   <p className={styles.copy}>
                     Choose a visual tone that feels at home with your practice
                     while the patient experience stays consistent and easy to
                     read.
                   </p>
                 </MarketingReveal.Item>
-                <MarketingReveal.Item>
-                  <div className={styles.brandGrid}>
-                    <article
-                      className={`${styles.brandCard} ${styles.brandTeal}`}
+                <div className={styles.brandGrid}>
+                  {BRAND_CARDS.map((card, index) => (
+                    <MarketingReveal.Item
+                      key={card.key}
+                      delay={0.22 + index * 0.08}
+                      className={styles.brandRevealSlot}
                     >
-                      <h3>Riverside Dental Demo</h3>
-                      <p>
-                        Calm clinical teal for a modern general dental practice.
-                      </p>
-                    </article>
-                    <article
-                      className={`${styles.brandCard} ${styles.brandNavy}`}
-                    >
-                      <h3>Specialist oral surgery</h3>
-                      <p>Ink and navy for a quieter specialist tone.</p>
-                    </article>
-                    <article
-                      className={`${styles.brandCard} ${styles.brandWarm}`}
-                    >
-                      <h3>Family dental</h3>
-                      <p>
-                        A warmer palette for a softer, more approachable
-                        welcome.
-                      </p>
-                    </article>
-                  </div>
-                </MarketingReveal.Item>
+                      <article
+                        className={`${styles.brandCard} ${card.className}`}
+                      >
+                        <h3>{card.title}</h3>
+                        <p>{card.copy}</p>
+                      </article>
+                    </MarketingReveal.Item>
+                  ))}
+                </div>
               </div>
             </MarketingReveal.Group>
           </section>
@@ -355,22 +360,22 @@ export default async function MarketingHomePage() {
             <MarketingReveal.Group>
               <div className={`${styles.inner} ${styles.previewGrid}`}>
                 <div className={styles.previewCopy}>
-                  <MarketingReveal.Item>
+                  <MarketingReveal.Item delay={0}>
                     <p className={styles.eyebrow}>Clinic preview</p>
                   </MarketingReveal.Item>
-                  <MarketingReveal.Item>
+                  <MarketingReveal.Item delay={0.07}>
                     <h2 id="preview-heading">
                       See what patients actually receive
                     </h2>
                   </MarketingReveal.Item>
-                  <MarketingReveal.Item>
+                  <MarketingReveal.Item delay={0.14}>
                     <p className={styles.copy}>
                       The Riverside Dental Demo shows the patient experience:
                       clinic branding, post-treatment instructions, and a
                       published Tooth Extraction guide.
                     </p>
                   </MarketingReveal.Item>
-                  <MarketingReveal.Item>
+                  <MarketingReveal.Item delay={0.21}>
                     <div className={styles.actions}>
                       <a
                         className={`${styles.button} ${styles.primary}`}
@@ -381,7 +386,7 @@ export default async function MarketingHomePage() {
                     </div>
                   </MarketingReveal.Item>
                 </div>
-                <MarketingReveal.Item>
+                <MarketingReveal.Item delay={0.28} preview>
                   <MarketingPatientPreview />
                 </MarketingReveal.Item>
               </div>
@@ -391,59 +396,32 @@ export default async function MarketingHomePage() {
 
         <div className={styles.marketingClosing} data-mk-chapter="closing">
           <section
-            id="early-access"
+            id="see-it"
             className={styles.ctaBlock}
-            aria-labelledby="cta-heading"
+            aria-labelledby="closing-heading"
           >
             <MarketingReveal.Group>
-              <div className={`${styles.inner} ${styles.earlyAccessLayout}`}>
-                <div className={styles.earlyAccessPrimary}>
-                  <MarketingReveal.Item>
-                    <p className={styles.eyebrow}>Early access</p>
-                  </MarketingReveal.Item>
-                  <MarketingReveal.Item>
-                    <h2 id="cta-heading">
-                      Talk to us about a design-partner clinic
+              <div className={`${styles.inner} ${styles.closingCta}`}>
+                <div className={styles.closingCtaCopy}>
+                  <MarketingReveal.Item delay={0}>
+                    <p className={styles.eyebrow}>See it in practice</p>
+                    <h2 id="closing-heading">
+                      See the patient experience for yourself.
                     </h2>
-                  </MarketingReveal.Item>
-                  <MarketingReveal.Item>
-                    <p className={styles.lede}>
-                      {PRODUCT_NAME} is in early development. We&apos;re working
-                      with a small number of clinics to help shape the first
-                      commercial release.
+                    <p className={styles.copy}>
+                      Open the Riverside Dental Demo and see how clinic-branded
+                      aftercare works on a real patient page.
                     </p>
                   </MarketingReveal.Item>
-                  <MarketingReveal.Item>
-                    <div className={styles.actions}>
-                      <a
-                        className={`${styles.button} ${styles.primary}`}
-                        href={demoHref}
-                      >
-                        View the clinic demo
-                      </a>
-                    </div>
-                  </MarketingReveal.Item>
                 </div>
-                <MarketingReveal.Item>
-                  <div className={styles.earlyAccessPartner}>
-                    <p className={styles.eyebrow}>Design partner</p>
-                    <h3 className={styles.partnerTitle}>
-                      What we&apos;ll validate together
-                    </h3>
-                    <ol className={styles.partnerList}>
-                      <li className={styles.partnerItem}>
-                        <span className={styles.partnerIndex}>01</span>
-                        <p>Guide setup</p>
-                      </li>
-                      <li className={styles.partnerItem}>
-                        <span className={styles.partnerIndex}>02</span>
-                        <p>Clinic branding</p>
-                      </li>
-                      <li className={styles.partnerItem}>
-                        <span className={styles.partnerIndex}>03</span>
-                        <p>Patient handoff</p>
-                      </li>
-                    </ol>
+                <MarketingReveal.Item delay={0.07}>
+                  <div className={styles.closingCtaAction}>
+                    <a
+                      className={`${styles.button} ${styles.primary}`}
+                      href={demoHref}
+                    >
+                      View the clinic demo
+                    </a>
                   </div>
                 </MarketingReveal.Item>
               </div>
@@ -467,9 +445,6 @@ export default async function MarketingHomePage() {
               </Link>
               <Link className={styles.textLink} href="#preview">
                 Clinic preview
-              </Link>
-              <Link className={styles.textLink} href="#early-access">
-                Early access
               </Link>
               <a className={styles.textLink} href={staffHref}>
                 Staff sign in

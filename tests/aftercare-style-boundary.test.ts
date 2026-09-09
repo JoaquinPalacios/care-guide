@@ -174,8 +174,7 @@ describe("aftercare style boundary", () => {
     expect(tokens).toContain("--mk-secondary-fill-active");
     expect(styles).toContain("phoneFrame");
     expect(styles).toContain(".secondary::before");
-    expect(styles).toContain("earlyAccessLayout");
-    expect(styles).toContain("partnerList");
+    expect(styles).toContain("closingCta");
     expect(styles).toContain("footerSeparator");
     expect(styles).toContain("at 82% 100%");
     expect(styles).toContain("at 82% 0%");
@@ -260,7 +259,11 @@ describe("aftercare style boundary", () => {
     const allowedMarketingClient = new Set([
       "app/(marketing)/components/marketing-theme-control.tsx",
       "app/(marketing)/components/marketing-experience.tsx",
+      "app/(marketing)/components/marketing-reveal.tsx",
       "app/(marketing)/components/marketing-motion-features.ts",
+      "app/(marketing)/components/marketing-process.tsx",
+      "app/(marketing)/components/marketing-pillars.tsx",
+      "app/(marketing)/components/marketing-product-assembly.tsx",
     ]);
     const files = walk("app/(aftercare)").filter((path) =>
       /\.(ts|tsx|css)$/.test(path)
@@ -304,6 +307,18 @@ describe("aftercare style boundary", () => {
     expect(read("app/(marketing)/components/marketing-experience.tsx")).toMatch(
       /['"]use client['"]/
     );
+    expect(read("app/(marketing)/components/marketing-reveal.tsx")).toMatch(
+      /['"]use client['"]/
+    );
+    expect(read("app/(marketing)/components/marketing-reveal.tsx")).toContain(
+      "useInView"
+    );
+    expect(read("app/(marketing)/components/marketing-reveal.tsx")).toContain(
+      "once: true"
+    );
+    expect(
+      read("app/(marketing)/components/marketing-experience.tsx")
+    ).not.toContain("IntersectionObserver");
     expect(
       read("app/(marketing)/components/marketing-experience.tsx")
     ).not.toContain("IntersectionObserver");

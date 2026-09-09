@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
 import { marketingMotionBootstrapScript } from "@/lib/marketing/motion-bootstrap";
@@ -12,5 +14,17 @@ describe("marketing motion bootstrap", () => {
     expect(script).toContain("reduce");
     expect(script).not.toContain("opacity:0");
     expect(script).not.toContain("localStorage");
+  });
+
+  it("keeps pending reveals fail-open without a CSS animation that fights Motion", () => {
+    const css = readFileSync("app/(marketing)/marketing.css", "utf8");
+
+    expect(css).not.toContain("mk-fail-open");
+    expect(css).not.toContain("@keyframes");
+    expect(css).toContain("@media (scripting: none)");
+    expect(css).toContain(
+      'html[data-mk-motion="enhance"] .mkReveal[data-mk-pending]'
+    );
+    expect(css).toContain("prefers-reduced-motion: reduce");
   });
 });

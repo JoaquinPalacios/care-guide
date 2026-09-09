@@ -1,3 +1,8 @@
+"use client";
+
+import { MarketingRevealItem } from "@/app/(marketing)/components/marketing-reveal";
+import { cardRevealItemVariants } from "@/lib/marketing/reveal-variants";
+
 import styles from "../marketing.module.css";
 
 const PILLARS = [
@@ -21,73 +26,86 @@ const PILLARS = [
   },
 ] as const;
 
+const PILLAR_START = 0.15;
+const PILLAR_STAGGER = 0.08;
+
 export function MarketingPillars() {
   return (
     <div className={styles.pillarStack} data-mk-pillars="">
       <div className={styles.pillarGrid}>
-        {PILLARS.map((pillar) => (
-          <article
+        {PILLARS.map((pillar, index) => (
+          <MarketingRevealItem
             key={pillar.key}
-            className={styles.pillarCard}
-            data-mk-pillar=""
+            delay={PILLAR_START + index * PILLAR_STAGGER}
+            variants={cardRevealItemVariants}
+            className={styles.pillarRevealSlot}
           >
-            <PillarVisual kind={pillar.key} />
-            <h3>{pillar.title}</h3>
-            <p>{pillar.copy}</p>
-            <ul className={styles.pillarPoints}>
-              {pillar.points.map((point) => (
-                <li key={point}>{point}</li>
-              ))}
-            </ul>
-          </article>
+            <article className={styles.pillarCard} data-mk-pillar="">
+              <PillarVisual kind={pillar.key} />
+              <h3>{pillar.title}</h3>
+              <p>{pillar.copy}</p>
+              <ul className={styles.pillarPoints}>
+                {pillar.points.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+            </article>
+          </MarketingRevealItem>
         ))}
       </div>
-      <div className={styles.customStrip} data-mk-custom-strip="">
-        <div className={styles.customCopy}>
-          <h3>Controlled customisation</h3>
-          <p>
-            Fit the patient page to the clinic with controlled choices that keep
-            every guide consistent and readable.
-          </p>
-        </div>
-        <div className={styles.customGroup} aria-hidden="true">
-          <p className={styles.customLabel}>Brand</p>
-          <div className={styles.customSwatches}>
-            <span className={styles.customSwatchItem}>
-              <span className={`${styles.swatch} ${styles.swatchPrimary}`} />
-              Primary
-            </span>
-            <span className={styles.customSwatchItem}>
-              <span className={`${styles.swatch} ${styles.swatchAccent}`} />
-              Accent
-            </span>
+      <MarketingRevealItem
+        delay={PILLAR_START + PILLARS.length * PILLAR_STAGGER}
+        variants={cardRevealItemVariants}
+      >
+        <div className={styles.customStrip} data-mk-custom-strip="">
+          <div className={styles.customCopy}>
+            <h3>Controlled customisation</h3>
+            <p>
+              Fit the patient page to the clinic with controlled choices that
+              keep every guide consistent and readable.
+            </p>
+          </div>
+          <div className={styles.customGroup} aria-hidden="true">
+            <p className={styles.customLabel}>Brand</p>
+            <div className={styles.customSwatches}>
+              <span className={styles.customSwatchItem}>
+                <span className={`${styles.swatch} ${styles.swatchPrimary}`} />
+                Primary
+              </span>
+              <span className={styles.customSwatchItem}>
+                <span className={`${styles.swatch} ${styles.swatchAccent}`} />
+                Accent
+              </span>
+            </div>
+          </div>
+          <div className={styles.customGroup} aria-hidden="true">
+            <p className={styles.customLabel}>Corners</p>
+            <div className={styles.radiusRow}>
+              <span className={`${styles.radiusChip} ${styles.radiusSharp}`}>
+                Sharp
+              </span>
+              <span className={`${styles.radiusChip} ${styles.radiusMedium}`}>
+                Medium
+              </span>
+              <span className={`${styles.radiusChip} ${styles.radiusSoft}`}>
+                Soft
+              </span>
+            </div>
+          </div>
+          <div className={styles.customGroup} aria-hidden="true">
+            <p className={styles.customLabel}>Appearance</p>
+            <div className={styles.themeChips}>
+              <span className={styles.themeChip}>Light</span>
+              <span className={styles.themeChip}>Dark</span>
+              <span
+                className={`${styles.themeChip} ${styles.themeChipCurrent}`}
+              >
+                System
+              </span>
+            </div>
           </div>
         </div>
-        <div className={styles.customGroup} aria-hidden="true">
-          <p className={styles.customLabel}>Corners</p>
-          <div className={styles.radiusRow}>
-            <span className={`${styles.radiusChip} ${styles.radiusSharp}`}>
-              Sharp
-            </span>
-            <span className={`${styles.radiusChip} ${styles.radiusMedium}`}>
-              Medium
-            </span>
-            <span className={`${styles.radiusChip} ${styles.radiusSoft}`}>
-              Soft
-            </span>
-          </div>
-        </div>
-        <div className={styles.customGroup} aria-hidden="true">
-          <p className={styles.customLabel}>Appearance</p>
-          <div className={styles.themeChips}>
-            <span className={styles.themeChip}>Light</span>
-            <span className={styles.themeChip}>Dark</span>
-            <span className={`${styles.themeChip} ${styles.themeChipCurrent}`}>
-              System
-            </span>
-          </div>
-        </div>
-      </div>
+      </MarketingRevealItem>
     </div>
   );
 }

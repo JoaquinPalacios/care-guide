@@ -820,3 +820,44 @@ Source CSS: `marketing.css` 7,959 + `marketing.module.css` 33,868 = **41,827** v
 ### Tenant CSS / JS
 
 Tenant CSS source was not modified in 1F.15. Playwright still enforces ≤ 9,538 raw on tenant routes when the local database is reachable. No Motion on tenant. Staff still loads Tailwind.
+
+## After Phase 1F.16 (one-shot choreography)
+
+Measured 2026-09-09 against `cursor/aftercare-phase-1e-hardening` after Phase 1F.16. Production `next start` on port 4173. Next.js 16.3.4 / Turbopack. Marketing Motion island now includes section-specific reveal items (process / pillars / assembly are marketing Client Components). Tenant still has no Motion.
+
+### Marketing CSS
+
+Loaded on `http://localhost:4173/`:
+
+- `2c40otwjue16n.css` — marketing base (7,820 raw / 2,107 gzip / 1,874 Brotli)
+- `32up745po2vku.css` — `marketing.module.css` (34,888 raw / 6,266 gzip / 5,468 Brotli)
+
+| Metric         |  1F.15 |      1F.16 |   Delta |
+| -------------- | -----: | ---------: | ------: |
+| CSS raw        | 42,669 | **42,708** | **+39** |
+| CSS gzip -9    |  8,385 |  **8,373** | **−12** |
+| CSS Brotli q11 |  7,364 |  **7,342** | **−22** |
+| Tailwind       |     no |         no |       — |
+
+Source CSS: `marketing.css` 8,349 + `marketing.module.css` 33,440 = **41,789** vs 1F.15 **41,827** (**−38**). Fail-open keyframes and Early Access layout CSS were removed; compact closing CTA CSS was added. No Tailwind. No CSS-in-JS. **0 font bytes.**
+
+### Marketing JavaScript
+
+Loaded Motion-related chunks on the marketing homepage:
+
+| Chunk              | Role                                            |    Raw | gzip -9 | Brotli |
+| ------------------ | ----------------------------------------------- | -----: | ------: | -----: |
+| `0cu7wbjz9hbf3.js` | Marketing experience + section reveals          | 35,418 |   8,915 |  7,833 |
+| `290cfjrz3sdlx.js` | Motion runtime (`motion/react-m`, `LazyMotion`) | 39,965 |  13,751 | 12,392 |
+
+| Metric             |  1F.15 |      1F.16 |       Delta |
+| ------------------ | -----: | ---------: | ----------: |
+| Experience island  | 22,831 | **35,418** | **+12,587** |
+| Motion runtime     | 39,519 | **39,965** |    **+446** |
+| Motion-related raw | 62,350 | **75,383** | **+13,033** |
+
+Theme control is now a separate 12,219-byte chunk (`17qg50x_rufn5.js`), split out of the old combined experience island. Process / pillars / product-assembly Client Components account for the experience-island increase. `domAnimation` remains a lazy `LazyMotion` feature import and is not in the initial `load` capture.
+
+### Tenant CSS / JS
+
+Tenant CSS source was not modified in 1F.16. A demodental request returned 500 in this session because Postgres credentials failed; the error-page scripts still contained **no Motion**. Source boundary tests continue to forbid `from "motion"` under `app/(aftercare)`. Staff still loads Tailwind.

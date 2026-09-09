@@ -302,6 +302,10 @@ body {
     animation: none;
   }
 
+  html[data-mk-motion="enhance"] .mkReveal[data-mk-pending][data-mk-rail] {
+    transform: none;
+  }
+
   .mtcBtn,
   .mtcBtn::before,
   .mtcOption {
@@ -311,20 +315,31 @@ body {
 
 #how-it-works,
 #preview,
-#early-access {
+#see-it {
   scroll-margin-top: 5.25rem;
 }
 
 html[data-mk-motion="enhance"] .mkReveal[data-mk-pending] {
   opacity: 0;
-  transform: translateY(18px);
-  animation: mk-fail-open 0.01s linear 1.6s forwards;
+  transform: translateY(14px);
 }
 
-@keyframes mk-fail-open {
-  to {
-    opacity: 1;
-    transform: none;
+html[data-mk-motion="enhance"] .mkReveal[data-mk-pending][data-mk-rail] {
+  opacity: 1;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+html[data-mk-motion="enhance"] .mkReveal[data-mk-pending][data-mk-preview] {
+  opacity: 0;
+  transform: translateY(10px) scale(0.985);
+}
+
+@media (scripting: none) {
+  .mkReveal {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
   }
 }
 

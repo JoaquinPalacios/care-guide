@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  delayedRevealItemVariants,
   HERO_PREVIEW_VARIANTS,
   REVEAL_EASE,
   REVEAL_ITEM_DURATION,
@@ -13,15 +14,16 @@ import {
 } from "@/lib/marketing/reveal-variants";
 
 describe("marketing reveal variants", () => {
-  it("staggers section children by 70–100ms with a short ease-out", () => {
-    const visible = revealContainerVariants.visible;
-
+  it("keeps shared timing restrained and uses per-item delays for sections", () => {
     expect(REVEAL_STAGGER).toBeGreaterThanOrEqual(0.07);
     expect(REVEAL_STAGGER).toBeLessThanOrEqual(0.1);
-    expect(typeof visible.transition.delayChildren).toBe("function");
-    expect(REVEAL_ITEM_DURATION).toBeGreaterThanOrEqual(0.5);
-    expect(REVEAL_ITEM_DURATION).toBeLessThanOrEqual(0.65);
+    expect(revealContainerVariants.visible).toEqual({});
+    expect(REVEAL_ITEM_DURATION).toBeGreaterThanOrEqual(0.48);
+    expect(REVEAL_ITEM_DURATION).toBeLessThanOrEqual(0.58);
     expect(REVEAL_EASE).toBe("easeOut");
+    const delayed = delayedRevealItemVariants.visible(0.07);
+    expect(delayed.transition.delay).toBe(0.07);
+    expect(delayed.transition.duration).toBe(REVEAL_ITEM_DURATION);
   });
 
   it("moves items a small distance rather than a theatrical drop", () => {
@@ -50,16 +52,15 @@ describe("marketing reveal variants", () => {
 
   it("triggers once, before the section is fully centered", () => {
     expect(REVEAL_VIEWPORT.once).toBe(true);
-    expect(REVEAL_VIEWPORT.amount).toBeLessThanOrEqual(0.35);
+    expect(REVEAL_VIEWPORT.amount).toBeGreaterThanOrEqual(0.15);
+    expect(REVEAL_VIEWPORT.amount).toBeLessThanOrEqual(0.25);
     expect(REVEAL_VIEWPORT.margin).toMatch(/-\d+%/);
   });
 
-  it("keeps the hero stagger in the same family as later sections", () => {
+  it("keeps the hero stagger while later sections orchestrate with explicit delays", () => {
     expect(typeof heroContainerVariants.visible.transition.delayChildren).toBe(
       "function"
     );
-    expect(
-      typeof revealContainerVariants.visible.transition.delayChildren
-    ).toBe("function");
+    expect(revealContainerVariants.visible).toEqual({});
   });
 });

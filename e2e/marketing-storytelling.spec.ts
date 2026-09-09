@@ -839,33 +839,31 @@ test.describe("Phase 1F.11 story clarity", () => {
     });
   });
 
-  test("early access uses a split layout and demo-only prospect CTA", async ({
-    page,
-  }) => {
+  test("closing CTA is compact, timeless, and demo-only", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(marketingUrl("/"), { waitUntil: "load" });
     await showStaticScheme(page, "light");
     await waitForHeroReveal(page);
-    await scrollSectionIntoView(page, "#early-access");
+    await scrollSectionIntoView(page, "#see-it");
 
-    const section = page.locator("#early-access");
+    const section = page.locator("#see-it");
     await expect(
       section.getByRole("heading", {
-        name: "Talk to us about a design-partner clinic",
+        name: "See the patient experience for yourself.",
       })
     ).toBeVisible();
-    await expect(section.getByText("Early access")).toBeVisible();
-    await expect(section.getByText("Design partner")).toBeVisible();
+    await expect(section.getByText("See it in practice")).toBeVisible();
     await expect(
-      section.getByRole("heading", { name: "What we'll validate together" })
+      section.getByText("Open the Riverside Dental Demo")
     ).toBeVisible();
-    await expect(section.getByText("Guide setup")).toBeVisible();
-    await expect(section.getByText("Clinic branding")).toBeVisible();
-    await expect(section.getByText("Patient handoff")).toBeVisible();
     await expect(
       section.getByRole("link", { name: "View the clinic demo" })
     ).toBeVisible();
     await waitForSectionReveal(section);
+    await expect(page.getByText("Early access")).toHaveCount(0);
+    await expect(page.getByText("Design partner")).toHaveCount(0);
+    await expect(page.getByText("early development")).toHaveCount(0);
+    await expect(page.locator("#early-access")).toHaveCount(0);
     await expect(
       section.getByRole("link", { name: "Open staff sign in" })
     ).toHaveCount(0);
@@ -875,7 +873,6 @@ test.describe("Phase 1F.11 story clarity", () => {
     await expect(
       section.getByRole("link", { name: "Request access" })
     ).toHaveCount(0);
-    await expect(section.getByText("operator admin")).toHaveCount(0);
 
     const headerStaff = page
       .getByRole("navigation", { name: "Marketing" })
@@ -885,67 +882,68 @@ test.describe("Phase 1F.11 story clarity", () => {
       .getByRole("link", { name: "Staff sign in" });
     await expect(headerStaff).toBeVisible();
     await expect(footerStaff).toBeVisible();
+    await expect(
+      page
+        .getByRole("navigation", { name: "Marketing" })
+        .getByRole("link", { name: "Early access" })
+    ).toHaveCount(0);
+    await expect(
+      page
+        .getByRole("navigation", { name: "Footer" })
+        .getByRole("link", { name: "Early access" })
+    ).toHaveCount(0);
 
     const desktopLayout = await section.evaluate((root) => {
-      const layout = root.querySelector('[class*="earlyAccessLayout"]');
-      const primary = root.querySelector('[class*="earlyAccessPrimary"]');
-      const partner = root.querySelector('[class*="earlyAccessPartner"]');
+      const layout = root.querySelector('[class*="closingCta"]');
+      const copy = root.querySelector('[class*="closingCtaCopy"]');
+      const action = root.querySelector('[class*="closingCtaAction"]');
       if (
         !(layout instanceof HTMLElement) ||
-        !(primary instanceof HTMLElement) ||
-        !(partner instanceof HTMLElement)
+        !(copy instanceof HTMLElement) ||
+        !(action instanceof HTMLElement)
       ) {
         return null;
       }
       const layoutBox = layout.getBoundingClientRect();
-      const primaryBox = primary.getBoundingClientRect();
-      const partnerBox = partner.getBoundingClientRect();
+      const copyBox = copy.getBoundingClientRect();
+      const actionBox = action.getBoundingClientRect();
       return {
-        sideBySide: partnerBox.left > primaryBox.right - 24,
-        primaryShare: primaryBox.width / layoutBox.width,
-        partnerShare: partnerBox.width / layoutBox.width,
-        stacked: partnerBox.top > primaryBox.bottom - 8,
-        paddingTop: Math.round(
-          Number.parseFloat(getComputedStyle(root).paddingTop)
-        ),
+        sideBySide: actionBox.left > copyBox.right - 48,
+        copyShare: copyBox.width / layoutBox.width,
+        stacked: actionBox.top > copyBox.bottom - 8,
+        height: Math.round(layoutBox.height),
       };
     });
     expect(desktopLayout).not.toBeNull();
     expect(desktopLayout!.sideBySide).toBe(true);
     expect(desktopLayout!.stacked).toBe(false);
-    expect(desktopLayout!.primaryShare).toBeGreaterThan(0.5);
-    expect(desktopLayout!.primaryShare).toBeLessThan(0.68);
-    expect(desktopLayout!.partnerShare).toBeGreaterThan(0.28);
-    expect(desktopLayout!.partnerShare).toBeLessThan(0.5);
-    expect(desktopLayout!.paddingTop).toBeGreaterThanOrEqual(96);
+    expect(desktopLayout!.copyShare).toBeGreaterThan(0.45);
+    expect(desktopLayout!.height).toBeLessThan(360);
 
     await section.screenshot({
-      path: "test-results/artifacts/phase-1f13-early-access-1440-light.png",
+      path: "test-results/artifacts/phase-1f16-closing-cta-1440-light.png",
     });
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
     await section.screenshot({
-      path: "test-results/artifacts/phase-1f13-early-access-1440-dark.png",
+      path: "test-results/artifacts/phase-1f16-closing-cta-1440-dark.png",
     });
 
     await page.setViewportSize({ width: 390, height: 844 });
     await showStaticScheme(page, "light");
-    await scrollSectionIntoView(page, "#early-access");
+    await scrollSectionIntoView(page, "#see-it");
     await waitForSectionReveal(section);
     const mobileLayout = await section.evaluate((root) => {
-      const primary = root.querySelector('[class*="earlyAccessPrimary"]');
-      const partner = root.querySelector('[class*="earlyAccessPartner"]');
-      if (
-        !(primary instanceof HTMLElement) ||
-        !(partner instanceof HTMLElement)
-      ) {
+      const copy = root.querySelector('[class*="closingCtaCopy"]');
+      const action = root.querySelector('[class*="closingCtaAction"]');
+      if (!(copy instanceof HTMLElement) || !(action instanceof HTMLElement)) {
         return null;
       }
-      const primaryBox = primary.getBoundingClientRect();
-      const partnerBox = partner.getBoundingClientRect();
+      const copyBox = copy.getBoundingClientRect();
+      const actionBox = action.getBoundingClientRect();
       return {
-        stacked: partnerBox.top >= primaryBox.bottom - 2,
-        sideBySide: partnerBox.left > primaryBox.right - 8,
+        stacked: actionBox.top >= copyBox.bottom - 8,
+        sideBySide: actionBox.left > copyBox.right - 8,
       };
     });
     expect(mobileLayout).not.toBeNull();
@@ -963,18 +961,12 @@ test.describe("Phase 1F.11 story clarity", () => {
     expect(mobilePadding.paddingBottom).toBeLessThanOrEqual(48);
     await expectNoHorizontalOverflow(page);
     await section.screenshot({
-      path: "test-results/artifacts/phase-1f13-early-access-390-light.png",
-    });
-    await section.screenshot({
-      path: "test-results/artifacts/phase-1f15-early-access-390-light.png",
+      path: "test-results/artifacts/phase-1f16-closing-cta-390-light.png",
     });
     await showStaticScheme(page, "dark");
     await waitForSectionReveal(section);
     await section.screenshot({
-      path: "test-results/artifacts/phase-1f13-early-access-390-dark.png",
-    });
-    await section.screenshot({
-      path: "test-results/artifacts/phase-1f15-early-access-390-dark.png",
+      path: "test-results/artifacts/phase-1f16-closing-cta-390-dark.png",
     });
   });
 
@@ -985,7 +977,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     await page.goto(marketingUrl("/"), { waitUntil: "load" });
     await showStaticScheme(page, "light");
     await waitForHeroReveal(page);
-    await scrollSectionIntoView(page, "#early-access");
+    await scrollSectionIntoView(page, "#see-it");
 
     const lightClosing = await page.evaluate(() => {
       const closing = document.querySelector('[data-mk-chapter="closing"]');
@@ -1096,7 +1088,7 @@ test.describe("Phase 1F.11 story clarity", () => {
 
     await page.setViewportSize({ width: 390, height: 844 });
     await showStaticScheme(page, "light");
-    await scrollSectionIntoView(page, "#early-access");
+    await scrollSectionIntoView(page, "#see-it");
     await expectNoHorizontalOverflow(page);
     await page.locator("footer").screenshot({
       path: "test-results/artifacts/phase-1f13-closing-390-light.png",
@@ -1158,7 +1150,7 @@ test.describe("Phase 1F.11 story clarity", () => {
 
     const footerLink = page
       .getByRole("navigation", { name: "Footer" })
-      .getByRole("link", { name: "Early access" });
+      .getByRole("link", { name: "Clinic preview" });
     await footerLink.scrollIntoViewIfNeeded();
     const footerAfter = await footerLink.evaluate((element) => {
       const after = getComputedStyle(element, "::after");
@@ -1930,7 +1922,7 @@ test.describe("Phase 1F.11 story clarity", () => {
         await waitForHeroReveal(page);
         await page.locator("#how-it-works").scrollIntoViewIfNeeded();
         await expectNoSeriousAxeViolations(page, {
-          exclude: "[data-mk-pending]",
+          exclude: ["[data-mk-pending]", "[aria-hidden='true']"],
         });
         if (viewport.width === 1440) {
           await page
@@ -1940,7 +1932,7 @@ test.describe("Phase 1F.11 story clarity", () => {
             page.getByRole("menu", { name: "Colour theme" })
           ).toBeVisible();
           await expectNoSeriousAxeViolations(page, {
-            exclude: "[data-mk-pending]",
+            exclude: ["[data-mk-pending]", "[aria-hidden='true']"],
           });
           await page.keyboard.press("Escape");
         }
@@ -2010,18 +2002,95 @@ test.describe("Phase 1F.11 story clarity", () => {
         path: `test-results/artifacts/phase-1f15-brand-360-${scheme}.png`,
       });
 
-      await scrollSectionIntoView(page, "#early-access");
-      await waitForSectionReveal(page.locator("#early-access"));
+      await scrollSectionIntoView(page, "#see-it");
+      await waitForSectionReveal(page.locator("#see-it"));
       const paddingTop = await page
-        .locator("#early-access")
+        .locator("#see-it")
         .evaluate((root) =>
           Math.round(Number.parseFloat(getComputedStyle(root).paddingTop))
         );
       expect(paddingTop).toBe(64);
-      await page.locator("#early-access").screenshot({
-        path: `test-results/artifacts/phase-1f15-early-access-360-${scheme}.png`,
+      await page.locator("#see-it").screenshot({
+        path: `test-results/artifacts/phase-1f16-closing-cta-360-${scheme}.png`,
       });
       await expectNoHorizontalOverflow(page);
     }
+  });
+
+  test("sections animate once and stay visible after scrolling away", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+    await waitForHeroReveal(page);
+
+    const samples = [
+      '[aria-labelledby="problem-heading"]',
+      "#how-it-works",
+      '[aria-labelledby="why-heading"]',
+    ] as const;
+
+    for (const selector of samples) {
+      await scrollSectionIntoView(page, selector);
+      const section = page.locator(selector);
+      await waitForSectionReveal(section);
+      await expect(section.locator("[data-mk-section]")).toHaveAttribute(
+        "data-mk-entered",
+        ""
+      );
+
+      await page.evaluate(() => {
+        window.scrollTo({ top: 0, behavior: "instant" });
+      });
+      await expect(section.locator("[data-mk-section]")).toHaveAttribute(
+        "data-mk-entered",
+        ""
+      );
+
+      await scrollSectionIntoView(page, selector);
+      const afterReturn = await section.evaluate((root) => {
+        const reveals = [...root.querySelectorAll<HTMLElement>(".mkReveal")];
+        return {
+          entered: root
+            .querySelector("[data-mk-section]")
+            ?.hasAttribute("data-mk-entered"),
+          visible:
+            reveals.length > 0 &&
+            reveals.every(
+              (node) =>
+                getComputedStyle(node).opacity === "1" &&
+                !node.hasAttribute("data-mk-pending")
+            ),
+        };
+      });
+      expect(afterReturn.entered).toBe(true);
+      expect(afterReturn.visible).toBe(true);
+    }
+  });
+
+  test("reduced motion shows section content immediately without waiting", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "light" });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showStaticScheme(page, "light");
+
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-mk-motion",
+      "reduce"
+    );
+    const hiddenPending = await page.evaluate(() => {
+      return [...document.querySelectorAll<HTMLElement>(".mkReveal")].filter(
+        (node) => getComputedStyle(node).opacity === "0"
+      ).length;
+    });
+    expect(hiddenPending).toBe(0);
+    await expect(
+      page.getByRole("heading", {
+        name: "From approved guidance to a page patients keep",
+      })
+    ).toBeVisible();
   });
 });

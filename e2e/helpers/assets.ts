@@ -121,6 +121,7 @@ export function motionLibraryJs(
       ) ||
       body.includes("staggerChildren") ||
       body.includes("whileInView") ||
+      body.includes("useInView") ||
       body.includes("LazyMotion") ||
       body.includes("data-mk-pending") ||
       body.includes("domAnimation")
