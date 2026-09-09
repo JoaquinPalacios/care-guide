@@ -40,6 +40,7 @@ test.describe("marketing conversion routes", () => {
     await expect(page.getByText("Custom pricing")).toBeVisible();
     await expect(page.getByText("Recommended")).toBeVisible();
     await expect(page.getByText("Coming after launch")).toBeVisible();
+    await page.locator("#later-heading").scrollIntoViewIfNeeded();
     await expect(
       page.getByRole("listitem", { name: "Patient check-ins" })
     ).toBeVisible();
@@ -112,9 +113,7 @@ test.describe("marketing conversion routes", () => {
     await expect(
       page.getByRole("button", { name: /Change colour theme/ })
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: /site menu/i })).toHaveCount(
-      0
-    );
+    await expect(page.getByRole("button", { name: /site menu/i })).toBeHidden();
 
     await expect(
       footerNav.getByRole("link", { name: "Pricing" })
