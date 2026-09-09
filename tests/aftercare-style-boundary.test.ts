@@ -316,6 +316,12 @@ describe("aftercare style boundary", () => {
     expect(read("app/(marketing)/components/marketing-reveal.tsx")).toContain(
       "once: true"
     );
+    expect(read("app/(marketing)/components/marketing-reveal.tsx")).toContain(
+      "MARKETING_REVEAL_VIEWPORT"
+    );
+    expect(read("app/(marketing)/components/marketing-reveal.tsx")).toContain(
+      "MarketingRevealCard"
+    );
     expect(
       read("app/(marketing)/components/marketing-experience.tsx")
     ).not.toContain("IntersectionObserver");

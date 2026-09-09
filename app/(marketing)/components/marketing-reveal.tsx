@@ -5,20 +5,21 @@ import * as m from "motion/react-m";
 import { type ReactNode, useRef } from "react";
 
 import {
+  cardRevealDelay,
   cardRevealItemVariants,
   delayedRevealItemVariants,
   HERO_PREVIEW_VARIANTS,
   HERO_VIEWPORT,
   heroContainerVariants,
+  MARKETING_REVEAL_VIEWPORT,
   nodeRevealItemVariants,
   previewRevealVariants,
   railRevealVariants,
   revealContainerVariants,
   revealItemVariants,
-  REVEAL_VIEWPORT,
 } from "@/lib/marketing/reveal-variants";
 
-type RevealViewport = typeof REVEAL_VIEWPORT | typeof HERO_VIEWPORT;
+type RevealViewport = typeof MARKETING_REVEAL_VIEWPORT | typeof HERO_VIEWPORT;
 type RevealVariants =
   | typeof delayedRevealItemVariants
   | typeof revealItemVariants
@@ -42,7 +43,7 @@ function clearPending(node: HTMLElement | null, definition: unknown) {
 
 export function MarketingRevealGroup({
   children,
-  viewport = REVEAL_VIEWPORT,
+  viewport = MARKETING_REVEAL_VIEWPORT,
   variants = revealContainerVariants,
 }: {
   children: ReactNode;
@@ -118,6 +119,61 @@ export function MarketingRevealItem({
       variants={resolvedVariants}
       onAnimationComplete={(definition) => {
         clearPending(nodeRef.current, definition);
+      }}
+    >
+      {children}
+    </Tag>
+  );
+}
+
+export function MarketingRevealCard({
+  children,
+  index = 0,
+  variants = cardRevealItemVariants,
+  as = "div",
+  className,
+  rail = false,
+  connector = false,
+  processCard = false,
+  ariaHidden = false,
+}: {
+  children: ReactNode;
+  index?: number;
+  variants?: RevealVariants;
+  as?: keyof typeof MotionTag;
+  className?: string;
+  rail?: boolean;
+  connector?: boolean;
+  processCard?: boolean;
+  ariaHidden?: boolean;
+}) {
+  const reduced = useReducedMotion();
+  const ref = useRef<HTMLElement | null>(null);
+  const inView = useInView(ref, { ...MARKETING_REVEAL_VIEWPORT, once: true });
+  const motionOn = reduced === false;
+  const Tag = MotionTag[as];
+  const classes = ["mkReveal", className].filter(Boolean).join(" ");
+
+  return (
+    <Tag
+      ref={(node: HTMLElement | null) => {
+        ref.current = node;
+      }}
+      className={classes}
+      data-mk-card=""
+      data-mk-pending={motionOn ? "" : undefined}
+      data-mk-entered={inView ? "" : undefined}
+      data-mk-rail={rail ? "" : undefined}
+      data-mk-process-rail={rail ? "" : undefined}
+      data-mk-process-connector={connector ? "" : undefined}
+      data-mk-process-card={processCard ? "" : undefined}
+      aria-hidden={rail || connector || ariaHidden ? true : undefined}
+      initial={motionOn ? "hidden" : false}
+      animate={motionOn ? (inView ? "visible" : "hidden") : false}
+      custom={reduced === true ? 0 : cardRevealDelay(index)}
+      variants={variants}
+      onAnimationComplete={(definition) => {
+        clearPending(ref.current, definition);
       }}
     >
       {children}

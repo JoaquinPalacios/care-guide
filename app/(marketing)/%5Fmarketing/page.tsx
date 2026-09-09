@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import {
   MarketingExperience,
+  MarketingRevealCard,
   MarketingRevealGroup,
   MarketingRevealHero,
   MarketingRevealItem,
@@ -23,6 +24,7 @@ import { getRootDomain } from "@/lib/tenancy/root-domain";
 import styles from "../marketing.module.css";
 
 const MarketingReveal = {
+  Card: MarketingRevealCard,
   Group: MarketingRevealGroup,
   Hero: MarketingRevealHero,
   Item: MarketingRevealItem,
@@ -217,8 +219,8 @@ export default async function MarketingHomePage() {
 
         <div className={styles.marketingSoft} data-mk-chapter="soft">
           <section className={styles.band} aria-labelledby="problem-heading">
-            <MarketingReveal.Group>
-              <div className={styles.inner}>
+            <div className={styles.inner}>
+              <MarketingReveal.Group>
                 <MarketingReveal.Item delay={0}>
                   <p className={styles.eyebrow}>The problem</p>
                 </MarketingReveal.Item>
@@ -231,22 +233,22 @@ export default async function MarketingHomePage() {
                   </MarketingReveal.Item>
                   <ol className={styles.frictionList}>
                     {FRICTION.map((item, index) => (
-                      <MarketingReveal.Item
+                      <MarketingReveal.Card
                         key={item.index}
                         as="li"
-                        delay={0.15 + index * 0.065}
+                        index={index}
                         className={styles.frictionItem}
                       >
                         <span className={styles.frictionIndex}>
                           {item.index}
                         </span>
                         <p>{item.copy}</p>
-                      </MarketingReveal.Item>
+                      </MarketingReveal.Card>
                     ))}
                   </ol>
                 </div>
-              </div>
-            </MarketingReveal.Group>
+              </MarketingReveal.Group>
+            </div>
           </section>
 
           <section className={styles.band} aria-labelledby="product-heading">
@@ -281,8 +283,8 @@ export default async function MarketingHomePage() {
             className={styles.band}
             aria-labelledby="how-heading"
           >
-            <MarketingReveal.Group>
-              <div className={styles.inner}>
+            <div className={styles.inner}>
+              <MarketingReveal.Group>
                 <MarketingReveal.Item delay={0}>
                   <p className={styles.eyebrow}>How it works</p>
                 </MarketingReveal.Item>
@@ -291,14 +293,14 @@ export default async function MarketingHomePage() {
                     From approved guidance to a page patients keep
                   </h2>
                 </MarketingReveal.Item>
-                <MarketingProcess />
-              </div>
-            </MarketingReveal.Group>
+              </MarketingReveal.Group>
+              <MarketingProcess />
+            </div>
           </section>
 
           <section className={styles.band} aria-labelledby="why-heading">
-            <MarketingReveal.Group>
-              <div className={styles.inner}>
+            <div className={styles.inner}>
+              <MarketingReveal.Group>
                 <MarketingReveal.Item delay={0}>
                   <p className={styles.eyebrow}>Why clinics use it</p>
                 </MarketingReveal.Item>
@@ -307,16 +309,16 @@ export default async function MarketingHomePage() {
                     Clinic-first aftercare, built for rereading
                   </h2>
                 </MarketingReveal.Item>
-                <MarketingPillars />
-              </div>
-            </MarketingReveal.Group>
+              </MarketingReveal.Group>
+              <MarketingPillars />
+            </div>
           </section>
         </div>
 
         <div className={styles.marketingShowcase} data-mk-chapter="showcase">
           <section className={styles.band} aria-labelledby="brand-heading">
-            <MarketingReveal.Group>
-              <div className={styles.inner}>
+            <div className={styles.inner}>
+              <MarketingReveal.Group>
                 <MarketingReveal.Item delay={0}>
                   <p className={styles.eyebrow}>Brand flexibility</p>
                 </MarketingReveal.Item>
@@ -332,24 +334,24 @@ export default async function MarketingHomePage() {
                     read.
                   </p>
                 </MarketingReveal.Item>
-                <div className={styles.brandGrid}>
-                  {BRAND_CARDS.map((card, index) => (
-                    <MarketingReveal.Item
-                      key={card.key}
-                      delay={0.22 + index * 0.08}
-                      className={styles.brandRevealSlot}
+              </MarketingReveal.Group>
+              <div className={styles.brandGrid}>
+                {BRAND_CARDS.map((card, index) => (
+                  <MarketingReveal.Card
+                    key={card.key}
+                    index={index}
+                    className={styles.brandRevealSlot}
+                  >
+                    <article
+                      className={`${styles.brandCard} ${card.className}`}
                     >
-                      <article
-                        className={`${styles.brandCard} ${card.className}`}
-                      >
-                        <h3>{card.title}</h3>
-                        <p>{card.copy}</p>
-                      </article>
-                    </MarketingReveal.Item>
-                  ))}
-                </div>
+                      <h3>{card.title}</h3>
+                      <p>{card.copy}</p>
+                    </article>
+                  </MarketingReveal.Card>
+                ))}
               </div>
-            </MarketingReveal.Group>
+            </div>
           </section>
 
           <section

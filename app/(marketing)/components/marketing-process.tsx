@@ -1,11 +1,7 @@
 "use client";
 
-import { MarketingRevealItem } from "@/app/(marketing)/components/marketing-reveal";
-import {
-  cardRevealItemVariants,
-  nodeRevealItemVariants,
-  railRevealVariants,
-} from "@/lib/marketing/reveal-variants";
+import { MarketingRevealCard } from "@/app/(marketing)/components/marketing-reveal";
+import { railRevealVariants } from "@/lib/marketing/reveal-variants";
 
 import styles from "../marketing.module.css";
 
@@ -40,17 +36,12 @@ const STEPS = [
   },
 ] as const;
 
-const CARD_START = 0.22;
-const CARD_STAGGER = 0.08;
-const CONNECTOR_OFFSET = 0.04;
-const NODE_START = 0.16;
-
 export function MarketingProcess() {
   return (
     <div className={styles.processJourney} data-mk-process="">
-      <MarketingRevealItem
+      <MarketingRevealCard
         as="span"
-        delay={0.14}
+        index={0}
         variants={railRevealVariants}
         className={styles.processRail}
         rail
@@ -58,47 +49,38 @@ export function MarketingProcess() {
         <span className={styles.processRailMark} />
         <span className={styles.processRailMark} />
         <span className={styles.processRailMark} />
-      </MarketingRevealItem>
+      </MarketingRevealCard>
       <ol className={styles.processList}>
         {STEPS.map((step, index) => (
-          <li
+          <MarketingRevealCard
             key={step.node}
+            as="li"
+            index={index}
             className={styles.processStep}
-            data-mk-process-card=""
+            processCard
           >
-            <MarketingRevealItem
-              delay={NODE_START + index * CARD_STAGGER}
-              variants={nodeRevealItemVariants}
-              className={styles.processTrack}
-              ariaHidden
-            >
+            <div className={styles.processTrack} aria-hidden="true">
               <span className={styles.processNode}>{step.node}</span>
-            </MarketingRevealItem>
-            <MarketingRevealItem
-              delay={CARD_START + index * CARD_STAGGER}
-              variants={cardRevealItemVariants}
-              className={styles.processCard}
-            >
+            </div>
+            <div className={styles.processCard}>
               <div className={styles.processVisual}>
                 <ProcessVisual kind={step.visual} />
               </div>
               <span className={styles.processIndex}>{step.index}</span>
               <h3>{step.title}</h3>
               <p>{step.copy}</p>
-            </MarketingRevealItem>
+            </div>
             {index < STEPS.length - 1 ? (
-              <MarketingRevealItem
-                as="span"
-                delay={CARD_START + index * CARD_STAGGER + CONNECTOR_OFFSET}
-                variants={cardRevealItemVariants}
+              <span
                 className={styles.processConnector}
-                connector
+                data-mk-process-connector=""
+                aria-hidden="true"
               >
                 <span className={styles.processConnectorLine} />
                 <span className={styles.processConnectorArrow} />
-              </MarketingRevealItem>
+              </span>
             ) : null}
-          </li>
+          </MarketingRevealCard>
         ))}
       </ol>
     </div>

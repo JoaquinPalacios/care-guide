@@ -324,6 +324,10 @@ html[data-mk-motion="enhance"] .mkReveal[data-mk-pending] {
   transform: translateY(14px);
 }
 
+html[data-mk-motion="enhance"] .mkReveal[data-mk-pending][data-mk-card] {
+  transform: translateY(16px);
+}
+
 html[data-mk-motion="enhance"] .mkReveal[data-mk-pending][data-mk-rail] {
   opacity: 1;
   transform: scaleX(0);

@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-09 (Phase 1F.16 one-shot marketing choreography and simplified closing CTA)
+Last updated: 2026-09-09 (Phase 1F.10 viewport reveal timing and card-by-card marketing Motion)
 
 ---
 
@@ -23,32 +23,33 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 
 ## Phase status
 
-| Phase | Status                                                         |
-| ----- | -------------------------------------------------------------- |
-| 1A    | COMPLETE / APPROVED                                            |
-| 1B    | COMPLETE / APPROVED                                            |
-| 1B.5  | COMPLETE / APPROVED                                            |
-| 1C    | COMPLETE / APPROVED                                            |
-| 1D    | ABSORBED INTO PHASE 1C / NO SEPARATE IMPLEMENTATION            |
-| 1E    | COMPLETE — TECHNICALLY READY FOR LOCAL JOAQUÍN ACCEPTANCE      |
-| 1F    | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                      |
-| 1F.1  | COMPLETE — PREMIUM PRODUCT EXPERIENCE READY FOR REVIEW         |
-| 1F.2  | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                      |
-| 1F.3  | COMPLETE — VISUAL SIMPLIFICATION READY FOR JOAQUÍN REVIEW      |
-| 1F.4  | COMPLETE — MARKETING MOTION READY FOR JOAQUÍN REVIEW           |
-| 1F.5  | COMPLETE — HERO COMPOSITION READY FOR JOAQUÍN REVIEW           |
-| 1F.6  | COMPLETE — PREMIUM MOBILE HERO READY FOR JOAQUÍN REVIEW        |
-| 1F.7  | COMPLETE — HERO INTERACTION POLISH READY FOR JOAQUÍN REVIEW    |
-| 1F.8  | COMPLETE — PREMIUM HERO ATMOSPHERE READY FOR JOAQUÍN REVIEW    |
-| 1F.9  | COMPLETE — RESPONSIVE PRODUCT PREVIEW READY FOR JOAQUÍN REVIEW |
-| 1F.10 | COMPLETE — PREMIUM STORYTELLING READY FOR JOAQUÍN REVIEW       |
-| 1F.11 | COMPLETE — STORY CLARITY READY FOR JOAQUÍN REVIEW              |
-| 1F.12 | COMPLETE — DESIGN COHERENCE READY FOR JOAQUÍN REVIEW           |
-| 1F.13 | COMPLETE — CLOSING COMPOSITION READY FOR JOAQUÍN REVIEW        |
-| 1F.14 | COMPLETE — FINAL MARKETING REFINEMENT READY FOR JOAQUÍN REVIEW |
-| 1F.15 | COMPLETE — MOBILE STORYTELLING READY FOR JOAQUÍN REVIEW        |
-| 1F.16 | COMPLETE — MOTION CHOREOGRAPHY READY FOR JOAQUÍN REVIEW        |
-| 2+    | Not started                                                    |
+| Phase   | Status                                                         |
+| ------- | -------------------------------------------------------------- |
+| 1A      | COMPLETE / APPROVED                                            |
+| 1B      | COMPLETE / APPROVED                                            |
+| 1B.5    | COMPLETE / APPROVED                                            |
+| 1C      | COMPLETE / APPROVED                                            |
+| 1D      | ABSORBED INTO PHASE 1C / NO SEPARATE IMPLEMENTATION            |
+| 1E      | COMPLETE — TECHNICALLY READY FOR LOCAL JOAQUÍN ACCEPTANCE      |
+| 1F      | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                      |
+| 1F.1    | COMPLETE — PREMIUM PRODUCT EXPERIENCE READY FOR REVIEW         |
+| 1F.2    | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                      |
+| 1F.3    | COMPLETE — VISUAL SIMPLIFICATION READY FOR JOAQUÍN REVIEW      |
+| 1F.4    | COMPLETE — MARKETING MOTION READY FOR JOAQUÍN REVIEW           |
+| 1F.5    | COMPLETE — HERO COMPOSITION READY FOR JOAQUÍN REVIEW           |
+| 1F.6    | COMPLETE — PREMIUM MOBILE HERO READY FOR JOAQUÍN REVIEW        |
+| 1F.7    | COMPLETE — HERO INTERACTION POLISH READY FOR JOAQUÍN REVIEW    |
+| 1F.8    | COMPLETE — PREMIUM HERO ATMOSPHERE READY FOR JOAQUÍN REVIEW    |
+| 1F.9    | COMPLETE — RESPONSIVE PRODUCT PREVIEW READY FOR JOAQUÍN REVIEW |
+| 1F.10   | COMPLETE — PREMIUM STORYTELLING READY FOR JOAQUÍN REVIEW       |
+| 1F.11   | COMPLETE — STORY CLARITY READY FOR JOAQUÍN REVIEW              |
+| 1F.12   | COMPLETE — DESIGN COHERENCE READY FOR JOAQUÍN REVIEW           |
+| 1F.13   | COMPLETE — CLOSING COMPOSITION READY FOR JOAQUÍN REVIEW        |
+| 1F.14   | COMPLETE — FINAL MARKETING REFINEMENT READY FOR JOAQUÍN REVIEW |
+| 1F.15   | COMPLETE — MOBILE STORYTELLING READY FOR JOAQUÍN REVIEW        |
+| 1F.16   | COMPLETE — MOTION CHOREOGRAPHY READY FOR JOAQUÍN REVIEW        |
+| 1F.10vt | COMPLETE — VIEWPORT REVEAL TIMING READY FOR JOAQUÍN REVIEW     |
+| 2+      | Not started                                                    |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
 
@@ -501,6 +502,23 @@ The public Early Access / Design Partner section was removed because founder-led
 Public landing narrative: Header → Hero → Problem → Product → How It Works → Why Clinics Use It → Brand Flexibility → Clinic Preview → compact demo CTA → Footer.
 
 See [PERFORMANCE.md](../architecture/PERFORMANCE.md) for the 1F.16 bundle table.
+
+---
+
+## Phase 1F.10 reveal timing (implemented after 1F.16)
+
+Marketing entrance-timing refinement only. No Phase 2. No static UI redesign. Aftercare still does not depend on `ProcedureSession`. The original Phase 1F.10 storytelling section above is unchanged; this pass reuses the brief label for viewport/card choreography.
+
+| Area              | Behaviour                                                                                                                                                                                                                                |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Viewport          | Shared `MARKETING_REVEAL_VIEWPORT`: `once: true`, `margin: "9999px 0px -100px 0px"`. Bottom inset is **-100px** so copy/cards must travel ~100px into view. Large top margin lets a fast jump still resolve already-passed content.      |
+| Editorial groups  | `MarketingRevealGroup` still orchestrates eyebrow → heading → copy → CTA at 0 / 70 / 140 / 210ms. Duration remains 520ms tween `easeOut`.                                                                                                |
+| Cards             | `MarketingRevealCard` owns its own `useInView({ once: true })`. How it works steps, Why Clinics pillars + customisation strip, Brand Flexibility cards, and Problem friction items no longer inherit the section's hidden/visible state. |
+| Desktop vs mobile | No width branching. Stacked mobile cards enter one-by-one; a desktop row that enters together uses `70ms × index`, capped at 250ms.                                                                                                      |
+| Reduced motion    | Unchanged: bootstrap `reduce`, pending CSS skipped, content visible immediately.                                                                                                                                                         |
+| Hero / patient    | Hero viewport unchanged. No Motion on tenant patient routes.                                                                                                                                                                             |
+
+See [PERFORMANCE.md](../architecture/PERFORMANCE.md) for the reveal-timing bundle table.
 
 ---
 

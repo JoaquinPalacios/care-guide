@@ -861,3 +861,28 @@ Theme control is now a separate 12,219-byte chunk (`17qg50x_rufn5.js`), split ou
 ### Tenant CSS / JS
 
 Tenant CSS source was not modified in 1F.16. A demodental request returned 500 in this session because Postgres credentials failed; the error-page scripts still contained **no Motion**. Source boundary tests continue to forbid `from "motion"` under `app/(aftercare)`. Staff still loads Tailwind.
+
+## After Phase 1F.10 reveal timing (viewport + card-by-card)
+
+Measured 2026-09-09 against `cursor/aftercare-phase-1e-hardening` after the viewport/card reveal pass. Production `next start` on port 4173. Next.js 16.3.4 / Turbopack. No new dependency. Motion remains `motion@13.2.0`. No Motion on tenant.
+
+### Marketing JavaScript
+
+Loaded Motion-related chunks on the marketing homepage:
+
+| Chunk              | Role                                            |    Raw | gzip -9 | Brotli |
+| ------------------ | ----------------------------------------------- | -----: | ------: | -----: |
+| `3x1t_2e5thtrd.js` | Marketing experience + section/card reveals     | 35,865 |   9,112 |  7,985 |
+| `290cfjrz3sdlx.js` | Motion runtime (`motion/react-m`, `LazyMotion`) | 39,965 |  13,751 | 12,392 |
+
+| Metric             |  1F.16 |    1F.10vt |    Delta |
+| ------------------ | -----: | ---------: | -------: |
+| Experience island  | 35,418 | **35,865** | **+447** |
+| Motion runtime     | 39,965 | **39,965** |    **0** |
+| Motion-related raw | 75,383 | **75,830** | **+447** |
+
+The increase is the independent `MarketingRevealCard` observer, not a new library. `domAnimation` remains a lazy `LazyMotion` feature import.
+
+### Tenant CSS / JS
+
+Tenant source was not modified. Boundary tests still forbid `from "motion"` under `app/(aftercare)`.

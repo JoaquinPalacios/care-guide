@@ -1,7 +1,6 @@
 "use client";
 
-import { MarketingRevealItem } from "@/app/(marketing)/components/marketing-reveal";
-import { cardRevealItemVariants } from "@/lib/marketing/reveal-variants";
+import { MarketingRevealCard } from "@/app/(marketing)/components/marketing-reveal";
 
 import styles from "../marketing.module.css";
 
@@ -26,18 +25,14 @@ const PILLARS = [
   },
 ] as const;
 
-const PILLAR_START = 0.15;
-const PILLAR_STAGGER = 0.08;
-
 export function MarketingPillars() {
   return (
     <div className={styles.pillarStack} data-mk-pillars="">
       <div className={styles.pillarGrid}>
         {PILLARS.map((pillar, index) => (
-          <MarketingRevealItem
+          <MarketingRevealCard
             key={pillar.key}
-            delay={PILLAR_START + index * PILLAR_STAGGER}
-            variants={cardRevealItemVariants}
+            index={index}
             className={styles.pillarRevealSlot}
           >
             <article className={styles.pillarCard} data-mk-pillar="">
@@ -50,13 +45,10 @@ export function MarketingPillars() {
                 ))}
               </ul>
             </article>
-          </MarketingRevealItem>
+          </MarketingRevealCard>
         ))}
       </div>
-      <MarketingRevealItem
-        delay={PILLAR_START + PILLARS.length * PILLAR_STAGGER}
-        variants={cardRevealItemVariants}
-      >
+      <MarketingRevealCard index={PILLARS.length}>
         <div className={styles.customStrip} data-mk-custom-strip="">
           <div className={styles.customCopy}>
             <h3>Controlled customisation</h3>
@@ -105,7 +97,7 @@ export function MarketingPillars() {
             </div>
           </div>
         </div>
-      </MarketingRevealItem>
+      </MarketingRevealCard>
     </div>
   );
 }

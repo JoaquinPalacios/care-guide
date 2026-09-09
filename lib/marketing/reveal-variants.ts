@@ -1,17 +1,26 @@
 import { stagger } from "motion";
 
 export const REVEAL_Y = 14;
-export const REVEAL_Y_CARD = 12;
+export const REVEAL_Y_CARD = 16;
 export const REVEAL_Y_PREVIEW = 10;
 export const REVEAL_STAGGER = 0.085;
 export const REVEAL_ITEM_DURATION = 0.52;
 export const REVEAL_EASE = "easeOut" as const;
+export const EDITORIAL_REVEAL_STEP = 0.07;
+export const CARD_REVEAL_STAGGER = 0.07;
+export const CARD_REVEAL_STAGGER_MAX = 0.25;
+export const MARKETING_REVEAL_MARGIN = "9999px 0px -100px 0px";
 
-export const REVEAL_VIEWPORT = {
+export const MARKETING_REVEAL_VIEWPORT = {
   once: true,
-  amount: 0.18,
-  margin: "0px 0px -12% 0px",
+  margin: MARKETING_REVEAL_MARGIN,
 } as const;
+
+export const REVEAL_VIEWPORT = MARKETING_REVEAL_VIEWPORT;
+
+export function cardRevealDelay(index: number): number {
+  return Math.min(index * CARD_REVEAL_STAGGER, CARD_REVEAL_STAGGER_MAX);
+}
 
 export const HERO_VIEWPORT = {
   once: true,

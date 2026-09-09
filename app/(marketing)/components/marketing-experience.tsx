@@ -4,6 +4,7 @@ import { LazyMotion, MotionConfig } from "motion/react";
 import { type ReactNode } from "react";
 
 import {
+  MarketingRevealCard,
   MarketingRevealGroup,
   MarketingRevealHero,
   MarketingRevealItem,
@@ -19,6 +20,7 @@ const loadFeatures = () =>
     });
 
 export {
+  MarketingRevealCard,
   MarketingRevealGroup,
   MarketingRevealHero,
   MarketingRevealItem,

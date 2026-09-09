@@ -1,13 +1,21 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  cardRevealDelay,
+  cardRevealItemVariants,
+  CARD_REVEAL_STAGGER,
+  CARD_REVEAL_STAGGER_MAX,
   delayedRevealItemVariants,
+  EDITORIAL_REVEAL_STEP,
   HERO_PREVIEW_VARIANTS,
+  MARKETING_REVEAL_MARGIN,
+  MARKETING_REVEAL_VIEWPORT,
   REVEAL_EASE,
   REVEAL_ITEM_DURATION,
   REVEAL_STAGGER,
   REVEAL_VIEWPORT,
   REVEAL_Y,
+  REVEAL_Y_CARD,
   heroContainerVariants,
   revealContainerVariants,
   revealItemVariants,
@@ -17,9 +25,10 @@ describe("marketing reveal variants", () => {
   it("keeps shared timing restrained and uses per-item delays for sections", () => {
     expect(REVEAL_STAGGER).toBeGreaterThanOrEqual(0.07);
     expect(REVEAL_STAGGER).toBeLessThanOrEqual(0.1);
+    expect(EDITORIAL_REVEAL_STEP).toBe(0.07);
     expect(revealContainerVariants.visible).toEqual({});
-    expect(REVEAL_ITEM_DURATION).toBeGreaterThanOrEqual(0.48);
-    expect(REVEAL_ITEM_DURATION).toBeLessThanOrEqual(0.58);
+    expect(REVEAL_ITEM_DURATION).toBeGreaterThanOrEqual(0.45);
+    expect(REVEAL_ITEM_DURATION).toBeLessThanOrEqual(0.55);
     expect(REVEAL_EASE).toBe("easeOut");
     const delayed = delayedRevealItemVariants.visible(0.07);
     expect(delayed.transition.delay).toBe(0.07);
@@ -50,11 +59,25 @@ describe("marketing reveal variants", () => {
     expect(visible.transition.type).toBe("tween");
   });
 
-  it("triggers once, before the section is fully centered", () => {
-    expect(REVEAL_VIEWPORT.once).toBe(true);
-    expect(REVEAL_VIEWPORT.amount).toBeGreaterThanOrEqual(0.15);
-    expect(REVEAL_VIEWPORT.amount).toBeLessThanOrEqual(0.25);
-    expect(REVEAL_VIEWPORT.margin).toMatch(/-\d+%/);
+  it("triggers once, about 100px after the viewport bottom edge", () => {
+    expect(MARKETING_REVEAL_VIEWPORT).toBe(REVEAL_VIEWPORT);
+    expect(MARKETING_REVEAL_VIEWPORT.once).toBe(true);
+    expect(MARKETING_REVEAL_VIEWPORT.margin).toBe("9999px 0px -100px 0px");
+    expect(MARKETING_REVEAL_MARGIN).toBe("9999px 0px -100px 0px");
+    expect("amount" in MARKETING_REVEAL_VIEWPORT).toBe(false);
+  });
+
+  it("staggers independent cards without a long cascade", () => {
+    expect(CARD_REVEAL_STAGGER).toBeGreaterThanOrEqual(0.06);
+    expect(CARD_REVEAL_STAGGER).toBeLessThanOrEqual(0.08);
+    expect(cardRevealDelay(0)).toBe(0);
+    expect(cardRevealDelay(1)).toBe(CARD_REVEAL_STAGGER);
+    expect(cardRevealDelay(3)).toBeLessThanOrEqual(CARD_REVEAL_STAGGER_MAX);
+    expect(cardRevealDelay(8)).toBe(CARD_REVEAL_STAGGER_MAX);
+    expect(cardRevealItemVariants.hidden.transform).toBe(
+      `translateY(${REVEAL_Y_CARD}px)`
+    );
+    expect(REVEAL_Y_CARD).toBe(16);
   });
 
   it("keeps the hero stagger while later sections orchestrate with explicit delays", () => {

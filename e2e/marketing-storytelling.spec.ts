@@ -101,6 +101,55 @@ async function scrollSectionIntoView(
     .toBeGreaterThan(48);
 }
 
+async function placeTopFromViewportBottom(
+  page: Page,
+  selector: string,
+  fromBottom: number
+): Promise<void> {
+  await page.evaluate(
+    ({ target, fromBottom: offset }) => {
+      const element = document.querySelector(target);
+      if (!(element instanceof HTMLElement)) {
+        return;
+      }
+      const top = element.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: Math.max(0, top - (window.innerHeight - offset)),
+        behavior: "instant",
+      });
+    },
+    { target: selector, fromBottom }
+  );
+}
+
+async function waitForRevealedMotion(root: Locator): Promise<void> {
+  await expect
+    .poll(async () =>
+      root.evaluate((element) => {
+        if (
+          document.documentElement.getAttribute("data-mk-motion") !== "enhance"
+        ) {
+          return true;
+        }
+        const nodes = [
+          ...element.querySelectorAll<HTMLElement>(".mkReveal"),
+        ].filter((node) => {
+          const rect = node.getBoundingClientRect();
+          return rect.bottom > 80 && rect.top < window.innerHeight - 100;
+        });
+        return (
+          nodes.length > 0 &&
+          nodes.every(
+            (node) =>
+              getComputedStyle(node).opacity === "1" &&
+              !node.hasAttribute("data-mk-pending")
+          )
+        );
+      })
+    )
+    .toBe(true);
+}
+
 async function waitForSectionReveal(root: Locator): Promise<void> {
   await expect
     .poll(async () =>
@@ -110,7 +159,15 @@ async function waitForSectionReveal(root: Locator): Promise<void> {
         ) {
           return true;
         }
-        const reveals = [...element.querySelectorAll<HTMLElement>(".mkReveal")];
+        const section = element.querySelector("[data-mk-section]");
+        if (!section?.hasAttribute("data-mk-entered")) {
+          return false;
+        }
+        const reveals = [
+          ...section.querySelectorAll<HTMLElement>(
+            ".mkReveal:not([data-mk-card])"
+          ),
+        ];
         return (
           reveals.length > 0 &&
           reveals.every((node) => getComputedStyle(node).opacity === "1")
@@ -216,6 +273,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "light" });
     await page.goto(marketingUrl("/"), { waitUntil: "load" });
     await showStaticScheme(page, "light");
     await waitForHeroReveal(page);
@@ -223,6 +281,15 @@ test.describe("Phase 1F.11 story clarity", () => {
     const section = page.locator("#how-it-works");
     await scrollSectionIntoView(page, "#how-it-works");
     await waitForSectionReveal(section);
+    await waitForRevealedMotion(section);
+    await expect
+      .poll(async () => {
+        const railBox = await section
+          .locator("[data-mk-process-rail]")
+          .boundingBox();
+        return railBox?.width ?? 0;
+      })
+      .toBeGreaterThan(100);
     const steps = section.getByRole("listitem");
     await expect(steps).toHaveCount(4);
     await expect(section.locator("ol")).toHaveCount(1);
@@ -1921,8 +1988,13 @@ test.describe("Phase 1F.11 story clarity", () => {
         await showMarketingScheme(page, scheme);
         await waitForHeroReveal(page);
         await page.locator("#how-it-works").scrollIntoViewIfNeeded();
+        await waitForRevealedMotion(page.locator("#how-it-works"));
         await expectNoSeriousAxeViolations(page, {
-          exclude: ["[data-mk-pending]", "[aria-hidden='true']"],
+          exclude: [
+            "[data-mk-pending]",
+            "[data-mk-pending] *",
+            "[aria-hidden='true']",
+          ],
         });
         if (viewport.width === 1440) {
           await page
@@ -1932,7 +2004,11 @@ test.describe("Phase 1F.11 story clarity", () => {
             page.getByRole("menu", { name: "Colour theme" })
           ).toBeVisible();
           await expectNoSeriousAxeViolations(page, {
-            exclude: ["[data-mk-pending]", "[aria-hidden='true']"],
+            exclude: [
+              "[data-mk-pending]",
+              "[data-mk-pending] *",
+              "[aria-hidden='true']",
+            ],
           });
           await page.keyboard.press("Escape");
         }
@@ -2039,6 +2115,25 @@ test.describe("Phase 1F.11 story clarity", () => {
         "data-mk-entered",
         ""
       );
+      await expect
+        .poll(async () =>
+          section.evaluate((root) => {
+            const cards = [
+              ...root.querySelectorAll<HTMLElement>(
+                "[data-mk-card][data-mk-entered]"
+              ),
+            ];
+            return (
+              cards.length > 0 &&
+              cards.every(
+                (node) =>
+                  getComputedStyle(node).opacity === "1" &&
+                  !node.hasAttribute("data-mk-pending")
+              )
+            );
+          })
+        )
+        .toBe(true);
 
       await page.evaluate(() => {
         window.scrollTo({ top: 0, behavior: "instant" });
@@ -2049,23 +2144,39 @@ test.describe("Phase 1F.11 story clarity", () => {
       );
 
       await scrollSectionIntoView(page, selector);
-      const afterReturn = await section.evaluate((root) => {
-        const reveals = [...root.querySelectorAll<HTMLElement>(".mkReveal")];
-        return {
-          entered: root
-            .querySelector("[data-mk-section]")
-            ?.hasAttribute("data-mk-entered"),
-          visible:
-            reveals.length > 0 &&
-            reveals.every(
-              (node) =>
-                getComputedStyle(node).opacity === "1" &&
-                !node.hasAttribute("data-mk-pending")
-            ),
-        };
-      });
-      expect(afterReturn.entered).toBe(true);
-      expect(afterReturn.visible).toBe(true);
+      await expect
+        .poll(async () =>
+          section.evaluate((root) => {
+            const heading = root.querySelector("[data-mk-section]");
+            const cards = [
+              ...root.querySelectorAll<HTMLElement>(
+                "[data-mk-card][data-mk-entered]"
+              ),
+            ];
+            const headingReveals = [
+              ...root.querySelectorAll<HTMLElement>(
+                "[data-mk-section] .mkReveal:not([data-mk-card])"
+              ),
+            ];
+            return Boolean(
+              heading?.hasAttribute("data-mk-entered") &&
+              headingReveals.length > 0 &&
+              headingReveals.every(
+                (node) =>
+                  getComputedStyle(node).opacity === "1" &&
+                  !node.hasAttribute("data-mk-pending")
+              ) &&
+              cards.length > 0 &&
+              cards.every(
+                (node) =>
+                  getComputedStyle(node).opacity === "1" &&
+                  node.hasAttribute("data-mk-entered") &&
+                  !node.hasAttribute("data-mk-pending")
+              )
+            );
+          })
+        )
+        .toBe(true);
     }
   });
 
@@ -2093,4 +2204,118 @@ test.describe("Phase 1F.11 story clarity", () => {
       })
     ).toBeVisible();
   });
+
+  test("section copy waits until it is about 100px into view", async ({
+    page,
+  }) => {
+    for (const viewport of [
+      { width: 1440, height: 900 },
+      { width: 1280, height: 800 },
+    ] as const) {
+      await page.setViewportSize(viewport);
+      await page.goto(marketingUrl("/"), { waitUntil: "load" });
+      await showMarketingScheme(page, "light");
+      await waitForHeroReveal(page);
+
+      const headingGroup = page.locator("#how-it-works [data-mk-section]");
+      await placeTopFromViewportBottom(
+        page,
+        "#how-it-works [data-mk-section]",
+        40
+      );
+      await expect(headingGroup).not.toHaveAttribute("data-mk-entered", "");
+
+      await placeTopFromViewportBottom(
+        page,
+        "#how-it-works [data-mk-section]",
+        140
+      );
+      await expect(headingGroup).toHaveAttribute("data-mk-entered", "");
+      await expect(
+        page.getByRole("heading", {
+          name: "From approved guidance to a page patients keep",
+        })
+      ).toBeVisible();
+    }
+  });
+
+  test("desktop process cards share a row trigger with index stagger", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+    await waitForHeroReveal(page);
+
+    const cards = page.locator(
+      "#how-it-works [data-mk-process-card][data-mk-card]"
+    );
+    await placeTopFromViewportBottom(
+      page,
+      "#how-it-works [data-mk-process-card][data-mk-card]",
+      40
+    );
+    await expect(cards.nth(0)).not.toHaveAttribute("data-mk-entered", "");
+    await expect(cards.nth(3)).not.toHaveAttribute("data-mk-entered", "");
+
+    await placeTopFromViewportBottom(
+      page,
+      "#how-it-works [data-mk-process-card][data-mk-card]",
+      140
+    );
+    await expect(cards.nth(0)).toHaveAttribute("data-mk-entered", "");
+    await expect(cards.nth(3)).toHaveAttribute("data-mk-entered", "");
+  });
+
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 360, height: 800 },
+  ] as const) {
+    test(`mobile process cards reveal independently at ${viewport.width}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(viewport);
+      await page.goto(marketingUrl("/"), { waitUntil: "load" });
+      await showMarketingScheme(page, "light");
+      await waitForHeroReveal(page);
+
+      const cards = page.locator(
+        "#how-it-works [data-mk-process-card][data-mk-card]"
+      );
+      await expect(cards).toHaveCount(4);
+
+      await placeTopFromViewportBottom(
+        page,
+        "#how-it-works [data-mk-process-card][data-mk-card]",
+        40
+      );
+      await expect(cards.nth(0)).not.toHaveAttribute("data-mk-entered", "");
+      await expect(cards.nth(1)).not.toHaveAttribute("data-mk-entered", "");
+      await expect(cards.nth(2)).not.toHaveAttribute("data-mk-entered", "");
+
+      await placeTopFromViewportBottom(
+        page,
+        "#how-it-works [data-mk-process-card][data-mk-card]",
+        140
+      );
+      await expect(cards.nth(0)).toHaveAttribute("data-mk-entered", "");
+      await expect(cards.nth(1)).not.toHaveAttribute("data-mk-entered", "");
+      await expect(cards.nth(2)).not.toHaveAttribute("data-mk-entered", "");
+
+      await placeTopFromViewportBottom(
+        page,
+        "#how-it-works [data-mk-process-card][data-mk-card]:nth-of-type(2)",
+        140
+      );
+      await expect(cards.nth(1)).toHaveAttribute("data-mk-entered", "");
+      await expect(cards.nth(2)).not.toHaveAttribute("data-mk-entered", "");
+
+      await placeTopFromViewportBottom(
+        page,
+        "#how-it-works [data-mk-process-card][data-mk-card]:nth-of-type(3)",
+        140
+      );
+      await expect(cards.nth(2)).toHaveAttribute("data-mk-entered", "");
+    });
+  }
 });
