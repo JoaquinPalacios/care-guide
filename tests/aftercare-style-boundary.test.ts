@@ -165,7 +165,10 @@ describe("aftercare style boundary", () => {
     expect(tokens).toContain("clamp(6rem, 8vw, 8rem)");
     expect(styles).not.toContain("3.6rem");
     expect(styles).not.toContain("3.25rem");
-    expect(styles).toContain("a.navAnchor");
+    expect(styles).toContain("a.navRoute");
+    expect(tokens).toContain("--mk-heading-content-gap");
+    expect(tokens).toContain("--mk-eyebrow-heading-gap");
+    expect(tokens).toContain("--mk-heading-intro-gap");
     expect(styles).toContain("phoneStageCurrent");
     expect(styles).toContain("phoneHelp");
     expect(styles).toContain("color-scheme: light");
@@ -272,6 +275,7 @@ describe("aftercare style boundary", () => {
       "app/(marketing)/components/marketing-pillars.tsx",
       "app/(marketing)/components/marketing-product-assembly.tsx",
       "app/(marketing)/components/marketing-nav-menu.tsx",
+      "app/(marketing)/components/contact-form.tsx",
     ]);
     const files = walk("app/(aftercare)").filter((path) =>
       /\.(ts|tsx|css)$/.test(path)
@@ -353,6 +357,12 @@ describe("aftercare style boundary", () => {
     );
     expect(read("app/(marketing)/%5Fmarketing/page.tsx")).not.toMatch(
       /import \{[^}]*\bMarketingReveal\b[^}]*\} from/
+    );
+    expect(read("app/(marketing)/%5Fmarketing/contact/page.tsx")).not.toMatch(
+      /['"]use client['"]/
+    );
+    expect(read("app/(marketing)/components/contact-form.tsx")).toMatch(
+      /['"]use client['"]/
     );
   });
 });

@@ -37,8 +37,12 @@ export default defineConfig({
     stderr: "pipe",
     env: {
       ...process.env,
-      MARKETING_CONTACT_EMAIL:
-        process.env.MARKETING_CONTACT_EMAIL ?? "hello@example.test",
+      MARKETING_CONTACT_TO_EMAIL:
+        process.env.MARKETING_CONTACT_TO_EMAIL ?? "hello@example.test",
+      MARKETING_CONTACT_FROM_EMAIL:
+        process.env.MARKETING_CONTACT_FROM_EMAIL ?? "website@example.test",
+      MARKETING_CONTACT_MAILER:
+        process.env.MARKETING_CONTACT_MAILER ?? "memory",
     },
   },
   projects: [

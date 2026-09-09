@@ -1008,4 +1008,14 @@ Loaded on `/`, `/pricing`, and `/contact`:
 | `3ahnw7t54-ocv.js` | Motion experience + compact site menu      | 29,378 |   8,371 |  7,410 |
 | `17qg50x_rufn5.js` | Theme popover on `/pricing` and `/contact` | 12,219 |   4,802 |  4,215 |
 
-Pricing and contact do not add a second animation system or a form-handler chunk. **No Motion on tenant.** Tenant `/pricing` and `/contact` remain 404.
+Pricing and contact do not add a second animation system. Contact adds a narrow form island. **No Motion on tenant.** Tenant `/pricing` and `/contact` remain 404.
+
+## After marketing conversion polish
+
+Measured after calmer reveal constants, page heroes, heading spacing tokens, simplified nav, and the clinic enquiry form. Production `next start` / port 4173. Next.js 16.3.4 / Turbopack. Motion remains `motion@13.2.0`. Contact uses a Server Component page plus a narrow `ContactForm` client boundary and a server-only nodemailer adapter.
+
+Viewport thresholds are unchanged (mobile ~-80px, desktop ~-200px, tablet interpolated). Editorial reveal is **720ms / 110ms**. Cards are **650ms / 95ms**, cap **320ms**.
+
+Per-route CSS/JS numbers are captured by `e2e/marketing-conversion.spec.ts` (`marketing-conversion-performance.json`). Contact now includes a form chunk in addition to shared Motion + theme + site menu. No Tailwind. No second animation library. **No Motion on tenant.**
+
+See [MARKETING-CONTACT.md](MARKETING-CONTACT.md) for delivery configuration.

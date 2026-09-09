@@ -5,17 +5,17 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-09 (Marketing completion: platform `/pricing` and `/contact`)
+Last updated: 2026-09-09 (Marketing conversion polish: calmer motion, page heroes, contact form)
 
 ---
 
 ## Product direction vs current implementation
 
-|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                                                                                |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** through **1F.16 / reveal timing** + **Phase 1G interactive patient demo** + **Phase 1G.1 launch-scope cleanup** + **marketing completion** (`/`, `/pricing`, `/contact` on the root host). Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. Check-in is post-launch only — see [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md). |
-| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** through **1F.16 / reveal timing** + **Phase 1G interactive patient demo** + **Phase 1G.1 launch-scope cleanup** + **marketing completion** (`/`, `/pricing`, `/contact` on the root host) + **marketing conversion polish** (page heroes, simplified nav, clinic enquiry form). Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. Check-in is post-launch only — see [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md). |
+| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 Do not claim QR codes, operator aftercare admin, or analytics exist until they are built. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented. Phase 1E added Playwright + axe browser acceptance; it did not add product features.
 
@@ -52,6 +52,7 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 | 1G                   | COMPLETE — INTERACTIVE RECOVERY DEMO READY FOR JOAQUÍN REVIEW  |
 | 1G.1                 | COMPLETE — LAUNCH-SCOPE CLEANUP                                |
 | Marketing completion | COMPLETE — PRICING + CONTACT READY FOR JOAQUÍN REVIEW          |
+| Marketing polish     | COMPLETE — CONVERSION POLISH READY FOR JOAQUÍN REVIEW          |
 | 2+                   | Not started                                                    |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
@@ -539,7 +540,7 @@ Phase 1G.1 removed Check-in from the launch product. Check-ins remain documented
 | Timeline         | Existing stages with earlier / current / upcoming. Subtle content-column separators between stages. Continuous clinic-accent rail. Not clinical “completed”.                                    |
 | Print            | `/extraction/print` plus `@media print`. Same `GuideDocument` / composed sections as the web guide. Browser Print / Save as PDF. No PDF library. Not a patient-specific Care Plan.              |
 | Client island    | `PatientDemoExperience` (Today / Timeline) + existing `PatientThemeControl` + tiny `PrintTrigger`. Guide body stays Server Components.                                                          |
-| Marketing reveal | Responsive IO margin: mobile ~**-80px**, desktop/large ~**-200px**, tablet interpolated. Editorial ~620ms / 90ms stagger; cards ~570ms / 80ms (cap 280ms). cubic-bezier(.22, 1, .36, 1).        |
+| Marketing reveal | Responsive IO margin: mobile ~**-80px**, desktop/large ~**-200px**, tablet interpolated. Editorial ~720ms / 110ms stagger; cards ~650ms / 95ms (cap 320ms). cubic-bezier(.22, 1, .36, 1).       |
 | Attribution      | “Powered by Aftercare Guide” in a centred document-flow footer when `showCareGuideAttribution` is true.                                                                                         |
 | Performance      | Tenant CSS **16,204** raw (budget 16,384). Demo island **4,818** raw (−1,950 vs 1G). Theme control unchanged. No Motion on tenant. See [PERFORMANCE.md](../architecture/PERFORMANCE.md).        |
 
@@ -568,25 +569,42 @@ Launch-scope cleanup. No Phase 2. No persisted RecoveryPlan.
 
 Root-platform commercial pages. No billing integration. No lead database. No tenant sales UI.
 
-| Area            | Location / behaviour                                                                                                                                                                                                    |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Routes          | Apex `/`, `/pricing`, `/contact` rewrite to `/_marketing`, `/_marketing/pricing`, `/_marketing/contact`. Direct `/_marketing` stays 404.                                                                                |
-| Tenant / staff  | `demodental` `/pricing` and `/contact` 404. `app.` host is unchanged. Platform Pricing/Contact never render inside tenant chrome.                                                                                       |
-| Working prices  | Essential **A$79 / month**, Practice **A$149 / month** (Recommended), Group **Custom pricing**. Provisional AUD. No annual toggle. No published setup fee.                                                              |
-| Launch vs later | Active plan lists are launchable aftercare capabilities. Check-ins, connected recovery plans, messaging, and integrations sit in **Coming after launch** only. No Check-in price.                                       |
-| Contact         | Platform sales page. Mailto from server-only `MARKETING_CONTACT_EMAIL`. No form, Resend, CRM, or fake confirmation. Subject: `Aftercare Guide — clinic enquiry`.                                                        |
-| Navigation      | Desktop: How it works, Clinic preview, Pricing, Contact, Staff sign in, theme. Mobile: brand, Staff sign in, theme, compact accessible site menu for real routes. Footer matches real routes/anchors.                   |
-| Demo            | Homepage **View the clinic demo** still goes to the production tenant patient renderer (`demodental`). Closing CTA **Request a demo** goes to `/contact`.                                                               |
-| SEO             | `app/sitemap.ts` and `app/robots.ts` list `/`, `/pricing`, `/contact` only. No `/_marketing` or `/_sites`. Optional `CARE_GUIDE_METADATA_BASE`. SoftwareApplication JSON-LD without ratings, offers, or certifications. |
-| Performance     | Shared marketing CSS **49,801** raw on `/`, `/pricing`, `/contact`. Motion+menu island **29,378** raw. No Tailwind. No form JS. See [PERFORMANCE.md](../architecture/PERFORMANCE.md).                                   |
+| Area            | Location / behaviour                                                                                                                                                                                                                                                                                     |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Routes          | Apex `/`, `/pricing`, `/contact` rewrite to `/_marketing`, `/_marketing/pricing`, `/_marketing/contact`. Direct `/_marketing` stays 404.                                                                                                                                                                 |
+| Tenant / staff  | `demodental` `/pricing` and `/contact` 404. `app.` host is unchanged. Platform Pricing/Contact never render inside tenant chrome.                                                                                                                                                                        |
+| Working prices  | Essential **A$79 / month**, Practice **A$149 / month** (Recommended), Group **Custom pricing**. Provisional AUD. No annual toggle. No published setup fee.                                                                                                                                               |
+| Launch vs later | Active plan lists are launchable aftercare capabilities. Check-ins, connected recovery plans, messaging, and integrations sit in **Coming after launch** only. No Check-in price.                                                                                                                        |
+| Contact         | Platform conversion page: concise hero + clinic enquiry form. Server action → validated `ContactEnquiry` → `MarketingContactMailer` (SMTP or local `memory`). No fake success. Subject: `Aftercare Guide — clinic enquiry — <clinic>`. See [MARKETING-CONTACT.md](../architecture/MARKETING-CONTACT.md). |
+| Navigation      | Desktop: Pricing, Contact, Staff sign in, theme. Mobile: brand, Staff sign in, compact site menu (Pricing + Contact only), theme. Homepage How it works / Clinic preview stay on `/` and in the footer.                                                                                                  |
+| Spacing         | `--mk-eyebrow-heading-gap`, `--mk-heading-intro-gap`, `--mk-heading-content-gap`, `--mk-card-grid-gap`. Heading groups use `headingBlock` / `headingFollow`.                                                                                                                                             |
+| Heroes          | Homepage remains the largest product hero. Pricing/Contact use `MarketingPageHero` with related but distinct atmosphere and SVG edges.                                                                                                                                                                   |
+| Demo            | Homepage **View the clinic demo** still goes to the production tenant patient renderer (`demodental`). Closing CTA **Request a demo** goes to `/contact`.                                                                                                                                                |
+| SEO             | `app/sitemap.ts` and `app/robots.ts` list `/`, `/pricing`, `/contact` only. No `/_marketing` or `/_sites`. Optional `CARE_GUIDE_METADATA_BASE`. SoftwareApplication JSON-LD without ratings, offers, or certifications.                                                                                  |
+| Performance     | See [PERFORMANCE.md](../architecture/PERFORMANCE.md). Contact adds a narrow form island; Motion remains shared. No Tailwind.                                                                                                                                                                             |
 
 Local URLs:
 
 - `http://localhost:3000/` — product story
 - `http://localhost:3000/pricing` — working plans
-- `http://localhost:3000/contact` — clinic enquiry
+- `http://localhost:3000/contact` — clinic enquiry form
 - `http://demodental.localhost:3000/pricing` — 404
 - `http://demodental.localhost:3000/contact` — 404
+
+---
+
+## Marketing conversion polish (implemented)
+
+Calmer marketing reveals, inner-page heroes, heading/content spacing tokens, simplified persistent nav, and a real clinic enquiry form. No Phase 2. Tenant patient UX was not redesigned.
+
+| Area         | Behaviour                                                                                                                                                                                                                   |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Motion       | Same viewport thresholds (~-80px mobile, ~-200px desktop, tablet interpolated). Editorial **720ms / 110ms**. Cards **650ms / 95ms**, cap **320ms**. `y` 14px, once, cubic-bezier(.22, 1, .36, 1). Reduced motion unchanged. |
+| Pricing hero | Medium-depth atmospheric light, no phone mockup, shallower asymmetric luminous edge into plans.                                                                                                                             |
+| Contact hero | Quieter, smaller atmosphere, tapered off-centre arc into the form. Copy is eyebrow + H1 + short intro only.                                                                                                                 |
+| Nav          | Persistent nav is Pricing / Contact / Staff sign in / Theme. How it works and Clinic preview remain homepage sections and footer links.                                                                                     |
+| Form         | Full name, work email, practice name, locations (1 / 2–5 / 6+), optional phone and message. Honeypot + validation + throttle.                                                                                               |
+| Delivery     | SMTP via nodemailer, or `MARKETING_CONTACT_MAILER=memory` for local/E2E. Production still needs real credentials.                                                                                                           |
 
 ---
 
@@ -681,12 +699,13 @@ This temporarily means we do not have the same TypeScript-aware ESLint rule cove
 
 ## Documentation files
 
-| File                                  | Role                                                                            |
-| ------------------------------------- | ------------------------------------------------------------------------------- |
-| `docs/README.md`                      | Docs index                                                                      |
-| `docs/product/PRD.md`                 | PRD v1.0                                                                        |
-| `docs/product/WORKING-MEMORY.md`      | This file                                                                       |
-| `docs/product/POST-LAUNCH-ROADMAP.md` | Post-launch Check-ins, RecoveryPlan, templates, verticals                       |
-| `docs/adr/*.md`                       | Architecture decisions 0001–0015                                                |
-| `docs/architecture/PERFORMANCE.md`    | Patient CSS/JS measurement contract, Phase 1E budget, and 1F.4 Motion isolation |
-| `README.md`                           | Repo entry; direction vs implementation                                         |
+| File                                     | Role                                                                            |
+| ---------------------------------------- | ------------------------------------------------------------------------------- |
+| `docs/README.md`                         | Docs index                                                                      |
+| `docs/product/PRD.md`                    | PRD v1.0                                                                        |
+| `docs/product/WORKING-MEMORY.md`         | This file                                                                       |
+| `docs/product/POST-LAUNCH-ROADMAP.md`    | Post-launch Check-ins, RecoveryPlan, templates, verticals                       |
+| `docs/adr/*.md`                          | Architecture decisions 0001–0015                                                |
+| `docs/architecture/PERFORMANCE.md`       | Patient CSS/JS measurement contract, Phase 1E budget, and 1F.4 Motion isolation |
+| `docs/architecture/MARKETING-CONTACT.md` | Clinic enquiry form fields, SMTP env, and launch mailbox recommendation         |
+| `README.md`                              | Repo entry; direction vs implementation                                         |

@@ -13,11 +13,9 @@ import MarketingContactPage from "@/app/(marketing)/%5Fmarketing/contact/page";
 
 describe("marketing contact page", () => {
   const previousRoot = process.env.CARE_GUIDE_ROOT_DOMAIN;
-  const previousEmail = process.env.MARKETING_CONTACT_EMAIL;
 
   beforeEach(() => {
     process.env.CARE_GUIDE_ROOT_DOMAIN = "localhost";
-    process.env.MARKETING_CONTACT_EMAIL = "hello@example.test";
   });
 
   afterEach(() => {
@@ -26,41 +24,38 @@ describe("marketing contact page", () => {
     } else {
       process.env.CARE_GUIDE_ROOT_DOMAIN = previousRoot;
     }
-
-    if (previousEmail === undefined) {
-      delete process.env.MARKETING_CONTACT_EMAIL;
-    } else {
-      process.env.MARKETING_CONTACT_EMAIL = previousEmail;
-    }
   });
 
-  it("is a platform sales page with a mailto, not a fake form", async () => {
+  it("is a concise conversion page with a real enquiry form", async () => {
     const html = renderToStaticMarkup(await MarketingContactPage());
 
     expect(html.match(/<h1\b/g)).toHaveLength(1);
     expect(html).toContain("Bring your aftercare online without losing your");
-    expect(html).toContain("not Riverside Dental");
-    expect(html).toContain("http://demodental.localhost:3000/");
-    expect(html).toContain('href="/pricing"');
-    expect(html).toContain("mailto:hello@example.test?subject=");
-    expect(html).toContain("Aftercare%20Guide%20%E2%80%94%20clinic%20enquiry");
-    expect(html).toContain("Email us");
-    expect(html).not.toContain("<form");
-    expect(html).not.toContain('type="submit"');
-    expect(html).not.toContain("Thanks, we received");
+    expect(html).toContain('data-mk-page-hero="contact"');
+    expect(html).toContain("mkPageWaveContact");
+    expect(html).toContain("Send an enquiry");
+    expect(html).toContain('name="fullName"');
+    expect(html).toContain('name="workEmail"');
+    expect(html).toContain('name="clinicName"');
+    expect(html).toContain('name="locationCount"');
+    expect(html).toContain('name="phone"');
+    expect(html).toContain("Anything you&#x27;d like us to know?");
+    expect(html).toContain(
+      "Please don&#x27;t include patient or clinical information."
+    );
+    expect(html).toContain("Send enquiry");
+    expect(html).toContain('name="website"');
+    expect(html).toContain("optional");
+    expect(html).not.toContain("Who it's for");
+    expect(html).not.toContain("What happens next");
+    expect(html).not.toContain("What we'll set up");
+    expect(html).not.toContain("mailto:");
+    expect(html).not.toContain("Thanks — your enquiry has been sent.");
+    expect(html).not.toContain("patient date of birth");
+    expect(html).not.toContain("specialty");
+    expect(html).not.toContain("password");
     expect(html).not.toContain("/_marketing");
     expect(html).not.toContain("/_sites");
     expect(html).not.toContain("Call Riverside Dental Demo");
-  });
-
-  it("omits the mailto when no contact email is configured", async () => {
-    delete process.env.MARKETING_CONTACT_EMAIL;
-    const html = renderToStaticMarkup(await MarketingContactPage());
-
-    expect(html).not.toContain("mailto:");
-    expect(html).not.toContain("<form");
-    expect(html).toContain(
-      "does not currently publish a clinic enquiry address"
-    );
   });
 });

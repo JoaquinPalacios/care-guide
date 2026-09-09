@@ -49,7 +49,8 @@ test.describe("marketing conversion routes", () => {
     await expect(
       page.getByRole("link", { name: "Request a demo" }).first()
     ).toHaveAttribute("href", "/contact");
-    await expect(page.locator("form")).toHaveCount(0);
+    await expect(page.locator('[data-mk-page-hero="pricing"]')).toHaveCount(1);
+    await expect(page.locator(".mkPageWavePricing")).toHaveCount(1);
 
     const contact = await page.goto(marketingUrl("/contact"), {
       waitUntil: "load",
@@ -63,11 +64,27 @@ test.describe("marketing conversion routes", () => {
     await expect(
       page.getByRole("link", { name: "View the clinic demo" })
     ).toHaveAttribute("href", tenantUrl(DEMO_TENANT_SLUG, "/"));
+    await expect(page.getByRole("link", { name: "See pricing" })).toHaveCount(
+      0
+    );
+    await expect(page.locator('[data-mk-page-hero="contact"]')).toHaveCount(1);
+    await expect(page.locator(".mkPageWaveContact")).toHaveCount(1);
+    await expect(page.locator("form")).toHaveCount(1);
+    await expect(page.getByLabel("Full name")).toBeVisible();
+    await expect(page.getByLabel("Work email")).toBeVisible();
+    await expect(page.getByLabel("Practice / clinic name")).toBeVisible();
+    await expect(page.getByLabel("Number of locations")).toBeVisible();
+    await expect(page.getByLabel("Phone (optional)")).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "See pricing" })
-    ).toHaveAttribute("href", "/pricing");
-    await expect(page.locator("form")).toHaveCount(0);
-    await expect(page.getByText("Thanks, we received")).toHaveCount(0);
+      page.getByLabel("Anything you'd like us to know? (optional)")
+    ).toBeVisible();
+    await expect(
+      page.getByText("Please don't include patient or clinical information.")
+    ).toBeVisible();
+    await expect(page.getByText("Who it's for")).toHaveCount(0);
+    await expect(
+      page.getByText("Thanks — your enquiry has been sent.")
+    ).toHaveCount(0);
 
     const robots = await page.goto(marketingUrl("/robots.txt"), {
       waitUntil: "domcontentloaded",
@@ -98,17 +115,17 @@ test.describe("marketing conversion routes", () => {
     const footerNav = page.getByRole("navigation", { name: "Footer" });
 
     await expect(
-      headerNav.getByRole("link", { name: "How it works" })
-    ).toBeVisible();
-    await expect(
-      headerNav.getByRole("link", { name: "Clinic preview" })
-    ).toBeVisible();
-    await expect(
       headerNav.getByRole("link", { name: "Pricing" })
     ).toBeVisible();
     await expect(
       headerNav.getByRole("link", { name: "Contact" })
     ).toBeVisible();
+    await expect(
+      headerNav.getByRole("link", { name: "How it works" })
+    ).toHaveCount(0);
+    await expect(
+      headerNav.getByRole("link", { name: "Clinic preview" })
+    ).toHaveCount(0);
     await expect(
       headerNav.getByRole("link", { name: "Staff sign in" })
     ).toBeVisible();
@@ -164,6 +181,12 @@ test.describe("marketing conversion routes", () => {
     await expect(
       headerNav.getByRole("link", { name: "Contact" })
     ).toBeVisible();
+    await expect(
+      headerNav.getByRole("link", { name: "How it works" })
+    ).toHaveCount(0);
+    await expect(
+      headerNav.getByRole("link", { name: "Clinic preview" })
+    ).toHaveCount(0);
 
     await headerNav.getByRole("link", { name: "Pricing" }).click();
     await expect(page).toHaveURL(marketingUrl("/pricing"));
@@ -195,10 +218,61 @@ test.describe("marketing conversion routes", () => {
 
     await page.getByRole("link", { name: "Request a demo" }).first().click();
     await expect(page).toHaveURL(marketingUrl("/contact"));
-    await page.getByRole("link", { name: "See pricing" }).click();
+    await page.getByRole("link", { name: "Pricing" }).first().click();
     await expect(page).toHaveURL(marketingUrl("/pricing"));
     await page.getByRole("link", { name: "Request a demo" }).first().click();
     await expect(page).toHaveURL(marketingUrl("/contact"));
+  });
+
+  test("contact form validates inline and delivers through the server mailer", async ({
+    page,
+  }) => {
+    await page.goto(marketingUrl("/contact"), { waitUntil: "load" });
+    await page.getByRole("button", { name: "Send enquiry" }).click();
+    await expect(page.getByText("Enter your full name.")).toBeVisible();
+    await expect(page.getByText("Enter your work email.")).toBeVisible();
+    await expect(
+      page.getByText("Enter your practice or clinic name.")
+    ).toBeVisible();
+    await expect(
+      page.getByText("Choose the number of locations.")
+    ).toBeVisible();
+    await expect(
+      page.getByText("Thanks — your enquiry has been sent.")
+    ).toHaveCount(0);
+    await page.screenshot({
+      path: "test-results/artifacts/contact-form-validation-1440.png",
+    });
+
+    await page.getByLabel("Full name").fill("Alex Rivera");
+    await page.getByLabel("Work email").fill("alex@clinic.example.test");
+    await page.getByLabel("Practice / clinic name").fill("Harbour Dental");
+    await page.getByLabel("Number of locations").selectOption("2-5");
+    await page.getByLabel("Phone (optional)").fill("0400 000 000");
+    await page
+      .getByLabel("Anything you'd like us to know? (optional)")
+      .fill("Two rooms, one hygiene chair.");
+    await page.getByRole("button", { name: "Send enquiry" }).click();
+
+    await expect(page.getByRole("status")).toContainText(
+      "Thanks — your enquiry has been sent."
+    );
+    await expect(
+      page.getByText("We'll reply to the email address you provided.")
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "Homepage" })).toHaveAttribute(
+      "href",
+      "/"
+    );
+    await expect(
+      page.getByRole("link", { name: "Clinic demo" })
+    ).toHaveAttribute("href", tenantUrl(DEMO_TENANT_SLUG, "/"));
+    await expect(
+      page.getByRole("link", { name: "Pricing" }).last()
+    ).toHaveAttribute("href", "/pricing");
+    await page.screenshot({
+      path: "test-results/artifacts/contact-form-success-1440.png",
+    });
   });
 
   test("tenant and staff hosts do not serve platform sales pages", async ({
@@ -271,16 +345,75 @@ test.describe("marketing conversion routes", () => {
       }
 
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(marketingUrl("/pricing"), { waitUntil: "load" });
-      await showMarketingScheme(page, colorScheme);
-      await page.evaluate(() => {
-        document.documentElement.setAttribute("data-mk-motion", "reduce");
-      });
-      await expectNoSeriousAxeViolations(page, {
-        exclude: ["[data-mk-pending]", "[data-mk-pending] *"],
-      });
+      for (const pathname of ["/pricing", "/contact"] as const) {
+        await page.goto(marketingUrl(pathname), { waitUntil: "load" });
+        await showMarketingScheme(page, colorScheme);
+        await page.evaluate(() => {
+          document.documentElement.setAttribute("data-mk-motion", "reduce");
+        });
+        await expectNoSeriousAxeViolations(page, {
+          exclude: ["[data-mk-pending]", "[data-mk-pending] *"],
+        });
+      }
     });
   }
+
+  test("captures conversion page artifacts", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+
+    for (const [pathname, name] of [
+      ["/pricing", "pricing"],
+      ["/contact", "contact"],
+    ] as const) {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.goto(marketingUrl(pathname), { waitUntil: "load" });
+      await showMarketingScheme(page, "light");
+      await page.screenshot({
+        path: `test-results/artifacts/${name}-1440-light.png`,
+        fullPage: true,
+      });
+      await page.locator("[data-mk-page-hero]").screenshot({
+        path: `test-results/artifacts/${name}-hero-1440-light.png`,
+      });
+      await showMarketingScheme(page, "dark");
+      await page.screenshot({
+        path: `test-results/artifacts/${name}-1440-dark.png`,
+        fullPage: true,
+      });
+
+      await page.setViewportSize({ width: 390, height: 844 });
+      await showMarketingScheme(page, "light");
+      await page.screenshot({
+        path: `test-results/artifacts/${name}-390-light.png`,
+        fullPage: true,
+      });
+      await showMarketingScheme(page, "dark");
+      await page.screenshot({
+        path: `test-results/artifacts/${name}-390-dark.png`,
+        fullPage: true,
+      });
+    }
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/pricing"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+    await page.locator('[aria-labelledby="plans-heading"]').screenshot({
+      path: "test-results/artifacts/pricing-plans-1440-light.png",
+    });
+    await page.locator('[aria-labelledby="onboarding-heading"]').screenshot({
+      path: "test-results/artifacts/pricing-onboarding-1440-light.png",
+    });
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await page.locator("header").screenshot({
+      path: "test-results/artifacts/marketing-nav-1440.png",
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator("header").screenshot({
+      path: "test-results/artifacts/marketing-nav-390.png",
+    });
+  });
 
   test("pricing and contact stay server-first without Tailwind", async ({
     page,

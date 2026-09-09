@@ -170,7 +170,7 @@ Platform Contact / Pricing live only on the **root marketing domain** (`/pricing
 - clinic phone
 - clinic urgent / emergency instructions
 
-Working published prices (provisional AUD): Essential A$79 / month, Practice A$149 / month, Group custom pricing. Check-ins remain unpriced post-launch premium/add-on work. Contact delivery is `MARKETING_CONTACT_EMAIL` mailto, not a lead form.
+Working published prices (provisional AUD): Essential A$79 / month, Practice A$149 / month, Group custom pricing. Check-ins remain unpriced post-launch premium/add-on work. Contact delivery is a server-side clinic enquiry form (`MARKETING_CONTACT_TO_EMAIL` / SMTP). See [MARKETING-CONTACT.md](../architecture/MARKETING-CONTACT.md).
 
 ---
 

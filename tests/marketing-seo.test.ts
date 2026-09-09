@@ -1,40 +1,43 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import {
-  getMarketingContactEmail,
-  marketingEnquiryMailto,
-} from "@/lib/marketing/contact-email";
+  getMarketingContactFromEmail,
+  getMarketingContactToEmail,
+} from "@/lib/marketing/contact-config";
 import { HOME_METADATA, PRICING_METADATA } from "@/lib/marketing/metadata";
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
 
-describe("marketing contact email", () => {
-  const previous = process.env.MARKETING_CONTACT_EMAIL;
+describe("marketing contact addresses", () => {
+  const previousTo = process.env.MARKETING_CONTACT_TO_EMAIL;
+  const previousFrom = process.env.MARKETING_CONTACT_FROM_EMAIL;
+  const previousLegacy = process.env.MARKETING_CONTACT_EMAIL;
 
   afterEach(() => {
-    if (previous === undefined) {
-      delete process.env.MARKETING_CONTACT_EMAIL;
-    } else {
-      process.env.MARKETING_CONTACT_EMAIL = previous;
-    }
+    restore("MARKETING_CONTACT_TO_EMAIL", previousTo);
+    restore("MARKETING_CONTACT_FROM_EMAIL", previousFrom);
+    restore("MARKETING_CONTACT_EMAIL", previousLegacy);
   });
 
-  it("accepts a configured address and builds a useful mailto", () => {
-    expect(getMarketingContactEmail("hello@example.test")).toBe(
-      "hello@example.test"
-    );
-    expect(marketingEnquiryMailto("hello@example.test")).toContain(
-      "mailto:hello@example.test?subject="
-    );
-    expect(marketingEnquiryMailto("hello@example.test")).toContain(
-      "clinic%20enquiry"
-    );
-  });
-
-  it("rejects missing or malformed values", () => {
-    expect(getMarketingContactEmail(undefined)).toBeNull();
-    expect(getMarketingContactEmail("not-an-email")).toBeNull();
-    expect(getMarketingContactEmail("hello@example")).toBeNull();
+  it("accepts configured to/from addresses and rejects malformed values", () => {
+    expect(
+      getMarketingContactToEmail({
+        MARKETING_CONTACT_TO_EMAIL: "hello@example.test",
+      })
+    ).toBe("hello@example.test");
+    expect(
+      getMarketingContactFromEmail({
+        MARKETING_CONTACT_FROM_EMAIL: "website@example.test",
+      })
+    ).toBe("website@example.test");
+    expect(
+      getMarketingContactToEmail({ MARKETING_CONTACT_TO_EMAIL: "not-an-email" })
+    ).toBeNull();
+    expect(
+      getMarketingContactFromEmail({
+        MARKETING_CONTACT_FROM_EMAIL: "hello@example",
+      })
+    ).toBeNull();
   });
 });
 
@@ -42,26 +45,14 @@ describe("marketing crawl files", () => {
   const previousRoot = process.env.CARE_GUIDE_ROOT_DOMAIN;
   const previousBase = process.env.CARE_GUIDE_METADATA_BASE;
 
-  beforeEach(() => {
-    process.env.CARE_GUIDE_ROOT_DOMAIN = "localhost";
-    delete process.env.CARE_GUIDE_METADATA_BASE;
-  });
-
   afterEach(() => {
-    if (previousRoot === undefined) {
-      delete process.env.CARE_GUIDE_ROOT_DOMAIN;
-    } else {
-      process.env.CARE_GUIDE_ROOT_DOMAIN = previousRoot;
-    }
-
-    if (previousBase === undefined) {
-      delete process.env.CARE_GUIDE_METADATA_BASE;
-    } else {
-      process.env.CARE_GUIDE_METADATA_BASE = previousBase;
-    }
+    restore("CARE_GUIDE_ROOT_DOMAIN", previousRoot);
+    restore("CARE_GUIDE_METADATA_BASE", previousBase);
   });
 
   it("lists only public platform routes", () => {
+    process.env.CARE_GUIDE_ROOT_DOMAIN = "localhost";
+    delete process.env.CARE_GUIDE_METADATA_BASE;
     const entries = sitemap();
     const urls = entries.map((entry) => entry.url);
 
@@ -75,6 +66,8 @@ describe("marketing crawl files", () => {
   });
 
   it("allows public marketing pages and blocks internal rewrites", () => {
+    process.env.CARE_GUIDE_ROOT_DOMAIN = "localhost";
+    delete process.env.CARE_GUIDE_METADATA_BASE;
     const document = robots();
     expect(document.rules).toMatchObject({
       allow: ["/", "/pricing", "/contact"],
@@ -85,3 +78,11 @@ describe("marketing crawl files", () => {
     expect(PRICING_METADATA.title).toBe("Pricing");
   });
 });
+
+function restore(name: string, value: string | undefined) {
+  if (value === undefined) {
+    delete process.env[name];
+  } else {
+    process.env[name] = value;
+  }
+}
