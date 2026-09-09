@@ -19,7 +19,7 @@ export const PRICING_METADATA = {
 export const CONTACT_METADATA = {
   title: "Contact",
   description:
-    "Request an Aftercare Guide demo or early access. Tell us about your practice and we will set up branded aftercare pages with you.",
+    "Request an Aftercare Guide demo. Tell us about your practice and we will set up branded aftercare pages with you.",
 } as const;
 
 export function marketingPageMetadata(input: {

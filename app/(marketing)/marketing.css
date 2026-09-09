@@ -58,6 +58,10 @@
   --mk-interact-ease: ease-out;
   --mk-section-pad-y: clamp(4rem, 6vw, 6rem);
   --mk-chapter-pad-y: clamp(6rem, 8vw, 8rem);
+  --mk-eyebrow-heading-gap: 0.85rem;
+  --mk-heading-intro-gap: 1.15rem;
+  --mk-heading-content-gap: clamp(2rem, 3vw, 2.5rem);
+  --mk-card-grid-gap: 1.15rem;
   --mk-card: light-dark(#ffffff, #171b24);
   --mk-card-line: light-dark(color-mix(in srgb, #0a0d14 8%, #ece8df), #2c3342);
   --mk-card-radius: 1.2rem;
@@ -375,5 +379,43 @@ html[data-mk-motion="enhance"] .mkReveal[data-mk-pending][data-mk-preview] {
 
 .mkWaveEdge {
   stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.mkPageWave {
+  display: block;
+  flex-shrink: 0;
+  overflow: visible;
+  background: transparent;
+  color: var(--mk-soft);
+  line-height: 0;
+}
+
+.mkPageWaveInner {
+  display: block;
+  overflow: visible;
+  width: 100%;
+}
+
+.mkPageWavePricing .mkPageWaveInner {
+  height: 2.15rem;
+}
+
+.mkPageWaveContact .mkPageWaveInner {
+  height: 1.7rem;
+}
+
+.mkPageWaveFill {
+  fill: currentColor;
+}
+
+.mkPageWaveGlow {
+  stroke-width: 5.2;
+  opacity: var(--mk-wave-glow-opacity);
+  vector-effect: non-scaling-stroke;
+}
+
+.mkPageWaveEdge {
+  stroke-width: 1.25;
   vector-effect: non-scaling-stroke;
 }

@@ -26,19 +26,19 @@ import {
 
 describe("marketing reveal variants", () => {
   it("slows editorial and card reveals slightly without going theatrical", () => {
-    expect(REVEAL_STAGGER).toBe(0.09);
-    expect(EDITORIAL_REVEAL_STEP).toBe(0.09);
-    expect(editorialRevealDelay(1)).toBe(0.09);
-    expect(editorialRevealDelay(2)).toBe(0.18);
+    expect(REVEAL_STAGGER).toBe(0.11);
+    expect(EDITORIAL_REVEAL_STEP).toBe(0.11);
+    expect(editorialRevealDelay(1)).toBe(0.11);
+    expect(editorialRevealDelay(2)).toBe(0.22);
     expect(revealContainerVariants.visible).toEqual({});
-    expect(EDITORIAL_REVEAL_DURATION).toBe(0.62);
-    expect(EDITORIAL_REVEAL_DURATION).toBeLessThanOrEqual(0.65);
-    expect(CARD_REVEAL_DURATION).toBeGreaterThanOrEqual(0.56);
-    expect(CARD_REVEAL_DURATION).toBeLessThanOrEqual(0.58);
+    expect(EDITORIAL_REVEAL_DURATION).toBe(0.72);
+    expect(EDITORIAL_REVEAL_DURATION).toBeLessThanOrEqual(0.75);
+    expect(CARD_REVEAL_DURATION).toBeGreaterThanOrEqual(0.64);
+    expect(CARD_REVEAL_DURATION).toBeLessThanOrEqual(0.66);
     expect(REVEAL_ITEM_DURATION).toBe(EDITORIAL_REVEAL_DURATION);
     expect(REVEAL_EASE).toEqual([0.22, 1, 0.36, 1]);
-    const delayed = delayedRevealItemVariants.visible(0.09);
-    expect(delayed.transition.delay).toBe(0.09);
+    const delayed = delayedRevealItemVariants.visible(0.11);
+    expect(delayed.transition.delay).toBe(0.11);
     expect(delayed.transition.duration).toBe(EDITORIAL_REVEAL_DURATION);
     expect(delayed.transition.ease).toEqual(REVEAL_EASE);
   });
@@ -76,8 +76,8 @@ describe("marketing reveal variants", () => {
   });
 
   it("staggers independent cards without a long cascade", () => {
-    expect(CARD_REVEAL_STAGGER).toBe(0.08);
-    expect(CARD_REVEAL_STAGGER_MAX).toBe(0.28);
+    expect(CARD_REVEAL_STAGGER).toBe(0.095);
+    expect(CARD_REVEAL_STAGGER_MAX).toBe(0.32);
     expect(cardRevealDelay(0)).toBe(0);
     expect(cardRevealDelay(1)).toBe(CARD_REVEAL_STAGGER);
     expect(cardRevealDelay(3)).toBeLessThanOrEqual(CARD_REVEAL_STAGGER_MAX);

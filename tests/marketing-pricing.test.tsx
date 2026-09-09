@@ -32,6 +32,10 @@ describe("marketing pricing page", () => {
 
     expect(html.match(/<h1\b/g)).toHaveLength(1);
     expect(html).toContain("Simple plans for clinic-branded aftercare.");
+    expect(html).toContain('data-mk-page-hero="pricing"');
+    expect(html).toContain("mkPageWavePricing");
+    expect(html).toContain("headingBlock");
+    expect(html).toContain("headingFollow");
     expect(html).toContain("A$79");
     expect(html).toContain("A$149");
     expect(html).toContain("Custom pricing");

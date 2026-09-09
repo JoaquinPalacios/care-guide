@@ -434,7 +434,7 @@
 }
 
 .eyebrow {
-  margin: 0 0 0.8rem;
+  margin: 0 0 var(--mk-eyebrow-heading-gap);
   color: var(--mk-brand);
   font-size: 0.78rem;
   font-weight: 700;
@@ -1047,7 +1047,7 @@
 
 .productCopy h2,
 .previewCopy h2 {
-  margin: 0 0 0.8rem;
+  margin: 0 0 var(--mk-heading-intro-gap);
   font-size: clamp(1.7rem, 3.4vw, 2.6rem);
   letter-spacing: -0.04em;
   line-height: 1.15;
@@ -1062,14 +1062,23 @@
   text-wrap: pretty;
 }
 
-.sectionTitle + .copy {
-  margin-top: 0.8rem;
+.sectionTitle + .copy,
+.headingBlock .copy {
+  margin-top: var(--mk-heading-intro-gap);
+}
+
+.headingBlock .copy {
+  margin-bottom: 0;
+}
+
+.headingFollow {
+  margin-top: var(--mk-heading-content-gap);
 }
 
 .processJourney {
   --process-node: 1.5rem;
   position: relative;
-  margin-top: 1.75rem;
+  margin-top: var(--mk-heading-content-gap);
 }
 
 .processRail {
@@ -1457,7 +1466,7 @@
 .pillarStack {
   display: grid;
   gap: 1rem;
-  margin-top: 1.75rem;
+  margin-top: var(--mk-heading-content-gap);
 }
 
 .pillarGrid {
@@ -1602,8 +1611,7 @@
 
 .brandGrid {
   display: grid;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: var(--mk-card-grid-gap);
 }
 
 .brandCard {
@@ -1650,7 +1658,7 @@
 
 .closingCta {
   display: grid;
-  gap: 1.35rem;
+  gap: var(--mk-heading-content-gap);
 }
 
 .closingCtaCopy .copy {
@@ -1660,7 +1668,7 @@
 
 .ctaBlock h2,
 .closingCta h2 {
-  margin: 0 0 0.7rem;
+  margin: 0 0 var(--mk-heading-intro-gap);
   font-size: clamp(1.5rem, 2.8vw, 2.1rem);
   letter-spacing: -0.04em;
   max-width: 18ch;
@@ -1668,7 +1676,7 @@
 }
 
 .closingCta .eyebrow {
-  margin-bottom: 0.7rem;
+  margin-bottom: var(--mk-eyebrow-heading-gap);
 }
 
 .closingCtaAction {
@@ -1745,11 +1753,56 @@
 }
 
 .pageHero {
-  padding: var(--mk-chapter-pad-y) 0 var(--mk-section-pad-y);
+  position: relative;
+  isolation: isolate;
+}
+
+.pageHeroInner {
+  padding-bottom: 1.35rem;
+}
+
+.pageHero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pageHero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pageHeroPricing {
+  padding: clamp(3.1rem, 5.4vw, 4.35rem) 0 0;
+}
+
+.pageHeroPricing::before {
+  background:
+    radial-gradient(68% 40% at 46% 12%, var(--mk-hero-bloom), transparent 74%),
+    radial-gradient(46% 26% at 78% 86%, var(--mk-hero-glow), transparent 72%),
+    radial-gradient(28% 16% at 22% 90%, var(--mk-hero-mist), transparent 70%),
+    linear-gradient(
+      to bottom,
+      transparent 62%,
+      color-mix(in srgb, var(--mk-wave-periwinkle) 8%, transparent) 90%,
+      color-mix(in srgb, var(--mk-wave-cyan) 10%, transparent) 100%
+    );
+}
+
+.pageHeroContact {
+  padding: clamp(2.5rem, 4.4vw, 3.5rem) 0 0;
+}
+
+.pageHeroContact::before {
+  background:
+    radial-gradient(54% 34% at 38% 18%, var(--mk-hero-bloom), transparent 76%),
+    radial-gradient(30% 18% at 62% 88%, var(--mk-hero-mist), transparent 74%);
 }
 
 .pageTitle {
-  margin: 0 0 1rem;
+  margin: 0;
   font-size: clamp(2.15rem, 5.4vw, 3.35rem);
   letter-spacing: -0.055em;
   line-height: 1.04;
@@ -1759,6 +1812,7 @@
 
 .pageLede {
   max-width: 42rem;
+  margin-top: var(--mk-heading-intro-gap);
   margin-bottom: 0;
 }
 
@@ -1766,7 +1820,7 @@
 .noteGrid,
 .contactPair {
   display: grid;
-  gap: 1.15rem;
+  gap: var(--mk-card-grid-gap);
 }
 
 .planRevealSlot,
@@ -1884,7 +1938,7 @@
 .storyList {
   display: grid;
   gap: 0.9rem;
-  margin: 1.5rem 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -1925,7 +1979,7 @@
 .laterList {
   display: grid;
   gap: 0.7rem;
-  margin-top: 1.35rem;
+  margin: 0;
 }
 
 .laterItem {
@@ -1953,6 +2007,134 @@
   background: var(--mk-card);
 }
 
+.contactFormTitle {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+  letter-spacing: -0.04em;
+}
+
+.contactForm {
+  position: relative;
+  display: grid;
+  gap: 1.15rem;
+  max-width: 44rem;
+}
+
+.contactFormRow {
+  display: grid;
+  gap: 1.15rem;
+}
+
+.contactField {
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+}
+
+.contactField label {
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+
+.contactOptional {
+  color: var(--mk-muted);
+  font-weight: 550;
+}
+
+.contactControl {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.85rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--mk-card-line);
+  border-radius: 0.75rem;
+  background: var(--mk-card);
+  color: var(--mk-ink);
+  font: inherit;
+}
+
+.contactField textarea.contactControl {
+  min-height: 8.5rem;
+  resize: vertical;
+}
+
+.contactControl:focus-visible {
+  outline: 2.5px solid var(--mk-focus);
+  outline-offset: 2px;
+}
+
+.contactControl[aria-invalid="true"] {
+  border-color: color-mix(in srgb, #9b1c1c 55%, var(--mk-card-line));
+}
+
+.contactFieldError {
+  margin: 0;
+  color: light-dark(#9b1c1c, #ffb4b4);
+  font-size: 0.88rem;
+}
+
+.contactErrorSummary {
+  padding: 0.85rem 0.95rem;
+  border: 1px solid color-mix(in srgb, #9b1c1c 35%, var(--mk-card-line));
+  border-radius: 0.75rem;
+  background: light-dark(
+    color-mix(in srgb, #9b1c1c 6%, var(--mk-card)),
+    color-mix(in srgb, #ffb4b4 8%, var(--mk-card))
+  );
+  color: light-dark(#9b1c1c, #ffb4b4);
+}
+
+.contactPrivacy {
+  margin: 0;
+  color: var(--mk-muted);
+  font-size: 0.9rem;
+}
+
+.contactSubmit {
+  justify-self: start;
+}
+
+.contactSubmit:disabled {
+  opacity: 0.72;
+  cursor: wait;
+}
+
+.contactHoneypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.contactSuccess {
+  display: grid;
+  gap: 1rem;
+  max-width: 36rem;
+}
+
+.contactSuccessTitle {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+  letter-spacing: -0.04em;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 @media (max-width: 47.99rem) {
   .topInner {
     width: min(80rem, calc(100% - 2rem));
@@ -1975,13 +2157,17 @@
     gap: 0.45rem;
   }
 
-  .nav a.navAnchor,
   .nav a.navRoute {
     display: none;
   }
 
   .navMenu {
     display: block;
+  }
+
+  .pageHeroPricing::before,
+  .pageHeroContact::before {
+    opacity: 0.7;
   }
 
   .ctaBlock,
@@ -2226,6 +2412,10 @@
 
   .noteGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .contactFormRow {
+    grid-template-columns: 1fr 1fr;
   }
 
   .contactPair {

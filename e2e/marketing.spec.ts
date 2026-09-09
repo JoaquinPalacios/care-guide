@@ -516,9 +516,9 @@ test.describe("marketing homepage", () => {
       .getByRole("link", { name: "See how it works" })
       .first();
     const theme = page.getByRole("button", { name: /Change colour theme/ });
-    const howItWorks = page
+    const pricing = page
       .getByRole("navigation", { name: "Marketing" })
-      .getByRole("link", { name: "How it works" });
+      .getByRole("link", { name: "Pricing" });
 
     const restPrimary = await primary.evaluate((element) => {
       const styles = getComputedStyle(element);
@@ -571,13 +571,13 @@ test.describe("marketing homepage", () => {
       path: "test-results/artifacts/phase-1f13-secondary-hover-hero.png",
     });
 
-    const navRestColor = await howItWorks.evaluate(
+    const navRestColor = await pricing.evaluate(
       (element) => getComputedStyle(element).color
     );
-    await howItWorks.hover();
+    await pricing.hover();
     await expect
       .poll(async () =>
-        howItWorks.evaluate((element) => getComputedStyle(element).color)
+        pricing.evaluate((element) => getComputedStyle(element).color)
       )
       .not.toBe(navRestColor);
 
@@ -618,7 +618,7 @@ test.describe("marketing homepage", () => {
       }
     }
 
-    expect(focusedNames.join(" ")).toMatch(/How it works/);
+    expect(focusedNames.join(" ")).toMatch(/Pricing/);
     expect(focusedNames.join(" ")).toMatch(/View the clinic demo/);
     expect(focusedNames.join(" ")).toMatch(/See how it works|Change colour/);
 
@@ -662,17 +662,17 @@ test.describe("marketing homepage", () => {
     await waitForHeroReveal(page);
 
     await expect(
-      headerNav.getByRole("link", { name: "How it works" })
-    ).toBeVisible();
-    await expect(
-      headerNav.getByRole("link", { name: "Clinic preview" })
-    ).toBeVisible();
-    await expect(
       headerNav.getByRole("link", { name: "Pricing" })
     ).toBeVisible();
     await expect(
       headerNav.getByRole("link", { name: "Contact" })
     ).toBeVisible();
+    await expect(
+      headerNav.getByRole("link", { name: "How it works" })
+    ).toHaveCount(0);
+    await expect(
+      headerNav.getByRole("link", { name: "Clinic preview" })
+    ).toHaveCount(0);
     await expect(
       headerNav.getByRole("link", { name: "Early access" })
     ).toHaveCount(0);
@@ -720,11 +720,7 @@ test.describe("marketing homepage", () => {
       await expect(
         headerNav.getByRole("link", { name: "Early access" })
       ).toHaveCount(0);
-      await expect(
-        headerNav.locator('[class*="navAnchor"]').filter({
-          hasText: "How it works",
-        })
-      ).toBeHidden();
+      await expect(headerNav.locator('[class*="navAnchor"]')).toHaveCount(0);
       await expect(
         headerNav.getByRole("link", { name: "Staff sign in" })
       ).toBeVisible();

@@ -24,8 +24,6 @@ export function MarketingShell({
   const howItWorksHref = homepageAnchor(currentPath, "how-it-works");
   const previewHref = homepageAnchor(currentPath, "preview");
   const menuItems = [
-    { href: howItWorksHref, label: "How it works" },
-    { href: previewHref, label: "Clinic preview" },
     {
       href: "/pricing",
       label: "Pricing",
@@ -47,18 +45,6 @@ export function MarketingShell({
             {PRODUCT_NAME}
           </Link>
           <nav className={styles.nav} aria-label="Marketing">
-            <Link
-              className={`${styles.navAnchor} ${styles.textLink}`}
-              href={howItWorksHref}
-            >
-              How it works
-            </Link>
-            <Link
-              className={`${styles.navAnchor} ${styles.textLink}`}
-              href={previewHref}
-            >
-              Clinic preview
-            </Link>
             <Link
               className={`${styles.navRoute} ${styles.textLink}`}
               href="/pricing"

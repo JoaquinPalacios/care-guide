@@ -1195,10 +1195,10 @@ test.describe("Phase 1F.11 story clarity", () => {
     await showMarketingScheme(page, "light");
     await waitForHeroReveal(page);
 
-    const howItWorks = page
+    const pricing = page
       .getByRole("navigation", { name: "Marketing" })
-      .getByRole("link", { name: "How it works" });
-    const underline = await howItWorks.evaluate((element) => {
+      .getByRole("link", { name: "Pricing" });
+    const underline = await pricing.evaluate((element) => {
       const after = getComputedStyle(element, "::after");
       const origin = after.transformOrigin.split(" ");
       const box = element.getBoundingClientRect();
@@ -1217,16 +1217,16 @@ test.describe("Phase 1F.11 story clarity", () => {
     );
     expect(underline.originCentered).toBe(true);
 
-    await howItWorks.hover();
+    await pricing.hover();
     await expect
       .poll(async () =>
-        howItWorks.evaluate(
+        pricing.evaluate(
           (element) => getComputedStyle(element, "::after").transform
         )
       )
       .toMatch(/matrix\(1,\s*0,\s*0,\s*1|none/);
 
-    const hoverColors = await howItWorks.evaluate((element) => {
+    const hoverColors = await pricing.evaluate((element) => {
       const styles = getComputedStyle(element);
       const after = getComputedStyle(element, "::after");
       return {

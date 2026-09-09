@@ -195,32 +195,36 @@ export default async function MarketingHomePage() {
             aria-labelledby="how-heading"
           >
             <div className={styles.inner}>
-              <MarketingReveal.Group>
-                <MarketingReveal.Item delay={0}>
-                  <p className={styles.eyebrow}>How it works</p>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item delay={editorialRevealDelay(1)}>
-                  <h2 id="how-heading" className={styles.sectionTitle}>
-                    From approved guidance to a page patients keep
-                  </h2>
-                </MarketingReveal.Item>
-              </MarketingReveal.Group>
+              <div className={styles.headingBlock}>
+                <MarketingReveal.Group>
+                  <MarketingReveal.Item delay={0}>
+                    <p className={styles.eyebrow}>How it works</p>
+                  </MarketingReveal.Item>
+                  <MarketingReveal.Item delay={editorialRevealDelay(1)}>
+                    <h2 id="how-heading" className={styles.sectionTitle}>
+                      From approved guidance to a page patients keep
+                    </h2>
+                  </MarketingReveal.Item>
+                </MarketingReveal.Group>
+              </div>
               <MarketingProcess />
             </div>
           </section>
 
           <section className={styles.band} aria-labelledby="why-heading">
             <div className={styles.inner}>
-              <MarketingReveal.Group>
-                <MarketingReveal.Item delay={0}>
-                  <p className={styles.eyebrow}>Why clinics use it</p>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item delay={editorialRevealDelay(1)}>
-                  <h2 id="why-heading" className={styles.sectionTitle}>
-                    Clinic-first aftercare, built for rereading
-                  </h2>
-                </MarketingReveal.Item>
-              </MarketingReveal.Group>
+              <div className={styles.headingBlock}>
+                <MarketingReveal.Group>
+                  <MarketingReveal.Item delay={0}>
+                    <p className={styles.eyebrow}>Why clinics use it</p>
+                  </MarketingReveal.Item>
+                  <MarketingReveal.Item delay={editorialRevealDelay(1)}>
+                    <h2 id="why-heading" className={styles.sectionTitle}>
+                      Clinic-first aftercare, built for rereading
+                    </h2>
+                  </MarketingReveal.Item>
+                </MarketingReveal.Group>
+              </div>
               <MarketingPillars />
             </div>
           </section>
@@ -229,24 +233,26 @@ export default async function MarketingHomePage() {
         <div className={styles.marketingShowcase} data-mk-chapter="showcase">
           <section className={styles.band} aria-labelledby="brand-heading">
             <div className={styles.inner}>
-              <MarketingReveal.Group>
-                <MarketingReveal.Item delay={0}>
-                  <p className={styles.eyebrow}>Brand flexibility</p>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item delay={editorialRevealDelay(1)}>
-                  <h2 id="brand-heading" className={styles.sectionTitle}>
-                    One product, many practice identities
-                  </h2>
-                </MarketingReveal.Item>
-                <MarketingReveal.Item delay={editorialRevealDelay(2)}>
-                  <p className={styles.copy}>
-                    Choose a visual tone that feels at home with your practice
-                    while the patient experience stays consistent and easy to
-                    read.
-                  </p>
-                </MarketingReveal.Item>
-              </MarketingReveal.Group>
-              <div className={styles.brandGrid}>
+              <div className={styles.headingBlock}>
+                <MarketingReveal.Group>
+                  <MarketingReveal.Item delay={0}>
+                    <p className={styles.eyebrow}>Brand flexibility</p>
+                  </MarketingReveal.Item>
+                  <MarketingReveal.Item delay={editorialRevealDelay(1)}>
+                    <h2 id="brand-heading" className={styles.sectionTitle}>
+                      One product, many practice identities
+                    </h2>
+                  </MarketingReveal.Item>
+                  <MarketingReveal.Item delay={editorialRevealDelay(2)}>
+                    <p className={styles.copy}>
+                      Choose a visual tone that feels at home with your practice
+                      while the patient experience stays consistent and easy to
+                      read.
+                    </p>
+                  </MarketingReveal.Item>
+                </MarketingReveal.Group>
+              </div>
+              <div className={`${styles.brandGrid} ${styles.headingFollow}`}>
                 {BRAND_CARDS.map((card, index) => (
                   <MarketingReveal.Card
                     key={card.key}
