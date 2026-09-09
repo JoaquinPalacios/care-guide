@@ -17,6 +17,8 @@ export const RESERVED_TENANT_SLUGS = [
   "support",
   "docs",
   "blog",
+  "pricing",
+  "contact",
   "localhost",
   "staging",
   "prod",

@@ -35,6 +35,11 @@ export default defineConfig({
     timeout: 120_000,
     stdout: "pipe",
     stderr: "pipe",
+    env: {
+      ...process.env,
+      MARKETING_CONTACT_EMAIL:
+        process.env.MARKETING_CONTACT_EMAIL ?? "hello@example.test",
+    },
   },
   projects: [
     {

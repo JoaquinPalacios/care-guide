@@ -72,10 +72,46 @@ describe("proxy", () => {
     );
   });
 
-  it("blocks unknown paths on the marketing host", () => {
-    expect(proxy(requestFor("http://localhost:3000/extraction")).status).toBe(
-      404
+  it("rewrites marketing pricing and contact to /_marketing/...", () => {
+    const pricing = proxy(requestFor("http://localhost:3000/pricing"));
+    expect(pricing.status).toBe(200);
+    expect(rewrittenUrl(pricing)?.pathname).toBe("/_marketing/pricing");
+
+    const contact = proxy(requestFor("http://localhost:3000/contact"));
+    expect(contact.status).toBe(200);
+    expect(rewrittenUrl(contact)?.pathname).toBe("/_marketing/contact");
+  });
+
+  it("lets sitemap and robots pass through on the marketing host", () => {
+    const sitemap = proxy(requestFor("http://localhost:3000/sitemap.xml"));
+    expect(sitemap.status).toBe(200);
+    expect(rewrittenUrl(sitemap)).toBeNull();
+
+    const robots = proxy(requestFor("http://localhost:3000/robots.txt"));
+    expect(robots.status).toBe(200);
+    expect(rewrittenUrl(robots)).toBeNull();
+  });
+
+  it("does not rewrite tenant /pricing or /contact to marketing", () => {
+    const pricing = proxy(
+      requestFor("http://demodental.localhost:3000/pricing")
     );
+    expect(rewrittenUrl(pricing)?.pathname).toBe("/_sites/demodental/pricing");
+
+    const contact = proxy(
+      requestFor("http://demodental.localhost:3000/contact")
+    );
+    expect(rewrittenUrl(contact)?.pathname).toBe("/_sites/demodental/contact");
+  });
+
+  it("does not rewrite staff /pricing or /contact to marketing", () => {
+    const pricing = proxy(requestFor("http://app.localhost:3000/pricing"));
+    expect(pricing.status).toBe(200);
+    expect(rewrittenUrl(pricing)).toBeNull();
+
+    const contact = proxy(requestFor("http://app.localhost:3000/contact"));
+    expect(contact.status).toBe(200);
+    expect(rewrittenUrl(contact)).toBeNull();
   });
 
   it("lets the app staff host pass through", () => {

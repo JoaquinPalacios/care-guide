@@ -89,6 +89,12 @@ describe("marketing homepage", () => {
     expect(html).not.toMatch(/<h[1-6][^>]*>Tooth Extraction/);
     expect(html).toContain("<ol");
     expect(html).toContain("View the clinic demo");
+    expect(html).toContain("Request a demo");
+    expect(html).toContain('href="/contact"');
+    expect(html).toContain('href="/pricing"');
+    expect(html).toContain("Pricing");
+    expect(html).toContain(">Contact<");
+    expect(html).toContain("Open site menu");
     expect(html).not.toContain("Early access");
     expect(html).not.toContain("earlyAccessLayout");
     expect(html).not.toContain("Design partner");
@@ -99,8 +105,9 @@ describe("marketing homepage", () => {
     expect(html).not.toContain("early development");
     expect(html).not.toContain("small number of clinics");
     expect(html).not.toContain("#early-access");
-    expect(html).toContain("See it in practice");
-    expect(html).toContain("See the patient experience for yourself.");
+    expect(html).not.toContain("See it in practice");
+    expect(html).not.toContain("See the patient experience for yourself.");
+    expect(html).toContain("Bring your aftercare online.");
     expect(html).toContain("closingCta");
     expect(html).toContain('id="see-it"');
     expect(html).not.toContain("Lead capture is not on this page yet.");

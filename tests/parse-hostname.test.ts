@@ -46,6 +46,14 @@ describe("parseHostname", () => {
       kind: "reserved",
       label: "www",
     });
+    expect(parseHostname("pricing.localhost:3000", LOCAL_ROOT)).toEqual({
+      kind: "reserved",
+      label: "pricing",
+    });
+    expect(parseHostname("contact.example.com", PROD_ROOT)).toEqual({
+      kind: "reserved",
+      label: "contact",
+    });
     expect(parseHostname("admin.localhost:3000", LOCAL_ROOT)).toEqual({
       kind: "reserved",
       label: "admin",

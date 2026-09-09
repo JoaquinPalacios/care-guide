@@ -7,6 +7,10 @@ export const STAFF_PATH_PREFIXES = [
   "/api/auth",
 ] as const;
 
+export const MARKETING_PAGE_PATHS = ["/", "/pricing", "/contact"] as const;
+
+export const MARKETING_CRAWL_PATHS = ["/sitemap.xml", "/robots.txt"] as const;
+
 export function isStaffPath(pathname: string): boolean {
   return STAFF_PATH_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
@@ -23,6 +27,22 @@ export function isInternalMarketingPath(pathname: string): boolean {
 
 export function isInternalAppPath(pathname: string): boolean {
   return isInternalSitesPath(pathname) || isInternalMarketingPath(pathname);
+}
+
+export function isMarketingPagePath(pathname: string): boolean {
+  return (MARKETING_PAGE_PATHS as readonly string[]).includes(pathname);
+}
+
+export function isMarketingCrawlPath(pathname: string): boolean {
+  return (MARKETING_CRAWL_PATHS as readonly string[]).includes(pathname);
+}
+
+export function marketingRewritePath(pathname: string): string | null {
+  if (!isMarketingPagePath(pathname)) {
+    return null;
+  }
+
+  return pathname === "/" ? "/_marketing" : `/_marketing${pathname}`;
 }
 
 export function normalizePathname(pathname: string): string {

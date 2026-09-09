@@ -1,0 +1,67 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { renderToStaticMarkup } from "react-dom/server";
+
+vi.mock("next/headers", () => ({
+  headers: async () =>
+    new Headers({
+      host: "localhost:3000",
+      "x-forwarded-proto": "http",
+    }),
+}));
+
+import MarketingPricingPage from "@/app/(marketing)/%5Fmarketing/pricing/page";
+import { LAUNCH_PLANS } from "@/lib/marketing/plans";
+
+describe("marketing pricing page", () => {
+  const previousRoot = process.env.CARE_GUIDE_ROOT_DOMAIN;
+
+  beforeEach(() => {
+    process.env.CARE_GUIDE_ROOT_DOMAIN = "localhost";
+  });
+
+  afterEach(() => {
+    if (previousRoot === undefined) {
+      delete process.env.CARE_GUIDE_ROOT_DOMAIN;
+    } else {
+      process.env.CARE_GUIDE_ROOT_DOMAIN = previousRoot;
+    }
+  });
+
+  it("publishes working launch plans without post-launch check-ins", async () => {
+    const html = renderToStaticMarkup(await MarketingPricingPage());
+
+    expect(html.match(/<h1\b/g)).toHaveLength(1);
+    expect(html).toContain("Simple plans for clinic-branded aftercare.");
+    expect(html).toContain("A$79");
+    expect(html).toContain("A$149");
+    expect(html).toContain("Custom pricing");
+    expect(html).toContain("Recommended");
+    expect(html).toContain(LAUNCH_PLANS[0].name);
+    expect(html).toContain(LAUNCH_PLANS[1].name);
+    expect(html).toContain(LAUNCH_PLANS[2].name);
+    expect(html).toContain("Print / Save PDF");
+    expect(html).toContain("Coming after launch");
+    expect(html).toContain("Patient check-ins");
+    expect(html).toContain("Connected recovery plans");
+    expect(html).toContain("Assisted onboarding is available");
+    expect(html).not.toContain("A$249");
+    expect(html).not.toContain("A$499");
+    expect(html).not.toContain("pay for 10 months");
+    expect(html).toContain('href="/contact"');
+    expect(html).not.toContain("analytics dashboard");
+    expect(html).not.toContain("SMS");
+    expect(html).not.toContain("custom domain");
+    expect(html).toContain("or PMS integrations");
+    expect(html).not.toContain("<form");
+    expect(html).not.toContain("/_marketing");
+    expect(html).not.toContain("/_sites");
+    expect(html).not.toContain("Riverside Dental Demo —");
+
+    const essentialBlock = html.slice(
+      html.indexOf('id="plan-essential"'),
+      html.indexOf('id="plan-practice"')
+    );
+    expect(essentialBlock).not.toContain("Patient check-ins");
+    expect(essentialBlock).not.toContain("Connected recovery");
+  });
+});

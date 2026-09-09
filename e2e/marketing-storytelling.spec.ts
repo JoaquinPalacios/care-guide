@@ -923,7 +923,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     });
   });
 
-  test("closing CTA is compact, timeless, and demo-only", async ({ page }) => {
+  test("closing CTA is compact and leads to contact", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(marketingUrl("/"), { waitUntil: "load" });
     await showStaticScheme(page, "light");
@@ -933,16 +933,16 @@ test.describe("Phase 1F.11 story clarity", () => {
     const section = page.locator("#see-it");
     await expect(
       section.getByRole("heading", {
-        name: "See the patient experience for yourself.",
+        name: "Bring your aftercare online.",
       })
     ).toBeVisible();
-    await expect(section.getByText("See it in practice")).toBeVisible();
+    await expect(section.getByText("Get started")).toBeVisible();
     await expect(
-      section.getByText("Open the Riverside Dental Demo")
+      section.getByText("Request a demo and we will walk through")
     ).toBeVisible();
     await expect(
-      section.getByRole("link", { name: "View the clinic demo" })
-    ).toBeVisible();
+      section.getByRole("link", { name: "Request a demo" })
+    ).toHaveAttribute("href", "/contact");
     await waitForSectionReveal(section);
     await expect(page.getByText("Early access")).toHaveCount(0);
     await expect(page.getByText("Design partner")).toHaveCount(0);
@@ -969,8 +969,13 @@ test.describe("Phase 1F.11 story clarity", () => {
     await expect(
       page
         .getByRole("navigation", { name: "Marketing" })
-        .getByRole("link", { name: "Early access" })
-    ).toHaveCount(0);
+        .getByRole("link", { name: "Pricing" })
+    ).toBeVisible();
+    await expect(
+      page
+        .getByRole("navigation", { name: "Footer" })
+        .getByRole("link", { name: "Contact" })
+    ).toBeVisible();
     await expect(
       page
         .getByRole("navigation", { name: "Footer" })

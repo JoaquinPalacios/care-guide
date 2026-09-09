@@ -444,10 +444,10 @@ test.describe("marketing homepage", () => {
     await page.locator("#see-it").scrollIntoViewIfNeeded();
     await expect(
       page.getByRole("heading", {
-        name: "See the patient experience for yourself.",
+        name: "Bring your aftercare online.",
       })
     ).toBeVisible();
-    await expect(page.getByText("See it in practice")).toBeVisible();
+    await expect(page.getByText("Get started")).toBeVisible();
     await expect(page.getByText("Early access")).toHaveCount(0);
 
     const overflow = await page.evaluate(() => {
@@ -668,6 +668,12 @@ test.describe("marketing homepage", () => {
       headerNav.getByRole("link", { name: "Clinic preview" })
     ).toBeVisible();
     await expect(
+      headerNav.getByRole("link", { name: "Pricing" })
+    ).toBeVisible();
+    await expect(
+      headerNav.getByRole("link", { name: "Contact" })
+    ).toBeVisible();
+    await expect(
       headerNav.getByRole("link", { name: "Early access" })
     ).toHaveCount(0);
     await expect(
@@ -704,6 +710,12 @@ test.describe("marketing homepage", () => {
       ).toHaveCount(0);
       await expect(
         headerNav.getByRole("link", { name: "Clinic preview" })
+      ).toHaveCount(0);
+      await expect(
+        headerNav.getByRole("link", { name: "Pricing" })
+      ).toHaveCount(0);
+      await expect(
+        headerNav.getByRole("link", { name: "Contact", exact: true })
       ).toHaveCount(0);
       await expect(
         headerNav.getByRole("link", { name: "Early access" })
@@ -789,8 +801,12 @@ test.describe("marketing homepage", () => {
       expect(headerLabels).not.toContain("How it works");
       expect(headerLabels).not.toContain("Clinic preview");
       expect(headerLabels).not.toContain("Early access");
-      expect(headerLabels.join(" ")).toMatch(/Staff sign in|Change colour/);
-      await expect(page.getByRole("button", { name: /menu/i })).toHaveCount(0);
+      expect(headerLabels.join(" ")).toMatch(
+        /Staff sign in|Change colour|Open site menu/
+      );
+      await expect(
+        page.getByRole("button", { name: "Open site menu" })
+      ).toBeVisible();
 
       await page.screenshot({
         path: `test-results/artifacts/phase-1f9-header-${width}-light.png`,

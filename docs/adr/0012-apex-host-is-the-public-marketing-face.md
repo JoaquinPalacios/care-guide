@@ -20,7 +20,7 @@ app.<platform-domain>              staff / parked chairside
 
 Classify the apex/root hostname as **marketing**. Keep `app.<root>` as **staff**. Tenant hostnames stay patient aftercare.
 
-The marketing homepage is rewritten internally to `/_marketing`, the same way tenant routes rewrite to `/_sites/<slug>`. Direct `/_marketing` access is blocked on every public host.
+The marketing homepage is rewritten internally to `/_marketing`, and `/pricing` / `/contact` rewrite to `/_marketing/pricing` and `/_marketing/contact`. Direct `/_marketing` access is blocked on every public host. `/sitemap.xml` and `/robots.txt` pass through on the marketing host only.
 
 Staff paths (`/login`, `/dashboard`, `/sessions`, `/session`, `/display`, `/api/auth`) are not served on the apex host. They remain on `app.<root>`.
 
@@ -29,8 +29,9 @@ The marketing surface has its own root layout and CSS. It must not import staff 
 ## Consequences
 
 - Local `http://localhost:<port>/` is the product homepage.
+- Local `http://localhost:<port>/pricing` and `/contact` are platform sales pages.
 - Local `http://app.localhost:<port>/` keeps the internal staff workspace, login, dashboard, and parked chairside routes.
-- Tenant routing is unchanged.
+- Tenant routing is unchanged. Tenant `/pricing` and `/contact` are not platform sales pages.
 - Later cookie, CORS, and host configuration must keep staff cookies off the marketing and tenant hosts.
 
 ## Notes for later implementation

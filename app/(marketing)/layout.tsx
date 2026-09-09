@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
+import {
+  HOME_METADATA,
+  MARKETING_TITLE_TEMPLATE,
+} from "@/lib/marketing/metadata";
 import { marketingMotionBootstrapScript } from "@/lib/marketing/motion-bootstrap";
 import {
   MARKETING_THEME_STORAGE_KEY,
@@ -11,9 +15,20 @@ import {
 import "./marketing.css";
 
 export const metadata: Metadata = {
-  title: `${PRODUCT_NAME} — Aftercare that still feels like your clinic`,
-  description:
-    "Turn approved post-treatment instructions into branded, mobile-first pages patients can reopen whenever they need them. No app. No login. No PDF to hunt down.",
+  title: {
+    default: HOME_METADATA.title,
+    template: MARKETING_TITLE_TEMPLATE,
+  },
+  description: HOME_METADATA.description,
+};
+
+const softwareJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: PRODUCT_NAME,
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  description: HOME_METADATA.description,
 };
 
 export default function MarketingRootLayout({
@@ -42,6 +57,12 @@ export default function MarketingRootLayout({
           </style>
         </noscript>
         {children}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(softwareJsonLd),
+          }}
+        />
       </body>
     </html>
   );

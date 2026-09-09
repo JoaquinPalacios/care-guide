@@ -4,7 +4,9 @@ import { NextResponse } from "next/server";
 import { parseHostname } from "@/lib/tenancy/parse-hostname";
 import {
   isInternalAppPath,
+  isMarketingCrawlPath,
   isStaffPath,
+  marketingRewritePath,
   normalizePathname,
 } from "@/lib/tenancy/paths";
 import { getRootDomain } from "@/lib/tenancy/root-domain";
@@ -52,12 +54,17 @@ export function proxy(request: NextRequest): NextResponse {
   }
 
   if (classification.kind === "marketing") {
-    if (pathname !== "/") {
+    if (isMarketingCrawlPath(pathname)) {
+      return continueWithoutSpoofedHeaders(request);
+    }
+
+    const rewrittenPath = marketingRewritePath(pathname);
+    if (!rewrittenPath) {
       return notFound();
     }
 
     const url = request.nextUrl.clone();
-    url.pathname = "/_marketing";
+    url.pathname = rewrittenPath;
 
     return NextResponse.rewrite(url, {
       request: {

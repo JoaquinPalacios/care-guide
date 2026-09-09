@@ -271,6 +271,7 @@ describe("aftercare style boundary", () => {
       "app/(marketing)/components/marketing-process.tsx",
       "app/(marketing)/components/marketing-pillars.tsx",
       "app/(marketing)/components/marketing-product-assembly.tsx",
+      "app/(marketing)/components/marketing-nav-menu.tsx",
     ]);
     const files = walk("app/(aftercare)").filter((path) =>
       /\.(ts|tsx|css)$/.test(path)

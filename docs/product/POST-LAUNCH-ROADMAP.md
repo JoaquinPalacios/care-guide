@@ -164,7 +164,13 @@ They must not appear on tenant hosts such as `demodental`. Tenant pages expose o
 - clinic phone
 - clinic urgent / emergency instructions
 
-Platform Contact / Pricing pages are a later marketing-domain task. Do not build them from aftercare tenant work.
+Platform Contact / Pricing live only on the **root marketing domain** (`/pricing`, `/contact`). They must not appear on tenant hosts such as `demodental`. Tenant pages expose only:
+
+- clinic contact
+- clinic phone
+- clinic urgent / emergency instructions
+
+Working published prices (provisional AUD): Essential A$79 / month, Practice A$149 / month, Group custom pricing. Check-ins remain unpriced post-launch premium/add-on work. Contact delivery is `MARKETING_CONTACT_EMAIL` mailto, not a lead form.
 
 ---
 

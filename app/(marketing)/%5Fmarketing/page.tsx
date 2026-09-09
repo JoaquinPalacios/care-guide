@@ -1,8 +1,6 @@
-import { headers } from "next/headers";
 import Link from "next/link";
 
 import {
-  MarketingExperience,
   MarketingRevealCard,
   MarketingRevealGroup,
   MarketingRevealHero,
@@ -14,13 +12,11 @@ import { MarketingPillars } from "@/app/(marketing)/components/marketing-pillars
 import { MarketingProcess } from "@/app/(marketing)/components/marketing-process";
 import { MarketingProductAssembly } from "@/app/(marketing)/components/marketing-product-assembly";
 import { MarketingProductPreview } from "@/app/(marketing)/components/marketing-product-preview";
-import { MarketingThemeControl } from "@/app/(marketing)/components/marketing-theme-control";
+import { MarketingShell } from "@/app/(marketing)/components/marketing-shell";
 import { MarketingWave } from "@/app/(marketing)/components/marketing-wave";
-import { DEMO_AFTERCARE_TENANT_SLUG } from "@/lib/aftercare/demo-tenant";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
+import { marketingPublicLinks } from "@/lib/marketing/public-links";
 import { editorialRevealDelay } from "@/lib/marketing/reveal-timing";
-import { labeledPublicUrl } from "@/lib/tenancy/public-url";
-import { getRootDomain } from "@/lib/tenancy/root-domain";
 
 import styles from "../marketing.module.css";
 
@@ -68,97 +64,11 @@ const BRAND_CARDS = [
   },
 ] as const;
 
-async function marketingLinks(): Promise<{
-  demoHref: string;
-  staffHref: string;
-}> {
-  const requestHeaders = await headers();
-  const host =
-    requestHeaders.get("x-forwarded-host") ??
-    requestHeaders.get("host") ??
-    "localhost";
-  const protocol =
-    requestHeaders.get("x-forwarded-proto") ??
-    (host.includes("localhost") ? "http" : "https");
-  const rootDomain = getRootDomain();
-
-  return {
-    demoHref:
-      labeledPublicUrl({
-        requestHost: host,
-        rootDomain,
-        label: DEMO_AFTERCARE_TENANT_SLUG,
-        protocol,
-      }) ?? `http://${DEMO_AFTERCARE_TENANT_SLUG}.localhost:3000/`,
-    staffHref:
-      labeledPublicUrl({
-        requestHost: host,
-        rootDomain,
-        label: "app",
-        protocol,
-        pathname: "/login",
-      }) ?? "http://app.localhost:3000/login",
-  };
-}
-
 export default async function MarketingHomePage() {
-  const { demoHref, staffHref } = await marketingLinks();
+  const { demoHref, staffHref } = await marketingPublicLinks();
 
   return (
-    <MarketingExperience className={styles.page}>
-      <header className={`${styles.top} ${styles.marketingBase}`}>
-        <div className={styles.topInner}>
-          <Link className={styles.wordmark} href="/">
-            <svg
-              className={styles.mark}
-              viewBox="0 0 32 32"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <rect
-                x="5"
-                y="4"
-                width="16"
-                height="21"
-                rx="3.5"
-                fill="currentColor"
-                opacity="0.38"
-              />
-              <rect
-                x="11"
-                y="8"
-                width="16"
-                height="21"
-                rx="3.5"
-                fill="currentColor"
-              />
-            </svg>
-            {PRODUCT_NAME}
-          </Link>
-          <nav className={styles.nav} aria-label="Marketing">
-            <Link
-              className={`${styles.navAnchor} ${styles.textLink}`}
-              href="#how-it-works"
-            >
-              How it works
-            </Link>
-            <Link
-              className={`${styles.navAnchor} ${styles.textLink}`}
-              href="#preview"
-            >
-              Clinic preview
-            </Link>
-            <a
-              className={`${styles.navStaff} ${styles.textLink}`}
-              href={staffHref}
-            >
-              Staff sign in
-            </a>
-            <MarketingThemeControl />
-          </nav>
-        </div>
-      </header>
-
+    <MarketingShell currentPath="/" staffHref={staffHref}>
       <main>
         <section
           className={`${styles.hero} ${styles.marketingBase}`}
@@ -407,24 +317,23 @@ export default async function MarketingHomePage() {
               <div className={`${styles.inner} ${styles.closingCta}`}>
                 <div className={styles.closingCtaCopy}>
                   <MarketingReveal.Item delay={0}>
-                    <p className={styles.eyebrow}>See it in practice</p>
-                    <h2 id="closing-heading">
-                      See the patient experience for yourself.
-                    </h2>
+                    <p className={styles.eyebrow}>Get started</p>
+                    <h2 id="closing-heading">Bring your aftercare online.</h2>
                     <p className={styles.copy}>
-                      Open the Riverside Dental Demo and see how clinic-branded
-                      aftercare works on a real patient page.
+                      Request a demo and we will walk through branded patient
+                      pages, templates, and what launch onboarding looks like
+                      for your practice.
                     </p>
                   </MarketingReveal.Item>
                 </div>
                 <MarketingReveal.Item delay={editorialRevealDelay(1)}>
                   <div className={styles.closingCtaAction}>
-                    <a
+                    <Link
                       className={`${styles.button} ${styles.primary}`}
-                      href={demoHref}
+                      href="/contact"
                     >
-                      View the clinic demo
-                    </a>
+                      Request a demo
+                    </Link>
                   </div>
                 </MarketingReveal.Item>
               </div>
@@ -432,33 +341,6 @@ export default async function MarketingHomePage() {
           </section>
         </div>
       </main>
-      <footer className={`${styles.footer} ${styles.marketingClosing}`}>
-        <div className={styles.inner}>
-          <div className={styles.footerSeparator} aria-hidden="true" />
-          <div className={styles.footerInner}>
-            <div className={styles.footerBrand}>
-              <p className={styles.footerName}>{PRODUCT_NAME}</p>
-              <p className={styles.footerTag}>
-                Clinic-branded aftercare patients can revisit.
-              </p>
-            </div>
-            <nav className={styles.footerNav} aria-label="Footer">
-              <Link className={styles.textLink} href="#how-it-works">
-                How it works
-              </Link>
-              <Link className={styles.textLink} href="#preview">
-                Clinic preview
-              </Link>
-              <a className={styles.textLink} href={staffHref}>
-                Staff sign in
-              </a>
-            </nav>
-          </div>
-          <p className={styles.footerCopy}>
-            © {new Date().getFullYear()} {PRODUCT_NAME}
-          </p>
-        </div>
-      </footer>
-    </MarketingExperience>
+    </MarketingShell>
   );
 }
