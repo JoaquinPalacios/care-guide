@@ -19,7 +19,7 @@ Keep using `GuideTemplateSection` (and practice additions) for recovery stages.
 - Period labels are content, not an enum. The renderer must not assume dental periods.
 - Practice overrides continue to replace title/body only; the canonical `periodLabel` is preserved.
 
-Do not add a separate timeline subsystem, patient-specific plan fields, or client-side timeline interaction.
+Do not add a separate timeline subsystem, patient-specific plan fields, or client-side timeline interaction in the document renderer. Phase 1G may derive demo Today/Timeline status (`earlier` / `current` / `upcoming`) from an explicit fixture plus these sections. That status is not clinical clearance.
 
 ## Consequences
 

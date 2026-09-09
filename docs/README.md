@@ -17,6 +17,6 @@ This directory is the product and architecture documentation for Care Guide.
 2. Read the [ADRs](adr/README.md) for the architectural decisions the PRD depends on.
 3. Use [WORKING-MEMORY.md](product/WORKING-MEMORY.md) only as a map of the current repository.
 
-The aftercare **product** described in the PRD is not a complete commercial MVP. Phase 1A–1C plus 1E hardening, 1F public-experience work, and 1F.1 Aftercare Guide branding/presentation settings are implemented. Phase 1D was absorbed into 1C. QR, operator admin, and analytics are later. The application also contains a parked chairside procedure-session product. See PRD §26 and [ADR 0009](adr/0009-existing-chairside-product-is-parked.md).
+The aftercare **product** described in the PRD is not a complete commercial MVP. Phase 1A–1C plus 1E hardening, 1F public-experience work, and Phase 1G’s interactive `demodental` recovery demo are implemented. Phase 1D was absorbed into 1C. QR, operator admin, analytics, and persisted RecoveryPlan are later. The application also contains a parked chairside procedure-session product. See PRD §26, [ADR 0009](adr/0009-existing-chairside-product-is-parked.md), and [ADR 0015](adr/0015-recovery-plan-is-not-procedure-session.md).
 
 **Aftercare Guide** is the current provisional commercial/product name. The repository remains `care-guide`.

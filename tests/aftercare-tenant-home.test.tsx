@@ -135,7 +135,9 @@ describe("tenant homepage", () => {
     expect(html).not.toContain("Book an appointment");
     expect(html).toContain("DEMO: call the clinic or emergency services.");
     expect(html).toContain("Powered by Aftercare Guide");
-    expect(html).toContain("Demo aftercare content — not clinical advice.");
+    expect(html).toContain("Interactive demo");
+    expect(html).toContain("Sample content only");
+    expect(html).toContain("Not clinical advice");
     expect(html).toContain('src="/demo/riverside-mark.svg"');
     expect(html).not.toContain("Implant Aftercare");
     expect(html).not.toContain("login");
@@ -233,7 +235,7 @@ describe("tenant homepage", () => {
     expect(html).not.toContain("02 5550 0100");
     expect(html).not.toContain("riverside-dental-demo");
     expect(html).not.toContain("Powered by Aftercare Guide");
-    expect(html).not.toContain("Demo aftercare content");
+    expect(html).not.toContain("Interactive demo");
   });
 
   it("uses one h1, a main landmark, and a tel action", async () => {

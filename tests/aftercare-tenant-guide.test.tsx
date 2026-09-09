@@ -198,7 +198,11 @@ describe("tenant guide page", () => {
     expect(html).toContain('href="tel:0255500100"');
     expect(html).toContain("Call Riverside Dental Demo");
     expect(html).not.toContain("Book an appointment");
-    expect(html).toContain("Demo aftercare content — not clinical advice.");
+    expect(html).toContain("Interactive demo");
+    expect(html).toContain("Sample content only");
+    expect(html).toContain("Not clinical advice");
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain("Check-in");
     expect(html).toContain("Powered by Aftercare Guide");
     expect(html).not.toContain("practice_override");
     expect(html).not.toContain("practice_addition");
@@ -238,6 +242,8 @@ describe("tenant guide page", () => {
     );
     expect(html).not.toContain("Weekend contact (Riverside demo)");
     expect(html).not.toContain("Powered by Aftercare Guide");
+    expect(html).not.toContain('role="tablist"');
+    expect(html).not.toContain("Check-in");
   });
 
   it("uses one h1, sequential headings, and a main landmark", async () => {

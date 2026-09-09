@@ -1,4 +1,5 @@
 import { guideSectionTone } from "@/lib/aftercare/guide-section-tone";
+import { sectionBodyParagraphs } from "@/lib/aftercare/section-body";
 import type { ComposedGuideSection } from "@/lib/aftercare/types";
 
 import styles from "../patient.module.css";
@@ -25,13 +26,6 @@ function visuallyHiddenPrefix(
   return null;
 }
 
-function bodyParagraphs(body: string): string[] {
-  return body
-    .split(/\n{2,}/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
-}
-
 export function GuideSection({ section }: { section: ComposedGuideSection }) {
   const tone = guideSectionTone(section.kind);
   const headingId = `section-${section.key}`;
@@ -43,7 +37,7 @@ export function GuideSection({ section }: { section: ComposedGuideSection }) {
         {prefix ? <span className={styles.vh}>{prefix}</span> : null}
         {section.title}
       </h2>
-      {bodyParagraphs(section.body).map((paragraph, index) => (
+      {sectionBodyParagraphs(section.body).map((paragraph, index) => (
         <p key={`${section.key}-${index}`} className={styles.body}>
           {paragraph}
         </p>

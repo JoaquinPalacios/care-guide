@@ -92,10 +92,16 @@ export function patientSpecificJs(
 ): AssetMeasurement[] {
   return assets.filter((asset) => {
     const url = decodeURIComponent(asset.url);
+    const body = asset.body;
     return (
       url.includes("app/(aftercare)") ||
       url.includes("app/%28aftercare%29") ||
-      /patient[-.]/i.test(url)
+      /patient[-.]/i.test(url) ||
+      body.includes("data-demo-view") ||
+      body.includes("Demo response") ||
+      body.includes("How are you feeling today?") ||
+      body.includes("Change colour theme") ||
+      body.includes("ptcBtn")
     );
   });
 }
@@ -105,7 +111,25 @@ export function patientThemeToggleJs(
 ): AssetMeasurement[] {
   return assets.filter((asset) => {
     const url = decodeURIComponent(asset.url);
-    return /patient-theme-control|theme-preference/i.test(url);
+    const body = asset.body;
+    return (
+      /patient-theme-control|theme-preference/i.test(url) ||
+      body.includes("Change colour theme") ||
+      body.includes("ptcBtn")
+    );
+  });
+}
+
+export function patientDemoJs(assets: AssetMeasurement[]): AssetMeasurement[] {
+  return assets.filter((asset) => {
+    const url = decodeURIComponent(asset.url);
+    const body = asset.body;
+    return (
+      /patient-demo-experience|print-trigger/i.test(url) ||
+      body.includes("data-demo-view") ||
+      body.includes("Demo response") ||
+      body.includes("How are you feeling today?")
+    );
   });
 }
 
@@ -134,11 +158,11 @@ export function expectCssWithinPhase1Budget(css: AssetMeasurement[]): void {
   const gzip = sumMetric(css, "gzip");
   const brotli = sumMetric(css, "brotli");
 
-  // Phase 1F.4: guide-card hover + recovery-surface CSS. Measured tenant CSS
-  // is 9,538 raw (gzip/Brotli stay under the previous 3,072 / 2,560 ceilings).
-  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(9_538);
-  expect(gzip, `CSS gzip ${gzip}`).toBeLessThanOrEqual(3072);
-  expect(brotli, `CSS brotli ${brotli}`).toBeLessThanOrEqual(2560);
+  // Phase 1G: demo nav, Today/Timeline/Check-in, and print styles.
+  // Review if tenant CSS grows well beyond the last measured payload.
+  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(16_384);
+  expect(gzip, `CSS gzip ${gzip}`).toBeLessThanOrEqual(4_500);
+  expect(brotli, `CSS brotli ${brotli}`).toBeLessThanOrEqual(4_000);
 }
 
 export function expectNoTailwind(css: AssetMeasurement[]): void {

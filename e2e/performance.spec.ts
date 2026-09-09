@@ -6,9 +6,10 @@ import {
   expectNoTailwind,
   expectStaffCssHasTailwind,
   measurePageAssets,
+  motionLibraryJs,
+  patientDemoJs,
   patientSpecificJs,
   patientThemeToggleJs,
-  motionLibraryJs,
   sumMetric,
 } from "./helpers/assets";
 import {
@@ -42,15 +43,9 @@ test.describe("Phase 1 performance and asset contracts", () => {
         .map((asset) => asset.url)
         .sort()
     );
-    expect(
-      patientSpecificJs(guide.js)
-        .map((asset) => asset.url)
-        .sort()
-    ).toEqual(
-      patientThemeToggleJs(guide.js)
-        .map((asset) => asset.url)
-        .sort()
-    );
+    expect(patientThemeToggleJs(guide.js).length).toBeGreaterThan(0);
+    expect(patientDemoJs(guide.js).length).toBeGreaterThan(0);
+    expect(motionLibraryJs(guide.js)).toEqual([]);
 
     testInfo.attach("phase-1e-performance.json", {
       contentType: "application/json",

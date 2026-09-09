@@ -49,8 +49,9 @@ test.describe("tenant homepage and guide", () => {
       page.getByRole("button", { name: /Change colour theme/ })
     ).toBeVisible();
     await expect(page.getByRole("radio", { name: "System" })).toHaveCount(0);
+    await expect(page.getByText("Interactive demo")).toBeVisible();
     await expect(
-      page.getByText("Demo aftercare content — not clinical advice.")
+      page.getByText("Sample content only · Not clinical advice")
     ).toBeVisible();
     await expectNoLoginUi(page);
     await page.screenshot({
@@ -67,36 +68,29 @@ test.describe("tenant homepage and guide", () => {
 
     await expectPublicTenantUrl(page, EXTRACTION);
     await expectOneH1(page, "Tooth Extraction");
+    await expect(page.getByRole("tab", { name: "Today" })).toBeVisible();
     await expect(
-      page.getByText("This sample “Tooth Extraction” guide exists", {
-        exact: false,
-      })
+      page.getByRole("tabpanel", { name: "Today" }).getByText("Day 1 of 7")
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", {
-        name: "The first day at Riverside Dental Demo",
-      })
+      page.getByRole("heading", { name: "What to do today" })
     ).toBeVisible();
     await expect(
-      page.getByText("Practice override: Riverside Dental Demo asks patients", {
-        exact: false,
-      })
-    ).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "Weekend contact (Riverside demo)" })
-    ).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "Warning signs (demo)" })
+      page.getByRole("heading", { name: "Weekend contact" })
     ).toHaveCount(0);
     await expect(
-      page.getByRole("heading", { name: "When to contact us (demo)" })
+      page.getByRole("heading", { name: "When to contact us" })
     ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Recovery overview" })
+    ).toHaveCount(0);
+    await page.getByRole("tab", { name: "Timeline" }).click();
     await expect(page.getByText("First few hours")).toBeVisible();
     await expect(page.getByText("Today / first 24 hours")).toBeVisible();
-    await expect(page.getByText("Days 2–3")).toBeVisible();
+    await expect(page.getByText("Days 2–3", { exact: true })).toBeVisible();
     await expect(page.getByText("Days 4–7")).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: "Recovery guide" })
+      page.getByRole("heading", { name: "Recovery overview" })
     ).toBeVisible();
     await expect(page.locator("text=Important.")).toHaveCount(1);
     await expect(page.getByText("If you need urgent help")).toBeVisible();

@@ -152,3 +152,19 @@ body {
   outline: 2px solid var(--cg-focus);
   outline-offset: 3px;
 }
+
+.aftercareTheme:has([data-print-care-plan]) .patientThemeSlot {
+  display: none;
+}
+
+@media print {
+  .patientThemeSlot {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #ffffff;
+    color: #111318;
+  }
+}

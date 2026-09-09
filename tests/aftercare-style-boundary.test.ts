@@ -255,6 +255,8 @@ describe("aftercare style boundary", () => {
   it("keeps patient Client Components isolated to theme control and marketing Motion to marketing", () => {
     const allowedPatientClient = new Set([
       "app/(aftercare)/components/patient-theme-control.tsx",
+      "app/(aftercare)/components/patient-demo-experience.tsx",
+      "app/(aftercare)/components/print-trigger.tsx",
     ]);
     const allowedMarketingClient = new Set([
       "app/(marketing)/components/marketing-theme-control.tsx",
@@ -301,6 +303,12 @@ describe("aftercare style boundary", () => {
     expect(
       read("app/(aftercare)/components/patient-theme-control.tsx")
     ).toMatch(/['"]use client['"]/);
+    expect(
+      read("app/(aftercare)/components/patient-demo-experience.tsx")
+    ).toMatch(/['"]use client['"]/);
+    expect(read("app/(aftercare)/components/print-trigger.tsx")).toMatch(
+      /['"]use client['"]/
+    );
     expect(
       read("app/(marketing)/components/marketing-theme-control.tsx")
     ).toMatch(/['"]use client['"]/);

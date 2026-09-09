@@ -31,9 +31,12 @@ export async function expectPublicTenantUrl(
 export async function expectNoLoginUi(page: Page): Promise<void> {
   const html = await page.content();
   expect(html.toLowerCase()).not.toContain("staff sign in");
-  expect(html.toLowerCase()).not.toContain("sign in");
+  expect(html.toLowerCase()).not.toContain("staff sign-in");
   expect(page.locator('input[type="password"]')).toHaveCount(0);
-  expect(page.locator("form")).toHaveCount(0);
+  expect(page.getByRole("heading", { name: "Staff sign in" })).toHaveCount(0);
+  expect(
+    page.locator('form[action*="login"], form[action*="auth"]')
+  ).toHaveCount(0);
 }
 
 export async function expectOneH1(page: Page, text: string): Promise<void> {

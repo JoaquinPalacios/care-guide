@@ -39,7 +39,9 @@ describe("resolvePracticeChrome", () => {
     expect(chrome.instructionsLabel).toBe("Aftercare instructions");
     expect(chrome.themeMode).toBe("SYSTEM");
     expect(chrome.allowPatientThemeToggle).toBe(false);
-    expect(DEMO_AFTERCARE_NOTICE).toContain("not clinical advice");
+    expect(DEMO_AFTERCARE_NOTICE.toLowerCase()).toContain(
+      "not clinical advice"
+    );
   });
 
   it("omits optional fields when they are missing or unsafe", () => {

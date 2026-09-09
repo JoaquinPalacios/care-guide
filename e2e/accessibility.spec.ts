@@ -37,9 +37,16 @@ test.describe("patient accessibility", () => {
       await page.emulateMedia({ colorScheme });
       await page.goto(EXTRACTION, { waitUntil: "load" });
       await expectNoSeriousAxeViolations(page);
+      await expect(
+        page.getByRole("tabpanel", { name: "Today" }).getByText("Day 1 of 7")
+      ).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: "Recovery overview" })
+      ).toHaveCount(0);
+      await page.getByRole("tab", { name: "Timeline" }).click();
       await expect(page.getByText("First few hours")).toBeVisible();
       await expect(
-        page.getByRole("heading", { name: "Recovery guide" })
+        page.getByRole("heading", { name: "Recovery overview" })
       ).toBeVisible();
     });
   }

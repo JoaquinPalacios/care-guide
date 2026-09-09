@@ -250,9 +250,6 @@ const DEMO_PROCEDURE_TEMPLATES = [
   },
 ];
 
-const DEMO_DISCLAIMER =
-  "DEMO CONTENT ONLY — this is fictional Care Guide sample copy for local development. It is not clinical advice and must not be given to patients.";
-
 const DEMO_CLINIC_PROFILE = {
   displayName: "Riverside Dental Demo",
   logoUrl: "/demo/riverside-mark.svg",
@@ -274,7 +271,7 @@ const DEMO_CLINIC_PROFILE = {
   contactUrl: "https://www.example.com/riverside-dental-demo/contact",
   contactEmail: "hello@riverside-dental-demo.example",
   emergencyInstructions:
-    "DEMO: If this were a real practice, patients would call the clinic during hours or emergency services if they have trouble breathing, uncontrolled bleeding, or rapidly worsening swelling. This demo text is not clinical advice.",
+    "Call the clinic during hours. Use emergency services if you have trouble breathing, uncontrolled bleeding, or rapidly worsening swelling.",
   showCareGuideAttribution: true,
 };
 
@@ -294,10 +291,10 @@ const DEMO_EXTRACTION_GUIDE = {
       id: "guide_sec_demo_extraction_intro",
       key: "introduction",
       kind: "INTRODUCTION",
-      title: "About this demo guide",
+      title: "After your extraction",
       periodLabel: null,
       sortOrder: 1,
-      body: `${DEMO_DISCLAIMER}\n\nThis sample “Tooth Extraction” guide exists so Aftercare Guide can demonstrate a clinic-branded recovery page. The stages below are paraphrased demo structure, not clinical advice.`,
+      body: `This page is your recovery information from Riverside Dental Demo. Follow the stages in order, and contact the practice if you are unsure or need help.`,
     },
     {
       id: "guide_sec_demo_extraction_immediate",
@@ -339,43 +336,43 @@ const DEMO_EXTRACTION_GUIDE = {
       id: "guide_sec_demo_extraction_normal",
       key: "what-is-normal",
       kind: "WHAT_IS_NORMAL",
-      title: "What this demo treats as normal",
+      title: "What's normal",
       periodLabel: null,
       sortOrder: 6,
-      body: `Mild swelling, a dull ache, and a little oozing can be expected in the first days. This seeded text is generic demonstration copy and does not describe every recovery.`,
+      body: `Mild swelling, a dull ache, and a little oozing can be expected in the first days. Recovery varies; contact the practice if you are unsure.`,
     },
     {
       id: "guide_sec_demo_extraction_warnings",
       key: "warning-signs",
       kind: "WARNING_SIGNS",
-      title: "When to contact us (demo)",
+      title: "When to contact us",
       periodLabel: null,
       sortOrder: 7,
-      body: `Call the practice if bleeding will not slow, swelling spreads, swallowing becomes difficult, or pain gets worse after the first few days. For trouble breathing, use emergency services. Do not treat this demo list as medical guidance.`,
+      body: `Call the practice if bleeding will not slow, swelling spreads, swallowing becomes difficult, or pain gets worse after the first few days. For trouble breathing, use emergency services.`,
     },
     {
       id: "guide_sec_demo_extraction_contact",
       key: "contact-practice",
       kind: "CONTACT_PRACTICE",
-      title: "Contact the practice (demo)",
+      title: "Contact the practice",
       periodLabel: null,
       sortOrder: 8,
-      body: `Use the practice phone on this page if you have a question about recovery. This paragraph is sample copy; patients would normally use the clinic profile contact details.`,
+      body: `Use the practice phone on this page if you have a question about recovery.`,
     },
   ],
   override: {
     sectionKey: "first-24-hours",
     title: "The first day at Riverside Dental Demo",
-    body: `${DEMO_DISCLAIMER}\n\nPractice override: Riverside Dental Demo asks patients to use the demo after-hours number on the clinic profile if they have questions during the first evening. This is sample customisation, not clinical advice.`,
+    body: `Leave the site undisturbed. Choose soft, cool foods and take any pain relief only as the clinic advised. If you have questions during the first evening, use the after-hours number on this page.`,
   },
   addition: {
     key: "weekend-contact",
     kind: "CUSTOM",
-    title: "Weekend contact (Riverside demo)",
+    title: "Weekend contact",
     sortOrder: 1,
     insertAfterSectionKey: "contact-practice",
     periodLabel: null,
-    body: `${DEMO_DISCLAIMER}\n\nPractice addition: this extra section shows how Riverside Dental Demo can insert local information after a canonical section. It is not a real on-call roster.`,
+    body: `If you need the practice at the weekend, use the phone number on this page.`,
   },
 };
 

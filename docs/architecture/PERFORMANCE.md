@@ -886,3 +886,50 @@ The increase is the independent `MarketingRevealCard` observer, not a new librar
 ### Tenant CSS / JS
 
 Tenant source was not modified. Boundary tests still forbid `from "motion"` under `app/(aftercare)`.
+
+## After Phase 1G (interactive recovery demo + responsive reveal threshold)
+
+Measured 2026-09-09 against `cursor/aftercare-phase-1e-hardening` after Phase 1G. Production `next start` on port 4173. Next.js 16.3.4 / Turbopack. No new production dependency. No PDF library. No Motion on tenant.
+
+### Marketing reveal JavaScript
+
+Responsive Intersection Observer margin only. Duration remains 520ms.
+
+| Chunk              | Role                                            |    Raw | gzip -9 | Brotli |
+| ------------------ | ----------------------------------------------- | -----: | ------: | -----: |
+| `2_tz0inlnt8w7.js` | Marketing experience + responsive reveal margin | 36,194 |   9,263 |  8,122 |
+| `290cfjrz3sdlx.js` | Motion runtime (`motion/react-m`, `LazyMotion`) | 39,965 |  13,751 | 12,392 |
+
+| Metric             | 1F.10vt |         1G |    Delta |
+| ------------------ | ------: | ---------: | -------: |
+| Experience island  |  35,865 | **36,194** | **+329** |
+| Motion runtime     |  39,965 | **39,965** |    **0** |
+| Motion-related raw |  75,830 | **76,159** | **+329** |
+
+The increase is `useMarketingRevealViewport` (`useSyncExternalStore` + memoized margin). No new Motion features.
+
+### Tenant CSS
+
+Loaded on `http://demodental.localhost:4173/` and `/extraction`:
+
+- `3kllwafy7q76u.css` — aftercare base (3,195 raw / 1,042 gzip / 885 Brotli)
+- `2_0yz5dcat0lb.css` — `patient.module.css` (11,919 raw / 2,453 gzip / 2,084 Brotli)
+
+| Metric         | 1F.10vt |         1G |      Delta |
+| -------------- | ------: | ---------: | ---------: |
+| CSS raw        |   9,538 | **15,114** | **+5,576** |
+| CSS gzip -9    |   ~2.5k |  **3,495** |          — |
+| CSS Brotli q11 |   ~2.2k |  **2,969** |          — |
+| Tailwind       |      no |         no |          — |
+
+Source CSS: `aftercare.css` 3,119 + `patient.module.css` 10,814 = **13,933**. Extra payload is demo navigation, Today/Timeline/Check-in, and print styles. Playwright now enforces **≤ 16,384 raw / 4,500 gzip / 4,000 Brotli**. No Tailwind. No CSS-in-JS. **0 font bytes.**
+
+### Tenant JavaScript (patient-specific islands)
+
+| Route       | Island                  | Chunk              |   Raw | gzip -9 | Brotli |
+| ----------- | ----------------------- | ------------------ | ----: | ------: | -----: |
+| Tenant home | `PatientThemeControl`   | `2ibiesqh06nb6.js` | 3,564 |   1,421 |  1,226 |
+| Guide       | `PatientDemoExperience` | `1mp69n0tu-fwn.js` | 6,768 |   1,981 |  1,732 |
+| Print       | `PrintTrigger`          | `0ni5wwxckjh5j.js` | 3,531 |     862 |    736 |
+
+The demo island loads on the extraction guide only, not the tenant homepage. Guide body (Today copy, timeline stages, print document) stays Server Components. **No Motion on tenant.** Check-in is React state in that island; it does not add fetch or storage code.

@@ -40,6 +40,7 @@ Do not create an ADR for a reversible UI detail. Create one when a later impleme
 | [0011](0011-patient-styling-uses-css-modules-and-semantic-runtime-tokens.md) | Patient styling uses CSS Modules and semantic runtime tokens | Accepted |
 | [0012](0012-apex-host-is-the-public-marketing-face.md)                       | Apex host is the public marketing face                       | Accepted |
 | [0014](0014-recovery-timeline-stages-are-data-driven-sections.md)            | Recovery timeline stages are data-driven sections            | Accepted |
+| [0015](0015-recovery-plan-is-not-procedure-session.md)                       | RecoveryPlan is not ProcedureSession                         | Accepted |
 
 Related product contract: [../product/PRD.md](../product/PRD.md).
 Performance contract: [../architecture/PERFORMANCE.md](../architecture/PERFORMANCE.md).
