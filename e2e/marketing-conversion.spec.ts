@@ -286,9 +286,16 @@ test.describe("marketing conversion routes", () => {
     page,
   }, testInfo) => {
     const pricing = await measurePageAssets(page, marketingUrl("/pricing"));
-    const contact = await measurePageAssets(page, marketingUrl("/contact"));
+    const contactPage = await page.context().newPage();
+    const contact = await measurePageAssets(
+      contactPage,
+      marketingUrl("/contact")
+    );
+    await contactPage.close();
     expectNoTailwind(pricing.css);
     expectNoTailwind(contact.css);
+    expect(pricing.css.length).toBeGreaterThan(0);
+    expect(contact.css.length).toBeGreaterThan(0);
 
     testInfo.attach("marketing-conversion-performance.json", {
       contentType: "application/json",

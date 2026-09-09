@@ -982,3 +982,30 @@ Source CSS: `aftercare.css` 3,147 + `patient.module.css` 11,715 = **14,862**. Ex
 | Patient client components |     3 |     **3** |      **0** |
 
 Client islands remain theme control, Today/Timeline demo nav, and print trigger. Check-in form/state was removed from `PatientDemoExperience`. Guide body stays Server Components. **No Motion on tenant.**
+
+## After marketing completion (pricing + contact)
+
+Measured 2026-09-09 against `cursor/aftercare-marketing-completion-ebe8` on production `next start` / port 4173. Next.js 16.3.4 / Turbopack. No new UI library. No billing or form-delivery JavaScript. Pricing and contact are Server Components; client JS is shared marketing chrome (theme popover, compact site menu, existing Motion).
+
+### Shared marketing CSS
+
+Loaded on `/`, `/pricing`, and `/contact`:
+
+- `43ou1to094gs_.css` — marketing base (7,917 raw / 2,131 gzip / 1,891 Brotli)
+- `2nlk4igi9hlfu.css` — `marketing.module.css` including plan/contact layout (41,884 raw / 7,270 gzip / 6,348 Brotli)
+
+| Metric         | Marketing completion |
+| -------------- | -------------------: |
+| CSS raw        |           **49,801** |
+| CSS gzip -9    |            **9,401** |
+| CSS Brotli q11 |            **8,239** |
+| Tailwind       |                   no |
+
+### Product client islands
+
+| Chunk              | Role                                       |    Raw | gzip -9 | Brotli |
+| ------------------ | ------------------------------------------ | -----: | ------: | -----: |
+| `3ahnw7t54-ocv.js` | Motion experience + compact site menu      | 29,378 |   8,371 |  7,410 |
+| `17qg50x_rufn5.js` | Theme popover on `/pricing` and `/contact` | 12,219 |   4,802 |  4,215 |
+
+Pricing and contact do not add a second animation system or a form-handler chunk. **No Motion on tenant.** Tenant `/pricing` and `/contact` remain 404.

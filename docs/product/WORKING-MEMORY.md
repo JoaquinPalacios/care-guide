@@ -578,6 +578,7 @@ Root-platform commercial pages. No billing integration. No lead database. No ten
 | Navigation      | Desktop: How it works, Clinic preview, Pricing, Contact, Staff sign in, theme. Mobile: brand, Staff sign in, theme, compact accessible site menu for real routes. Footer matches real routes/anchors.                   |
 | Demo            | Homepage **View the clinic demo** still goes to the production tenant patient renderer (`demodental`). Closing CTA **Request a demo** goes to `/contact`.                                                               |
 | SEO             | `app/sitemap.ts` and `app/robots.ts` list `/`, `/pricing`, `/contact` only. No `/_marketing` or `/_sites`. Optional `CARE_GUIDE_METADATA_BASE`. SoftwareApplication JSON-LD without ratings, offers, or certifications. |
+| Performance     | Shared marketing CSS **49,801** raw on `/`, `/pricing`, `/contact`. Motion+menu island **29,378** raw. No Tailwind. No form JS. See [PERFORMANCE.md](../architecture/PERFORMANCE.md).                                   |
 
 Local URLs:
 

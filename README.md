@@ -88,6 +88,8 @@ http://app.localhost:3000/login
 
 Local login credentials come from `LOCAL_<ROLE>_EMAIL` and `LOCAL_<ROLE>_PASSWORD` in `.env` or `.env.local`. `.env.example` shows the local-only defaults for the two current membership roles (`ADMIN` and `STAFF`). Those values are refused by the seed in production. Do not use them outside local development.
 
+`/contact` renders a mailto only when `MARKETING_CONTACT_EMAIL` is set. `.env.example` uses the fake local value `hello@example.test`. If the variable is unset, the page does not pretend that a form was submitted.
+
 You can start editing `app/(marketing)/%5Fmarketing/page.tsx` or `app/(staff)/page.tsx`; the page auto-updates as you edit.
 
 Staff surfaces use Tailwind. Patient tenant routes use CSS Modules and server-rendered CSS custom properties — see [docs/architecture/PERFORMANCE.md](docs/architecture/PERFORMANCE.md).
