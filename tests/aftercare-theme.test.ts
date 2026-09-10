@@ -277,6 +277,16 @@ describe("serializeAftercareThemeCss", () => {
       expect(css).toContain(`html{color-scheme:${scheme}}`);
     }
   );
+
+  it("can scope color-scheme to the patient theme wrapper", () => {
+    const css = serializeAftercareThemeCss(DEFAULT_AFTERCARE_THEME, {
+      themeMode: "LIGHT",
+      colorSchemeSelector: "scope",
+    });
+
+    expect(css).toContain(`.${AFTERCARE_THEME_SCOPE}{color-scheme:light;`);
+    expect(css).not.toContain("html{color-scheme");
+  });
 });
 
 describe("toAftercareThemeStyle", () => {

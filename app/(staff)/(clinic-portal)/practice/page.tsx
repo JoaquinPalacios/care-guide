@@ -27,7 +27,7 @@ export default async function PracticePage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
       <header>
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
           Practice

@@ -48,6 +48,7 @@ describe("clinic portal pages", () => {
     expect(chrome).toContain("Guides");
     expect(chrome).toContain("Practice");
     expect(chrome).toContain("View patient site");
+    expect(chrome).toContain("PortalAppearanceControl");
     expect(chrome).not.toContain("/sessions");
     expect(chrome).not.toContain("Analytics");
     expect(chrome).not.toContain("Check-ins");
@@ -101,6 +102,7 @@ describe("clinic portal pages", () => {
     expect(preview).toContain("requireStaffSession");
     expect(preview).toContain("PatientPage");
     expect(preview).toContain("GuideDocument");
+    expect(preview).toContain("StaffPreviewToolbar");
     expect(preview).not.toContain("Wisdom Teeth");
   });
 });

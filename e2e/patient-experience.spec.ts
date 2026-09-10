@@ -102,6 +102,11 @@ test.describe("tenant homepage and guide", () => {
       page.getByRole("link", { name: /Call Riverside Dental Demo/ })
     ).toBeVisible();
     await expect(page.getByText("Riverside Dental Demo").first()).toBeVisible();
+    await expect(page.getByText("Draft preview")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Back to guide" })).toHaveCount(
+      0
+    );
+    await expect(page.getByRole("link", { name: "Edit guide" })).toHaveCount(0);
     await expectNoLoginUi(page);
     await page.screenshot({
       path: "test-results/artifacts/extraction-desktop.png",

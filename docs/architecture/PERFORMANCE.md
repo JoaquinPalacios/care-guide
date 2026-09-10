@@ -1091,8 +1091,9 @@ New staff Client Components (not on the patient tenant):
 - `PasswordVisibilityField` on `/login`
 - `GuideEditor` / `CreateGuideForm` on clinic guide routes
 - `PracticeSettingsForm` + `ColorField` on `/practice`
-- Existing `PortalChrome` shell
+- Existing `PortalChrome` shell, plus `PortalAppearanceControl`, dirty-state guard, and confirm dialogs
+- Authenticated draft preview toolbar is a Server Component wrapping the real patient renderer
 
-Draft preview at `/guides/[id]/preview` reuses `PatientPage` + `GuideDocument` and aftercare CSS modules. It still sits under the staff root layout, so Tailwind is present on that authenticated preview route. Public tenant routes remain CSS Modules only.
+Portal appearance uses the same blocking `data-theme-mode` bootstrap as marketing/patient, with storage key `aftercare-guide-portal-theme`. It is not a ThemeProvider and does not load on tenant routes.
 
-Measure production client chunks for the editor and practice forms after `pnpm build` before treating a size regression as accepted.
+Measure production client chunks for the editor shell, portal theme control, and practice forms after `pnpm build` before treating a size regression as accepted.

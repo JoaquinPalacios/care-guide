@@ -22,7 +22,21 @@ Utility action, separated by a divider:
 
 - View patient site ↗ — real tenant origin, new tab
 
-Account/sign-out stay in the footer.
+Preferences, separated by a divider, above account:
+
+- Appearance — System / Light / Dark for the **staff/operator shell**. Stored as `aftercare-guide-portal-theme` on this device. Does **not** change `ClinicProfile.themeMode` (patient presentation).
+
+Account/sign-out stay below Appearance.
+
+### Guide editor
+
+Cancel returns to `/guides`. Unsaved edits open a discard confirmation (Keep editing / Discard changes). Save draft does not change the public pinned revision. Publish asks for confirmation, then pins an immutable snapshot.
+
+Authenticated draft preview uses a staff toolbar outside `PatientPage`. Public tenant URLs never render that toolbar.
+
+### Practice
+
+One route with internal sections: Practice identity, Branding, Contact, Emergency / urgent help, Patient presentation. Save-state is `Saved` / `Unsaved changes` / `Saving…`.
 
 ### Permissions
 
@@ -42,4 +56,4 @@ See [ADR 0017](../adr/0017-clinic-owned-practice-revisions-pin-public-documents.
 
 ## Logo
 
-Upload is **blocked** until production object storage exists. See [ADR 0019](../adr/0019-clinic-logo-upload-requires-object-storage.md).
+Upload is **blocked** until production object storage exists. Practice shows the current mark plus “Upload logo — coming before launch”. There is no file input. See [ADR 0019](../adr/0019-clinic-logo-upload-requires-object-storage.md).

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   MARKETING_THEME_STORAGE_KEY,
   PATIENT_THEME_STORAGE_KEY,
+  PORTAL_THEME_STORAGE_KEY,
   parseThemeMode,
   parseThemePreference,
   themePreferenceBootstrapScript,
@@ -40,5 +41,8 @@ describe("theme preference", () => {
     expect(script).not.toContain("ThemeProvider");
     expect(script).not.toContain("<");
     expect(MARKETING_THEME_STORAGE_KEY).not.toBe(PATIENT_THEME_STORAGE_KEY);
+    expect(PORTAL_THEME_STORAGE_KEY).toBe("aftercare-guide-portal-theme");
+    expect(PORTAL_THEME_STORAGE_KEY).not.toBe(MARKETING_THEME_STORAGE_KEY);
+    expect(PORTAL_THEME_STORAGE_KEY).not.toBe(PATIENT_THEME_STORAGE_KEY);
   });
 });

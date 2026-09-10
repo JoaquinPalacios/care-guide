@@ -23,10 +23,10 @@ describe("logo upload infrastructure", () => {
       "utf8"
     );
 
-    expect(form).toContain(
-      "Production logo upload is blocked until object storage is provisioned"
-    );
+    expect(form).toContain("Upload logo — coming before launch");
+    expect(form).toContain("production object storage");
     expect(form).not.toContain('type="file"');
+    expect(form).toContain('type="hidden"');
     expect(schema).toContain("toSafeLogoSrc");
     expect(schema).not.toContain("base64");
   });
