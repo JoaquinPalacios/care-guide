@@ -1096,4 +1096,13 @@ New staff Client Components (not on the patient tenant):
 
 Portal appearance uses the same blocking `data-theme-mode` bootstrap as marketing/patient, with storage key `aftercare-guide-portal-theme`. It is not a ThemeProvider and does not load on tenant routes.
 
-Measure production client chunks for the editor shell, portal theme control, and practice forms after `pnpm build` before treating a size regression as accepted.
+Measured 2026-09-10 against `cursor/clinic-self-service-ux-polish-eed5` production `next build` (Next.js 16.3.4 / Turbopack). Staff Client islands only; tenant still has no Tailwind and no Motion. No new UI, dialog, or theme library.
+
+| Chunk              | Role                                             |    raw | gzip -9 | Brotli q11 |
+| ------------------ | ------------------------------------------------ | -----: | ------: | ---------: |
+| `2hezqkrcvt1w3.js` | Guide editor (dirty/cancel/publish, breadcrumbs) | 16,269 |   5,106 |      4,409 |
+| `3zu_vb6z-x7je.js` | Practice settings form                           | 15,592 |   4,546 |      3,925 |
+| `3ezgriosqx2_q.js` | Portal appearance + logout                       | 11,306 |   4,548 |      3,972 |
+| `42jbjdl7-dgw9.js` | Operator shell (logout + icons)                  | 17,029 |   6,159 |      5,420 |
+
+Framework/React chunks are shared App Router runtime and are not counted as product islands. Authenticated preview toolbar is a Server Component.

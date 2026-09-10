@@ -148,6 +148,7 @@ export default async function OperatorClinicDetailPage({
         <Link
           href="/operator/clinics"
           className="staffBtn staffBtnQuiet gap-1 px-0"
+          aria-label="Back to all clinics"
         >
           <BackArrowIcon />
           All clinics

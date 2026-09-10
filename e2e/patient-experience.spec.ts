@@ -102,7 +102,9 @@ test.describe("tenant homepage and guide", () => {
       page.getByRole("link", { name: /Call Riverside Dental Demo/ })
     ).toBeVisible();
     await expect(page.getByText("Riverside Dental Demo").first()).toBeVisible();
-    await expect(page.getByText("Draft preview")).toHaveCount(0);
+    await expect(page.getByText("Draft preview", { exact: true })).toHaveCount(
+      0
+    );
     await expect(page.getByRole("link", { name: "Back to guide" })).toHaveCount(
       0
     );

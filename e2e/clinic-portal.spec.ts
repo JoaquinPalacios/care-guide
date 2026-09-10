@@ -79,6 +79,9 @@ test.describe("clinic portal", () => {
       fullPage: true,
     });
     await expectNoSeriousAxeViolations(page);
+
+    await page.setViewportSize({ width: 360, height: 800 });
+    await expectNoHorizontalOverflow(page);
   });
 
   test("guides lists real clinic guides with working preview links", async ({
@@ -177,7 +180,9 @@ test.describe("clinic portal", () => {
       page.getByLabel("Primary brand colour", { exact: true })
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Save changes" })
+      page
+        .getByRole("button", { name: "Save changes" })
+        .filter({ visible: true })
     ).toBeVisible();
     await page.screenshot({
       path: "test-results/artifacts/staff-practice-1440.png",
@@ -191,6 +196,9 @@ test.describe("clinic portal", () => {
       path: "test-results/artifacts/staff-practice-mobile.png",
       fullPage: true,
     });
+
+    await page.setViewportSize({ width: 360, height: 800 });
+    await expectNoHorizontalOverflow(page);
 
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(staffUrl("/guides/new"), { waitUntil: "load" });
@@ -210,12 +218,16 @@ test.describe("clinic portal", () => {
     await page.goto(staffUrl("/guides"), { waitUntil: "load" });
     await page.getByRole("link", { name: "Edit" }).first().click();
     await expect(
-      page.getByRole("button", { name: "Save draft" })
+      page.getByRole("button", { name: "Save draft" }).filter({ visible: true })
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Publish guide" })
+      page
+        .getByRole("button", { name: "Publish guide" })
+        .filter({ visible: true })
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Cancel" }).filter({ visible: true })
+    ).toBeVisible();
     await expect(page.getByText("Saved", { exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Add stage" })).toBeVisible();
     await page.screenshot({
@@ -231,10 +243,15 @@ test.describe("clinic portal", () => {
       fullPage: true,
     });
 
+    await page.setViewportSize({ width: 360, height: 800 });
+    await expectNoHorizontalOverflow(page);
+
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.getByRole("link", { name: "Preview" }).first().click();
     await expect(page).toHaveURL(/\/guides\/.+\/preview/);
-    await expect(page.getByText("Draft preview")).toBeVisible();
+    await expect(
+      page.getByText("Draft preview", { exact: true })
+    ).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "Tooth Extraction" })
     ).toBeVisible();
@@ -322,13 +339,15 @@ test.describe("platform operator", () => {
         name: "All Clinics",
       })
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: "All clinics" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Back to all clinics" })
+    ).toBeVisible();
     await page.screenshot({
       path: "test-results/artifacts/operator-clinic-detail-1440.png",
       fullPage: true,
     });
     await expectNoSeriousAxeViolations(page);
-    await page.getByRole("link", { name: "All clinics" }).click();
+    await page.getByRole("link", { name: "Back to all clinics" }).click();
     await expect(page).toHaveURL(staffUrl("/operator/clinics"));
   });
 });
@@ -350,20 +369,28 @@ test.describe("clinic portal UX polish", () => {
       fullPage: true,
     });
 
-    await page.getByRole("button", { name: "Cancel" }).click();
+    await page
+      .getByRole("button", { name: "Cancel" })
+      .filter({ visible: true })
+      .click();
     await expect(page).toHaveURL(staffUrl("/guides"));
     await expect(page.getByRole("dialog")).toHaveCount(0);
 
     await page.getByRole("link", { name: "Edit" }).first().click();
     const introduction = page.getByLabel("Short introduction");
     await introduction.fill(`${await introduction.inputValue()} `);
-    await expect(page.getByText("Unsaved changes")).toBeVisible();
+    await expect(
+      page.getByText("Unsaved changes", { exact: true })
+    ).toBeVisible();
     await page.screenshot({
       path: "test-results/artifacts/staff-guide-editor-unsaved-1440.png",
       fullPage: true,
     });
 
-    await page.getByRole("button", { name: "Cancel" }).click();
+    await page
+      .getByRole("button", { name: "Cancel" })
+      .filter({ visible: true })
+      .click();
     const discardDialog = page.getByRole("dialog", {
       name: "Discard unsaved changes?",
     });
@@ -377,15 +404,23 @@ test.describe("clinic portal UX polish", () => {
     await discardDialog.getByRole("button", { name: "Keep editing" }).click();
     await expect(discardDialog).toHaveCount(0);
     await expect(page).toHaveURL(/\/guides\/.+\/edit/);
-    await expect(page.getByText("Unsaved changes")).toBeVisible();
+    await expect(
+      page.getByText("Unsaved changes", { exact: true })
+    ).toBeVisible();
 
-    await page.getByRole("button", { name: "Cancel" }).click();
+    await page
+      .getByRole("button", { name: "Cancel" })
+      .filter({ visible: true })
+      .click();
     await page.getByRole("button", { name: "Discard changes" }).click();
     await expect(page).toHaveURL(staffUrl("/guides"));
 
     await page.getByRole("link", { name: "Edit" }).first().click();
     await expect(page.getByText("Saved", { exact: true })).toBeVisible();
-    await page.getByRole("button", { name: "Publish guide" }).click();
+    await page
+      .getByRole("button", { name: "Publish guide" })
+      .filter({ visible: true })
+      .click();
     const publishDialog = page.getByRole("dialog", {
       name: "Publish this guide?",
     });
@@ -415,8 +450,13 @@ test.describe("clinic portal UX polish", () => {
     await expect(page).toHaveURL(/\/guides\/.+\/edit/);
     await expect(page.getByText("Saved", { exact: true })).toBeVisible();
     await page.getByLabel("Short introduction").fill("Draft only copy.");
-    await expect(page.getByText("Unsaved changes")).toBeVisible();
-    await page.getByRole("button", { name: "Save draft" }).click();
+    await expect(
+      page.getByText("Unsaved changes", { exact: true })
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Save draft" })
+      .filter({ visible: true })
+      .click();
     await expect(page.getByText("Saved", { exact: true })).toBeVisible();
     await expect(
       page.getByText(
@@ -426,7 +466,9 @@ test.describe("clinic portal UX polish", () => {
     await page
       .getByLabel("Short introduction")
       .fill("Draft only copy, edited.");
-    await expect(page.getByText("Unsaved changes")).toBeVisible();
+    await expect(
+      page.getByText("Unsaved changes", { exact: true })
+    ).toBeVisible();
   });
 
   test("portal appearance is a sidebar preference separate from patient theme", async ({
@@ -503,7 +545,9 @@ test.describe("clinic portal UX polish", () => {
       page.getByText("Upload logo — coming before launch")
     ).toBeVisible();
     await page.getByLabel("Display name").fill("Riverside Dental Demo ");
-    await expect(page.getByText("Unsaved changes")).toBeVisible();
+    await expect(
+      page.getByText("Unsaved changes", { exact: true })
+    ).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.screenshot({
       path: "test-results/artifacts/staff-practice-sections-1440.png",
@@ -524,7 +568,9 @@ test.describe("clinic portal UX polish", () => {
     await expect(
       page.getByRole("heading", { name: "Tooth Extraction" })
     ).toBeVisible();
-    await expect(page.getByText("Draft preview")).toHaveCount(0);
+    await expect(page.getByText("Draft preview", { exact: true })).toHaveCount(
+      0
+    );
     await expect(page.getByRole("link", { name: "Back to guide" })).toHaveCount(
       0
     );
