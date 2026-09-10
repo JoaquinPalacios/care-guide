@@ -208,7 +208,9 @@ function parseRadiusPreset(value: string | null | undefined): string {
   return RADIUS_PRESET_VALUES.MEDIUM;
 }
 
-function parseCssHexColor(value: string | null | undefined): string | null {
+export function parseCssHexColor(
+  value: string | null | undefined
+): string | null {
   if (typeof value !== "string") {
     return null;
   }
