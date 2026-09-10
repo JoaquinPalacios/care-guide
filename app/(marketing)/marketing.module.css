@@ -474,19 +474,24 @@
     background-color var(--mk-interact-duration) var(--mk-interact-ease),
     color var(--mk-interact-duration) var(--mk-interact-ease),
     border-color var(--mk-interact-duration) var(--mk-interact-ease),
-    box-shadow var(--mk-interact-duration) var(--mk-interact-ease);
+    box-shadow var(--mk-interact-duration) var(--mk-interact-ease),
+    transform var(--mk-interact-duration) var(--mk-interact-ease);
 }
 
 .primary {
   background: var(--mk-brand-strong);
   color: var(--mk-on-brand);
-  box-shadow: 0 1px 0 color-mix(in srgb, #0a0d14 8%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, #0a0d14 8%, transparent),
+    0 8px 18px color-mix(in srgb, var(--mk-brand-strong) 18%, transparent);
 }
 
 .primary:hover {
   background: var(--mk-brand-hover);
-  box-shadow: 0 6px 16px
-    color-mix(in srgb, var(--mk-brand-strong) 22%, transparent);
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, #0a0d14 6%, transparent),
+    0 10px 22px color-mix(in srgb, var(--mk-brand-strong) 24%, transparent);
 }
 
 .primary:focus-visible {
@@ -496,7 +501,32 @@
 
 .primary:active {
   background: var(--mk-brand-active);
+  transform: translateY(0);
   box-shadow: 0 1px 0 color-mix(in srgb, #0a0d14 10%, transparent);
+}
+
+.primary:disabled,
+.primary:disabled:hover,
+.primary[aria-busy="true"],
+.primary[aria-busy="true"]:hover {
+  opacity: 0.72;
+  cursor: wait;
+  transform: none;
+}
+
+.primaryButtonSwap {
+  display: grid;
+  justify-items: center;
+  align-items: center;
+}
+
+.primaryButtonReserve,
+.primaryButtonLive {
+  grid-area: 1 / 1;
+}
+
+.primaryButtonReserve {
+  visibility: hidden;
 }
 
 .secondary {
@@ -1713,7 +1743,7 @@
 .footerInner {
   display: grid;
   gap: 1.25rem;
-  padding-top: 1.35rem;
+  padding-top: var(--mk-footer-pad-top);
 }
 
 .footerBrand {
@@ -1758,7 +1788,7 @@
 }
 
 .pageHeroInner {
-  padding-bottom: 1.35rem;
+  padding-bottom: var(--mk-hero-bottom-gap);
 }
 
 .pageHero::before {
@@ -2092,11 +2122,6 @@
 
 .contactSubmit {
   justify-self: start;
-}
-
-.contactSubmit:disabled {
-  opacity: 0.72;
-  cursor: wait;
 }
 
 .contactHoneypot {
@@ -2449,5 +2474,12 @@
   .textLink,
   .textLink::after {
     transition: none;
+  }
+
+  .primary:hover,
+  .primary:active,
+  .primary:disabled,
+  .primary[aria-busy="true"] {
+    transform: none;
   }
 }

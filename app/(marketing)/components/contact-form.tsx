@@ -16,6 +16,8 @@ import {
   initialContactActionState,
   type ContactActionState,
 } from "@/app/(marketing)/%5Fmarketing/contact/state";
+import { MarketingPrimaryButton } from "@/app/(marketing)/components/marketing-primary-button";
+import { MarketingPrimaryLink } from "@/app/(marketing)/components/marketing-primary-link";
 import {
   CONTACT_FIELD_LIMITS,
   CONTACT_HONEYPOT_FIELD,
@@ -124,9 +126,7 @@ export function ContactForm({ demoHref }: { demoHref: string }) {
           We&apos;ll reply to the email address you provided.
         </p>
         <div className={styles.actions}>
-          <Link className={`${styles.button} ${styles.primary}`} href="/">
-            Homepage
-          </Link>
+          <MarketingPrimaryLink href="/">Homepage</MarketingPrimaryLink>
           <a className={`${styles.button} ${styles.secondary}`} href={demoHref}>
             Clinic demo
           </a>
@@ -313,13 +313,13 @@ export function ContactForm({ demoHref }: { demoHref: string }) {
         Please don&apos;t include patient or clinical information.
       </p>
 
-      <button
-        className={`${styles.button} ${styles.primary} ${styles.contactSubmit}`}
+      <MarketingPrimaryButton
+        className={styles.contactSubmit}
         type="submit"
-        disabled={pending}
+        busy={pending}
       >
-        {pending ? "Sending…" : "Send enquiry"}
-      </button>
+        Send enquiry
+      </MarketingPrimaryButton>
     </form>
   );
 }

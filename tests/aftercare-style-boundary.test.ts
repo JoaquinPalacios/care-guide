@@ -132,6 +132,9 @@ describe("aftercare style boundary", () => {
     const tokens = read("app/(marketing)/marketing.css");
     const styles = read("app/(marketing)/marketing.module.css");
     const wave = read("app/(marketing)/components/marketing-wave.tsx");
+    const pageEdge = read(
+      "app/(marketing)/components/marketing-page-hero-edge.tsx"
+    );
     const preview = read(
       "app/(marketing)/components/marketing-product-preview.tsx"
     );
@@ -194,12 +197,24 @@ describe("aftercare style boundary", () => {
     expect(styles).not.toContain(".phoneBezel");
     expect(styles).not.toContain(".phoneIsland");
     expect(styles).not.toContain(".phoneGlass");
+    expect(tokens).toContain("--mk-hero-bottom-gap");
+    expect(tokens).toContain("--mk-footer-pad-top");
+    expect(tokens).toContain("--mk-footer-pad-bottom");
+    expect(styles).toContain("var(--mk-hero-bottom-gap)");
+    expect(styles).toContain("var(--mk-footer-pad-top)");
     expect(tokens).toContain("ease-out");
     expect(styles).not.toContain("translateY(-1.5px)");
-    expect(styles).not.toMatch(/\.primary:hover\s*\{[^}]*transform/);
+    expect(styles).toMatch(
+      /\.primary:hover\s*\{[^}]*transform:\s*translateY\(-1px\)/
+    );
+    expect(styles).toMatch(
+      /\.primary:active\s*\{[^}]*transform:\s*translateY\(0\)/
+    );
+    expect(styles).toMatch(
+      /prefers-reduced-motion:\s*reduce[\s\S]*\.primary:hover[\s\S]*transform:\s*none/
+    );
     expect(styles).not.toMatch(/\.secondary:hover\s*\{[^}]*transform/);
     expect(styles).not.toMatch(/\.secondary::before\s*\{[^}]*scaleX\(1\)/);
-    expect(styles).not.toMatch(/\.primary:active\s*\{[^}]*transform/);
     expect(styles).not.toMatch(/\.secondary:active\s*\{[^}]*transform/);
     expect(styles).not.toMatch(/\.secondary:hover\s*\{[^}]*translate/);
     expect(styles).not.toMatch(/\.secondary:active\s*\{[^}]*translate/);
@@ -217,6 +232,13 @@ describe("aftercare style boundary", () => {
     expect(wave).toContain('focusable="false"');
     expect(wave).toContain("linearGradient");
     expect(wave).toContain("feGaussianBlur");
+    expect(pageEdge).toContain("INNER_PAGE_FILL");
+    expect(pageEdge).toContain("INNER_PAGE_EDGE");
+    expect(pageEdge).toContain("mkPageWaveInnerPage");
+    expect(pageEdge).not.toContain("CONTACT_FILL");
+    expect(pageEdge).not.toContain("PRICING_FILL");
+    expect(pageEdge).not.toContain("mkPageWaveContact");
+    expect(pageEdge).not.toContain("mkPageWavePricing");
     expect(styles).toContain("processJourney");
     expect(styles).toContain("processRail");
     expect(styles).toContain("processVisual");

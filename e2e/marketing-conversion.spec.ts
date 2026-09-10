@@ -52,7 +52,7 @@ test.describe("marketing conversion routes", () => {
       page.getByRole("link", { name: "Request a demo" }).first()
     ).toHaveAttribute("href", "/contact");
     await expect(page.locator('[data-mk-page-hero="pricing"]')).toHaveCount(1);
-    await expect(page.locator(".mkPageWavePricing")).toHaveCount(1);
+    await expect(page.locator(".mkPageWaveInnerPage")).toHaveCount(1);
 
     const contact = await page.goto(marketingUrl("/contact"), {
       waitUntil: "load",
@@ -73,7 +73,7 @@ test.describe("marketing conversion routes", () => {
       0
     );
     await expect(page.locator('[data-mk-page-hero="contact"]')).toHaveCount(1);
-    await expect(page.locator(".mkPageWaveContact")).toHaveCount(1);
+    await expect(page.locator(".mkPageWaveInnerPage")).toHaveCount(1);
     await expect(page.locator("form")).toHaveCount(1);
     await expect(page.getByLabel("Full name")).toBeVisible();
     await expect(page.getByLabel("Work email")).toBeVisible();
@@ -414,68 +414,159 @@ test.describe("marketing conversion routes", () => {
     await page.locator("header").screenshot({
       path: "test-results/artifacts/marketing-nav-1440.png",
     });
+    await page.locator("footer").screenshot({
+      path: "test-results/artifacts/marketing-footer-1440.png",
+    });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator("header").screenshot({
       path: "test-results/artifacts/marketing-nav-390.png",
+    });
+    await page.locator("footer").screenshot({
+      path: "test-results/artifacts/marketing-footer-390.png",
+    });
+
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto(marketingUrl("/pricing"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+    await page.locator("[data-mk-page-hero]").screenshot({
+      path: "test-results/artifacts/pricing-hero-1280-light.png",
+    });
+    await page.goto(marketingUrl("/contact"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+    await page.locator("[data-mk-page-hero]").screenshot({
+      path: "test-results/artifacts/contact-hero-1280-light.png",
+    });
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/contact"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+    const submit = page.getByRole("button", { name: "Send enquiry" });
+    await submit.scrollIntoViewIfNeeded();
+    await submit.screenshot({
+      path: "test-results/artifacts/contact-primary-default-1440.png",
+    });
+    await submit.hover();
+    await submit.screenshot({
+      path: "test-results/artifacts/contact-primary-hover-1440.png",
+    });
+    await submit.focus();
+    await submit.screenshot({
+      path: "test-results/artifacts/contact-primary-focus-1440.png",
+    });
+  });
+
+  test.describe("homepage scroll recording", () => {
+    test.use({
+      video: { mode: "on", size: { width: 1440, height: 900 } },
+      viewport: { width: 1440, height: 900 },
+    });
+
+    test("records homepage scroll at 1440 and keeps reveals once", async ({
+      page,
+    }) => {
+      mkdirSync("test-results/artifacts", { recursive: true });
+      await page.goto(marketingUrl("/"), { waitUntil: "load" });
+      await expectOneH1(page, "Aftercare that still feels like your clinic.");
+      await expect
+        .poll(async () =>
+          page.evaluate(
+            () =>
+              document.documentElement.getAttribute("data-mk-motion") ===
+                "enhance" ||
+              document.documentElement.getAttribute("data-mk-motion") ===
+                "reduce"
+          )
+        )
+        .toBe(true);
+
+      const height = await page.evaluate(
+        () => document.documentElement.scrollHeight
+      );
+      for (let y = 0; y < height; y += 80) {
+        await page.mouse.wheel(0, 80);
+        await page.waitForTimeout(50);
+      }
+      await page.waitForTimeout(900);
+
+      const afterDown = await page.evaluate(() => ({
+        pending: document.querySelectorAll("[data-mk-pending]").length,
+        visible: [
+          ...document.querySelectorAll<HTMLElement>(".mkReveal"),
+        ].filter((node) => getComputedStyle(node).opacity === "1").length,
+      }));
+
+      await page.evaluate(() =>
+        window.scrollTo({ top: 0, behavior: "instant" })
+      );
+      await page.waitForTimeout(400);
+      await page.mouse.wheel(0, 480);
+      await page.waitForTimeout(400);
+
+      const afterReturn = await page.evaluate(() => ({
+        pending: document.querySelectorAll("[data-mk-pending]").length,
+        hidden: [...document.querySelectorAll<HTMLElement>(".mkReveal")].filter(
+          (node) => getComputedStyle(node).opacity === "0"
+        ).length,
+      }));
+
+      expect(afterDown.visible).toBeGreaterThan(0);
+      expect(afterReturn.hidden).toBe(0);
+      await page
+        .video()
+        ?.saveAs("test-results/artifacts/homepage-scroll-1440.webm");
     });
   });
 
   test("pricing and contact stay server-first without Tailwind", async ({
     page,
   }, testInfo) => {
-    const pricing = await measurePageAssets(page, marketingUrl("/pricing"));
+    const home = await measurePageAssets(page, marketingUrl("/"));
+    const pricingPage = await page.context().newPage();
+    const pricing = await measurePageAssets(
+      pricingPage,
+      marketingUrl("/pricing")
+    );
+    await pricingPage.close();
     const contactPage = await page.context().newPage();
     const contact = await measurePageAssets(
       contactPage,
       marketingUrl("/contact")
     );
     await contactPage.close();
+    expectNoTailwind(home.css);
     expectNoTailwind(pricing.css);
     expectNoTailwind(contact.css);
+    expect(home.css.length).toBeGreaterThan(0);
     expect(pricing.css.length).toBeGreaterThan(0);
     expect(contact.css.length).toBeGreaterThan(0);
 
+    const summarise = (
+      measured: Awaited<ReturnType<typeof measurePageAssets>>
+    ) => ({
+      cssRaw: measured.css.reduce((sum, asset) => sum + asset.raw, 0),
+      cssGzip: measured.css.reduce((sum, asset) => sum + asset.gzip, 0),
+      cssBrotli: measured.css.reduce((sum, asset) => sum + asset.brotli, 0),
+      jsRaw: measured.js.reduce((sum, asset) => sum + asset.raw, 0),
+      jsGzip: measured.js.reduce((sum, asset) => sum + asset.gzip, 0),
+      jsBrotli: measured.js.reduce((sum, asset) => sum + asset.brotli, 0),
+      cssUrls: measured.css.map((asset) => ({
+        url: asset.url,
+        raw: asset.raw,
+        gzip: asset.gzip,
+        brotli: asset.brotli,
+      })),
+      jsUrls: measured.js.map((asset) => ({
+        url: asset.url,
+        raw: asset.raw,
+        gzip: asset.gzip,
+        brotli: asset.brotli,
+      })),
+    });
+
     const payload = {
-      pricing: {
-        cssRaw: pricing.css.reduce((sum, asset) => sum + asset.raw, 0),
-        cssGzip: pricing.css.reduce((sum, asset) => sum + asset.gzip, 0),
-        cssBrotli: pricing.css.reduce((sum, asset) => sum + asset.brotli, 0),
-        jsRaw: pricing.js.reduce((sum, asset) => sum + asset.raw, 0),
-        jsGzip: pricing.js.reduce((sum, asset) => sum + asset.gzip, 0),
-        jsBrotli: pricing.js.reduce((sum, asset) => sum + asset.brotli, 0),
-        cssUrls: pricing.css.map((asset) => ({
-          url: asset.url,
-          raw: asset.raw,
-          gzip: asset.gzip,
-          brotli: asset.brotli,
-        })),
-        jsUrls: pricing.js.map((asset) => ({
-          url: asset.url,
-          raw: asset.raw,
-          gzip: asset.gzip,
-          brotli: asset.brotli,
-        })),
-      },
-      contact: {
-        cssRaw: contact.css.reduce((sum, asset) => sum + asset.raw, 0),
-        cssGzip: contact.css.reduce((sum, asset) => sum + asset.gzip, 0),
-        cssBrotli: contact.css.reduce((sum, asset) => sum + asset.brotli, 0),
-        jsRaw: contact.js.reduce((sum, asset) => sum + asset.raw, 0),
-        jsGzip: contact.js.reduce((sum, asset) => sum + asset.gzip, 0),
-        jsBrotli: contact.js.reduce((sum, asset) => sum + asset.brotli, 0),
-        cssUrls: contact.css.map((asset) => ({
-          url: asset.url,
-          raw: asset.raw,
-          gzip: asset.gzip,
-          brotli: asset.brotli,
-        })),
-        jsUrls: contact.js.map((asset) => ({
-          url: asset.url,
-          raw: asset.raw,
-          gzip: asset.gzip,
-          brotli: asset.brotli,
-        })),
-      },
+      home: summarise(home),
+      pricing: summarise(pricing),
+      contact: summarise(contact),
     };
     mkdirSync("test-results/artifacts", { recursive: true });
     writeFileSync(

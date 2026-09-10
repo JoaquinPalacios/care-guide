@@ -11,6 +11,8 @@ import { MarketingPatientPreview } from "@/app/(marketing)/components/marketing-
 import { MarketingPillars } from "@/app/(marketing)/components/marketing-pillars";
 import { MarketingProcess } from "@/app/(marketing)/components/marketing-process";
 import { MarketingProductAssembly } from "@/app/(marketing)/components/marketing-product-assembly";
+import { MarketingPrimaryAnchor } from "@/app/(marketing)/components/marketing-primary-anchor";
+import { MarketingPrimaryLink } from "@/app/(marketing)/components/marketing-primary-link";
 import { MarketingProductPreview } from "@/app/(marketing)/components/marketing-product-preview";
 import { MarketingShell } from "@/app/(marketing)/components/marketing-shell";
 import { MarketingWave } from "@/app/(marketing)/components/marketing-wave";
@@ -103,12 +105,9 @@ export default async function MarketingHomePage() {
                       <div
                         className={`${styles.actions} ${styles.heroActions}`}
                       >
-                        <a
-                          className={`${styles.button} ${styles.primary}`}
-                          href={demoHref}
-                        >
+                        <MarketingPrimaryAnchor href={demoHref}>
                           View the clinic demo
-                        </a>
+                        </MarketingPrimaryAnchor>
                         <Link
                           className={`${styles.button} ${styles.secondary}`}
                           href="#how-it-works"
@@ -296,12 +295,9 @@ export default async function MarketingHomePage() {
                   </MarketingReveal.Item>
                   <MarketingReveal.Item delay={editorialRevealDelay(3)}>
                     <div className={styles.actions}>
-                      <a
-                        className={`${styles.button} ${styles.primary}`}
-                        href={demoHref}
-                      >
+                      <MarketingPrimaryAnchor href={demoHref}>
                         Open Riverside Dental Demo
-                      </a>
+                      </MarketingPrimaryAnchor>
                     </div>
                   </MarketingReveal.Item>
                 </div>
@@ -334,12 +330,9 @@ export default async function MarketingHomePage() {
                 </div>
                 <MarketingReveal.Item delay={editorialRevealDelay(1)}>
                   <div className={styles.closingCtaAction}>
-                    <Link
-                      className={`${styles.button} ${styles.primary}`}
-                      href="/contact"
-                    >
+                    <MarketingPrimaryLink href="/contact">
                       Request a demo
-                    </Link>
+                    </MarketingPrimaryLink>
                   </div>
                 </MarketingReveal.Item>
               </div>

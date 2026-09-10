@@ -6,6 +6,7 @@ import {
   MarketingRevealItem,
 } from "@/app/(marketing)/components/marketing-experience";
 import { MarketingPageHero } from "@/app/(marketing)/components/marketing-page-hero";
+import { MarketingPrimaryLink } from "@/app/(marketing)/components/marketing-primary-link";
 import { MarketingShell } from "@/app/(marketing)/components/marketing-shell";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 import {
@@ -96,14 +97,21 @@ export default async function MarketingPricingPage() {
                           <li key={feature}>{feature}</li>
                         ))}
                       </ul>
-                      <Link
-                        className={`${styles.button} ${
-                          plan.recommended ? styles.primary : styles.secondary
-                        } ${styles.planCta}`}
-                        href={plan.ctaHref}
-                      >
-                        {plan.ctaLabel}
-                      </Link>
+                      {plan.recommended ? (
+                        <MarketingPrimaryLink
+                          className={styles.planCta}
+                          href={plan.ctaHref}
+                        >
+                          {plan.ctaLabel}
+                        </MarketingPrimaryLink>
+                      ) : (
+                        <Link
+                          className={`${styles.button} ${styles.secondary} ${styles.planCta}`}
+                          href={plan.ctaHref}
+                        >
+                          {plan.ctaLabel}
+                        </Link>
+                      )}
                     </article>
                   </MarketingRevealCard>
                 ))}
@@ -242,12 +250,9 @@ export default async function MarketingPricingPage() {
                 </div>
                 <MarketingRevealItem delay={editorialRevealDelay(1)}>
                   <div className={styles.closingCtaAction}>
-                    <Link
-                      className={`${styles.button} ${styles.primary}`}
-                      href="/contact"
-                    >
+                    <MarketingPrimaryLink href="/contact">
                       Request a demo
-                    </Link>
+                    </MarketingPrimaryLink>
                   </div>
                 </MarketingRevealItem>
               </div>

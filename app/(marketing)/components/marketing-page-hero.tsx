@@ -46,7 +46,7 @@ export function MarketingPageHero({
           </MarketingRevealItem>
         </MarketingRevealGroup>
       </div>
-      <MarketingPageHeroEdge variant={variant} />
+      <MarketingPageHeroEdge />
     </section>
   );
 }
