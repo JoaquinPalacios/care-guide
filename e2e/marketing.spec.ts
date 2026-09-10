@@ -532,9 +532,9 @@ test.describe("marketing homepage", () => {
     await primary.hover();
     await expect
       .poll(async () =>
-        primary.evaluate((element) => getComputedStyle(element).backgroundColor)
+        primary.evaluate((element) => getComputedStyle(element).transform)
       )
-      .not.toBe(restPrimary.background);
+      .toMatch(/matrix\(1,\s*0,\s*0,\s*1,\s*0,\s*-1/);
     const hoverPrimary = await primary.evaluate((element) => {
       const styles = getComputedStyle(element);
       return {
@@ -543,10 +543,6 @@ test.describe("marketing homepage", () => {
         background: styles.backgroundColor,
       };
     });
-    expect(
-      hoverPrimary.transform === "none" ||
-        hoverPrimary.transform === "matrix(1, 0, 0, 1, 0, 0)"
-    ).toBe(true);
     expect(hoverPrimary.boxShadow).not.toBe(restPrimary.boxShadow);
     expect(hoverPrimary.background).not.toBe(restPrimary.background);
     await page.screenshot({

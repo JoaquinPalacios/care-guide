@@ -1048,10 +1048,28 @@ Measured 2026-09-10 against `cursor/marketing-final-polish-7bf5`. Production pay
 
 Viewport thresholds are unchanged (mobile ~-80px, desktop ~-200px, tablet interpolated). Editorial reveal is **800ms / 125ms**. Cards are **700ms / 105ms**, cap **350ms**.
 
-The contact client island should stay the same size or shrink: locations `<select>` was removed, Zod remains server-only (`contact-enquiry.ts`), and the client still validates with `contact-fields.ts`. Fill the table below from the e2e artifact after `pnpm build`.
+The contact client island stayed the same size or shrank: locations `<select>` was removed, Zod remains server-only (`contact-enquiry.ts`), and the client still validates with `contact-fields.ts`.
 
-| Metric         | Conversion polish | Final polish |
-| -------------- | ----------------: | -----------: |
-| CSS raw        |            54,496 |          TBD |
-| Contact island |            18,939 |          TBD |
-| Tailwind       |                no |           no |
+### Shared marketing CSS
+
+Loaded on `/`, `/pricing`, and `/contact`:
+
+- `28s6mnkpjj310.css` — marketing base (8,552 raw / 2,241 gzip / 1,970 Brotli)
+- `0t5xg984946yj.css` — `marketing.module.css` including hero-bottom / footer tokens, primary lift, and the enquiry form (46,818 raw / 8,116 gzip / 7,013 Brotli)
+
+| Metric         | Conversion polish | Final polish | Delta |
+| -------------- | ----------------: | -----------: | ----: |
+| CSS raw        |            54,496 |   **55,370** |  +874 |
+| CSS gzip -9    |            10,214 |   **10,357** |  +143 |
+| CSS Brotli q11 |             8,846 |    **8,983** |  +137 |
+| Tailwind       |                no |           no |    no |
+
+### Product client islands
+
+| Chunk              | Role                                            |    Raw | gzip -9 | Brotli |
+| ------------------ | ----------------------------------------------- | -----: | ------: | -----: |
+| `17qg50x_rufn5.js` | Theme popover (`/pricing`, `/contact`)          | 12,219 |   4,818 |  4,215 |
+| `0v06gx-7n9bju.js` | Contact form island (`useActionState` + UX)     | 18,748 |   6,763 |  5,934 |
+| `3pgpyvqtbrp3l.js` | Motion (contact form sits in `MarketingReveal`) | 37,727 |  13,921 | 12,620 |
+
+Contact island vs conversion polish `0-i9vkpe7y6f8.js` (18,939 / 6,823 / 5,948): **−191 raw / −60 gzip / −14 Brotli**. Motion on `/contact` is the existing marketing Motion library, not a second animation system. Framework/React chunks are shared with other App Router routes and are not counted as product islands. **No Motion on tenant.** Tenant `/pricing` and `/contact` remain 404. No new UI or form library.

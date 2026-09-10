@@ -1187,7 +1187,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     });
   });
 
-  test("nav links use a centre-out underline and buttons do not lift", async ({
+  test("nav links use a centre-out underline and primary buttons lift", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -1257,13 +1257,11 @@ test.describe("Phase 1F.11 story clarity", () => {
       .getByRole("link", { name: "View the clinic demo" })
       .first();
     await primary.hover();
-    const primaryTransform = await primary.evaluate(
-      (element) => getComputedStyle(element).transform
-    );
-    expect(
-      primaryTransform === "none" ||
-        primaryTransform === "matrix(1, 0, 0, 1, 0, 0)"
-    ).toBe(true);
+    await expect
+      .poll(async () =>
+        primary.evaluate((element) => getComputedStyle(element).transform)
+      )
+      .toMatch(/matrix\(1,\s*0,\s*0,\s*1,\s*0,\s*-1/);
     const secondary = page.getByRole("link", { name: "See how it works" });
     const restFill = await secondary.evaluate((element) => {
       const fill = getComputedStyle(element, "::before");

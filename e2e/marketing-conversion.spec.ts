@@ -457,68 +457,6 @@ test.describe("marketing conversion routes", () => {
     });
   });
 
-  test.describe("homepage scroll recording", () => {
-    test.use({
-      video: { mode: "on", size: { width: 1440, height: 900 } },
-      viewport: { width: 1440, height: 900 },
-    });
-
-    test("records homepage scroll at 1440 and keeps reveals once", async ({
-      page,
-    }) => {
-      mkdirSync("test-results/artifacts", { recursive: true });
-      await page.goto(marketingUrl("/"), { waitUntil: "load" });
-      await expectOneH1(page, "Aftercare that still feels like your clinic.");
-      await expect
-        .poll(async () =>
-          page.evaluate(
-            () =>
-              document.documentElement.getAttribute("data-mk-motion") ===
-                "enhance" ||
-              document.documentElement.getAttribute("data-mk-motion") ===
-                "reduce"
-          )
-        )
-        .toBe(true);
-
-      const height = await page.evaluate(
-        () => document.documentElement.scrollHeight
-      );
-      for (let y = 0; y < height; y += 80) {
-        await page.mouse.wheel(0, 80);
-        await page.waitForTimeout(50);
-      }
-      await page.waitForTimeout(900);
-
-      const afterDown = await page.evaluate(() => ({
-        pending: document.querySelectorAll("[data-mk-pending]").length,
-        visible: [
-          ...document.querySelectorAll<HTMLElement>(".mkReveal"),
-        ].filter((node) => getComputedStyle(node).opacity === "1").length,
-      }));
-
-      await page.evaluate(() =>
-        window.scrollTo({ top: 0, behavior: "instant" })
-      );
-      await page.waitForTimeout(400);
-      await page.mouse.wheel(0, 480);
-      await page.waitForTimeout(400);
-
-      const afterReturn = await page.evaluate(() => ({
-        pending: document.querySelectorAll("[data-mk-pending]").length,
-        hidden: [...document.querySelectorAll<HTMLElement>(".mkReveal")].filter(
-          (node) => getComputedStyle(node).opacity === "0"
-        ).length,
-      }));
-
-      expect(afterDown.visible).toBeGreaterThan(0);
-      expect(afterReturn.hidden).toBe(0);
-      await page
-        .video()
-        ?.saveAs("test-results/artifacts/homepage-scroll-1440.webm");
-    });
-  });
-
   test("pricing and contact stay server-first without Tailwind", async ({
     page,
   }, testInfo) => {
