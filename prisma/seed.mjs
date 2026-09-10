@@ -18,6 +18,8 @@ const LOCAL_LOGIN_ACCOUNTS = [
     name: "Demo Admin",
     emailKey: "LOCAL_ADMIN_EMAIL",
     passwordKey: "LOCAL_ADMIN_PASSWORD",
+    platformRole: "NONE",
+    clinicMembership: true,
   },
   {
     role: ClinicMembershipRole.STAFF,
@@ -25,6 +27,17 @@ const LOCAL_LOGIN_ACCOUNTS = [
     name: "Demo Staff",
     emailKey: "LOCAL_STAFF_EMAIL",
     passwordKey: "LOCAL_STAFF_PASSWORD",
+    platformRole: "NONE",
+    clinicMembership: true,
+  },
+  {
+    role: null,
+    userId: "user_demo_operator",
+    name: "Demo Operator",
+    emailKey: "LOCAL_OPERATOR_EMAIL",
+    passwordKey: "LOCAL_OPERATOR_PASSWORD",
+    platformRole: "OPERATOR",
+    clinicMembership: false,
   },
 ];
 
@@ -302,6 +315,8 @@ const DEMO_EXTRACTION_GUIDE = {
       kind: "RECOVERY_TIMELINE",
       title: "Immediate care",
       periodLabel: "First few hours",
+      startDay: 0,
+      endDay: 0,
       sortOrder: 2,
       body: `Bite gently on the gauze the clinic placed and keep the site still so a clot can form. Rest, keep your head up, and avoid rinsing, spitting, or using a straw during this first period.`,
     },
@@ -311,6 +326,8 @@ const DEMO_EXTRACTION_GUIDE = {
       kind: "RECOVERY_TIMELINE",
       title: "Protect the healing site",
       periodLabel: "Today / first 24 hours",
+      startDay: 1,
+      endDay: 1,
       sortOrder: 3,
       body: `Leave the site undisturbed. Choose soft, cool foods and take any pain relief only as the clinic advised. Do not smoke, drink alcohol, or poke the area today.`,
     },
@@ -320,6 +337,8 @@ const DEMO_EXTRACTION_GUIDE = {
       kind: "RECOVERY_TIMELINE",
       title: "Early recovery",
       periodLabel: "Days 2–3",
+      startDay: 2,
+      endDay: 3,
       sortOrder: 4,
       body: `Swelling often peaks, then eases. If the clinic recommended a gentle salt-water rinse, start it now. Keep meals soft and avoid strenuous exercise until you feel steady.`,
     },
@@ -329,6 +348,8 @@ const DEMO_EXTRACTION_GUIDE = {
       kind: "RECOVERY_TIMELINE",
       title: "Healing check",
       periodLabel: "Days 4–7",
+      startDay: 4,
+      endDay: 7,
       sortOrder: 5,
       body: `Discomfort should continue to settle. Return to usual food only as comfort allows. Contact the practice if pain increases, the site feels worse, or you are unsure.`,
     },
@@ -427,12 +448,14 @@ async function upsertLocalLoginUser(account) {
       name: account.name,
       email: account.email,
       passwordHash,
+      platformRole: account.platformRole,
     },
     create: {
       id: account.userId,
       name: account.name,
       email: account.email,
       passwordHash,
+      platformRole: account.platformRole,
     },
   });
 }
@@ -568,6 +591,8 @@ async function upsertAftercareDemo(clinicId) {
         title: section.title,
         body: section.body,
         periodLabel: section.periodLabel,
+        startDay: section.startDay ?? null,
+        endDay: section.endDay ?? null,
         sortOrder: section.sortOrder,
       },
     });
@@ -577,6 +602,7 @@ async function upsertAftercareDemo(clinicId) {
     where: { id: DEMO_EXTRACTION_GUIDE.practiceGuideId },
     update: {
       clinicId,
+      title: DEMO_EXTRACTION_GUIDE.title,
       guideTemplateId: template.id,
       pinnedRevisionId: revision.id,
       publicSlug: DEMO_EXTRACTION_GUIDE.slug,
@@ -588,6 +614,7 @@ async function upsertAftercareDemo(clinicId) {
     create: {
       id: DEMO_EXTRACTION_GUIDE.practiceGuideId,
       clinicId,
+      title: DEMO_EXTRACTION_GUIDE.title,
       guideTemplateId: template.id,
       pinnedRevisionId: revision.id,
       publicSlug: DEMO_EXTRACTION_GUIDE.slug,
@@ -642,7 +669,80 @@ async function upsertAftercareDemo(clinicId) {
     },
   });
 
+  await snapshotDemoPracticeRevisions(practiceGuide.id);
+
   return { template, revision, practiceGuide };
+}
+
+function demoComposedSections() {
+  return DEMO_EXTRACTION_GUIDE.sections.flatMap((section, index) => {
+    const override =
+      section.key === DEMO_EXTRACTION_GUIDE.override.sectionKey
+        ? DEMO_EXTRACTION_GUIDE.override
+        : null;
+    const composed = {
+      key: section.key,
+      kind: section.kind,
+      title: override?.title ?? section.title,
+      body: override?.body ?? section.body,
+      periodLabel: section.periodLabel,
+      startDay: section.startDay ?? null,
+      endDay: section.endDay ?? null,
+      sortOrder: index + 1,
+      provenance: override ? "PRACTICE_OVERRIDE" : "CANONICAL",
+    };
+    if (section.key !== DEMO_EXTRACTION_GUIDE.addition.insertAfterSectionKey) {
+      return [composed];
+    }
+    return [
+      composed,
+      {
+        key: DEMO_EXTRACTION_GUIDE.addition.key,
+        kind: DEMO_EXTRACTION_GUIDE.addition.kind,
+        title: DEMO_EXTRACTION_GUIDE.addition.title,
+        body: DEMO_EXTRACTION_GUIDE.addition.body,
+        periodLabel: DEMO_EXTRACTION_GUIDE.addition.periodLabel,
+        startDay: null,
+        endDay: null,
+        sortOrder: index + 2,
+        provenance: "PRACTICE_ADDITION",
+      },
+    ];
+  });
+}
+
+async function snapshotDemoPracticeRevisions(practiceGuideId) {
+  await prisma.practiceGuideRevision.deleteMany({
+    where: { practiceGuideId },
+  });
+
+  const sections = demoComposedSections().map((section, index) => ({
+    ...section,
+    sortOrder: index + 1,
+  }));
+
+  await prisma.practiceGuideRevision.create({
+    data: {
+      id: "practice_rev_demo_rivers_extraction_draft",
+      practiceGuideId,
+      version: 0,
+      status: "DRAFT",
+      title: DEMO_EXTRACTION_GUIDE.title,
+      sections: { create: sections },
+    },
+  });
+
+  await prisma.practiceGuideRevision.create({
+    data: {
+      id: "practice_rev_demo_rivers_extraction_v1",
+      practiceGuideId,
+      version: 1,
+      status: "PUBLISHED",
+      title: DEMO_EXTRACTION_GUIDE.title,
+      publishedAt: DEMO_EXTRACTION_GUIDE.publishedAt,
+      sections: { create: sections },
+    },
+  });
 }
 
 async function main() {
@@ -669,6 +769,9 @@ async function main() {
 
   for (const account of localLogin.accounts) {
     const user = await upsertLocalLoginUser(account);
+    if (!account.clinicMembership || !account.role) {
+      continue;
+    }
     await prisma.clinicMembership.upsert({
       where: {
         clinicId_userId: {
@@ -731,7 +834,7 @@ async function main() {
   if (localLogin.accounts.length > 0) {
     for (const account of localLogin.accounts) {
       console.info(
-        `- ${account.role}: ${account.email} (${account.emailKey} / ${account.passwordKey})`
+        `- ${account.role ?? account.platformRole}: ${account.email} (${account.emailKey} / ${account.passwordKey})`
       );
     }
   }

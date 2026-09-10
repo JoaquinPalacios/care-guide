@@ -12,6 +12,8 @@ const DEV_ENV = {
   LOCAL_ADMIN_PASSWORD: "LocalOnly123!",
   LOCAL_STAFF_EMAIL: "staff@local.aftercare.test",
   LOCAL_STAFF_PASSWORD: "LocalOnly123!",
+  LOCAL_OPERATOR_EMAIL: "operator@local.aftercare.test",
+  LOCAL_OPERATOR_PASSWORD: "LocalOnly123!",
 };
 
 describe("local login seed plan", () => {
@@ -25,10 +27,12 @@ describe("local login seed plan", () => {
     expect(plan.accounts.map((account) => account.role)).toEqual([
       "ADMIN",
       "STAFF",
+      "OPERATOR",
     ]);
     expect(plan.accounts.map((account) => account.email)).toEqual([
       "admin@local.aftercare.test",
       "staff@local.aftercare.test",
+      "operator@local.aftercare.test",
     ]);
   });
 
@@ -104,11 +108,13 @@ describe("local login accounts", () => {
     expect(first.map((account) => account.id)).toEqual([
       "user_demo_admin",
       "user_demo_staff",
+      "user_demo_operator",
     ]);
     expect(second.map((account) => account.id)).toEqual(
       first.map((account) => account.id)
     );
-    expect(userUpsert).toHaveBeenCalledTimes(4);
+    expect(userUpsert).toHaveBeenCalledTimes(6);
+    expect(membershipUpsert).toHaveBeenCalledTimes(4);
     expect(userUpsert.mock.calls[0]?.[0].where).toEqual({
       id: "user_demo_admin",
     });

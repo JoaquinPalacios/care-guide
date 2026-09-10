@@ -83,6 +83,18 @@ enum ClinicThemeMode {
   SYSTEM
 }
 
+enum PlatformRole {
+  NONE
+  OPERATOR
+}
+
+enum PracticeSectionProvenance {
+  CANONICAL
+  PRACTICE_OVERRIDE
+  PRACTICE_ADDITION
+  PRACTICE_CUSTOM
+}
+
 model Clinic {
   id                 String              @id @default(cuid())
   name               String
@@ -99,17 +111,19 @@ model Clinic {
 }
 
 model User {
-  id            String             @id @default(cuid())
-  name          String?
-  email         String             @unique
-  emailVerified DateTime?
-  image         String?
-  passwordHash  String?
-  memberships   ClinicMembership[]
-  accounts      Account[]
-  sessions      Session[]
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
+  id                              String                     @id @default(cuid())
+  name                            String?
+  email                           String                     @unique
+  emailVerified                   DateTime?
+  image                           String?
+  passwordHash                    String?
+  platformRole                    PlatformRole               @default(NONE)
+  memberships                     ClinicMembership[]
+  accounts                        Account[]
+  sessions                        Session[]
+  authoredPracticeGuideRevisions  PracticeGuideRevision[]
+  createdAt                       DateTime                   @default(now())
+  updatedAt                       DateTime                   @updatedAt
 }
 
 model ClinicMembership {
@@ -410,6 +424,8 @@ model GuideTemplateSection {
   title       String
   body        String                @db.Text
   periodLabel String?
+  startDay    Int?
+  endDay      Int?
   sortOrder   Int
   revision    GuideTemplateRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
   createdAt   DateTime              @default(now())
@@ -420,32 +436,79 @@ model GuideTemplateSection {
   @@index([revisionId])
 }
 
-/// A practice-enabled canonical guide. `guideTemplateId` is both the
-/// template identity and part of the composite foreign key to the pinned
-/// revision, so a practice guide cannot pin a revision from another template.
+/// A practice-enabled canonical or custom guide. Template-backed guides keep
+/// `guideTemplateId` plus a canonical `pinnedRevisionId` (ADR 0010). Custom
+/// guides leave both null. Patient-visible content is served from an immutable
+/// published `PracticeGuideRevision` snapshot, not from live overrides.
 model PracticeGuide {
-  id               String                  @id @default(cuid())
+  id               String                    @id @default(cuid())
   clinicId         String
-  guideTemplateId  String
-  pinnedRevisionId String
+  title            String
+  guideTemplateId  String?
+  pinnedRevisionId String?
   publicSlug       String
-  isEnabled        Boolean                 @default(false)
-  status           PracticeGuideStatus     @default(DRAFT)
-  sortOrder        Int                     @default(0)
+  isEnabled        Boolean                   @default(false)
+  status           PracticeGuideStatus       @default(DRAFT)
+  sortOrder        Int                       @default(0)
   publishedAt      DateTime?
-  createdAt        DateTime                @default(now())
-  updatedAt        DateTime                @updatedAt
-  clinic           Clinic                  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
-  guideTemplate    GuideTemplate           @relation(fields: [guideTemplateId], references: [id], onDelete: Restrict)
-  pinnedRevision   GuideTemplateRevision   @relation(fields: [pinnedRevisionId, guideTemplateId], references: [id, guideTemplateId], onDelete: Restrict)
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+  clinic           Clinic                    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  guideTemplate    GuideTemplate?            @relation(fields: [guideTemplateId], references: [id], onDelete: Restrict)
+  pinnedRevision   GuideTemplateRevision?    @relation(fields: [pinnedRevisionId, guideTemplateId], references: [id, guideTemplateId], onDelete: Restrict)
   overrides        PracticeGuideOverride[]
   additions        PracticeGuideAddition[]
+  contentRevisions PracticeGuideRevision[]
 
   @@unique([clinicId, guideTemplateId])
   @@unique([clinicId, publicSlug])
   @@index([clinicId, status, isEnabled])
   @@index([guideTemplateId])
   @@index([pinnedRevisionId])
+}
+
+/// Clinic-owned guide document. Version 0 is the mutable working draft.
+/// Versions 1+ are immutable published snapshots. Public pages pin the
+/// highest published version; draft edits never mutate those rows.
+model PracticeGuideRevision {
+  id              String                          @id @default(cuid())
+  practiceGuideId String
+  version         Int
+  status          GuideRevisionStatus             @default(DRAFT)
+  title           String
+  introduction    String?                         @db.Text
+  publishedAt     DateTime?
+  createdByUserId String?
+  createdAt       DateTime                        @default(now())
+  updatedAt       DateTime                        @updatedAt
+  practiceGuide   PracticeGuide                   @relation(fields: [practiceGuideId], references: [id], onDelete: Cascade)
+  createdBy       User?                           @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+  sections        PracticeGuideRevisionSection[]
+
+  @@unique([practiceGuideId, version])
+  @@index([practiceGuideId, status])
+  @@index([createdByUserId])
+}
+
+model PracticeGuideRevisionSection {
+  id            String                     @id @default(cuid())
+  revisionId    String
+  key           String
+  kind          GuideSectionKind
+  title         String
+  body          String                     @db.Text
+  periodLabel   String?
+  startDay      Int?
+  endDay        Int?
+  sortOrder     Int
+  provenance    PracticeSectionProvenance
+  createdAt     DateTime                   @default(now())
+  updatedAt     DateTime                   @updatedAt
+  revision      PracticeGuideRevision      @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+
+  @@unique([revisionId, key])
+  @@unique([revisionId, sortOrder])
+  @@index([revisionId])
 }
 
 model PracticeGuideOverride {
@@ -470,6 +533,8 @@ model PracticeGuideAddition {
   title                 String
   body                  String           @db.Text
   periodLabel           String?
+  startDay              Int?
+  endDay                Int?
   sortOrder             Int
   insertAfterSectionKey String?
   practiceGuide         PracticeGuide    @relation(fields: [practiceGuideId], references: [id], onDelete: Cascade)

@@ -11,6 +11,16 @@ vi.mock("@/lib/auth/password", () => ({
 
 vi.mock("@/lib/auth/session", () => ({
   createDatabaseSession: createDatabaseSessionMock,
+  postLoginPath: ({
+    platformRole,
+    hasClinicMembership,
+  }: {
+    platformRole: string;
+    hasClinicMembership: boolean;
+  }) =>
+    !hasClinicMembership && platformRole === "OPERATOR"
+      ? "/operator/clinics"
+      : "/dashboard",
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -50,6 +60,7 @@ describe("POST /api/auth/login", () => {
       name: "Demo Admin",
       email: "admin@care-guide.test",
       passwordHash: "stored-hash",
+      platformRole: "NONE",
     });
     verifyPasswordMock.mockReturnValue(false);
 
@@ -80,6 +91,7 @@ describe("POST /api/auth/login", () => {
       name: "Demo Admin",
       email: "admin@care-guide.test",
       passwordHash: "stored-hash",
+      platformRole: "NONE",
     });
     verifyPasswordMock.mockReturnValue(true);
     findManyMock.mockResolvedValue([{ clinicId: "clinic_1" }]);
@@ -103,6 +115,7 @@ describe("POST /api/auth/login", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
+      redirectTo: "/dashboard",
       user: {
         id: "user_1",
         name: "Demo Admin",
@@ -120,6 +133,7 @@ describe("POST /api/auth/login", () => {
       name: "Demo Admin",
       email: "admin@care-guide.test",
       passwordHash: "stored-hash",
+      platformRole: "NONE",
     });
     verifyPasswordMock.mockReturnValue(true);
     findManyMock.mockResolvedValue([
@@ -145,5 +159,73 @@ describe("POST /api/auth/login", () => {
       error:
         "Your account has multiple clinic memberships and cannot sign in to this MVP yet.",
     });
+  });
+
+  it("allows a platform operator with no clinic membership to sign in", async () => {
+    const expires = new Date("2026-05-01T12:00:00.000Z");
+
+    findUniqueMock.mockResolvedValue({
+      id: "user_operator",
+      name: "Demo Operator",
+      email: "operator@local.aftercare.test",
+      passwordHash: "stored-hash",
+      platformRole: "OPERATOR",
+    });
+    verifyPasswordMock.mockReturnValue(true);
+    findManyMock.mockResolvedValue([]);
+    createDatabaseSessionMock.mockResolvedValue({
+      sessionToken: "operator-session",
+      expires,
+    });
+
+    const response = await POST(
+      new Request("http://localhost/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "operator@local.aftercare.test",
+          password: "LocalOnly123!",
+        }),
+      })
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      redirectTo: "/operator/clinics",
+      user: {
+        id: "user_operator",
+        name: "Demo Operator",
+        email: "operator@local.aftercare.test",
+      },
+    });
+  });
+
+  it("rejects a clinic user with no membership", async () => {
+    findUniqueMock.mockResolvedValue({
+      id: "user_1",
+      name: "Demo Admin",
+      email: "admin@care-guide.test",
+      passwordHash: "stored-hash",
+      platformRole: "NONE",
+    });
+    verifyPasswordMock.mockReturnValue(true);
+    findManyMock.mockResolvedValue([]);
+
+    const response = await POST(
+      new Request("http://localhost/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "admin@care-guide.test",
+          password: "CareGuideDemo123!",
+        }),
+      })
+    );
+
+    expect(response.status).toBe(403);
   });
 });

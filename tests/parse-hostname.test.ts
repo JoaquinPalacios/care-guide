@@ -62,6 +62,10 @@ describe("parseHostname", () => {
       kind: "reserved",
       label: "api",
     });
+    expect(parseHostname("operator.localhost:3000", LOCAL_ROOT)).toEqual({
+      kind: "reserved",
+      label: "operator",
+    });
   });
 
   it("rejects an unrelated domain", () => {

@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import { PlatformRole } from "@prisma/client";
 
 import { verifyPassword } from "@/lib/auth/password";
 import {
   AUTH_SESSION_COOKIE_NAME,
   authSessionCookieOptions,
 } from "@/lib/auth/session-cookie";
-import { createDatabaseSession } from "@/lib/auth/session";
+import { createDatabaseSession, postLoginPath } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
@@ -43,6 +44,7 @@ export async function POST(request: Request) {
       name: true,
       email: true,
       passwordHash: true,
+      platformRole: true,
     },
   });
 
@@ -63,7 +65,7 @@ export async function POST(request: Request) {
     },
   });
 
-  if (memberships.length === 0) {
+  if (memberships.length === 0 && user.platformRole !== PlatformRole.OPERATOR) {
     return NextResponse.json(
       { error: "Your account does not have staff access yet." },
       { status: 403 }
@@ -81,7 +83,12 @@ export async function POST(request: Request) {
   }
 
   const session = await createDatabaseSession(user.id);
+  const redirectTo = postLoginPath({
+    platformRole: user.platformRole,
+    hasClinicMembership: memberships.length === 1,
+  });
   const response = NextResponse.json({
+    redirectTo,
     user: {
       id: user.id,
       name: user.name,

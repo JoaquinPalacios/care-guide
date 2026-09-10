@@ -6,6 +6,7 @@ import {
   type AuthenticatedUser,
   type ClinicMembershipContext,
   getAuthContext,
+  isPlatformOperator,
 } from "@/lib/auth/session";
 
 interface StaffSessionContext {
@@ -16,7 +17,15 @@ interface StaffSessionContext {
 export async function requireStaffSession(): Promise<StaffSessionContext> {
   const authContext = await getAuthContext();
 
-  if (!authContext.user || !authContext.clinicMembership) {
+  if (!authContext.user) {
+    redirect("/login");
+  }
+
+  if (!authContext.clinicMembership) {
+    if (isPlatformOperator(authContext.user)) {
+      redirect("/operator/clinics");
+    }
+
     redirect("/login");
   }
 

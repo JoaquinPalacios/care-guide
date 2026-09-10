@@ -9,6 +9,8 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@/lib/auth/session", () => ({
   getAuthContext: getAuthContextMock,
+  isPlatformOperator: (user: { platformRole?: string } | null | undefined) =>
+    user?.platformRole === "OPERATOR",
 }));
 
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
@@ -47,6 +49,7 @@ describe("requireStaffSession", () => {
         id: "user_1",
         email: "admin@care-guide.test",
         name: "Demo Admin",
+        platformRole: "NONE",
       },
       clinicMembership,
     });
@@ -56,9 +59,25 @@ describe("requireStaffSession", () => {
         id: "user_1",
         email: "admin@care-guide.test",
         name: "Demo Admin",
+        platformRole: "NONE",
       },
       clinicMembership,
     });
     expect(redirectMock).not.toHaveBeenCalled();
+  });
+
+  it("redirects a platform operator without clinic membership to All Clinics", async () => {
+    getAuthContextMock.mockResolvedValue({
+      user: {
+        id: "user_operator",
+        email: "operator@care-guide.test",
+        name: "Demo Operator",
+        platformRole: "OPERATOR",
+      },
+      clinicMembership: null,
+    });
+
+    await expect(requireStaffSession()).rejects.toThrow("NEXT_REDIRECT");
+    expect(redirectMock).toHaveBeenCalledWith("/operator/clinics");
   });
 });

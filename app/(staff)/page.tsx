@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { ProductMark } from "@/app/(staff)/components/product-mark";
 import { getAuthContext } from "@/lib/auth/session";
+import { signedInHomePath } from "@/lib/auth/signed-in-home";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 
 export const metadata: Metadata = {
@@ -16,9 +17,9 @@ export default async function Home() {
     user: null,
     clinicMembership: null,
   }));
-
-  if (authContext.user && authContext.clinicMembership) {
-    redirect("/dashboard");
+  const home = signedInHomePath(authContext);
+  if (home) {
+    redirect(home);
   }
 
   return (

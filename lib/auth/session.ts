@@ -2,7 +2,7 @@ import "server-only";
 
 import { randomUUID } from "node:crypto";
 
-import { ClinicMembershipRole } from "@prisma/client";
+import { ClinicMembershipRole, PlatformRole } from "@prisma/client";
 import { cache } from "react";
 
 import { auth } from "@/auth";
@@ -13,6 +13,7 @@ export interface AuthenticatedUser {
   id: string;
   email: string;
   name: string | null;
+  platformRole: PlatformRole;
 }
 
 export interface ClinicMembershipContext {
@@ -41,6 +42,26 @@ export class MultipleClinicMembershipsError extends Error {
     );
     this.name = "MultipleClinicMembershipsError";
   }
+}
+
+export function isPlatformOperator(
+  user: { platformRole: PlatformRole } | null | undefined
+): boolean {
+  return user?.platformRole === PlatformRole.OPERATOR;
+}
+
+export function postLoginPath(input: {
+  platformRole: PlatformRole;
+  hasClinicMembership: boolean;
+}): string {
+  if (
+    !input.hasClinicMembership &&
+    input.platformRole === PlatformRole.OPERATOR
+  ) {
+    return "/operator/clinics";
+  }
+
+  return "/dashboard";
 }
 
 export async function createDatabaseSession(
@@ -80,6 +101,7 @@ export const getCurrentUser = cache(
         id: true,
         email: true,
         name: true,
+        platformRole: true,
       },
     });
   }

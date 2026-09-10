@@ -1,0 +1,30 @@
+import type { Metadata } from "next";
+
+import { CreateClinicForm } from "@/app/(staff)/(operator)/operator/clinics/new/create-clinic-form";
+import { requirePlatformOperator } from "@/lib/auth/require-platform-operator";
+import { PRODUCT_NAME } from "@/lib/branding/product-name";
+
+export const metadata: Metadata = {
+  title: `Create clinic · ${PRODUCT_NAME}`,
+};
+
+export default async function CreateClinicPage() {
+  await requirePlatformOperator();
+
+  return (
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+      <header>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
+          Platform
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight">
+          Create clinic
+        </h1>
+        <p className="mt-2 text-sm text-staff-muted">
+          Minimal identity only. Staff onboarding remains a later auth design.
+        </p>
+      </header>
+      <CreateClinicForm />
+    </div>
+  );
+}

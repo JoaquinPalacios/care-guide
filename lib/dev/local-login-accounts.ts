@@ -1,5 +1,9 @@
-export const LOCAL_LOGIN_ROLES = ["ADMIN", "STAFF"] as const;
+import { ClinicMembershipRole, PlatformRole } from "@prisma/client";
 
+export const LOCAL_CLINIC_LOGIN_ROLES = ["ADMIN", "STAFF"] as const;
+export const LOCAL_LOGIN_ROLES = ["ADMIN", "STAFF", "OPERATOR"] as const;
+
+export type LocalClinicLoginRole = (typeof LOCAL_CLINIC_LOGIN_ROLES)[number];
 export type LocalLoginRole = (typeof LOCAL_LOGIN_ROLES)[number];
 
 export interface LocalLoginAccount {
@@ -31,6 +35,12 @@ const ACCOUNT_META: Record<
     emailKey: "LOCAL_STAFF_EMAIL",
     passwordKey: "LOCAL_STAFF_PASSWORD",
   },
+  OPERATOR: {
+    userId: "user_demo_operator",
+    name: "Demo Operator",
+    emailKey: "LOCAL_OPERATOR_EMAIL",
+    passwordKey: "LOCAL_OPERATOR_PASSWORD",
+  },
 };
 
 export function localLoginEnvKeys(role: LocalLoginRole): {
@@ -41,6 +51,10 @@ export function localLoginEnvKeys(role: LocalLoginRole): {
     emailKey: ACCOUNT_META[role].emailKey,
     passwordKey: ACCOUNT_META[role].passwordKey,
   };
+}
+
+function platformRoleFor(role: LocalLoginRole): PlatformRole {
+  return role === "OPERATOR" ? PlatformRole.OPERATOR : PlatformRole.NONE;
 }
 
 function readPair(
@@ -109,20 +123,30 @@ export interface LocalLoginPrisma {
   user: {
     upsert: (args: {
       where: { id: string };
-      update: { name: string; email: string; passwordHash: string };
+      update: {
+        name: string;
+        email: string;
+        passwordHash: string;
+        platformRole: PlatformRole;
+      };
       create: {
         id: string;
         name: string;
         email: string;
         passwordHash: string;
+        platformRole: PlatformRole;
       };
     }) => Promise<{ id: string; email: string }>;
   };
   clinicMembership: {
     upsert: (args: {
       where: { clinicId_userId: { clinicId: string; userId: string } };
-      update: { role: LocalLoginRole };
-      create: { clinicId: string; userId: string; role: LocalLoginRole };
+      update: { role: ClinicMembershipRole };
+      create: {
+        clinicId: string;
+        userId: string;
+        role: ClinicMembershipRole;
+      };
     }) => Promise<unknown>;
   };
 }
@@ -137,35 +161,40 @@ export async function upsertLocalLoginAccounts(input: {
 
   for (const account of input.accounts) {
     const passwordHash = input.hashPassword(account.password);
+    const platformRole = platformRoleFor(account.role);
     const user = await input.prisma.user.upsert({
       where: { id: account.userId },
       update: {
         name: account.name,
         email: account.email,
         passwordHash,
+        platformRole,
       },
       create: {
         id: account.userId,
         name: account.name,
         email: account.email,
         passwordHash,
+        platformRole,
       },
     });
 
-    await input.prisma.clinicMembership.upsert({
-      where: {
-        clinicId_userId: {
+    if (account.role !== "OPERATOR") {
+      await input.prisma.clinicMembership.upsert({
+        where: {
+          clinicId_userId: {
+            clinicId: input.clinicId,
+            userId: user.id,
+          },
+        },
+        update: { role: account.role },
+        create: {
           clinicId: input.clinicId,
           userId: user.id,
+          role: account.role,
         },
-      },
-      update: { role: account.role },
-      create: {
-        clinicId: input.clinicId,
-        userId: user.id,
-        role: account.role,
-      },
-    });
+      });
+    }
 
     seeded.push({ id: user.id, email: user.email, role: account.role });
   }
