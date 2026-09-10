@@ -25,6 +25,14 @@ test("records full-page marketing scroll", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(marketingUrl("/"), { waitUntil: "load" });
   await expectOneH1(page, "Aftercare that still feels like your clinic.");
+  await expect
+    .poll(async () =>
+      page
+        .locator("h1")
+        .evaluate((element) => getComputedStyle(element).opacity)
+    )
+    .toBe("1");
+  await page.waitForTimeout(400);
   const height = await page.evaluate(() => {
     document.documentElement.style.scrollBehavior = "auto";
     return document.documentElement.scrollHeight;
