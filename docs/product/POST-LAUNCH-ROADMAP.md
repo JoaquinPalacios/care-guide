@@ -7,6 +7,27 @@ Architecture: [ADR 0006](../adr/0006-canonical-guide-plus-practice-configuration
 
 ---
 
+## HIGH PRIORITY — launch-adjacent anti-spam
+
+**Status: not implemented.** Add a bot challenge **before launch or immediately after launch**. This is launch-adjacent work, not vague later polish.
+
+Recommended direction: **Cloudflare Turnstile**.
+
+Do **not** provision Cloudflare or add Turnstile from a marketing visual/contact polish pass.
+
+When it is implemented:
+
+| Requirement                    | Why                                                                                                           |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| Server-side token verification | A client widget alone is not protection                                                                       |
+| Graceful failure               | The form must not silently drop legitimate clinic enquiries if the provider is down or the token check errors |
+| Accessibility                  | Turnstile has an accessibility mode. Do not block keyboard or screen-reader users                             |
+| Business enquiry only          | No patient or clinical information is involved                                                                |
+
+Until then, keep the current baseline: server Zod validation, honeypot (`website`), and in-process IP throttle. See [MARKETING-CONTACT.md](../architecture/MARKETING-CONTACT.md).
+
+---
+
 ## Launch vs post-launch
 
 **Current production launch contains no persisted patient check-ins.**

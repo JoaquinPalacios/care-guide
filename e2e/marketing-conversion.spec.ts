@@ -76,9 +76,9 @@ test.describe("marketing conversion routes", () => {
     await expect(page.locator(".mkPageWaveInnerPage")).toHaveCount(1);
     await expect(page.locator("form")).toHaveCount(1);
     await expect(page.getByLabel("Full name")).toBeVisible();
-    await expect(page.getByLabel("Work email")).toBeVisible();
+    await expect(page.getByLabel("Email", { exact: true })).toBeVisible();
     await expect(page.getByLabel("Practice / clinic name")).toBeVisible();
-    await expect(page.getByLabel("Number of locations")).toBeVisible();
+    await expect(page.getByLabel("Number of locations")).toHaveCount(0);
     await expect(page.getByLabel("Phone (optional)")).toBeVisible();
     await expect(
       page.getByLabel("Anything you'd like us to know? (optional)")
@@ -235,13 +235,14 @@ test.describe("marketing conversion routes", () => {
     await page.goto(marketingUrl("/contact"), { waitUntil: "load" });
     await page.getByRole("button", { name: "Send enquiry" }).click();
     await expect(page.getByText("Enter your full name.")).toBeVisible();
-    await expect(page.getByText("Enter your work email.")).toBeVisible();
+    await expect(page.getByText("Enter your email.")).toBeVisible();
     await expect(
       page.getByText("Enter your practice or clinic name.")
     ).toBeVisible();
-    await expect(
-      page.getByText("Choose the number of locations.")
-    ).toBeVisible();
+    await expect(page.getByText("Choose the number of locations.")).toHaveCount(
+      0
+    );
+    await expect(page.getByText("Work email")).toHaveCount(0);
     await expect(
       page.getByText("Thanks — your enquiry has been sent.")
     ).toHaveCount(0);
@@ -250,9 +251,10 @@ test.describe("marketing conversion routes", () => {
     });
 
     await page.getByLabel("Full name").fill("Alex Rivera");
-    await page.getByLabel("Work email").fill("alex@clinic.example.test");
+    await page
+      .getByLabel("Email", { exact: true })
+      .fill("alex@clinic.example.test");
     await page.getByLabel("Practice / clinic name").fill("Harbour Dental");
-    await page.getByLabel("Number of locations").selectOption("2-5");
     await page.getByLabel("Phone (optional)").fill("0400 000 000");
     await page
       .getByLabel("Anything you'd like us to know? (optional)")

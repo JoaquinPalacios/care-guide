@@ -1,6 +1,3 @@
-export const LOCATION_COUNTS = ["1", "2-5", "6+"] as const;
-export type LocationCount = (typeof LOCATION_COUNTS)[number];
-
 export const CONTACT_HONEYPOT_FIELD = "website";
 
 export const CONTACT_FIELD_LIMITS = {
@@ -13,22 +10,24 @@ export const CONTACT_FIELD_LIMITS = {
 } as const;
 
 export type ContactEnquiryField =
-  | "fullName"
-  | "workEmail"
-  | "clinicName"
-  | "locationCount"
-  | "phone"
-  | "message";
+  "fullName" | "workEmail" | "clinicName" | "phone" | "message";
 
 export type ContactEnquiryFieldErrors = Partial<
   Record<ContactEnquiryField, string>
 >;
 
+export interface ContactFormValues {
+  fullName: string;
+  workEmail: string;
+  clinicName: string;
+  phone: string;
+  message: string;
+  [CONTACT_HONEYPOT_FIELD]: string;
+}
+
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function readContactFormValues(
-  formData: FormData
-): Record<string, string> {
+export function readContactFormValues(formData: FormData): ContactFormValues {
   const read = (name: string) => {
     const value = formData.get(name);
     return typeof value === "string" ? value : "";
@@ -38,7 +37,6 @@ export function readContactFormValues(
     fullName: read("fullName"),
     workEmail: read("workEmail"),
     clinicName: read("clinicName"),
-    locationCount: read("locationCount"),
     phone: read("phone"),
     message: read("message"),
     [CONTACT_HONEYPOT_FIELD]: read(CONTACT_HONEYPOT_FIELD),
@@ -68,7 +66,7 @@ function optionalText(value: string, max: number): string | undefined {
 }
 
 export function validateContactFormValues(
-  values: Record<string, string>
+  values: ContactFormValues | Record<string, string>
 ): ContactEnquiryFieldErrors {
   const errors: ContactEnquiryFieldErrors = {};
   const fullName = requiredText(
@@ -82,11 +80,11 @@ export function validateContactFormValues(
 
   const workEmail = (values.workEmail ?? "").trim();
   if (!workEmail) {
-    errors.workEmail = "Enter your work email.";
+    errors.workEmail = "Enter your email.";
   } else if (workEmail.length > CONTACT_FIELD_LIMITS.workEmail) {
     errors.workEmail = "This value is too long.";
   } else if (!EMAIL_PATTERN.test(workEmail)) {
-    errors.workEmail = "Enter a valid work email.";
+    errors.workEmail = "Enter a valid email.";
   }
 
   const clinicName = requiredText(
@@ -96,11 +94,6 @@ export function validateContactFormValues(
   );
   if (clinicName) {
     errors.clinicName = clinicName;
-  }
-
-  const locationCount = values.locationCount ?? "";
-  if (!(LOCATION_COUNTS as readonly string[]).includes(locationCount)) {
-    errors.locationCount = "Choose the number of locations.";
   }
 
   const phone = optionalText(values.phone ?? "", CONTACT_FIELD_LIMITS.phone);

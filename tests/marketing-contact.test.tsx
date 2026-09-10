@@ -37,8 +37,11 @@ describe("marketing contact page", () => {
     expect(html).toContain("Send an enquiry");
     expect(html).toContain('name="fullName"');
     expect(html).toContain('name="workEmail"');
+    expect(html).toContain(">Email<");
+    expect(html).not.toContain("Work email");
     expect(html).toContain('name="clinicName"');
-    expect(html).toContain('name="locationCount"');
+    expect(html).not.toContain('name="locationCount"');
+    expect(html).not.toContain("Number of locations");
     expect(html).toContain('name="phone"');
     expect(html).toContain("Anything you&#x27;d like us to know?");
     expect(html).toContain(

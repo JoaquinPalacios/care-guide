@@ -4,6 +4,21 @@ Platform `/contact` submits a clinic enquiry through a server action. There is n
 
 This is business contact information, not patient health information. The form asks practices not to include patient or clinical details.
 
+## Fields
+
+Required:
+
+- Full name
+- Email (user-facing label; the internal field name remains `workEmail`)
+- Practice / clinic name
+
+Optional:
+
+- Phone
+- Anything you'd like us to know?
+
+The form does **not** ask for number of locations, patient information, or clinical details.
+
 ## Launch mailbox recommendation
 
 Use a brand-domain inbox once the public domain is secured. Do not hard-code a guessed commercial domain in the app.
@@ -48,9 +63,16 @@ Production delivery requires real `TO` / `FROM` values plus working SMTP credent
 - Honeypot field (`website`)
 - In-process throttle: 5 attempts / 10 minutes per client IP
 - HTML is escaped in the HTML email part; fields are treated as plain text
-- No CAPTCHA in this pass
+- No CAPTCHA or Turnstile in this pass
 
-Revisit rate limiting or CAPTCHA when real traffic warrants it.
+A **Cloudflare Turnstile** (or equivalent) challenge is **HIGH PRIORITY before launch or immediately after launch**. Do not implement it from a marketing polish task. When it is added:
+
+- Verify the token **server-side**. A client widget alone is not protection.
+- Fail gracefully: the form must not silently drop legitimate clinic enquiries if the challenge provider is down or the token check errors.
+- Keep the form accessible (Turnstile has an accessibility mode). Do not block keyboard or screen-reader users.
+- This remains a business enquiry form. Do not collect patient or clinical information.
+
+See [POST-LAUNCH-ROADMAP.md](../product/POST-LAUNCH-ROADMAP.md).
 
 ## Client boundary
 

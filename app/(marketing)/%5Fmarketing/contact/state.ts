@@ -1,3 +1,5 @@
+import type { ContactEnquiryField } from "@/lib/marketing/contact-fields";
+
 export type ContactActionState =
   | {
       status: "idle";
@@ -5,17 +7,7 @@ export type ContactActionState =
   | {
       status: "error";
       error: string | null;
-      fieldErrors: Partial<
-        Record<
-          | "fullName"
-          | "workEmail"
-          | "clinicName"
-          | "locationCount"
-          | "phone"
-          | "message",
-          string
-        >
-      >;
+      fieldErrors: Partial<Record<ContactEnquiryField, string>>;
     }
   | {
       status: "success";

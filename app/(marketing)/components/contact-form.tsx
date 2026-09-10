@@ -21,7 +21,6 @@ import { MarketingPrimaryLink } from "@/app/(marketing)/components/marketing-pri
 import {
   CONTACT_FIELD_LIMITS,
   CONTACT_HONEYPOT_FIELD,
-  LOCATION_COUNTS,
   readContactFormValues,
   validateContactFormValues,
   type ContactEnquiryField,
@@ -34,7 +33,6 @@ const FIELD_ORDER: ContactEnquiryField[] = [
   "fullName",
   "workEmail",
   "clinicName",
-  "locationCount",
   "phone",
   "message",
 ];
@@ -189,7 +187,7 @@ export function ContactForm({ demoHref }: { demoHref: string }) {
         </ContactField>
         <ContactField
           id={`${formId}-email`}
-          label="Work email"
+          label="Email"
           error={fieldErrors.workEmail}
         >
           <input
@@ -199,6 +197,7 @@ export function ContactForm({ demoHref }: { demoHref: string }) {
             type="email"
             autoComplete="email"
             inputMode="email"
+            spellCheck={false}
             required
             maxLength={CONTACT_FIELD_LIMITS.workEmail}
             aria-invalid={fieldErrors.workEmail ? true : undefined}
@@ -209,55 +208,25 @@ export function ContactForm({ demoHref }: { demoHref: string }) {
         </ContactField>
       </div>
 
-      <div className={styles.contactFormRow}>
-        <ContactField
+      <ContactField
+        id={`${formId}-clinic`}
+        label="Practice / clinic name"
+        error={fieldErrors.clinicName}
+      >
+        <input
           id={`${formId}-clinic`}
-          label="Practice / clinic name"
-          error={fieldErrors.clinicName}
-        >
-          <input
-            id={`${formId}-clinic`}
-            className={styles.contactControl}
-            name="clinicName"
-            type="text"
-            autoComplete="organization"
-            required
-            maxLength={CONTACT_FIELD_LIMITS.clinicName}
-            aria-invalid={fieldErrors.clinicName ? true : undefined}
-            aria-describedby={
-              fieldErrors.clinicName ? `${formId}-clinic-error` : undefined
-            }
-          />
-        </ContactField>
-        <ContactField
-          id={`${formId}-locations`}
-          label="Number of locations"
-          error={fieldErrors.locationCount}
-        >
-          <select
-            id={`${formId}-locations`}
-            className={styles.contactControl}
-            name="locationCount"
-            required
-            defaultValue=""
-            aria-invalid={fieldErrors.locationCount ? true : undefined}
-            aria-describedby={
-              fieldErrors.locationCount
-                ? `${formId}-locations-error`
-                : undefined
-            }
-          >
-            <option value="" disabled>
-              Select
-            </option>
-            {LOCATION_COUNTS.map((value) => (
-              <option key={value} value={value}>
-                {value === "2-5" ? "2–5" : value}
-              </option>
-            ))}
-          </select>
-        </ContactField>
-      </div>
+          className={styles.contactControl}
+          name="clinicName"
+          type="text"
+          autoComplete="organization"
+          required
+          maxLength={CONTACT_FIELD_LIMITS.clinicName}
+          aria-invalid={fieldErrors.clinicName ? true : undefined}
+          aria-describedby={
+            fieldErrors.clinicName ? `${formId}-clinic-error` : undefined
+          }
+        />
+      </ContactField>
 
       <ContactField
         id={`${formId}-phone`}

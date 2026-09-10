@@ -3,19 +3,17 @@ import { z } from "zod";
 import {
   CONTACT_FIELD_LIMITS,
   CONTACT_HONEYPOT_FIELD,
-  LOCATION_COUNTS,
   type ContactEnquiryFieldErrors,
 } from "@/lib/marketing/contact-fields";
 
 export {
   CONTACT_FIELD_LIMITS,
   CONTACT_HONEYPOT_FIELD,
-  LOCATION_COUNTS,
   readContactFormValues,
   validateContactFormValues,
   type ContactEnquiryField,
   type ContactEnquiryFieldErrors,
-  type LocationCount,
+  type ContactFormValues,
 } from "@/lib/marketing/contact-fields";
 
 const requiredText = (max: number, emptyMessage: string) =>
@@ -29,16 +27,13 @@ export const contactEnquirySchema = z.object({
   workEmail: z
     .string()
     .trim()
-    .min(1, "Enter your work email.")
+    .min(1, "Enter your email.")
     .max(CONTACT_FIELD_LIMITS.workEmail, "This value is too long.")
-    .email("Enter a valid work email."),
+    .email("Enter a valid email."),
   clinicName: requiredText(
     CONTACT_FIELD_LIMITS.clinicName,
     "Enter your practice or clinic name."
   ),
-  locationCount: z.enum(LOCATION_COUNTS, {
-    error: "Choose the number of locations.",
-  }),
   phone: z
     .string()
     .trim()
@@ -72,7 +67,6 @@ export function contactFieldErrorsFromZod(
       field === "fullName" ||
       field === "workEmail" ||
       field === "clinicName" ||
-      field === "locationCount" ||
       field === "phone" ||
       field === "message"
     ) {

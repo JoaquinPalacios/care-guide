@@ -5,17 +5,17 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-09 (Marketing conversion polish: calmer motion, page heroes, contact form)
+Last updated: 2026-09-10 (Marketing final polish: calmer motion, shared inner-page heroes, simplified contact form)
 
 ---
 
 ## Product direction vs current implementation
 
-|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** through **1F.16 / reveal timing** + **Phase 1G interactive patient demo** + **Phase 1G.1 launch-scope cleanup** + **marketing completion** (`/`, `/pricing`, `/contact` on the root host) + **marketing conversion polish** (page heroes, simplified nav, clinic enquiry form). Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. Check-in is post-launch only — see [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md). |
-| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** through **1F.16 / reveal timing** + **Phase 1G interactive patient demo** + **Phase 1G.1 launch-scope cleanup** + **marketing completion** (`/`, `/pricing`, `/contact` on the root host) + **marketing conversion polish** + **marketing final polish** (calmer motion, shared inner-page heroes, simplified clinic enquiry form). Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. Check-in is post-launch only — see [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md). A Cloudflare Turnstile challenge is HIGH PRIORITY before or immediately after launch and is **not implemented**. |
+| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 Do not claim QR codes, operator aftercare admin, or analytics exist until they are built. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented. Phase 1E added Playwright + axe browser acceptance; it did not add product features.
 
@@ -23,37 +23,38 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 
 ## Phase status
 
-| Phase                | Status                                                         |
-| -------------------- | -------------------------------------------------------------- |
-| 1A                   | COMPLETE / APPROVED                                            |
-| 1B                   | COMPLETE / APPROVED                                            |
-| 1B.5                 | COMPLETE / APPROVED                                            |
-| 1C                   | COMPLETE / APPROVED                                            |
-| 1D                   | ABSORBED INTO PHASE 1C / NO SEPARATE IMPLEMENTATION            |
-| 1E                   | COMPLETE — TECHNICALLY READY FOR LOCAL JOAQUÍN ACCEPTANCE      |
-| 1F                   | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                      |
-| 1F.1                 | COMPLETE — PREMIUM PRODUCT EXPERIENCE READY FOR REVIEW         |
-| 1F.2                 | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                      |
-| 1F.3                 | COMPLETE — VISUAL SIMPLIFICATION READY FOR JOAQUÍN REVIEW      |
-| 1F.4                 | COMPLETE — MARKETING MOTION READY FOR JOAQUÍN REVIEW           |
-| 1F.5                 | COMPLETE — HERO COMPOSITION READY FOR JOAQUÍN REVIEW           |
-| 1F.6                 | COMPLETE — PREMIUM MOBILE HERO READY FOR JOAQUÍN REVIEW        |
-| 1F.7                 | COMPLETE — HERO INTERACTION POLISH READY FOR JOAQUÍN REVIEW    |
-| 1F.8                 | COMPLETE — PREMIUM HERO ATMOSPHERE READY FOR JOAQUÍN REVIEW    |
-| 1F.9                 | COMPLETE — RESPONSIVE PRODUCT PREVIEW READY FOR JOAQUÍN REVIEW |
-| 1F.10                | COMPLETE — PREMIUM STORYTELLING READY FOR JOAQUÍN REVIEW       |
-| 1F.11                | COMPLETE — STORY CLARITY READY FOR JOAQUÍN REVIEW              |
-| 1F.12                | COMPLETE — DESIGN COHERENCE READY FOR JOAQUÍN REVIEW           |
-| 1F.13                | COMPLETE — CLOSING COMPOSITION READY FOR JOAQUÍN REVIEW        |
-| 1F.14                | COMPLETE — FINAL MARKETING REFINEMENT READY FOR JOAQUÍN REVIEW |
-| 1F.15                | COMPLETE — MOBILE STORYTELLING READY FOR JOAQUÍN REVIEW        |
-| 1F.16                | COMPLETE — MOTION CHOREOGRAPHY READY FOR JOAQUÍN REVIEW        |
-| 1F.10vt              | COMPLETE — VIEWPORT REVEAL TIMING READY FOR JOAQUÍN REVIEW     |
-| 1G                   | COMPLETE — INTERACTIVE RECOVERY DEMO READY FOR JOAQUÍN REVIEW  |
-| 1G.1                 | COMPLETE — LAUNCH-SCOPE CLEANUP                                |
-| Marketing completion | COMPLETE — PRICING + CONTACT READY FOR JOAQUÍN REVIEW          |
-| Marketing polish     | COMPLETE — CONVERSION POLISH READY FOR JOAQUÍN REVIEW          |
-| 2+                   | Not started                                                    |
+| Phase                  | Status                                                         |
+| ---------------------- | -------------------------------------------------------------- |
+| 1A                     | COMPLETE / APPROVED                                            |
+| 1B                     | COMPLETE / APPROVED                                            |
+| 1B.5                   | COMPLETE / APPROVED                                            |
+| 1C                     | COMPLETE / APPROVED                                            |
+| 1D                     | ABSORBED INTO PHASE 1C / NO SEPARATE IMPLEMENTATION            |
+| 1E                     | COMPLETE — TECHNICALLY READY FOR LOCAL JOAQUÍN ACCEPTANCE      |
+| 1F                     | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                      |
+| 1F.1                   | COMPLETE — PREMIUM PRODUCT EXPERIENCE READY FOR REVIEW         |
+| 1F.2                   | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                      |
+| 1F.3                   | COMPLETE — VISUAL SIMPLIFICATION READY FOR JOAQUÍN REVIEW      |
+| 1F.4                   | COMPLETE — MARKETING MOTION READY FOR JOAQUÍN REVIEW           |
+| 1F.5                   | COMPLETE — HERO COMPOSITION READY FOR JOAQUÍN REVIEW           |
+| 1F.6                   | COMPLETE — PREMIUM MOBILE HERO READY FOR JOAQUÍN REVIEW        |
+| 1F.7                   | COMPLETE — HERO INTERACTION POLISH READY FOR JOAQUÍN REVIEW    |
+| 1F.8                   | COMPLETE — PREMIUM HERO ATMOSPHERE READY FOR JOAQUÍN REVIEW    |
+| 1F.9                   | COMPLETE — RESPONSIVE PRODUCT PREVIEW READY FOR JOAQUÍN REVIEW |
+| 1F.10                  | COMPLETE — PREMIUM STORYTELLING READY FOR JOAQUÍN REVIEW       |
+| 1F.11                  | COMPLETE — STORY CLARITY READY FOR JOAQUÍN REVIEW              |
+| 1F.12                  | COMPLETE — DESIGN COHERENCE READY FOR JOAQUÍN REVIEW           |
+| 1F.13                  | COMPLETE — CLOSING COMPOSITION READY FOR JOAQUÍN REVIEW        |
+| 1F.14                  | COMPLETE — FINAL MARKETING REFINEMENT READY FOR JOAQUÍN REVIEW |
+| 1F.15                  | COMPLETE — MOBILE STORYTELLING READY FOR JOAQUÍN REVIEW        |
+| 1F.16                  | COMPLETE — MOTION CHOREOGRAPHY READY FOR JOAQUÍN REVIEW        |
+| 1F.10vt                | COMPLETE — VIEWPORT REVEAL TIMING READY FOR JOAQUÍN REVIEW     |
+| 1G                     | COMPLETE — INTERACTIVE RECOVERY DEMO READY FOR JOAQUÍN REVIEW  |
+| 1G.1                   | COMPLETE — LAUNCH-SCOPE CLEANUP                                |
+| Marketing completion   | COMPLETE — PRICING + CONTACT READY FOR JOAQUÍN REVIEW          |
+| Marketing polish       | COMPLETE — CONVERSION POLISH READY FOR JOAQUÍN REVIEW          |
+| Marketing final polish | COMPLETE — READY FOR JOAQUÍN REVIEW                            |
+| 2+                     | Not started                                                    |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
 
@@ -578,7 +579,7 @@ Root-platform commercial pages. No billing integration. No lead database. No ten
 | Contact         | Platform conversion page: concise hero + clinic enquiry form. Server action → validated `ContactEnquiry` → `MarketingContactMailer` (SMTP or local `memory`). No fake success. Subject: `Aftercare Guide — clinic enquiry — <clinic>`. See [MARKETING-CONTACT.md](../architecture/MARKETING-CONTACT.md). |
 | Navigation      | Desktop: Pricing, Contact, Staff sign in, theme. Mobile: brand, Staff sign in, compact site menu (Pricing + Contact only), theme. Homepage How it works / Clinic preview stay on `/` and in the footer.                                                                                                  |
 | Spacing         | `--mk-eyebrow-heading-gap`, `--mk-heading-intro-gap`, `--mk-heading-content-gap`, `--mk-card-grid-gap`. Heading groups use `headingBlock` / `headingFollow`.                                                                                                                                             |
-| Heroes          | Homepage remains the largest product hero. Pricing/Contact use `MarketingPageHero` with related but distinct atmosphere and SVG edges.                                                                                                                                                                   |
+| Heroes          | Homepage remains the largest product hero. Pricing/Contact use `MarketingPageHero` with related but distinct atmosphere and a **shared** inner-page SVG edge.                                                                                                                                            |
 | Demo            | Homepage **View the clinic demo** still goes to the production tenant patient renderer (`demodental`). Closing CTA **Request a demo** goes to `/contact`.                                                                                                                                                |
 | SEO             | `app/sitemap.ts` and `app/robots.ts` list `/`, `/pricing`, `/contact` only. No `/_marketing` or `/_sites`. Optional `CARE_GUIDE_METADATA_BASE`. SoftwareApplication JSON-LD without ratings, offers, or certifications.                                                                                  |
 | Performance     | See [PERFORMANCE.md](../architecture/PERFORMANCE.md). Contact adds a narrow form island; Motion remains shared. No Tailwind.                                                                                                                                                                             |
@@ -605,6 +606,22 @@ Calmer marketing reveals, inner-page heroes, heading/content spacing tokens, sim
 | Nav          | Persistent nav is Pricing / Contact / Staff sign in / Theme. How it works and Clinic preview remain homepage sections and footer links.                                                                                     |
 | Form         | Full name, work email, practice name, locations (1 / 2–5 / 6+), optional phone and message. Honeypot + validation + throttle.                                                                                               |
 | Delivery     | SMTP via nodemailer, or `MARKETING_CONTACT_MAILER=memory` for local/E2E. Production still needs real credentials.                                                                                                           |
+
+---
+
+## Marketing final polish (implemented)
+
+Motion, inner-page hero rhythm, shared conversion button, simplified contact form. No Phase 2. No Turnstile. Tenant patient UX was not redesigned. Aftercare still does not depend on `ProcedureSession`.
+
+| Area              | Behaviour                                                                                                                                                                                                                                                                                            |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Motion            | Same viewport thresholds (~-80px mobile, ~-200px desktop, tablet interpolated). Editorial **800ms / 125ms**. Cards **700ms / 105ms**, cap **350ms**. `y` 14px, once, cubic-bezier(.22, 1, .36, 1). Reduced motion unchanged. Duration stays ≤825ms.                                                  |
+| Inner-page heroes | Shared `--mk-hero-bottom-gap: calc(1.35rem + 2.5rem)` on `.pageHeroInner`. Pricing and Contact share one inner-page SVG edge (`mkPageWaveInnerPage`). Homepage keeps its unique wave. `data-mk-page-hero` remains `pricing` \| `contact`.                                                            |
+| Primary button    | Shared `.button.primary` with a 1px hover lift (removed under `prefers-reduced-motion`). Explicit `MarketingPrimaryLink` / `MarketingPrimaryAnchor` / `MarketingPrimaryButton` — not boolean soup. Contact **Send enquiry** / **Sending…** uses the same system with a reserved label width.         |
+| Footer            | `--mk-footer-pad-top: 2rem` (32px). Compact footer otherwise unchanged.                                                                                                                                                                                                                              |
+| Form              | Required: Full name, Email, Practice / clinic name. Optional: Phone, Anything you'd like us to know? Locations field removed. User-facing copy says Email, not Work email. Internal name may remain `workEmail`. Honeypot + validation + throttle kept.                                              |
+| Anti-spam         | **Cloudflare Turnstile is HIGH PRIORITY before or immediately after launch. Not implemented.** Server-side verification, graceful failure, accessibility required when added. See [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md) and [MARKETING-CONTACT.md](../architecture/MARKETING-CONTACT.md). |
+| Nav               | Unchanged: desktop Pricing / Contact / Staff sign in / Theme. Mobile Staff sign in + site menu (Pricing + Contact) + Theme.                                                                                                                                                                          |
 
 ---
 
@@ -704,7 +721,7 @@ This temporarily means we do not have the same TypeScript-aware ESLint rule cove
 | `docs/README.md`                         | Docs index                                                                      |
 | `docs/product/PRD.md`                    | PRD v1.0                                                                        |
 | `docs/product/WORKING-MEMORY.md`         | This file                                                                       |
-| `docs/product/POST-LAUNCH-ROADMAP.md`    | Post-launch Check-ins, RecoveryPlan, templates, verticals                       |
+| `docs/product/POST-LAUNCH-ROADMAP.md`    | Launch-adjacent Turnstile note, Check-ins, RecoveryPlan, templates, verticals   |
 | `docs/adr/*.md`                          | Architecture decisions 0001–0015                                                |
 | `docs/architecture/PERFORMANCE.md`       | Patient CSS/JS measurement contract, Phase 1E budget, and 1F.4 Motion isolation |
 | `docs/architecture/MARKETING-CONTACT.md` | Clinic enquiry form fields, SMTP env, and launch mailbox recommendation         |

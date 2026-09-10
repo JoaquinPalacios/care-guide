@@ -5,14 +5,14 @@ import {
   type ContactEnquiry,
 } from "@/lib/marketing/contact-enquiry";
 
-export type MarketingContactMessage = {
+export interface MarketingContactMessage {
   to: string;
   from: string;
   replyTo: string;
   subject: string;
   text: string;
   html: string;
-};
+}
 
 function escapeHtml(value: string): string {
   return value
@@ -20,18 +20,6 @@ function escapeHtml(value: string): string {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
-}
-
-function locationLabel(value: ContactEnquiry["locationCount"]): string {
-  if (value === "1") {
-    return "1";
-  }
-
-  if (value === "2-5") {
-    return "2–5";
-  }
-
-  return "6+";
 }
 
 export function composeMarketingContactMessage({
@@ -44,19 +32,17 @@ export function composeMarketingContactMessage({
   fromEmail: string;
 }): MarketingContactMessage {
   const fullName = sanitizeHeaderValue(enquiry.fullName);
-  const workEmail = sanitizeHeaderValue(enquiry.workEmail);
+  const email = sanitizeHeaderValue(enquiry.workEmail);
   const clinicName = sanitizeHeaderValue(enquiry.clinicName);
   const phone = enquiry.phone ? sanitizeHeaderValue(enquiry.phone) : null;
   const message = enquiry.message?.trim() || null;
-  const locations = locationLabel(enquiry.locationCount);
 
   const lines = [
     `${PRODUCT_NAME} clinic enquiry`,
     "",
     `Name: ${fullName}`,
-    `Work email: ${workEmail}`,
-    `Clinic/practice: ${clinicName}`,
-    `Number of locations: ${locations}`,
+    `Email: ${email}`,
+    `Clinic: ${clinicName}`,
   ];
 
   if (phone) {
@@ -69,9 +55,8 @@ export function composeMarketingContactMessage({
 
   const htmlRows = [
     ["Name", fullName],
-    ["Work email", workEmail],
-    ["Clinic/practice", clinicName],
-    ["Number of locations", locations],
+    ["Email", email],
+    ["Clinic", clinicName],
   ];
 
   if (phone) {
@@ -96,7 +81,7 @@ export function composeMarketingContactMessage({
   return {
     to: toEmail,
     from: fromEmail,
-    replyTo: workEmail,
+    replyTo: email,
     subject: enquirySubject(clinicName),
     text: lines.join("\n"),
     html,

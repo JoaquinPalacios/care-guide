@@ -21,7 +21,6 @@ function enquiryData(overrides: Record<string, string> = {}): FormData {
   data.set("fullName", "Alex Rivera");
   data.set("workEmail", "alex@clinic.example.test");
   data.set("clinicName", "Harbour Dental");
-  data.set("locationCount", "1");
   data.set("phone", "");
   data.set("message", "");
   data.set(CONTACT_HONEYPOT_FIELD, "");

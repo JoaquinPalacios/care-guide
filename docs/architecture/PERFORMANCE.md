@@ -1041,3 +1041,17 @@ Loaded on `/`, `/pricing`, and `/contact`:
 Contact does **not** load the Zod runtime. Framework/React chunks are shared with other App Router routes and are not counted as product islands. Pricing and contact do not add a second animation library. **No Motion on tenant.** Tenant `/pricing` and `/contact` remain 404.
 
 See [MARKETING-CONTACT.md](MARKETING-CONTACT.md) for delivery configuration.
+
+## After marketing final polish
+
+Measured 2026-09-10 against `cursor/marketing-final-polish-7bf5`. Production payload is captured by conversion e2e (`measurePageAssets` on `/`, `/pricing`, `/contact`) into `test-results/artifacts/marketing-conversion-performance.json`. Motion remains `motion@13.2.0`. No new UI, form, or animation library. Tailwind still absent from marketing.
+
+Viewport thresholds are unchanged (mobile ~-80px, desktop ~-200px, tablet interpolated). Editorial reveal is **800ms / 125ms**. Cards are **700ms / 105ms**, cap **350ms**.
+
+The contact client island should stay the same size or shrink: locations `<select>` was removed, Zod remains server-only (`contact-enquiry.ts`), and the client still validates with `contact-fields.ts`. Fill the table below from the e2e artifact after `pnpm build`.
+
+| Metric         | Conversion polish | Final polish |
+| -------------- | ----------------: | -----------: |
+| CSS raw        |            54,496 |          TBD |
+| Contact island |            18,939 |          TBD |
+| Tailwind       |                no |           no |

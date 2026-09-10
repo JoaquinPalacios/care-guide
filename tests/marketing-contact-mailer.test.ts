@@ -17,7 +17,6 @@ const enquiry = {
   fullName: "Alex Rivera",
   workEmail: "alex@clinic.example.test",
   clinicName: "Harbour Dental",
-  locationCount: "2-5" as const,
   phone: "0400 000 000",
   message: "We have two rooms.",
   [CONTACT_HONEYPOT_FIELD]: "",
@@ -73,7 +72,10 @@ describe("marketing contact mailer", () => {
     );
     expect(message.replyTo).toBe("alex@clinic.example.test");
     expect(message.text).toContain("Name: Alex Rivera");
-    expect(message.text).toContain("Number of locations: 2–5");
+    expect(message.text).toContain("Email: alex@clinic.example.test");
+    expect(message.text).toContain("Clinic: Harbour Dental");
+    expect(message.text).not.toContain("Work email");
+    expect(message.text).not.toContain("Number of locations");
     expect(message.text).toContain("Phone: 0400 000 000");
     expect(message.html).toContain("Harbour Dental");
     expect(message.html).not.toContain("<script");
@@ -112,6 +114,9 @@ describe("compose marketing contact message", () => {
     expect(message.text).not.toContain("Phone:");
     expect(message.html).toContain("&lt;b&gt;custom&lt;/b&gt;");
     expect(message.html).not.toContain("<b>custom</b>");
+    expect(message.html).toContain('<th align="left">Email</th>');
+    expect(message.html).not.toContain("Work email");
+    expect(message.html).not.toContain("Number of locations");
   });
 });
 

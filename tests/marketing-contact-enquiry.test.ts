@@ -23,7 +23,6 @@ const valid = {
   fullName: "Alex Rivera",
   workEmail: "alex@clinic.example.test",
   clinicName: "Harbour Dental",
-  locationCount: "1",
   phone: "",
   message: "",
   [CONTACT_HONEYPOT_FIELD]: "",
@@ -34,7 +33,7 @@ describe("contact enquiry schema", () => {
     const parsed = contactEnquirySchema.parse(valid);
     expect(parsed.phone).toBeNull();
     expect(parsed.message).toBeNull();
-    expect(parsed.locationCount).toBe("1");
+    expect(parsed.workEmail).toBe("alex@clinic.example.test");
     expect(isHoneypotTriggered(parsed)).toBe(false);
   });
 
@@ -44,21 +43,19 @@ describe("contact enquiry schema", () => {
       fullName: "",
       workEmail: "not-an-email",
       clinicName: "",
-      locationCount: "",
     });
     expect(errors.fullName).toMatch(/full name/i);
-    expect(errors.workEmail).toMatch(/work email/i);
+    expect(errors.workEmail).toMatch(/enter a valid email/i);
     expect(errors.clinicName).toMatch(/practice or clinic/i);
-    expect(errors.locationCount).toMatch(/locations/i);
+    expect(errors).not.toHaveProperty("locationCount");
   });
 
-  it("requires name, work email, clinic, and locations", () => {
+  it("requires name, email, and clinic", () => {
     const parsed = contactEnquirySchema.safeParse({
       ...valid,
       fullName: "",
       workEmail: "not-an-email",
       clinicName: "",
-      locationCount: "",
     });
     expect(parsed.success).toBe(false);
     if (parsed.success) {
@@ -66,24 +63,24 @@ describe("contact enquiry schema", () => {
     }
     const errors = contactFieldErrorsFromZod(parsed.error);
     expect(errors.fullName).toMatch(/full name/i);
-    expect(errors.workEmail).toMatch(/work email/i);
+    expect(errors.workEmail).toMatch(/valid email/i);
     expect(errors.clinicName).toMatch(/practice or clinic/i);
-    expect(errors.locationCount).toMatch(/locations/i);
+    expect(errors).not.toHaveProperty("locationCount");
+    expect(JSON.stringify(errors)).not.toMatch(/work email/i);
   });
 
-  it("does not collect patient or clinical fields", () => {
+  it("does not collect patient, clinical, or location-count fields", () => {
     const data = readContactFormValues(formData(valid));
     expect(Object.keys(data)).toEqual([
       "fullName",
       "workEmail",
       "clinicName",
-      "locationCount",
       "phone",
       "message",
       CONTACT_HONEYPOT_FIELD,
     ]);
     expect(JSON.stringify(data)).not.toMatch(
-      /patient|specialty|password|billing/i
+      /patient|specialty|password|billing|locationCount/i
     );
   });
 
