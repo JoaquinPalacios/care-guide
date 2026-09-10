@@ -18,7 +18,7 @@ export const GUIDE_SECTION_KINDS = [
 export type GuideSectionKind = (typeof GUIDE_SECTION_KINDS)[number];
 
 export type GuideSectionProvenance =
-  "canonical" | "practice_override" | "practice_addition";
+  "canonical" | "practice_override" | "practice_addition" | "practice_custom";
 
 export interface CanonicalGuideSection {
   key: string;
@@ -26,6 +26,8 @@ export interface CanonicalGuideSection {
   title: string;
   body: string;
   periodLabel?: string | null;
+  startDay?: number | null;
+  endDay?: number | null;
   sortOrder: number;
 }
 
@@ -41,6 +43,8 @@ export interface PracticeGuideAdditionInput {
   title: string;
   body: string;
   periodLabel?: string | null;
+  startDay?: number | null;
+  endDay?: number | null;
   sortOrder: number;
   insertAfterSectionKey: string | null;
 }
@@ -57,6 +61,8 @@ export interface ComposedGuideSection {
   title: string;
   body: string;
   periodLabel: string | null;
+  startDay?: number | null;
+  endDay?: number | null;
   provenance: GuideSectionProvenance;
 }
 

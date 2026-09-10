@@ -89,6 +89,8 @@ describe("composeGuideDocument", () => {
         title: "Intro",
         body: "introduction body",
         periodLabel: null,
+        startDay: null,
+        endDay: null,
         provenance: "canonical",
       },
       {
@@ -97,6 +99,8 @@ describe("composeGuideDocument", () => {
         title: "Riverside immediate care",
         body: "Call reception.",
         periodLabel: null,
+        startDay: null,
+        endDay: null,
         provenance: "practice_override",
       },
     ]);
@@ -171,6 +175,8 @@ describe("composeGuideDocument", () => {
         title: "introduction",
         body: "introduction body",
         periodLabel: null,
+        startDay: null,
+        endDay: null,
         provenance: "canonical",
       },
     ]);
@@ -251,6 +257,8 @@ describe("composeGuideDocument", () => {
         title: "Second override",
         body: "Second body",
         periodLabel: null,
+        startDay: null,
+        endDay: null,
         provenance: "practice_override",
       },
     ]);
@@ -287,6 +295,8 @@ describe("composeGuideDocument", () => {
         title: "",
         body: "",
         periodLabel: null,
+        startDay: null,
+        endDay: null,
         provenance: "practice_override",
       },
       {
@@ -295,6 +305,8 @@ describe("composeGuideDocument", () => {
         title: "",
         body: "   ",
         periodLabel: null,
+        startDay: null,
+        endDay: null,
         provenance: "practice_addition",
       },
     ]);
@@ -347,10 +359,50 @@ describe("composeGuideDocument", () => {
       title: "Local immediate care",
       body: "Local body",
       periodLabel: "First 4 hours",
+      startDay: null,
+      endDay: null,
       provenance: "practice_override",
     });
     expect(document.sections.every((item) => !("patientName" in item))).toBe(
       true
     );
+  });
+
+  it("passes structured startDay and endDay through composition", () => {
+    const document = composeGuideDocument({
+      canonicalSections: [
+        {
+          key: "immediate-care",
+          kind: "RECOVERY_TIMELINE",
+          title: "Immediate care",
+          body: "Keep the site still.",
+          periodLabel: "First few hours",
+          startDay: 0,
+          endDay: 0,
+          sortOrder: 1,
+        },
+      ],
+      overrides: [],
+      additions: [
+        {
+          key: "days-2-3",
+          kind: "RECOVERY_TIMELINE",
+          title: "Early recovery",
+          body: "Swelling often peaks.",
+          periodLabel: "Days 2–3",
+          startDay: 2,
+          endDay: 3,
+          sortOrder: 1,
+          insertAfterSectionKey: "immediate-care",
+        },
+      ],
+    });
+
+    expect(
+      document.sections.map((item) => [item.key, item.startDay, item.endDay])
+    ).toEqual([
+      ["immediate-care", 0, 0],
+      ["days-2-3", 2, 3],
+    ]);
   });
 });

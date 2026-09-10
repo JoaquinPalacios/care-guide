@@ -1,10 +1,13 @@
 import "server-only";
 
+import { GuideRevisionStatus } from "@prisma/client";
+
 import { composeGuideDocument } from "@/lib/aftercare/compose-guide-document";
 import {
   type ClinicBySlugRecord,
   clinicBySlugSelect,
 } from "@/lib/aftercare/get-clinic-by-slug";
+import { composedSectionsFromPracticeRevision } from "@/lib/aftercare/practice-revision-document";
 import { PUBLIC_PRACTICE_GUIDE_WHERE } from "@/lib/aftercare/public-practice-guide-predicates";
 import { isValidCareGuideSlug } from "@/lib/aftercare/slug";
 import type { ComposedGuideSection } from "@/lib/aftercare/types";
@@ -17,12 +20,13 @@ export interface PublishedPracticeGuideDocument {
     name: string;
   };
   profile: ClinicBySlugRecord["profile"];
+  title: string;
   template: {
     id: string;
     slug: string;
     title: string;
     specialty: string;
-  };
+  } | null;
   practiceGuide: {
     id: string;
     publicSlug: string;
@@ -61,6 +65,8 @@ const publishedGuideInclude = {
           title: true,
           body: true,
           periodLabel: true,
+          startDay: true,
+          endDay: true,
           sortOrder: true,
         },
       },
@@ -80,8 +86,38 @@ const publishedGuideInclude = {
       title: true,
       body: true,
       periodLabel: true,
+      startDay: true,
+      endDay: true,
       sortOrder: true,
       insertAfterSectionKey: true,
+    },
+  },
+  contentRevisions: {
+    where: {
+      status: GuideRevisionStatus.PUBLISHED,
+      version: { gt: 0 },
+    },
+    orderBy: { version: "desc" as const },
+    take: 1,
+    select: {
+      id: true,
+      version: true,
+      title: true,
+      publishedAt: true,
+      sections: {
+        orderBy: [{ sortOrder: "asc" as const }, { key: "asc" as const }],
+        select: {
+          key: true,
+          kind: true,
+          title: true,
+          body: true,
+          periodLabel: true,
+          startDay: true,
+          endDay: true,
+          sortOrder: true,
+          provenance: true,
+        },
+      },
     },
   },
 };
@@ -110,6 +146,62 @@ export async function getPublishedPracticeGuide(input: {
     return null;
   }
 
+  const publishedRevision = practiceGuide.contentRevisions[0] ?? null;
+  const title =
+    publishedRevision?.title?.trim() ||
+    practiceGuide.title.trim() ||
+    practiceGuide.guideTemplate?.title ||
+    "Aftercare guide";
+
+  const sections = publishedRevision
+    ? composedSectionsFromPracticeRevision(publishedRevision.sections)
+    : practiceGuide.pinnedRevision
+      ? composeGuideDocument({
+          canonicalSections: practiceGuide.pinnedRevision.sections.map(
+            (section) => ({
+              key: section.key,
+              kind: section.kind,
+              title: section.title,
+              body: section.body,
+              periodLabel: section.periodLabel,
+              startDay: section.startDay,
+              endDay: section.endDay,
+              sortOrder: section.sortOrder,
+            })
+          ),
+          overrides: practiceGuide.overrides,
+          additions: practiceGuide.additions.map((addition) => ({
+            key: addition.key,
+            kind: addition.kind,
+            title: addition.title,
+            body: addition.body,
+            periodLabel: addition.periodLabel,
+            startDay: addition.startDay,
+            endDay: addition.endDay,
+            sortOrder: addition.sortOrder,
+            insertAfterSectionKey: addition.insertAfterSectionKey,
+          })),
+        }).sections
+      : [];
+
+  const revision = publishedRevision
+    ? {
+        id: publishedRevision.id,
+        version: publishedRevision.version,
+        reviewedAt: publishedRevision.publishedAt,
+      }
+    : practiceGuide.pinnedRevision
+      ? {
+          id: practiceGuide.pinnedRevision.id,
+          version: practiceGuide.pinnedRevision.version,
+          reviewedAt: practiceGuide.pinnedRevision.reviewedAt,
+        }
+      : {
+          id: practiceGuide.id,
+          version: 0,
+          reviewedAt: practiceGuide.publishedAt,
+        };
+
   return {
     clinic: {
       id: practiceGuide.clinic.id,
@@ -117,38 +209,14 @@ export async function getPublishedPracticeGuide(input: {
       name: practiceGuide.clinic.name,
     },
     profile: practiceGuide.clinic.profile,
+    title,
     template: practiceGuide.guideTemplate,
     practiceGuide: {
       id: practiceGuide.id,
       publicSlug: practiceGuide.publicSlug,
       publishedAt: practiceGuide.publishedAt,
     },
-    revision: {
-      id: practiceGuide.pinnedRevision.id,
-      version: practiceGuide.pinnedRevision.version,
-      reviewedAt: practiceGuide.pinnedRevision.reviewedAt,
-    },
-    sections: composeGuideDocument({
-      canonicalSections: practiceGuide.pinnedRevision.sections.map(
-        (section) => ({
-          key: section.key,
-          kind: section.kind,
-          title: section.title,
-          body: section.body,
-          periodLabel: section.periodLabel,
-          sortOrder: section.sortOrder,
-        })
-      ),
-      overrides: practiceGuide.overrides,
-      additions: practiceGuide.additions.map((addition) => ({
-        key: addition.key,
-        kind: addition.kind,
-        title: addition.title,
-        body: addition.body,
-        periodLabel: addition.periodLabel,
-        sortOrder: addition.sortOrder,
-        insertAfterSectionKey: addition.insertAfterSectionKey,
-      })),
-    }).sections,
+    revision,
+    sections,
   };
 }

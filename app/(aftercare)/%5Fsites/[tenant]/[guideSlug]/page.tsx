@@ -48,8 +48,8 @@ export async function generateMetadata({
   const displayName = document.profile?.displayName ?? document.clinic.name;
 
   return aftercarePageMetadata({
-    title: `${document.template.title} · ${displayName}`,
-    description: `${document.template.title} ${instructionLabel(document.profile?.instructionTerminology).toLowerCase()} from ${displayName}.`,
+    title: `${document.title} · ${displayName}`,
+    description: `${document.title} ${instructionLabel(document.profile?.instructionTerminology).toLowerCase()} from ${displayName}.`,
     canonicalUrl: await publicTenantCanonicalUrl(
       `/${document.practiceGuide.publicSlug}`
     ),
@@ -87,7 +87,7 @@ export default async function TenantGuidePage({
     <PatientPage chrome={chrome}>
       <header className={styles.hero}>
         <p className={styles.kicker}>{chrome.instructionsLabel}</p>
-        <h1 className={styles.title}>{document.template.title}</h1>
+        <h1 className={styles.title}>{document.title}</h1>
         <p className={styles.lede}>
           {demoEnabled
             ? `What matters today in your recovery from ${chrome.displayName}.`

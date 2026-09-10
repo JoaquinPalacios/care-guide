@@ -1,4 +1,5 @@
 import type { ComposedGuideSection } from "@/lib/aftercare/types";
+import { normalizeDayRange } from "@/lib/aftercare/timeline-range";
 
 export interface DemoRecoveryFixture {
   simulatedDay: number;
@@ -136,14 +137,22 @@ export function resolveDemoRecoveryState(
     (section) => section.kind === "RECOVERY_TIMELINE"
   );
   const simulatedDay = Math.max(0, fixture.simulatedDay);
-  const parsedRanges = timelineSections.map((section, index) =>
-    parsePeriodDayRange(
+  const parsedRanges = timelineSections.map((section, index) => {
+    const structured = normalizeDayRange(section.startDay, section.endDay);
+    if (structured.startDay !== null && structured.endDay !== null) {
+      return {
+        startDay: structured.startDay,
+        endDay: structured.endDay,
+      };
+    }
+
+    return parsePeriodDayRange(
       section.periodLabel,
       index,
       timelineSections.length,
       fixture.recoveryWindowDays
-    )
-  );
+    );
+  });
   const inferredWindow = parsedRanges.reduce(
     (max, range) => Math.max(max, range.endDay),
     0

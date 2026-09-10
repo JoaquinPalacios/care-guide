@@ -115,6 +115,7 @@ const DOCUMENT = {
     themeMode: "SYSTEM",
     allowPatientThemeToggle: true,
   },
+  title: "Tooth Extraction",
   template: {
     id: "guide_tmpl_demo_extraction",
     slug: "extraction",

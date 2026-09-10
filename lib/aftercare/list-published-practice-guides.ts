@@ -43,7 +43,14 @@ export async function listPublishedPracticeGuides(
       publicSlug: true,
       sortOrder: true,
       publishedAt: true,
+      title: true,
       guideTemplate: {
+        select: { title: true },
+      },
+      contentRevisions: {
+        where: { status: "PUBLISHED", version: { gt: 0 } },
+        orderBy: { version: "desc" },
+        take: 1,
         select: { title: true },
       },
     },
@@ -59,7 +66,11 @@ export async function listPublishedPracticeGuides(
     guides: guides.map((guide) => ({
       id: guide.id,
       publicSlug: guide.publicSlug,
-      title: guide.guideTemplate.title,
+      title:
+        guide.contentRevisions[0]?.title?.trim() ||
+        guide.title.trim() ||
+        guide.guideTemplate?.title ||
+        "Aftercare guide",
       sortOrder: guide.sortOrder,
       publishedAt: guide.publishedAt,
     })),

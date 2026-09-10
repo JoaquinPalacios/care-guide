@@ -1,0 +1,139 @@
+"use client";
+
+import { useActionState } from "react";
+
+import {
+  createCustomGuideAction,
+  createGuideFromTemplateAction,
+  type GuideActionState,
+} from "@/app/(staff)/(clinic-portal)/guides/actions";
+import type { CanonicalGuideTemplateOption } from "@/lib/clinic-portal/list-canonical-templates";
+
+const initialState: GuideActionState = {};
+
+export function CreateGuideForm({
+  templates,
+}: {
+  templates: CanonicalGuideTemplateOption[];
+}) {
+  const [templateState, templateAction, templatePending] = useActionState(
+    createGuideFromTemplateAction,
+    initialState
+  );
+  const [customState, customAction, customPending] = useActionState(
+    createCustomGuideAction,
+    initialState
+  );
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-2">
+      <section className="rounded-xl border border-staff-line bg-staff-panel p-5 shadow-sm">
+        <h2 className="text-base font-semibold tracking-tight">
+          Start from a template
+        </h2>
+        <p className="mt-2 text-sm leading-6 text-staff-muted">
+          Enable a canonical Aftercare Guide template, then adapt it for this
+          practice.
+        </p>
+        {templates.length === 0 ? (
+          <p className="mt-4 text-sm text-staff-muted">
+            No reviewed templates are available yet.
+          </p>
+        ) : (
+          <ul className="mt-4 flex flex-col gap-3">
+            {templates.map((template) => (
+              <li
+                key={template.id}
+                className="rounded-lg border border-staff-line px-4 py-3"
+              >
+                <p className="font-medium text-staff-ink">{template.title}</p>
+                <p className="mt-1 text-sm text-staff-muted">
+                  {template.alreadyEnabled
+                    ? "Already in My guides"
+                    : "Canonical template"}
+                </p>
+                {template.alreadyEnabled ? null : (
+                  <form action={templateAction} className="mt-3">
+                    <input
+                      type="hidden"
+                      name="templateId"
+                      value={template.id}
+                    />
+                    {templateState.error ? (
+                      <p className="mb-2 text-sm text-red-600" role="alert">
+                        {templateState.error}
+                      </p>
+                    ) : null}
+                    <button
+                      type="submit"
+                      disabled={templatePending}
+                      className="inline-flex h-10 items-center justify-center rounded-md bg-staff-brand px-4 text-sm font-medium text-staff-on-brand hover:bg-staff-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand disabled:opacity-60"
+                    >
+                      {templatePending ? "Creating…" : "Create from template"}
+                    </button>
+                  </form>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="rounded-xl border border-staff-line bg-staff-panel p-5 shadow-sm">
+        <h2 className="text-base font-semibold tracking-tight">
+          Create a custom guide
+        </h2>
+        <p className="mt-2 text-sm leading-6 text-staff-muted">
+          Start from a blank guide for a treatment unique to this clinic.
+        </p>
+        <form action={customAction} className="mt-4 flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium" htmlFor="title">
+              Guide title
+            </label>
+            <input
+              id="title"
+              name="title"
+              required
+              className="h-11 rounded-md border border-staff-line bg-staff-panel px-3 text-sm"
+            />
+            {customState.fieldErrors?.title ? (
+              <p className="text-sm text-red-600">
+                {customState.fieldErrors.title}
+              </p>
+            ) : null}
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium" htmlFor="publicSlug">
+              Public slug
+            </label>
+            <input
+              id="publicSlug"
+              name="publicSlug"
+              required
+              placeholder="extraction"
+              className="h-11 rounded-md border border-staff-line bg-staff-panel px-3 text-sm"
+            />
+            {customState.fieldErrors?.publicSlug ? (
+              <p className="text-sm text-red-600">
+                {customState.fieldErrors.publicSlug}
+              </p>
+            ) : null}
+          </div>
+          {customState.error ? (
+            <p className="text-sm text-red-600" role="alert">
+              {customState.error}
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={customPending}
+            className="inline-flex h-10 items-center justify-center rounded-md bg-staff-brand px-4 text-sm font-medium text-staff-on-brand hover:bg-staff-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand disabled:opacity-60"
+          >
+            {customPending ? "Creating…" : "Create custom guide"}
+          </button>
+        </form>
+      </section>
+    </div>
+  );
+}

@@ -90,14 +90,14 @@ async function upsertUnpublishedGuide(input: {
       slug: input.templateSlug,
       title: input.title,
       specialty: "DENTAL",
-      isActive: true,
+      isActive: false,
     },
     create: {
       id: input.templateId,
       slug: input.templateSlug,
       title: input.title,
       specialty: "DENTAL",
-      isActive: true,
+      isActive: false,
     },
   });
 
@@ -143,6 +143,7 @@ async function upsertUnpublishedGuide(input: {
     where: { id: input.guideId },
     update: {
       clinicId: input.clinicId,
+      title: input.title,
       guideTemplateId: input.templateId,
       pinnedRevisionId: input.revisionId,
       publicSlug: input.publicSlug,
@@ -155,6 +156,7 @@ async function upsertUnpublishedGuide(input: {
     create: {
       id: input.guideId,
       clinicId: input.clinicId,
+      title: input.title,
       guideTemplateId: input.templateId,
       pinnedRevisionId: input.revisionId,
       publicSlug: input.publicSlug,
@@ -226,6 +228,7 @@ export async function seedPhase1eFixtures(): Promise<void> {
       guideTemplateId: EXTRACTION_TEMPLATE_ID,
       pinnedRevisionId: EXTRACTION_REVISION_ID,
       publicSlug: "extraction",
+      title: "Tooth Extraction",
       isEnabled: true,
       status: "PUBLISHED",
       sortOrder: 1,

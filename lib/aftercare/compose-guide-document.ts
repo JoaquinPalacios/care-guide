@@ -1,4 +1,5 @@
 import { normalizePeriodLabel } from "@/lib/aftercare/period-label";
+import { normalizeDayRange } from "@/lib/aftercare/timeline-range";
 import type {
   CanonicalGuideSection,
   ComposedGuideDocument,
@@ -21,12 +22,15 @@ function compareBySortOrderThenKey(
 function toAdditionSection(
   addition: PracticeGuideAdditionInput
 ): ComposedGuideSection {
+  const range = normalizeDayRange(addition.startDay, addition.endDay);
   return {
     key: addition.key,
     kind: addition.kind,
     title: addition.title,
     body: addition.body,
     periodLabel: normalizePeriodLabel(addition.periodLabel),
+    startDay: range.startDay,
+    endDay: range.endDay,
     provenance: "practice_addition",
   };
 }
@@ -106,6 +110,11 @@ function composeCanonicalSection(
   canonicalSection: CanonicalGuideSection,
   override: { title: string; body: string } | undefined
 ): ComposedGuideSection {
+  const range = normalizeDayRange(
+    canonicalSection.startDay,
+    canonicalSection.endDay
+  );
+
   if (!override) {
     return {
       key: canonicalSection.key,
@@ -113,6 +122,8 @@ function composeCanonicalSection(
       title: canonicalSection.title,
       body: canonicalSection.body,
       periodLabel: normalizePeriodLabel(canonicalSection.periodLabel),
+      startDay: range.startDay,
+      endDay: range.endDay,
       provenance: "canonical",
     };
   }
@@ -123,6 +134,8 @@ function composeCanonicalSection(
     title: override.title,
     body: override.body,
     periodLabel: normalizePeriodLabel(canonicalSection.periodLabel),
+    startDay: range.startDay,
+    endDay: range.endDay,
     provenance: "practice_override",
   };
 }

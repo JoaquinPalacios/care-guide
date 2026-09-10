@@ -3,7 +3,13 @@ import "server-only";
 import { GuideRevisionStatus, PracticeGuideStatus } from "@prisma/client";
 import { headers } from "next/headers";
 
+import { WORKING_DRAFT_VERSION } from "@/lib/aftercare/practice-revision-document";
 import { clinicPatientSiteUrl } from "@/lib/clinic-portal/patient-site-url";
+import {
+  clinicGuideLifecycleStatus,
+  clinicGuideStatusLabel,
+  type ClinicGuideLifecycleStatus,
+} from "@/lib/clinic-portal/guide-status";
 import { prisma } from "@/lib/prisma";
 
 export interface ClinicPortalGuide {
@@ -11,9 +17,12 @@ export interface ClinicPortalGuide {
   title: string;
   publicSlug: string;
   status: PracticeGuideStatus;
+  lifecycle: ClinicGuideLifecycleStatus;
+  statusLabel: string;
   isEnabled: boolean;
-  templateSlug: string;
-  specialty: string;
+  sourceLabel: string;
+  templateSlug: string | null;
+  specialty: string | null;
   updatedAt: Date;
   previewHref: string | null;
 }
@@ -35,9 +44,11 @@ export async function listClinicPortalGuides(
     orderBy: [{ sortOrder: "asc" }, { publicSlug: "asc" }],
     select: {
       id: true,
+      title: true,
       publicSlug: true,
       status: true,
       isEnabled: true,
+      publishedAt: true,
       updatedAt: true,
       guideTemplate: {
         select: {
@@ -51,6 +62,15 @@ export async function listClinicPortalGuides(
           status: true,
         },
       },
+      contentRevisions: {
+        select: {
+          version: true,
+          status: true,
+          title: true,
+          updatedAt: true,
+          publishedAt: true,
+        },
+      },
     },
   });
 
@@ -62,12 +82,37 @@ export async function listClinicPortalGuides(
     (host.includes("localhost") ? "http" : "https");
 
   return guides.map((guide) => {
-    const canPreview =
+    const draft = (guide.contentRevisions ?? []).find(
+      (revision) => revision.version === WORKING_DRAFT_VERSION
+    );
+    const published = (guide.contentRevisions ?? [])
+      .filter(
+        (revision) =>
+          revision.status === GuideRevisionStatus.PUBLISHED &&
+          revision.version > 0
+      )
+      .toSorted(
+        (left, right) =>
+          (right.publishedAt?.getTime() ?? 0) -
+          (left.publishedAt?.getTime() ?? 0)
+      )[0];
+    const lifecycle = clinicGuideLifecycleStatus({
+      status: guide.status,
+      isEnabled: guide.isEnabled,
+      publishedRevisionStatus:
+        published?.status ?? guide.pinnedRevision?.status,
+      draftUpdatedAt: draft?.updatedAt ?? null,
+      publishedAt: published?.publishedAt ?? guide.publishedAt,
+    });
+    const canPreviewPublic =
       guide.isEnabled &&
       guide.status === PracticeGuideStatus.PUBLISHED &&
-      guide.pinnedRevision.status === GuideRevisionStatus.PUBLISHED;
+      Boolean(
+        published ||
+        guide.pinnedRevision?.status === GuideRevisionStatus.PUBLISHED
+      );
     const previewHref =
-      canPreview && host
+      canPreviewPublic && host
         ? clinicPatientSiteUrl({
             requestHost: host,
             clinicSlug: clinic.slug,
@@ -78,13 +123,22 @@ export async function listClinicPortalGuides(
 
     return {
       id: guide.id,
-      title: guide.guideTemplate.title,
+      title:
+        draft?.title?.trim() ||
+        guide.title ||
+        guide.guideTemplate?.title ||
+        "Untitled guide",
       publicSlug: guide.publicSlug,
       status: guide.status,
+      lifecycle,
+      statusLabel: clinicGuideStatusLabel(lifecycle),
       isEnabled: guide.isEnabled,
-      templateSlug: guide.guideTemplate.slug,
-      specialty: guide.guideTemplate.specialty,
-      updatedAt: guide.updatedAt,
+      sourceLabel: guide.guideTemplate
+        ? `Template · ${guide.guideTemplate.title}`
+        : "Custom guide",
+      templateSlug: guide.guideTemplate?.slug ?? null,
+      specialty: guide.guideTemplate?.specialty ?? null,
+      updatedAt: draft?.updatedAt ?? guide.updatedAt,
       previewHref,
     };
   });

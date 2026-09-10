@@ -158,4 +158,25 @@ describe("demo recovery-state resolver", () => {
       endDay: 1,
     });
   });
+
+  it("prefers structured startDay/endDay over periodLabel parsing", () => {
+    const recovery = resolveDemoRecoveryState(
+      [
+        section({
+          key: "misleading-label",
+          kind: "RECOVERY_TIMELINE",
+          title: "Later healing",
+          periodLabel: "Day 1",
+          startDay: 4,
+          endDay: 7,
+          body: "Structured range wins.",
+        }),
+      ],
+      { simulatedDay: 5, recoveryWindowDays: 7 }
+    );
+
+    expect(recovery.currentStage?.key).toBe("misleading-label");
+    expect(recovery.currentStage?.startDay).toBe(4);
+    expect(recovery.currentStage?.endDay).toBe(7);
+  });
 });

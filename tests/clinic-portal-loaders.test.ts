@@ -109,6 +109,7 @@ describe("clinic portal loaders", () => {
         status: PracticeGuideStatus.PUBLISHED,
         isEnabled: true,
         updatedAt: new Date("2026-09-01T00:00:00.000Z"),
+        title: "Tooth Extraction",
         guideTemplate: {
           title: "Tooth Extraction",
           slug: "extraction",
@@ -122,6 +123,7 @@ describe("clinic portal loaders", () => {
         status: PracticeGuideStatus.DRAFT,
         isEnabled: false,
         updatedAt: new Date("2026-09-02T00:00:00.000Z"),
+        title: "Draft Guide",
         guideTemplate: {
           title: "Draft Guide",
           slug: "draft-guide",

@@ -59,6 +59,7 @@ const GUIDE_A = {
     name: "Rivers Care Demo Clinic",
   },
   profile: PROFILE_A,
+  title: "Tooth Extraction",
   template: {
     id: "guide_tmpl_demo_extraction",
     slug: "extraction",

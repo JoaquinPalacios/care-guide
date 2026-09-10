@@ -59,7 +59,9 @@ function publishedGuideRecord(clinic = CLINIC_A) {
     id: "pg_extraction",
     clinicId: clinic.id,
     publicSlug: "extraction",
+    title: "Tooth Extraction",
     publishedAt: PUBLISHED_AT,
+    contentRevisions: [],
     clinic,
     guideTemplate: {
       id: "tmpl_extraction",
@@ -114,13 +116,11 @@ describe("aftercare public loaders", () => {
   });
 
   it("requires enabled, published, and a published pinned revision", () => {
-    expect(PUBLIC_PRACTICE_GUIDE_WHERE).toEqual({
+    expect(PUBLIC_PRACTICE_GUIDE_WHERE).toMatchObject({
       isEnabled: true,
       status: PracticeGuideStatus.PUBLISHED,
-      pinnedRevision: {
-        status: GuideRevisionStatus.PUBLISHED,
-      },
     });
+    expect(PUBLIC_PRACTICE_GUIDE_WHERE.OR).toHaveLength(2);
   });
 
   it("resolves a published enabled guide with a published pinned revision", async () => {
@@ -142,6 +142,7 @@ describe("aftercare public loaders", () => {
         }),
       })
     );
+    expect(result?.title).toBe("Tooth Extraction");
     expect(result?.practiceGuide.publicSlug).toBe("extraction");
     expect(result?.sections.map((section) => section.provenance)).toEqual([
       "canonical",
@@ -191,9 +192,8 @@ describe("aftercare public loaders", () => {
     ).resolves.toBeNull();
 
     expect(
-      prismaMock.practiceGuide.findFirst.mock.calls[0]?.[0].where.pinnedRevision
-        .status
-    ).toBe(GuideRevisionStatus.PUBLISHED);
+      prismaMock.practiceGuide.findFirst.mock.calls[0]?.[0].where.OR
+    ).toEqual(PUBLIC_PRACTICE_GUIDE_WHERE.OR);
   });
 
   it("does not resolve an unknown guide slug", async () => {
