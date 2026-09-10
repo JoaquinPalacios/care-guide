@@ -167,11 +167,13 @@ describe("proxy", () => {
     expect(response.status).toBe(404);
   });
 
-  it("blocks tenant /dashboard", () => {
-    const response = proxy(
-      requestFor("http://demodental.localhost:3000/dashboard")
-    );
-    expect(response.status).toBe(404);
+  it("blocks tenant /dashboard and /guides", () => {
+    expect(
+      proxy(requestFor("http://demodental.localhost:3000/dashboard")).status
+    ).toBe(404);
+    expect(
+      proxy(requestFor("http://demodental.localhost:3000/guides")).status
+    ).toBe(404);
   });
 
   it("blocks tenant /display/<token>", () => {

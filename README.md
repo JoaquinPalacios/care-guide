@@ -198,9 +198,11 @@ Related routes:
 - `GET /api/auth/me` or `/api/auth/session`
 - `POST /api/auth/logout`
 - `/login` — email/password form; successful sign-in redirects to `/dashboard`
-- `app/dashboard/layout.tsx` — protected shell via `lib/auth/require-staff-session.ts`
+- `app/(staff)/(clinic-portal)/layout.tsx` — Aftercare Guide clinic portal shell via `lib/auth/require-staff-session.ts`
+- `/dashboard` — clinic Overview
+- `/guides` — clinic Guides
 
-Signed-out visits to `/dashboard` redirect to `/login`. Signed-in visits to `/login` redirect to `/dashboard`. Only users with one effective clinic membership can establish a valid staff session for that shell.
+Signed-out visits to `/dashboard` and `/guides` redirect to `/login`. Signed-in visits to `/login` redirect to `/dashboard`. Only users with one effective clinic membership can establish a valid staff session for that shell. Parked chairside routes such as `/dashboard/procedures` and `/sessions/new` remain directly reachable and are not linked from the portal.
 
 Later **aftercare operator admin** should reuse this kind of server-side protection on an admin host; it is not the same product surface as clinic chairside controls. Clinic self-service aftercare admin is **out of MVP**.
 

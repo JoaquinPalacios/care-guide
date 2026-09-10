@@ -97,6 +97,12 @@ describe("aftercare style boundary", () => {
     expect(styles).not.toContain("tailwind");
     expect(styles).not.toContain("--tw-");
     expect(styles).toMatch(/\.guideLink\s*\{[^}]*box-shadow/);
+    expect(styles).not.toContain("translateY(-2px)");
+    expect(styles).not.toContain("translateX(4px)");
+    expect(styles).toContain("translateX(2px)");
+    expect(styles).toContain("@media (hover: hover) and (pointer: fine)");
+    expect(styles).toContain('.demoTab:not([aria-selected="true"]):hover');
+    expect(styles).toContain(".demoTab:focus-visible");
     expect(styles).not.toMatch(/\.timelineItem\s*\{[^}]*box-shadow/);
     expect(styles).not.toMatch(/\.timelineItem\s*\{[^}]*border-radius/);
     expect(styles).not.toContain(".checkIn");
@@ -156,7 +162,9 @@ describe("aftercare style boundary", () => {
       /\.marketingBase[^{]*\{[^}]*color:\s*var\(--mk-on-dark\)/
     );
     expect(styles).toContain("heroTitleBlock");
-    expect(styles).toContain("text-align: center");
+    expect(styles).toMatch(/\.heroTitleBlock\s*\{[^}]*text-align:\s*center/);
+    expect(styles).not.toMatch(/\.pageTitle\s*\{[^}]*text-align:\s*center/);
+    expect(styles).not.toMatch(/\.sectionTitle\s*\{[^}]*text-align:\s*center/);
     expect(styles).toContain("0.42fr 0.58fr");
     expect(styles).not.toContain("100vh");
     expect(styles).toContain("100svh");
@@ -297,6 +305,7 @@ describe("aftercare style boundary", () => {
       "app/(marketing)/components/marketing-pillars.tsx",
       "app/(marketing)/components/marketing-product-assembly.tsx",
       "app/(marketing)/components/marketing-nav-menu.tsx",
+      "app/(marketing)/components/marketing-nav-theme.tsx",
       "app/(marketing)/components/contact-form.tsx",
     ]);
     const files = walk("app/(aftercare)").filter((path) =>

@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
+import { ProductMark } from "@/app/(staff)/components/product-mark";
 import { LoginForm } from "@/app/(staff)/login/login-form";
 import { getAuthContext } from "@/lib/auth/session";
+import { PRODUCT_NAME } from "@/lib/branding/product-name";
 import { resolveLocalLoginSeed } from "@/lib/dev/local-login-accounts";
 
 export const metadata: Metadata = {
-  title: "Staff Sign In",
-  description: "Sign in to the Care Guide staff dashboard.",
+  title: `Staff sign in · ${PRODUCT_NAME}`,
+  description: "Sign in to the Aftercare Guide clinic portal.",
 };
 
 export default async function LoginPage() {
@@ -26,24 +28,25 @@ export default async function LoginPage() {
       : null;
 
   return (
-    <main className="flex flex-1 items-center justify-center bg-zinc-50 px-6 py-16">
-      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+    <main className="flex flex-1 items-center justify-center bg-staff-canvas px-6 py-16">
+      <div className="w-full max-w-md rounded-2xl border border-staff-line bg-staff-panel p-8 shadow-sm">
         <div className="mb-8 flex flex-col gap-2">
-          <p className="text-sm font-medium uppercase tracking-[0.14em] text-zinc-500">
-            Care Guide
+          <p className="flex items-center gap-2 text-sm font-semibold text-staff-brand">
+            <ProductMark className="h-5 w-5" />
+            {PRODUCT_NAME}
           </p>
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-950">
+          <h1 className="text-3xl font-semibold tracking-tight text-staff-ink">
             Staff sign in
           </h1>
-          <p className="text-sm leading-6 text-zinc-600">
-            Use your staff email and password to continue to the dashboard.
+          <p className="text-sm leading-6 text-staff-muted">
+            Use your staff email and password to continue to the clinic portal.
           </p>
         </div>
 
         <LoginForm />
         {localLogin?.status === "seed" ? (
-          <div className="mt-6 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-3 text-sm text-zinc-600">
-            <p className="font-medium text-zinc-900">
+          <div className="mt-6 rounded-md border border-staff-line bg-staff-canvas px-3 py-3 text-sm text-staff-muted">
+            <p className="font-medium text-staff-ink">
               Local development account
             </p>
             <ul className="mt-2 flex flex-col gap-1">

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
-export function LogoutButton() {
+export function LogoutButton({ className }: { className?: string }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -31,12 +31,12 @@ export function LogoutButton() {
   }
 
   return (
-    <div className="flex flex-col items-start gap-2 sm:items-end">
+    <div className={className ?? "flex flex-col items-start gap-2"}>
       <button
         type="button"
         onClick={handleLogout}
         disabled={isPending}
-        className="inline-flex h-10 items-center justify-center rounded-md border border-zinc-300 bg-white px-4 text-sm font-medium text-zinc-700 transition hover:border-zinc-400 hover:text-zinc-950 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex h-10 items-center justify-center rounded-md border border-staff-line bg-staff-panel px-3 text-sm font-medium text-staff-ink transition hover:border-staff-brand hover:text-staff-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? "Signing out..." : "Sign out"}
       </button>

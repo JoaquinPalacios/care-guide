@@ -1073,3 +1073,9 @@ Loaded on `/`, `/pricing`, and `/contact`:
 | `3pgpyvqtbrp3l.js` | Motion (contact form sits in `MarketingReveal`) | 37,727 |  13,921 | 12,620 |
 
 Contact island vs conversion polish `0-i9vkpe7y6f8.js` (18,939 / 6,823 / 5,948): **−191 raw / −60 gzip / −14 Brotli**. Motion on `/contact` is the existing marketing Motion library, not a second animation system. Framework/React chunks are shared with other App Router routes and are not counted as product islands. **No Motion on tenant.** Tenant `/pricing` and `/contact` remain 404. No new UI or form library.
+
+## UX polish + clinic portal foundation
+
+No new UI or animation library. Motion remains marketing-only (`motion@13.2.0`). Tenant still has no Tailwind and no Motion. Staff/admin continues to load the isolated Tailwind stylesheet.
+
+Clinic Overview (`/dashboard`) and Guides (`/guides`) are server-rendered from membership-scoped loaders. `PortalChrome` is a small client shell for navigation, the mobile menu, and sign-out; page bodies are not client components.

@@ -149,6 +149,7 @@ test.describe("staff isolation", () => {
     for (const pathname of [
       "/login",
       "/dashboard",
+      "/guides",
       "/display/token-like-value",
     ] as const) {
       const response = await page.goto(tenantUrl(DEMO_TENANT_SLUG, pathname), {
@@ -170,9 +171,11 @@ test.describe("staff isolation", () => {
     const home = await page.goto(staffUrl("/"), { waitUntil: "load" });
     expect(home?.status()).toBe(200);
     await expect(
-      page.getByRole("heading", { name: "Internal staff workspace" })
+      page.getByRole("heading", { name: "Clinic portal" })
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: "Open login" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Staff sign in" })
+    ).toBeVisible();
 
     const login = await page.goto(staffUrl("/login"), { waitUntil: "load" });
     expect(login?.status()).toBe(200);
@@ -185,6 +188,11 @@ test.describe("staff isolation", () => {
       waitUntil: "load",
     });
     expect(dashboard?.url()).toContain("/login");
+
+    const guides = await page.goto(staffUrl("/guides"), {
+      waitUntil: "load",
+    });
+    expect(guides?.url()).toContain("/login");
 
     const newSession = await page.goto(staffUrl("/sessions/new"), {
       waitUntil: "load",

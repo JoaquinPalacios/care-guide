@@ -101,7 +101,7 @@ export function LoginForm() {
   return (
     <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-zinc-900" htmlFor="email">
+        <label className="text-sm font-medium text-staff-ink" htmlFor="email">
           Email
         </label>
         <input
@@ -114,7 +114,7 @@ export function LoginForm() {
           onChange={(event) => updateField("email", event.target.value)}
           aria-invalid={errors.email ? "true" : "false"}
           aria-describedby={errors.email ? "email-error" : undefined}
-          className="h-11 rounded-md border border-zinc-300 bg-white px-3 text-base text-zinc-950 outline-none transition focus:border-zinc-950 focus:ring-2 focus:ring-zinc-950/10"
+          className="h-11 rounded-md border border-staff-line bg-staff-panel px-3 text-base text-staff-ink outline-none transition focus:border-staff-brand focus:ring-2 focus:ring-staff-brand/20"
         />
         {errors.email ? (
           <p id="email-error" className="text-sm text-red-600">
@@ -124,7 +124,10 @@ export function LoginForm() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-zinc-900" htmlFor="password">
+        <label
+          className="text-sm font-medium text-staff-ink"
+          htmlFor="password"
+        >
           Password
         </label>
         <input
@@ -136,7 +139,7 @@ export function LoginForm() {
           onChange={(event) => updateField("password", event.target.value)}
           aria-invalid={errors.password ? "true" : "false"}
           aria-describedby={errors.password ? "password-error" : undefined}
-          className="h-11 rounded-md border border-zinc-300 bg-white px-3 text-base text-zinc-950 outline-none transition focus:border-zinc-950 focus:ring-2 focus:ring-zinc-950/10"
+          className="h-11 rounded-md border border-staff-line bg-staff-panel px-3 text-base text-staff-ink outline-none transition focus:border-staff-brand focus:ring-2 focus:ring-staff-brand/20"
         />
         {errors.password ? (
           <p id="password-error" className="text-sm text-red-600">
@@ -157,7 +160,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="inline-flex h-11 items-center justify-center rounded-md bg-zinc-950 px-4 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-400"
+        className="inline-flex h-11 items-center justify-center rounded-md bg-staff-brand px-4 text-sm font-medium text-staff-on-brand shadow-sm transition hover:bg-staff-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? "Signing in..." : "Sign in"}
       </button>

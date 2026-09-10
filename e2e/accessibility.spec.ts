@@ -87,6 +87,10 @@ test.describe("marketing accessibility", () => {
       await expectNoSeriousAxeViolations(page, {
         exclude: "[data-mk-pending]",
       });
+      await page.getByRole("button", { name: "Site menu" }).click();
+      await expectNoSeriousAxeViolations(page, {
+        exclude: "[data-mk-pending]",
+      });
     });
   }
 });

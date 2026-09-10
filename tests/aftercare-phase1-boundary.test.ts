@@ -22,6 +22,7 @@ describe("Phase 1 aftercare product boundary", () => {
       ...sourceFiles("lib/aftercare"),
       ...sourceFiles("lib/tenancy"),
       ...sourceFiles("lib/branding"),
+      ...sourceFiles("lib/clinic-portal"),
     ];
 
     expect(files.length).toBeGreaterThan(10);

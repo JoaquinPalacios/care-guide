@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+
+import { PRODUCT_NAME } from "@/lib/branding/product-name";
+
 import "./staff.css";
 
 const geistSans = Geist({
@@ -13,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Care Guide",
-  description: "Internal staff workflow and procedure guidance for Care Guide.",
+  title: PRODUCT_NAME,
+  description: "Clinic aftercare portal for Aftercare Guide.",
 };
 
 export default function RootLayout({

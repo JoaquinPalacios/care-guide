@@ -10,7 +10,7 @@ import {
 
 interface StaffSessionContext {
   user: AuthenticatedUser;
-  clinicMembership: ClinicMembershipContext | null;
+  clinicMembership: ClinicMembershipContext;
 }
 
 export async function requireStaffSession(): Promise<StaffSessionContext> {
