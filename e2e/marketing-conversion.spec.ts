@@ -168,10 +168,10 @@ test.describe("marketing conversion routes", () => {
     ).toBeVisible();
     await expect(
       headerNav.getByRole("link", { name: "Staff sign in" })
-    ).toBeVisible();
+    ).toHaveCount(0);
     await expect(
       page.getByRole("button", { name: /Change colour theme/ })
-    ).toBeVisible();
+    ).toHaveCount(0);
     await expect(headerNav.getByRole("link", { name: "Pricing" })).toHaveCount(
       0
     );
@@ -185,6 +185,12 @@ test.describe("marketing conversion routes", () => {
     ).toBeVisible();
     await expect(
       headerNav.getByRole("link", { name: "Contact" })
+    ).toBeVisible();
+    await expect(
+      headerNav.getByRole("link", { name: "Staff sign in" })
+    ).toBeVisible();
+    await expect(
+      headerNav.getByRole("button", { name: "Theme" })
     ).toBeVisible();
     await expect(
       headerNav.getByRole("link", { name: "How it works" })
@@ -306,7 +312,7 @@ test.describe("marketing conversion routes", () => {
     const appHome = await page.goto(staffUrl("/"), { waitUntil: "load" });
     expect(appHome?.status()).toBe(200);
     await expect(
-      page.getByRole("heading", { name: "Internal staff workspace" })
+      page.getByRole("heading", { name: "Clinic portal" })
     ).toBeVisible();
   });
 
@@ -517,5 +523,108 @@ test.describe("marketing conversion routes", () => {
       contentType: "application/json",
       body: JSON.stringify(payload, null, 2),
     });
+  });
+
+  test("mobile menu rows are full-width and include theme", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    const menu = page.getByRole("button", { name: "Site menu" });
+    await menu.click();
+
+    const pricing = page
+      .getByRole("navigation", { name: "Marketing" })
+      .getByRole("link", { name: "Pricing" });
+    const box = await pricing.boundingBox();
+    expect(box, "Pricing row should be visible").not.toBeNull();
+    expect(box!.height).toBeGreaterThanOrEqual(44);
+    expect(box!.width).toBeGreaterThanOrEqual(280);
+
+    await pricing.hover();
+    const hoverBg = await pricing.evaluate(
+      (element) => getComputedStyle(element).backgroundColor
+    );
+    expect(hoverBg).not.toBe("rgba(0, 0, 0, 0)");
+
+    await pricing.focus();
+    await expect(pricing).toBeFocused();
+    const outline = await pricing.evaluate(
+      (element) => getComputedStyle(element).outlineStyle
+    );
+    expect(outline).not.toBe("none");
+
+    const theme = page.getByRole("button", { name: "Theme" });
+    await expect(theme).toBeVisible();
+    await theme.click();
+    await expect(page.getByRole("radio", { name: "Light" })).toBeVisible();
+    await page.getByRole("radio", { name: "Dark" }).click();
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-theme-mode",
+      "dark"
+    );
+    await page.screenshot({
+      path: "test-results/artifacts/marketing-mobile-menu-open-390.png",
+    });
+    await page.keyboard.press("Escape");
+    await page.screenshot({
+      path: "test-results/artifacts/marketing-mobile-nav-closed-390.png",
+    });
+  });
+
+  test("onboarding numbers align to the first line of wrapping copy", async ({
+    page,
+  }) => {
+    for (const width of [1440, 1280, 390, 360] as const) {
+      await page.setViewportSize({
+        width,
+        height: width >= 1280 ? 900 : 844,
+      });
+      await page.goto(marketingUrl("/pricing"), { waitUntil: "load" });
+      const item = page
+        .locator("ol")
+        .filter({ hasText: "Start with a reviewed template" })
+        .locator("li")
+        .first();
+      const alignment = await item.evaluate((element) => {
+        const number = element.querySelector("span");
+        const text = element.querySelector("p");
+        if (
+          !(number instanceof HTMLElement) ||
+          !(text instanceof HTMLElement)
+        ) {
+          return null;
+        }
+        const range = document.createRange();
+        range.setStart(text, 0);
+        range.setEnd(text, 1);
+        const firstLine = range.getClientRects()[0];
+        const numberBox = number.getBoundingClientRect();
+        if (!firstLine) {
+          return null;
+        }
+        return {
+          numberCenter: numberBox.top + numberBox.height / 2,
+          firstLineCenter: firstLine.top + firstLine.height / 2,
+          alignItems: getComputedStyle(element).alignItems,
+        };
+      });
+      expect(alignment?.alignItems).toBe("start");
+      expect(
+        Math.abs(
+          (alignment?.numberCenter ?? 0) - (alignment?.firstLineCenter ?? 0)
+        )
+      ).toBeLessThanOrEqual(6);
+      if (width === 1440) {
+        await item.screenshot({
+          path: "test-results/artifacts/onboarding-numbers-1440.png",
+        });
+      }
+      if (width === 390) {
+        await item.screenshot({
+          path: "test-results/artifacts/onboarding-numbers-390.png",
+        });
+      }
+    }
   });
 });

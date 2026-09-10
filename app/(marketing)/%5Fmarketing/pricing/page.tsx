@@ -154,7 +154,7 @@ export default async function MarketingPricingPage() {
                     index={index}
                     className={styles.storyItem}
                   >
-                    <span className={styles.frictionIndex}>
+                    <span className={styles.storyIndex}>
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <p>{step}</p>

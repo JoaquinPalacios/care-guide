@@ -27,6 +27,6 @@ test("records marketing scroll choreography", async ({ page }) => {
   );
   for (let y = 0; y < height; y += 70) {
     await page.mouse.wheel(0, 70);
-    await page.waitForTimeout(35);
+    await page.waitForTimeout(90);
   }
 });

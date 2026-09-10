@@ -127,7 +127,7 @@ describe("marketing homepage", () => {
     expect(html).not.toContain("Family practice");
     expect(html).toContain("Choose a visual tone that feels at home");
     expect(html).toContain("Staff sign in");
-    expect(html.match(/Staff sign in/g)).toHaveLength(2);
+    expect(html.match(/Staff sign in/g)).toHaveLength(3);
     expect(html).toContain("footerSeparator");
     expect(html).not.toContain("Book an appointment");
     expect(html).toContain("http://demodental.localhost:3000/");

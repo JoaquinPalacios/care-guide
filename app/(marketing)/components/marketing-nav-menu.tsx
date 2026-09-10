@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 
+import { MarketingNavTheme } from "@/app/(marketing)/components/marketing-nav-theme";
+
 import styles from "../marketing.module.css";
 
 export type MarketingMenuItem = {
@@ -11,7 +13,13 @@ export type MarketingMenuItem = {
   current?: boolean;
 };
 
-export function MarketingNavMenu({ items }: { items: MarketingMenuItem[] }) {
+export function MarketingNavMenu({
+  items,
+  staffHref,
+}: {
+  items: MarketingMenuItem[];
+  staffHref: string;
+}) {
   const reactId = useId().replace(/:/g, "");
   const menuId = `mk-nav-${reactId}`;
   const menuRef = useRef<HTMLDivElement>(null);
@@ -84,7 +92,7 @@ export function MarketingNavMenu({ items }: { items: MarketingMenuItem[] }) {
           {items.map((item) => (
             <li key={item.label}>
               <Link
-                className={styles.navMenuLink}
+                className={styles.navMenuRow}
                 href={item.href}
                 aria-current={item.current ? "page" : undefined}
               >
@@ -92,6 +100,14 @@ export function MarketingNavMenu({ items }: { items: MarketingMenuItem[] }) {
               </Link>
             </li>
           ))}
+          <li>
+            <a className={styles.navMenuRow} href={staffHref}>
+              Staff sign in
+            </a>
+          </li>
+          <li>
+            <MarketingNavTheme />
+          </li>
         </ul>
       </div>
     </div>

@@ -49,6 +49,9 @@ describe("marketing pricing page", () => {
     expect(html).toContain("Patient check-ins");
     expect(html).toContain("Connected recovery plans");
     expect(html).toContain("Assisted onboarding is available");
+    expect(html).toContain("Start with a reviewed template");
+    expect(html).toContain("storyIndex");
+    expect(html).not.toContain("frictionIndex");
     expect(html).not.toContain("A$249");
     expect(html).not.toContain("A$499");
     expect(html).not.toContain("pay for 10 months");

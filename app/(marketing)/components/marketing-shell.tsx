@@ -65,8 +65,10 @@ export function MarketingShell({
             >
               Staff sign in
             </a>
-            <MarketingNavMenu items={menuItems} />
-            <MarketingThemeControl />
+            <span className={styles.navTheme}>
+              <MarketingThemeControl />
+            </span>
+            <MarketingNavMenu items={menuItems} staffHref={staffHref} />
           </nav>
         </div>
       </header>

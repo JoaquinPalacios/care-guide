@@ -1046,7 +1046,7 @@ See [MARKETING-CONTACT.md](MARKETING-CONTACT.md) for delivery configuration.
 
 Measured 2026-09-10 against `cursor/marketing-final-polish-7bf5`. Production payload is captured by conversion e2e (`measurePageAssets` on `/`, `/pricing`, `/contact`) into `test-results/artifacts/marketing-conversion-performance.json`. Motion remains `motion@13.2.0`. No new UI, form, or animation library. Tailwind still absent from marketing.
 
-Viewport thresholds are unchanged (mobile ~-80px, desktop ~-200px, tablet interpolated). Editorial reveal is **800ms / 125ms**. Cards are **700ms / 105ms**, cap **350ms**.
+Viewport thresholds are unchanged (mobile ~-80px, desktop ~-200px, tablet interpolated). Editorial reveal is **900ms / 150ms**. Cards are **800ms / 120ms**, cap **400ms**. Tune `MARKETING_MOTION_TIMING` in `lib/marketing/reveal-timing.ts`.
 
 The contact client island stayed the same size or shrank: locations `<select>` was removed, Zod remains server-only (`contact-enquiry.ts`), and the client still validates with `contact-fields.ts`.
 

@@ -719,10 +719,10 @@ test.describe("marketing homepage", () => {
       await expect(headerNav.locator('[class*="navAnchor"]')).toHaveCount(0);
       await expect(
         headerNav.getByRole("link", { name: "Staff sign in" })
-      ).toBeVisible();
+      ).toHaveCount(0);
       await expect(
         page.getByRole("button", { name: /Change colour theme/ })
-      ).toBeVisible();
+      ).toHaveCount(0);
       await expect(
         footerNav.getByRole("link", { name: "How it works" })
       ).toBeVisible();
@@ -742,21 +742,14 @@ test.describe("marketing homepage", () => {
       expect(wordmarkBox.whiteSpace).toBe("nowrap");
       expect(wordmarkBox.height).toBeLessThanOrEqual(36);
 
-      const staffBox = await headerNav
-        .getByRole("link", { name: "Staff sign in" })
-        .evaluate((element) => {
-          const box = element.getBoundingClientRect();
-          return { width: box.width, height: box.height };
-        });
-      const themeBox = await page
-        .getByRole("button", { name: /Change colour theme/ })
-        .evaluate((element) => {
-          const box = element.getBoundingClientRect();
-          return { width: box.width, height: box.height };
-        });
-      expect(staffBox.height).toBeGreaterThanOrEqual(44);
-      expect(themeBox.width).toBeGreaterThanOrEqual(44);
-      expect(themeBox.height).toBeGreaterThanOrEqual(44);
+      const staffInHeader = headerNav.getByRole("link", {
+        name: "Staff sign in",
+      });
+      await expect(staffInHeader).toHaveCount(0);
+      const themeInHeader = page.getByRole("button", {
+        name: /Change colour theme/,
+      });
+      await expect(themeInHeader).toHaveCount(0);
 
       const focusedNames: string[] = [];
       await page.locator("body").click({ position: { x: 8, y: 8 } });
@@ -792,9 +785,7 @@ test.describe("marketing homepage", () => {
       expect(headerLabels).not.toContain("How it works");
       expect(headerLabels).not.toContain("Clinic preview");
       expect(headerLabels).not.toContain("Early access");
-      expect(headerLabels.join(" ")).toMatch(
-        /Staff sign in|Change colour|Site menu/
-      );
+      expect(headerLabels.join(" ")).toMatch(/Site menu/);
       await expect(
         page.getByRole("button", { name: "Site menu" })
       ).toBeVisible();

@@ -2082,7 +2082,7 @@ test.describe("Phase 1F.11 story clarity", () => {
       ).toHaveCount(0);
       await expect(
         headerNav.getByRole("link", { name: "Staff sign in" })
-      ).toBeVisible();
+      ).toHaveCount(0);
 
       await scrollSectionIntoView(page, '[aria-labelledby="product-heading"]');
       await waitForSectionReveal(

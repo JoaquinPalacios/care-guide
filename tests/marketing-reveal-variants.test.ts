@@ -11,6 +11,7 @@ import {
   EDITORIAL_REVEAL_STEP,
   editorialRevealDelay,
   HERO_PREVIEW_VARIANTS,
+  MARKETING_MOTION_TIMING,
   MARKETING_REVEAL_MARGIN,
   MARKETING_REVEAL_VIEWPORT,
   REVEAL_EASE,
@@ -26,18 +27,29 @@ import {
 
 describe("marketing reveal variants", () => {
   it("slows editorial and card reveals slightly without going theatrical", () => {
-    expect(REVEAL_STAGGER).toBe(0.125);
-    expect(EDITORIAL_REVEAL_STEP).toBe(0.125);
-    expect(editorialRevealDelay(1)).toBe(0.125);
-    expect(editorialRevealDelay(2)).toBe(0.25);
+    expect(MARKETING_MOTION_TIMING).toEqual({
+      editorialDuration: 0.9,
+      editorialStagger: 0.15,
+      cardDuration: 0.8,
+      cardStagger: 0.12,
+      cardStaggerCap: 0.4,
+    });
+    expect(REVEAL_STAGGER).toBe(MARKETING_MOTION_TIMING.editorialStagger);
+    expect(EDITORIAL_REVEAL_STEP).toBe(
+      MARKETING_MOTION_TIMING.editorialStagger
+    );
+    expect(editorialRevealDelay(1)).toBe(0.15);
+    expect(editorialRevealDelay(2)).toBe(0.3);
     expect(revealContainerVariants.visible).toEqual({});
-    expect(EDITORIAL_REVEAL_DURATION).toBe(0.8);
-    expect(EDITORIAL_REVEAL_DURATION).toBeLessThanOrEqual(0.825);
-    expect(CARD_REVEAL_DURATION).toBe(0.7);
+    expect(EDITORIAL_REVEAL_DURATION).toBe(
+      MARKETING_MOTION_TIMING.editorialDuration
+    );
+    expect(EDITORIAL_REVEAL_DURATION).toBeLessThanOrEqual(1);
+    expect(CARD_REVEAL_DURATION).toBe(MARKETING_MOTION_TIMING.cardDuration);
     expect(REVEAL_ITEM_DURATION).toBe(EDITORIAL_REVEAL_DURATION);
     expect(REVEAL_EASE).toEqual([0.22, 1, 0.36, 1]);
-    const delayed = delayedRevealItemVariants.visible(0.125);
-    expect(delayed.transition.delay).toBe(0.125);
+    const delayed = delayedRevealItemVariants.visible(0.15);
+    expect(delayed.transition.delay).toBe(0.15);
     expect(delayed.transition.duration).toBe(EDITORIAL_REVEAL_DURATION);
     expect(delayed.transition.ease).toEqual(REVEAL_EASE);
   });
@@ -75,8 +87,10 @@ describe("marketing reveal variants", () => {
   });
 
   it("staggers independent cards without a long cascade", () => {
-    expect(CARD_REVEAL_STAGGER).toBe(0.105);
-    expect(CARD_REVEAL_STAGGER_MAX).toBe(0.35);
+    expect(CARD_REVEAL_STAGGER).toBe(MARKETING_MOTION_TIMING.cardStagger);
+    expect(CARD_REVEAL_STAGGER_MAX).toBe(
+      MARKETING_MOTION_TIMING.cardStaggerCap
+    );
     expect(cardRevealDelay(0)).toBe(0);
     expect(cardRevealDelay(1)).toBe(CARD_REVEAL_STAGGER);
     expect(cardRevealDelay(3)).toBeLessThanOrEqual(CARD_REVEAL_STAGGER_MAX);

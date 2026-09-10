@@ -31,7 +31,7 @@ test("records full-page marketing scroll", async ({ page }) => {
   });
   for (let y = 0; y < height; y += 80) {
     await page.mouse.wheel(0, 80);
-    await page.waitForTimeout(40);
+    await page.waitForTimeout(90);
   }
   await page.mouse.wheel(0, -520);
   await page.waitForTimeout(400);

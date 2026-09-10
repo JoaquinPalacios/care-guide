@@ -1,18 +1,33 @@
+/** Distance in pixels for ordinary editorial / card / preview reveals. */
 export const REVEAL_Y = 14;
 export const REVEAL_Y_CARD = 16;
 export const REVEAL_Y_PREVIEW = 10;
 
+/**
+ * Adjust these values to tune marketing reveal speed.
+ * Units are seconds (Motion). Viewport trigger thresholds live in
+ * `lib/marketing/reveal-margin.ts` and should stay unchanged.
+ */
+export const MARKETING_MOTION_TIMING = {
+  editorialDuration: 0.9,
+  editorialStagger: 0.15,
+  cardDuration: 0.8,
+  cardStagger: 0.12,
+  cardStaggerCap: 0.4,
+} as const;
+
 /** Hero container child stagger. */
-export const REVEAL_STAGGER = 0.125;
+export const REVEAL_STAGGER = MARKETING_MOTION_TIMING.editorialStagger;
 
 /** Editorial group items (eyebrow → heading → copy → CTA). */
-export const EDITORIAL_REVEAL_DURATION = 0.8;
-export const EDITORIAL_REVEAL_STEP = 0.125;
+export const EDITORIAL_REVEAL_DURATION =
+  MARKETING_MOTION_TIMING.editorialDuration;
+export const EDITORIAL_REVEAL_STEP = MARKETING_MOTION_TIMING.editorialStagger;
 
 /** Independent cards / process nodes. Cap keeps a desktop row from cascading. */
-export const CARD_REVEAL_DURATION = 0.7;
-export const CARD_REVEAL_STAGGER = 0.105;
-export const CARD_REVEAL_STAGGER_MAX = 0.35;
+export const CARD_REVEAL_DURATION = MARKETING_MOTION_TIMING.cardDuration;
+export const CARD_REVEAL_STAGGER = MARKETING_MOTION_TIMING.cardStagger;
+export const CARD_REVEAL_STAGGER_MAX = MARKETING_MOTION_TIMING.cardStaggerCap;
 
 /** Premium ease-out. Motion cubic-bezier(.22, 1, .36, 1). */
 export const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
