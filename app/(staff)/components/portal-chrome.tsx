@@ -8,22 +8,22 @@ import { LogoutButton } from "@/app/(staff)/components/logout-button";
 import { ProductMark } from "@/app/(staff)/components/product-mark";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 
-const NAV_ITEMS = [
-  { href: "/dashboard", label: "Overview" },
-  { href: "/guides", label: "Guides" },
-] as const;
+const MAIN_NAV_CLASS =
+  "flex min-h-11 items-center rounded-md px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand";
 
 export function PortalChrome({
   displayName,
   userLabel,
   roleLabel,
   patientSiteHref,
+  canManagePractice,
   children,
 }: {
   displayName: string;
   userLabel: string;
   roleLabel: string;
   patientSiteHref: string | null;
+  canManagePractice: boolean;
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -67,6 +67,7 @@ export function PortalChrome({
         <PortalNav
           pathname={pathname}
           patientSiteHref={patientSiteHref}
+          canManagePractice={canManagePractice}
           onNavigate={() => undefined}
         />
         <PortalAccount userLabel={userLabel} roleLabel={roleLabel} />
@@ -101,6 +102,7 @@ export function PortalChrome({
             <PortalNav
               pathname={pathname}
               patientSiteHref={patientSiteHref}
+              canManagePractice={canManagePractice}
               onNavigate={() => menuRef.current?.hidePopover()}
             />
             <PortalAccount userLabel={userLabel} roleLabel={roleLabel} />
@@ -137,48 +139,66 @@ function PortalBrand({
 function PortalNav({
   pathname,
   patientSiteHref,
+  canManagePractice,
   onNavigate,
 }: {
   pathname: string;
   patientSiteHref: string | null;
+  canManagePractice: boolean;
   onNavigate: () => void;
 }) {
+  const items = [
+    { href: "/dashboard", label: "Overview" },
+    { href: "/guides", label: "Guides" },
+    ...(canManagePractice ? [{ href: "/practice", label: "Practice" }] : []),
+  ];
+
   return (
-    <nav className="flex flex-1 flex-col gap-1 p-3" aria-label="Clinic portal">
-      {NAV_ITEMS.map((item) => {
-        const current =
-          item.href === "/dashboard"
-            ? pathname === "/dashboard"
-            : pathname === item.href || pathname.startsWith(`${item.href}/`);
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            aria-current={current ? "page" : undefined}
-            onClick={onNavigate}
-            className={`flex min-h-11 items-center rounded-md px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand ${
-              current
-                ? "bg-staff-brand/10 text-staff-brand"
-                : "text-staff-ink hover:bg-staff-canvas"
-            }`}
-          >
-            {item.label}
-          </Link>
-        );
-      })}
+    <nav className="flex flex-1 flex-col p-3" aria-label="Clinic portal">
+      <div className="flex flex-col gap-1">
+        {items.map((item) => {
+          const current =
+            item.href === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname === item.href || pathname.startsWith(`${item.href}/`);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={current ? "page" : undefined}
+              onClick={onNavigate}
+              className={`${MAIN_NAV_CLASS} ${
+                current
+                  ? "bg-staff-brand/10 text-staff-brand"
+                  : "text-staff-ink hover:bg-staff-canvas"
+              }`}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
+      </div>
       {patientSiteHref ? (
-        <a
-          href={patientSiteHref}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-staff-muted hover:bg-staff-canvas hover:text-staff-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
-        >
-          View patient site
-          <span className="sr-only"> (opens in a new tab)</span>
-          <span aria-hidden="true" className="ml-1">
-            ↗
-          </span>
-        </a>
+        <>
+          <div
+            className="my-3 border-t border-staff-line"
+            role="presentation"
+          />
+          <div className="flex flex-col gap-1">
+            <a
+              href={patientSiteHref}
+              target="_blank"
+              rel="noreferrer"
+              className={`${MAIN_NAV_CLASS} text-staff-muted hover:bg-staff-canvas hover:text-staff-ink`}
+            >
+              View patient site
+              <span className="sr-only"> (opens in a new tab)</span>
+              <span aria-hidden="true" className="ml-1">
+                ↗
+              </span>
+            </a>
+          </div>
+        </>
       ) : null}
     </nav>
   );

@@ -27,7 +27,7 @@ describe("clinic portal pages", () => {
     expect(guides).toContain("requireStaffSession");
     expect(guides).toContain("clinicMembership.clinic.id");
     expect(guides).not.toContain("searchParams");
-    expect(guides).toContain("View patient guide");
+    expect(guides).toContain("Create guide");
     expect(guides).not.toContain("Add guide");
     expect(guides).not.toContain("Duplicate");
     expect(layout).toContain("requireStaffSession");
@@ -46,6 +46,7 @@ describe("clinic portal pages", () => {
 
     expect(chrome).toContain("Overview");
     expect(chrome).toContain("Guides");
+    expect(chrome).toContain("Practice");
     expect(chrome).toContain("View patient site");
     expect(chrome).not.toContain("/sessions");
     expect(chrome).not.toContain("Analytics");
@@ -60,5 +61,46 @@ describe("clinic portal pages", () => {
     expect(login).toContain("PRODUCT_NAME");
     expect(login).toContain("Staff sign in");
     expect(login).not.toContain("Care Guide");
+  });
+
+  it("keeps Practice and operator mutations behind server-side role guards", () => {
+    const practice = readFileSync(
+      "app/(staff)/(clinic-portal)/practice/page.tsx",
+      "utf8"
+    );
+    const practiceActions = readFileSync(
+      "app/(staff)/(clinic-portal)/practice/actions.ts",
+      "utf8"
+    );
+    const guideActions = readFileSync(
+      "app/(staff)/(clinic-portal)/guides/actions.ts",
+      "utf8"
+    );
+    const operatorPage = readFileSync(
+      "app/(staff)/(operator)/operator/clinics/page.tsx",
+      "utf8"
+    );
+    const operatorActions = readFileSync(
+      "app/(staff)/(operator)/operator/actions.ts",
+      "utf8"
+    );
+    const preview = readFileSync(
+      "app/(staff)/(guide-preview)/guides/[guideId]/preview/page.tsx",
+      "utf8"
+    );
+
+    expect(practice).toContain("requireClinicAdmin");
+    expect(practice).not.toContain("searchParams");
+    expect(practiceActions).toContain("requireClinicAdmin");
+    expect(practiceActions).toContain("clinicMembership.clinic.id");
+    expect(practiceActions).not.toContain('formData.get("clinicId")');
+    expect(guideActions).toContain("requireClinicAdmin");
+    expect(guideActions).not.toContain('formData.get("clinicId")');
+    expect(operatorPage).toContain("requirePlatformOperator");
+    expect(operatorActions).toContain("requirePlatformOperator");
+    expect(preview).toContain("requireStaffSession");
+    expect(preview).toContain("PatientPage");
+    expect(preview).toContain("GuideDocument");
+    expect(preview).not.toContain("Wisdom Teeth");
   });
 });

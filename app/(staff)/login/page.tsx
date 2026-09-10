@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { ProductMark } from "@/app/(staff)/components/product-mark";
 import { LoginForm } from "@/app/(staff)/login/login-form";
 import { getAuthContext } from "@/lib/auth/session";
+import { signedInHomePath } from "@/lib/auth/signed-in-home";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 import { resolveLocalLoginSeed } from "@/lib/dev/local-login-accounts";
 
@@ -17,9 +18,9 @@ export default async function LoginPage() {
     user: null,
     clinicMembership: null,
   }));
-
-  if (authContext.user && authContext.clinicMembership) {
-    redirect("/dashboard");
+  const home = signedInHomePath(authContext);
+  if (home) {
+    redirect(home);
   }
 
   const localLogin =

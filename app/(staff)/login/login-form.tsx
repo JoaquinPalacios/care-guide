@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
+import { PasswordVisibilityField } from "@/app/(staff)/components/password-visibility-field";
 import {
   loginSchema,
   type LoginFormValues,
@@ -66,7 +67,8 @@ export function LoginForm() {
         });
 
         if (response.ok) {
-          router.push("/dashboard");
+          const data = (await response.json()) as { redirectTo?: string };
+          router.push(data.redirectTo || "/dashboard");
           router.refresh();
           return;
         }
@@ -99,7 +101,12 @@ export function LoginForm() {
   }
 
   return (
-    <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
+    <form
+      className="flex flex-col gap-5"
+      method="post"
+      onSubmit={handleSubmit}
+      noValidate
+    >
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium text-staff-ink" htmlFor="email">
           Email
@@ -130,16 +137,11 @@ export function LoginForm() {
         >
           Password
         </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
+        <PasswordVisibilityField
           value={values.password}
-          onChange={(event) => updateField("password", event.target.value)}
-          aria-invalid={errors.password ? "true" : "false"}
-          aria-describedby={errors.password ? "password-error" : undefined}
-          className="h-11 rounded-md border border-staff-line bg-staff-panel px-3 text-base text-staff-ink outline-none transition focus:border-staff-brand focus:ring-2 focus:ring-staff-brand/20"
+          onChange={(value) => updateField("password", value)}
+          invalid={Boolean(errors.password)}
+          errorId={errors.password ? "password-error" : undefined}
         />
         {errors.password ? (
           <p id="password-error" className="text-sm text-red-600">

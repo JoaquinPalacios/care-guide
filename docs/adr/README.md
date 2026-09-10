@@ -39,8 +39,13 @@ Do not create an ADR for a reversible UI detail. Create one when a later impleme
 | [0010](0010-practice-guides-explicitly-pin-canonical-revisions.md)           | Practice guides explicitly pin canonical revisions           | Accepted |
 | [0011](0011-patient-styling-uses-css-modules-and-semantic-runtime-tokens.md) | Patient styling uses CSS Modules and semantic runtime tokens | Accepted |
 | [0012](0012-apex-host-is-the-public-marketing-face.md)                       | Apex host is the public marketing face                       | Accepted |
+| [0013](0013-provisional-aftercare-guide-presentation-controls.md)            | Provisional Aftercare Guide name and presentation controls   | Accepted |
 | [0014](0014-recovery-timeline-stages-are-data-driven-sections.md)            | Recovery timeline stages are data-driven sections            | Accepted |
 | [0015](0015-recovery-plan-is-not-procedure-session.md)                       | RecoveryPlan is not ProcedureSession                         | Accepted |
+| [0016](0016-platform-operator-is-distinct-from-clinic-admin.md)              | Platform OPERATOR is distinct from clinic ADMIN              | Accepted |
+| [0017](0017-clinic-owned-practice-revisions-pin-public-documents.md)         | Clinic-owned practice revisions pin the public document      | Accepted |
+| [0018](0018-recovery-timeline-stores-optional-day-ranges.md)                 | Recovery timeline stores optional structured day ranges      | Accepted |
+| [0019](0019-clinic-logo-upload-requires-object-storage.md)                   | Clinic logo upload waits for production object storage       | Accepted |
 
 Related product contract: [../product/PRD.md](../product/PRD.md).
 Performance contract: [../architecture/PERFORMANCE.md](../architecture/PERFORMANCE.md).

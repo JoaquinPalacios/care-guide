@@ -85,7 +85,11 @@ test.describe("tenant homepage and guide", () => {
       page.getByRole("heading", { name: "Recovery overview" })
     ).toHaveCount(0);
     await page.getByRole("tab", { name: "Timeline" }).click();
-    await expect(page.getByText("First few hours")).toBeVisible();
+    await expect(
+      page
+        .getByRole("tabpanel", { name: "Timeline" })
+        .getByText("First few hours")
+    ).toBeVisible();
     await expect(page.getByText("Today / first 24 hours")).toBeVisible();
     await expect(page.getByText("Days 2–3", { exact: true })).toBeVisible();
     await expect(page.getByText("Days 4–7")).toBeVisible();

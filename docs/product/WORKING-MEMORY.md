@@ -5,17 +5,17 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-10 (UX polish + clinic portal foundation: slower marketing motion, mobile nav, patient hover, Aftercare Guide clinic portal)
+Last updated: 2026-09-11 (Phase 2A clinic self-service foundation: operator boundary, guide editor, Practice settings)
 
 ---
 
 ## Product direction vs current implementation
 
-|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** through **1F.16 / reveal timing** + **Phase 1G interactive patient demo** + **Phase 1G.1 launch-scope cleanup** + **marketing completion** (`/`, `/pricing`, `/contact` on the root host) + **marketing conversion polish** + **marketing final polish** + **UX polish + clinic portal foundation** (slower motion, simplified mobile nav, clinic Overview/Guides). Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. Check-in is post-launch only — see [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md). A Cloudflare Turnstile challenge is HIGH PRIORITY before or immediately after launch and is **not implemented**. |
-| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** through **1F.16 / reveal timing** + **Phase 1G interactive patient demo** + **Phase 1G.1 launch-scope cleanup** + **marketing completion** (`/`, `/pricing`, `/contact` on the root host) + **marketing conversion polish** + **marketing final polish** + **UX polish + clinic portal foundation** + **Phase 2A clinic self-service foundation** (Overview / Guides / Practice, draft-preview-publish, platform OPERATOR All Clinics). Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. Check-in is post-launch only — see [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md). Logo upload is blocked pending object storage. A Cloudflare Turnstile challenge is HIGH PRIORITY before or immediately after launch and is **not implemented**. |
+| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
 Do not claim QR codes, operator aftercare admin, or analytics exist until they are built. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented. Phase 1E added Playwright + axe browser acceptance; it did not add product features.
 
@@ -55,7 +55,8 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 | Marketing polish          | COMPLETE — CONVERSION POLISH READY FOR JOAQUÍN REVIEW          |
 | Marketing final polish    | COMPLETE — READY FOR JOAQUÍN REVIEW                            |
 | UX polish + clinic portal | COMPLETE — READY FOR JOAQUÍN REVIEW                            |
-| 2+                        | Not started                                                    |
+| 2A                        | LOCAL — CLINIC SELF-SERVICE FOUNDATION                         |
+| 2+ remainder              | Not started                                                    |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
 
@@ -664,24 +665,25 @@ Marketing motion/navigation polish, calmer patient interactions, and the first A
 
 Staff `/dashboard` is the Aftercare Guide clinic portal, not the parked chairside dashboard.
 
-| Area      | Behaviour                                                                                                                                                                                                         |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Auth      | Unchanged `requireStaffSession()`. Unauthenticated `/dashboard` and `/guides` redirect to `/login`. Authenticated `app.` `/` redirects to `/dashboard`.                                                           |
-| Shell     | Platform periwinkle/cobalt, clinic display name from `ClinicProfile` (fallback `Clinic.name`). Overview, Guides, View patient site, signed-in identity, Sign out.                                                 |
-| Overview  | Real published/draft guide counts. Setup checks: identity, branding, contact, emergency, published guide. Statuses are Configured / Needs attention. Patient-site link uses the real tenant renderer.             |
-| Guides    | `/guides` lists the authenticated clinic's actual `PracticeGuide` rows. Preview only when published, enabled, and pinned to a published revision. No fake template library. No Edit/Duplicate/Delete/Publish/Add. |
-| Isolation | Loaders query by membership `clinicId` only. No client-provided clinic IDs.                                                                                                                                       |
-| Chairside | `/dashboard/procedures`, `/sessions/new`, `/session/[id]/control`, `/display/[token]` remain. Not linked from portal nav. Not shown on Overview.                                                                  |
+| Area      | Behaviour                                                                                                                                                                                                                                                |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth      | Unchanged `requireStaffSession()`. Unauthenticated `/dashboard` and `/guides` redirect to `/login`. Authenticated `app.` `/` redirects to `/dashboard`.                                                                                                  |
+| Shell     | Platform periwinkle/cobalt, clinic display name from `ClinicProfile` (fallback `Clinic.name`). Overview, Guides, Practice (ADMIN), then a divider and View patient site. Signed-in identity and Sign out in the footer.                                  |
+| Overview  | Real published/draft guide counts. Setup checks: identity, branding, contact, emergency, published guide. Statuses are Configured / Needs attention. Patient-site link uses the real tenant renderer.                                                    |
+| Guides    | `/guides` lists the authenticated clinic's actual `PracticeGuide` rows. ADMIN can create from a real canonical template or as a custom guide, edit draft, preview, and publish. STAFF can view and preview. No fake template library. No delete/archive. |
+| Practice  | `/practice` (ADMIN). Identity, controlled branding colours/radius/terminology/theme, contact, emergency. Tenant slug is not editable here. Logo path remains; upload is blocked.                                                                         |
+| Isolation | Loaders and mutations query by membership `clinicId` only. No client-provided clinic IDs.                                                                                                                                                                |
+| Chairside | `/dashboard/procedures`, `/sessions/new`, `/session/[id]/control`, `/display/[token]` remain. Not linked from portal nav. Not shown on Overview.                                                                                                         |
 
 ### Next clinic-portal work (not built)
 
-Guide management/editing, template enablement, overrides/additions, branding editor, contact/emergency settings, share/QR, operator workflows, team, billing, Check-ins, RecoveryPlan, messaging, PMS integrations.
+Archive/delete, QR, invitations/team management, canonical library authoring, object-storage logo upload, unpublish, Check-ins, RecoveryPlan, messaging, PMS integrations, billing.
 
 ---
 
 ## Do not do (until a later explicit task)
 
-- Phase 2 operator admin, QR, analytics, SMS/email, billing, custom domains, extra specialties, clinical CMS, rich-text editor, patient-specific guides, chairside integration
+- Remaining Phase 2 operator library/QR, analytics, SMS/email, billing, custom domains, extra specialties, clinical CMS, rich-text editor, patient-specific guides, chairside integration
 - Enable `cacheComponents: true`
 - Delete or refactor parked chairside functionality
 - Depend aftercare on `ProcedureSession`
@@ -696,10 +698,11 @@ Guide management/editing, template enablement, overrides/additions, branding edi
 
 - Next.js App Router, React, Tailwind (staff only), CSS Modules (patient + marketing), PostgreSQL, Prisma
 - `Clinic` (`id`, `name`, **`slug`**), `User`, `ClinicMembership`, **`ClinicProfile`** (`primaryColor`, `accentColor`, `neutralColor`, `radiusPreset`, `instructionTerminology`, `themeMode`, `allowPatientThemeToggle`)
-- Staff auth: `auth.ts`, `lib/auth/*`, `/login`, clinic portal `/dashboard` + `/guides` (`requireStaffSession()`)
-- Clinic portal loaders: `lib/clinic-portal/*` (membership `clinicId` only)
+- Staff auth: `auth.ts`, `lib/auth/*`, `/login`, clinic portal `/dashboard` + `/guides` + `/practice` (`requireStaffSession()` / `requireClinicAdmin()`)
+- Platform operator: `User.platformRole`, `/operator/clinics` (`requirePlatformOperator()`)
+- Clinic portal loaders/mutations: `lib/clinic-portal/*` (membership `clinicId` only)
 - Clinic-scoped query patterns (membership-derived clinic id)
-- Aftercare domain: `GuideTemplate` → `GuideTemplateRevision` → `GuideTemplateSection`; `PracticeGuide` + override/addition
+- Aftercare domain: `GuideTemplate` → `GuideTemplateRevision` → `GuideTemplateSection`; `PracticeGuide` + clinic-owned `PracticeGuideRevision` (draft v0 / published 1+) + legacy override/addition
 - Tenancy: `lib/tenancy/*`, `proxy.ts`, `app/(aftercare)/%5Fsites/[tenant]`, `app/(marketing)/%5Fmarketing` (`/`, `/pricing`, `/contact`)
 - Patient theme: `lib/branding/aftercare-theme.ts`
 - Patient pages: `app/(aftercare)/components/*`, `lib/aftercare/practice-chrome.ts`
@@ -732,6 +735,7 @@ Seeded fictional clinic: **Rivers Care Demo Clinic** (`clinic_demo_rivers`).
 - Demo mark: `/demo/riverside-mark.svg`
 - Admin: `LOCAL_ADMIN_EMAIL` / `LOCAL_ADMIN_PASSWORD` (see `.env.example`)
 - Staff: `LOCAL_STAFF_EMAIL` / `LOCAL_STAFF_PASSWORD`
+- Operator: `LOCAL_OPERATOR_EMAIL` / `LOCAL_OPERATOR_PASSWORD` (no clinic membership; production must not seed these)
 
 Aftercare seed (Phase 1A, logo path updated in 1C; canonical copy made clinic-neutral in 1E):
 
@@ -747,7 +751,7 @@ Pacific Dental appears in the PRD only as a **conceptual** hostname example (`pa
 
 ## Phase 1 remainder (not started)
 
-Phase 1G.1 is the launch-scope cleanup for the current aftercare branch. Root-platform `/pricing` and `/contact` are implemented. Commercial MVP is after Phase 3 (see PRD §19 and §22). Do not begin Phase 2 from this branch.
+Phase 1G.1 is the launch-scope cleanup for the current aftercare branch. Root-platform `/pricing` and `/contact` are implemented. Commercial MVP is after Phase 3 (see PRD §19 and §22). Phase 2A clinic self-service foundation is implemented locally.
 
 See [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md) for Check-ins, RecoveryPlan, dental template candidates, and future verticals.
 
@@ -777,7 +781,25 @@ This temporarily means we do not have the same TypeScript-aware ESLint rule cove
 | `docs/product/PRD.md`                    | PRD v1.0                                                                        |
 | `docs/product/WORKING-MEMORY.md`         | This file                                                                       |
 | `docs/product/POST-LAUNCH-ROADMAP.md`    | Launch-adjacent Turnstile note, Check-ins, RecoveryPlan, templates, verticals   |
-| `docs/adr/*.md`                          | Architecture decisions 0001–0015                                                |
+| `docs/adr/*.md`                          | Architecture decisions 0001–0019                                                |
 | `docs/architecture/PERFORMANCE.md`       | Patient CSS/JS measurement contract, Phase 1E budget, and 1F.4 Motion isolation |
 | `docs/architecture/MARKETING-CONTACT.md` | Clinic enquiry form fields, SMTP env, and launch mailbox recommendation         |
+| `docs/architecture/CLINIC-PORTAL.md`     | Clinic portal IA, permissions, publication, logo blocker                        |
 | `README.md`                              | Repo entry; direction vs implementation                                         |
+
+## Phase 2A clinic self-service foundation (implemented)
+
+Date: 2026-09-11
+
+Clinic portal is no longer read-only. Platform operator is distinct from clinic ADMIN.
+
+| Area      | Behaviour                                                                                                                                       |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Login     | Password input has a `type="button"` show/hide control. Default hidden.                                                                         |
+| Nav       | Overview / Guides / Practice as one group; View patient site is a utility action after a divider.                                               |
+| Operator  | `User.platformRole`. `/operator/clinics` lists real clinics. Clinic create is name+slug only. No impersonation or invites.                      |
+| Guides    | Create from actual `GuideTemplate` rows or custom (`guideTemplateId` null). Draft v0, authenticated preview, publish copies immutable snapshot. |
+| Timeline  | Optional `startDay`/`endDay`. Overlap rejected. Legacy `periodLabel` still renders.                                                             |
+| Practice  | ADMIN edits `ClinicProfile` used by the tenant renderer. No arbitrary CSS. Booking remains hidden.                                              |
+| Logo      | **BLOCKED** pending production object storage. Path field only.                                                                                 |
+| Not in 2A | Check-ins, RecoveryPlan persistence, analytics, billing, SMS/email, QR, fake templates.                                                         |

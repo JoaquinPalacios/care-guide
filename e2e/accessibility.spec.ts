@@ -44,7 +44,11 @@ test.describe("patient accessibility", () => {
         page.getByRole("heading", { name: "Recovery overview" })
       ).toHaveCount(0);
       await page.getByRole("tab", { name: "Timeline" }).click();
-      await expect(page.getByText("First few hours")).toBeVisible();
+      await expect(
+        page
+          .getByRole("tabpanel", { name: "Timeline" })
+          .getByText("First few hours")
+      ).toBeVisible();
       await expect(
         page.getByRole("heading", { name: "Recovery overview" })
       ).toBeVisible();

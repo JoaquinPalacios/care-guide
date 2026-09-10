@@ -125,13 +125,17 @@ MVP patients:
 
 A **Care Guide operator** is an internal platform administrator (Care Guide staff), not necessarily clinic staff.
 
-For MVP, operators perform onboarding and content management. Clinic self-service administration is **out of MVP scope**.
+Operator identity is `User.platformRole = OPERATOR`. It is **not** clinic `ADMIN`. See [ADR 0016](../adr/0016-platform-operator-is-distinct-from-clinic-admin.md).
+
+Phase 2A implements All Clinics oversight and clinic creation. Canonical library management, QR, analytics, and impersonation remain later.
 
 ### 5.4 Clinic staff (current repository)
 
-The repository already has clinic-scoped staff users (`User`, `ClinicMembership`, Auth.js). That foundation is **reusable** for operator or future clinic-staff tools.
+The repository has clinic-scoped staff users (`User`, `ClinicMembership`, Auth.js).
 
-Existing staff UI is built around the parked chairside workflow (`/dashboard`, `/sessions/new`, `/session/[id]/control`, `/dashboard/procedures`). That UI is not the aftercare operator admin specified here.
+Clinic `ADMIN` can manage guides and Practice settings for **their** clinic. Clinic `STAFF` can view Overview and Guides and preview, but cannot publish or change clinic configuration.
+
+Existing parked chairside routes (`/sessions/new`, `/session/[id]/control`, `/dashboard/procedures`) remain reachable by direct URL and are not the aftercare operator admin.
 
 ---
 
@@ -1073,21 +1077,16 @@ Phase 1 does **not** require the full operator admin product, production domain,
 
 Build the internal operating product.
 
-Operators can:
+**Phase 2A (implemented locally):** clinic self-service foundation plus platform operator All Clinics. See [WORKING-MEMORY.md](WORKING-MEMORY.md) and [../architecture/CLINIC-PORTAL.md](../architecture/CLINIC-PORTAL.md).
 
-- create / manage clinics;
-- configure slug;
-- configure branding;
-- configure contact / emergency details;
-- manage canonical library;
-- enable guides;
-- configure overrides / additions;
-- preview;
-- publish / unpublish;
-- copy URLs;
-- generate / access QR codes.
+Remaining Phase 2 work includes:
 
-No clinic self-service required.
+- manage canonical library (beyond listing real templates that already exist);
+- generate / access QR codes;
+- unpublish / archive lifecycle;
+- invitation / user assignment workflow.
+
+No Check-ins, RecoveryPlan persistence, analytics, or billing in 2A.
 
 ### Phase 3 — Commercial MVP completion
 
@@ -1109,7 +1108,7 @@ After this phase, the agreed Care Guide MVP can be considered ready for controll
 
 ### Later phases (not near-term scope)
 
-- clinic self-service;
+- remaining clinic self-service (archive/delete, invitations, teams);
 - multi-location practices;
 - custom customer domains;
 - automated SMS / email delivery;
@@ -1200,7 +1199,7 @@ These are intentionally unresolved in PRD v1.0. Implementation must not pretend 
 | OD-2  | Hosting / DNS provider                                                | Undecided. Do not lock the PRD to a vendor.                                                                                                                                                             |
 | OD-3  | Exact 3–5 guides for the first technical slice                        | Planning library exists; slice set can be chosen in Phase 1.                                                                                                                                            |
 | OD-4  | Canonical-template update rollout UX                                  | The pin invariant is closed: a library update must never silently mutate a published Practice Guide (ADR 0010). Remaining open: notify / auto-draft / freeze UX when a newer canonical revision exists. |
-| OD-5  | Operator identity model                                               | Platform operator role vs reuse of clinic `ADMIN` membership for Care Guide staff.                                                                                                                      |
+| OD-5  | Operator identity model                                               | **Closed in Phase 2A:** `User.platformRole` `NONE` \| `OPERATOR`, distinct from clinic `ADMIN`. See ADR 0016.                                                                                           |
 | OD-6  | Public robots / SEO policy                                            | Index tenant aftercare vs `noindex` during controlled testing. Phase 3.                                                                                                                                 |
 | OD-7  | QR encoding details                                                   | Product requires a QR for the durable URL. Image format, print sizes, and whether a `?src=qr` (or similar) marker is used are implementation/product follow-ups.                                        |
 | OD-8  | Analytics implementation                                              | Vendor vs first-party; retention; dashboard density. Product metrics are defined; stack is not.                                                                                                         |

@@ -20,6 +20,7 @@ export default async function ClinicPortalLayout({
       userLabel={user.name?.trim() || user.email}
       roleLabel={roleLabel}
       patientSiteHref={overview?.patientSiteHref ?? null}
+      canManagePractice={clinicMembership.role === "ADMIN"}
     >
       {children}
     </PortalChrome>

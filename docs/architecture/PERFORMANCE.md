@@ -1081,3 +1081,18 @@ No new UI or animation library. Motion remains marketing-only (`motion@13.2.0`).
 Clinic Overview (`/dashboard`) and Guides (`/guides`) are server-rendered from membership-scoped loaders. `PortalChrome` is a small client shell for navigation, the mobile menu, and sign-out; page bodies are not client components.
 
 Tenant CSS grew slightly for restrained guide-card and inactive-tab hover. Playwright now allows **≤ 17,408 raw** (gzip/Brotli ceilings unchanged). Measured raw on this revision: **16,734**.
+
+## Phase 2A clinic self-service (staff client islands)
+
+No new UI, rich-text, or drag-and-drop library. Tenant still has no Tailwind and no Motion. Staff/admin continues to load the isolated Tailwind stylesheet.
+
+New staff Client Components (not on the patient tenant):
+
+- `PasswordVisibilityField` on `/login`
+- `GuideEditor` / `CreateGuideForm` on clinic guide routes
+- `PracticeSettingsForm` + `ColorField` on `/practice`
+- Existing `PortalChrome` shell
+
+Draft preview at `/guides/[id]/preview` reuses `PatientPage` + `GuideDocument` and aftercare CSS modules. It still sits under the staff root layout, so Tailwind is present on that authenticated preview route. Public tenant routes remain CSS Modules only.
+
+Measure production client chunks for the editor and practice forms after `pnpm build` before treating a size regression as accepted.
