@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 
 import { LogoutButton } from "@/app/(staff)/components/logout-button";
+import { PortalAppearanceControl } from "@/app/(staff)/components/portal-appearance-control";
 import { ProductMark } from "@/app/(staff)/components/product-mark";
 import { requirePlatformOperator } from "@/lib/auth/require-platform-operator";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
@@ -23,20 +24,29 @@ export default async function OperatorLayout({
           </p>
           <p className="mt-1 text-sm text-staff-muted">Platform operator</p>
         </div>
-        <nav className="flex flex-1 flex-col gap-1 p-3" aria-label="Platform">
-          <Link
-            href="/operator/clinics"
-            className="flex min-h-11 items-center rounded-md bg-staff-brand/10 px-3 text-sm font-medium text-staff-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
-          >
-            All Clinics
-          </Link>
-        </nav>
-        <div className="mt-auto border-t border-staff-line p-4">
-          <p className="truncate text-sm font-medium">
-            {user.name?.trim() || user.email}
-          </p>
-          <p className="mt-0.5 text-xs text-staff-muted">Operator</p>
-          <LogoutButton className="mt-3 flex flex-col items-start gap-2" />
+        <div className="flex min-h-0 flex-1 flex-col p-3">
+          <nav className="staffNavGroup" aria-label="Platform">
+            <Link
+              href="/operator/clinics"
+              className="staffNavRow bg-staff-brand/10 text-staff-brand"
+            >
+              All Clinics
+            </Link>
+          </nav>
+          <div className="mt-auto">
+            <div className="staffNavRule" role="presentation" />
+            <div className="staffNavGroup" aria-label="Preferences">
+              <PortalAppearanceControl />
+            </div>
+            <div className="staffNavRule" role="presentation" />
+            <div className="px-1 pt-1">
+              <p className="truncate text-sm font-medium">
+                {user.name?.trim() || user.email}
+              </p>
+              <p className="mt-0.5 text-xs text-staff-muted">Operator</p>
+              <LogoutButton className="mt-3 flex flex-col items-start gap-2" />
+            </div>
+          </div>
         </div>
       </aside>
       <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">

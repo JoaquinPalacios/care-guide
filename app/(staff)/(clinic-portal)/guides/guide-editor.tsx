@@ -2,13 +2,18 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   publishGuideAction,
   saveGuideDraftAction,
   type GuideActionState,
 } from "@/app/(staff)/(clinic-portal)/guides/actions";
+import { ConfirmDialog } from "@/app/(staff)/components/confirm-dialog";
+import { PortalBreadcrumb } from "@/app/(staff)/components/portal-breadcrumb";
+import { SaveStatus } from "@/app/(staff)/components/save-status";
+import { useUnsavedChangesGuard } from "@/app/(staff)/components/use-unsaved-changes-guard";
+import { formSaveStatus } from "@/lib/clinic-portal/form-save-status";
 import type { PracticeGuideEditorRecord } from "@/lib/clinic-portal/load-practice-guide-editor";
 import type { GuideSectionKind } from "@/lib/aftercare/types";
 
@@ -72,12 +77,15 @@ export function GuideEditor({
   canEdit: boolean;
 }) {
   const router = useRouter();
+  const errorSummaryRef = useRef<HTMLParagraphElement>(null);
+  const pendingSnapshot = useRef<string>("");
   const [title, setTitle] = useState(guide.title);
   const [publicSlug, setPublicSlug] = useState(guide.publicSlug);
   const [introduction, setIntroduction] = useState(guide.introduction ?? "");
   const [sections, setSections] = useState(() =>
     toEditorSections(guide.sections)
   );
+  const [publishOpen, setPublishOpen] = useState(false);
   const [saveState, saveAction, saving] = useActionState(
     saveGuideDraftAction,
     emptyAction
@@ -86,12 +94,6 @@ export function GuideEditor({
     publishGuideAction,
     emptyAction
   );
-
-  useEffect(() => {
-    if (saveState.ok || publishState.ok) {
-      router.refresh();
-    }
-  }, [saveState.ok, publishState.ok, router]);
 
   const serialized = useMemo(
     () =>
@@ -103,7 +105,7 @@ export function GuideEditor({
       }),
     [title, publicSlug, introduction, sections]
   );
-  const initialSerialized = useMemo(
+  const serverSerialized = useMemo(
     () =>
       JSON.stringify({
         title: guide.title,
@@ -113,19 +115,46 @@ export function GuideEditor({
       }),
     [guide]
   );
-  const dirty = serialized !== initialSerialized;
+  const [confirmed, setConfirmed] = useState(serverSerialized);
+  const dirty = serialized !== confirmed;
+  const saveStatus = formSaveStatus({ dirty, pending: saving });
+  const {
+    open: discardOpen,
+    requestLeave,
+    keepEditing,
+    discard,
+  } = useUnsavedChangesGuard(dirty);
 
   useEffect(() => {
-    if (!dirty) {
+    setConfirmed(serverSerialized);
+  }, [serverSerialized]);
+
+  useEffect(() => {
+    if (saveState.ok) {
+      setConfirmed(pendingSnapshot.current);
+      router.refresh();
+    }
+  }, [saveState, router]);
+
+  useEffect(() => {
+    if (publishState.ok) {
+      router.refresh();
+    }
+  }, [publishState, router]);
+
+  useEffect(() => {
+    if (!saveState.error && !saveState.fieldErrors) {
       return;
     }
-    const onBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue = "";
-    };
-    window.addEventListener("beforeunload", onBeforeUnload);
-    return () => window.removeEventListener("beforeunload", onBeforeUnload);
-  }, [dirty]);
+    const first = document.querySelector<HTMLElement>(
+      "[data-guide-field][aria-invalid='true']"
+    );
+    if (first) {
+      first.focus();
+      return;
+    }
+    errorSummaryRef.current?.focus();
+  }, [saveState]);
 
   const timeline = sections.filter(
     (section) => section.kind === "RECOVERY_TIMELINE"
@@ -159,33 +188,93 @@ export function GuideEditor({
     }));
   }
 
+  const actions = (
+    <>
+      <button
+        type="button"
+        className="staffBtn staffBtnQuiet"
+        onClick={() => requestLeave("/guides")}
+      >
+        Cancel
+      </button>
+      {canEdit ? (
+        <>
+          <button
+            type="submit"
+            form="guide-draft-form"
+            disabled={saving}
+            className="staffBtn staffBtnSecondary"
+          >
+            {saving ? "Saving…" : "Save draft"}
+          </button>
+          <button
+            type="button"
+            disabled={publishing || dirty}
+            className="staffBtn staffBtnPrimary"
+            onClick={() => setPublishOpen(true)}
+          >
+            {publishing ? "Publishing…" : "Publish guide"}
+          </button>
+        </>
+      ) : null}
+    </>
+  );
+
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
-            Guide editor
-          </p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight">
-            {guide.title}
-          </h1>
-          <p className="mt-2 text-sm text-staff-muted">
-            {guide.statusLabel}
-            {guide.template
-              ? ` · Template ${guide.template.title}`
-              : " · Custom guide"}
-            {dirty ? " · Unsaved changes" : ""}
-          </p>
+    <div className="staffEditorPage mx-auto flex w-full max-w-5xl flex-col">
+      <header className="staffEditorChrome">
+        <PortalBreadcrumb
+          items={[
+            { href: "/guides", label: "Guides" },
+            { label: title || guide.title },
+            { label: "Edit" },
+          ]}
+        />
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Edit guide
+            </h1>
+            <p className="mt-1 text-sm text-staff-muted">
+              {guide.statusLabel}
+              {guide.template
+                ? ` · Template ${guide.template.title}`
+                : " · Custom guide"}
+            </p>
+            <div className="mt-2">
+              <SaveStatus
+                status={saveStatus}
+                error={saveState.error ?? publishState.error}
+                success={
+                  publishState.ok
+                    ? "Guide published. Patients now see this version."
+                    : saveState.ok && !dirty
+                      ? "Draft saved. The public guide is unchanged until you publish."
+                      : undefined
+                }
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={`/guides/${guide.id}/preview`}
+              className="staffBtn staffBtnSecondary"
+            >
+              Preview
+            </Link>
+            <div className="staffEditorActionsDesktop">{actions}</div>
+          </div>
         </div>
-        <Link
-          href={`/guides/${guide.id}/preview`}
-          className="inline-flex h-10 items-center justify-center rounded-md border border-staff-line px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
-        >
-          Preview draft
-        </Link>
       </header>
 
-      <form action={saveAction} className="flex flex-col gap-8">
+      <form
+        id="guide-draft-form"
+        action={saveAction}
+        className="mt-6 flex flex-col gap-8"
+        onSubmit={() => {
+          pendingSnapshot.current = serialized;
+        }}
+      >
         <input type="hidden" name="guideId" value={guide.id} />
         <input
           type="hidden"
@@ -198,19 +287,26 @@ export function GuideEditor({
             <input
               id="title"
               name="title"
+              data-guide-field
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               disabled={!canEdit}
+              aria-invalid={saveState.fieldErrors?.title ? "true" : "false"}
               className={fieldClass}
             />
+            <FieldError message={saveState.fieldErrors?.title} />
           </Field>
           <Field label="Public slug" htmlFor="publicSlug">
             <input
               id="publicSlug"
               name="publicSlug"
+              data-guide-field
               value={publicSlug}
               onChange={(event) => setPublicSlug(event.target.value)}
               disabled={!canEdit || guide.isPublished}
+              aria-invalid={
+                saveState.fieldErrors?.publicSlug ? "true" : "false"
+              }
               className={fieldClass}
             />
             <p className="text-sm text-staff-muted">
@@ -223,17 +319,23 @@ export function GuideEditor({
                 keep working.
               </p>
             ) : null}
+            <FieldError message={saveState.fieldErrors?.publicSlug} />
           </Field>
           <Field label="Short introduction" htmlFor="introduction">
             <textarea
               id="introduction"
               name="introduction"
+              data-guide-field
               value={introduction}
               onChange={(event) => setIntroduction(event.target.value)}
               disabled={!canEdit}
               rows={4}
+              aria-invalid={
+                saveState.fieldErrors?.introduction ? "true" : "false"
+              }
               className={`${fieldClass} h-auto py-2`}
             />
+            <FieldError message={saveState.fieldErrors?.introduction} />
           </Field>
         </EditorSectionHeading>
 
@@ -280,23 +382,18 @@ export function GuideEditor({
           />
         </EditorSectionHeading>
 
-        {saveState.error ? (
-          <p className="text-sm text-red-600" role="alert">
-            {saveState.error}
+        {saveState.error || saveState.fieldErrors?.sections ? (
+          <p
+            ref={errorSummaryRef}
+            className="text-sm text-red-600"
+            role="alert"
+            tabIndex={-1}
+          >
+            {saveState.error ?? saveState.fieldErrors?.sections}
           </p>
         ) : null}
 
-        {canEdit ? (
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="submit"
-              disabled={saving}
-              className="inline-flex h-10 items-center justify-center rounded-md bg-staff-brand px-4 text-sm font-medium text-staff-on-brand hover:bg-staff-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand disabled:opacity-60"
-            >
-              {saving ? "Saving…" : "Save draft"}
-            </button>
-          </div>
-        ) : (
+        {canEdit ? null : (
           <p className="text-sm text-staff-muted">
             Staff can view this guide but cannot edit it.
           </p>
@@ -304,35 +401,45 @@ export function GuideEditor({
       </form>
 
       {canEdit ? (
-        <form
-          action={publishAction}
-          className="rounded-xl border border-staff-line bg-staff-panel p-5"
-        >
+        <form id="guide-publish-form" action={publishAction} className="hidden">
           <input type="hidden" name="guideId" value={guide.id} />
-          <h2 className="text-base font-semibold">Preview / publication</h2>
-          <p className="mt-2 text-sm leading-6 text-staff-muted">
-            Save draft first. Publishing pins an immutable revision as the
-            public patient page. It does not happen automatically on save.
-          </p>
-          {publishState.error ? (
-            <p className="mt-3 text-sm text-red-600" role="alert">
-              {publishState.error}
-            </p>
-          ) : null}
-          <button
-            type="submit"
-            disabled={publishing || dirty}
-            className="mt-4 inline-flex h-10 items-center justify-center rounded-md bg-staff-brand px-4 text-sm font-medium text-staff-on-brand hover:bg-staff-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand disabled:opacity-60"
-          >
-            {publishing ? "Publishing…" : "Publish guide"}
-          </button>
-          {dirty ? (
-            <p className="mt-2 text-sm text-staff-muted">
-              Save the current draft before publishing.
-            </p>
-          ) : null}
         </form>
       ) : null}
+
+      {canEdit && dirty ? (
+        <p className="mt-4 text-sm text-staff-muted">
+          Save the current draft before publishing.
+        </p>
+      ) : null}
+
+      <div className="staffEditorActionsMobile">{actions}</div>
+
+      <ConfirmDialog
+        open={discardOpen}
+        title="Discard unsaved changes?"
+        description="Your latest changes haven't been saved."
+        cancelLabel="Keep editing"
+        confirmLabel="Discard changes"
+        confirmTone="danger"
+        onCancel={keepEditing}
+        onConfirm={discard}
+      />
+      <ConfirmDialog
+        open={publishOpen}
+        title="Publish this guide?"
+        description="Patients using the public guide will see this version."
+        cancelLabel="Cancel"
+        confirmLabel="Publish guide"
+        confirmTone="primary"
+        onCancel={() => setPublishOpen(false)}
+        onConfirm={() => {
+          setPublishOpen(false);
+          const form = document.getElementById(
+            "guide-publish-form"
+          ) as HTMLFormElement | null;
+          form?.requestSubmit();
+        }}
+      />
     </div>
   );
 }
@@ -357,6 +464,13 @@ function Field({
       {children}
     </div>
   );
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) {
+    return null;
+  }
+  return <p className="text-sm text-red-600">{message}</p>;
 }
 
 function EditorSectionHeading({
@@ -472,14 +586,14 @@ function TimelineEditor({
               <button
                 type="button"
                 onClick={() => move(index, -1)}
-                className="h-10 rounded-md border border-staff-line px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
+                className="staffBtn staffBtnSecondary"
               >
                 Move up
               </button>
               <button
                 type="button"
                 onClick={() => move(index, 1)}
-                className="h-10 rounded-md border border-staff-line px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
+                className="staffBtn staffBtnSecondary"
               >
                 Move down
               </button>
@@ -488,7 +602,7 @@ function TimelineEditor({
                 onClick={() =>
                   onChange(stages.filter((_, current) => current !== index))
                 }
-                className="h-10 rounded-md border border-staff-line px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
+                className="staffBtn staffBtnSecondary"
               >
                 Remove stage
               </button>
@@ -513,7 +627,7 @@ function TimelineEditor({
               },
             ])
           }
-          className="h-10 self-start rounded-md border border-staff-line px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
+          className="staffBtn staffBtnSecondary self-start"
         >
           Add stage
         </button>
@@ -608,14 +722,14 @@ function GenericSectionEditor({
               <button
                 type="button"
                 onClick={() => move(index, -1)}
-                className="h-10 rounded-md border border-staff-line px-3 text-sm"
+                className="staffBtn staffBtnSecondary"
               >
                 Move up
               </button>
               <button
                 type="button"
                 onClick={() => move(index, 1)}
-                className="h-10 rounded-md border border-staff-line px-3 text-sm"
+                className="staffBtn staffBtnSecondary"
               >
                 Move down
               </button>
@@ -624,7 +738,7 @@ function GenericSectionEditor({
                 onClick={() =>
                   onChange(sections.filter((_, current) => current !== index))
                 }
-                className="h-10 rounded-md border border-staff-line px-3 text-sm"
+                className="staffBtn staffBtnSecondary"
               >
                 Remove
               </button>
@@ -649,7 +763,7 @@ function GenericSectionEditor({
               },
             ])
           }
-          className="h-10 self-start rounded-md border border-staff-line px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
+          className="staffBtn staffBtnSecondary self-start"
         >
           {addLabel}
         </button>

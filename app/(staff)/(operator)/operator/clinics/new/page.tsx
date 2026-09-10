@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { CreateClinicForm } from "@/app/(staff)/(operator)/operator/clinics/new/create-clinic-form";
+import { PortalBreadcrumb } from "@/app/(staff)/components/portal-breadcrumb";
 import { requirePlatformOperator } from "@/lib/auth/require-platform-operator";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 
@@ -14,7 +15,13 @@ export default async function CreateClinicPage() {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
+        <PortalBreadcrumb
+          items={[
+            { href: "/operator/clinics", label: "All Clinics" },
+            { label: "Create clinic" },
+          ]}
+        />
+        <p className="mt-4 text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
           Platform
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">

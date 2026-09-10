@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { ExternalLinkIcon } from "@/app/(staff)/components/icons";
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
 import { getClinicPortalOverview } from "@/lib/clinic-portal/get-clinic-portal";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
@@ -37,13 +38,11 @@ export default async function ClinicOverviewPage() {
             href={overview.patientSiteHref}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex h-10 items-center justify-center rounded-md bg-staff-brand px-4 text-sm font-medium text-staff-on-brand shadow-sm transition hover:bg-staff-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
+            className="staffBtn staffBtnPrimary"
           >
             View patient site
             <span className="sr-only"> (opens in a new tab)</span>
-            <span aria-hidden="true" className="ml-1">
-              ↗
-            </span>
+            <ExternalLinkIcon className="ml-1" />
           </a>
         ) : null}
       </header>

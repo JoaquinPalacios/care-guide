@@ -36,7 +36,7 @@ export function LogoutButton({ className }: { className?: string }) {
         type="button"
         onClick={handleLogout}
         disabled={isPending}
-        className="inline-flex h-10 items-center justify-center rounded-md border border-staff-line bg-staff-panel px-3 text-sm font-medium text-staff-ink transition hover:border-staff-brand hover:text-staff-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand disabled:cursor-not-allowed disabled:opacity-60"
+        className="staffBtn staffBtnQuiet px-0"
       >
         {isPending ? "Signing out..." : "Sign out"}
       </button>

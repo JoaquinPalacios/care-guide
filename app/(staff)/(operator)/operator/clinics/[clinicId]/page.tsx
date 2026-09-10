@@ -3,6 +3,8 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
+import { BackArrowIcon } from "@/app/(staff)/components/icons";
+import { PortalBreadcrumb } from "@/app/(staff)/components/portal-breadcrumb";
 import { requirePlatformOperator } from "@/lib/auth/require-platform-operator";
 import { clinicPatientSiteUrl } from "@/lib/clinic-portal/patient-site-url";
 import { getOperatorClinic } from "@/lib/operator/get-operator-clinic";
@@ -43,7 +45,13 @@ export default async function OperatorClinicDetailPage({
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
+        <PortalBreadcrumb
+          items={[
+            { href: "/operator/clinics", label: "All Clinics" },
+            { label: clinic.displayName },
+          ]}
+        />
+        <p className="mt-4 text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
           Platform
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">
@@ -139,9 +147,10 @@ export default async function OperatorClinicDetailPage({
       <p>
         <Link
           href="/operator/clinics"
-          className="text-sm font-medium text-staff-brand"
+          className="staffBtn staffBtnQuiet gap-1 px-0"
         >
-          Back to All Clinics
+          <BackArrowIcon />
+          All clinics
         </Link>
       </p>
     </div>

@@ -27,10 +27,7 @@ export default async function OperatorClinicsPage() {
             Subscribing practices on Aftercare Guide.
           </p>
         </div>
-        <Link
-          href="/operator/clinics/new"
-          className="inline-flex h-10 items-center justify-center rounded-md bg-staff-brand px-4 text-sm font-medium text-staff-on-brand hover:bg-staff-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
-        >
+        <Link href="/operator/clinics/new" className="staffBtn staffBtnPrimary">
           Create clinic
         </Link>
       </header>

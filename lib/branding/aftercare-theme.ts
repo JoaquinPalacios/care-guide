@@ -55,6 +55,7 @@ export interface AftercareThemeInput {
 
 export interface AftercareThemeCssOptions {
   themeMode?: string | null;
+  colorSchemeSelector?: "html" | "scope";
 }
 
 const HEX_COLOR_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
@@ -187,6 +188,10 @@ export function serializeAftercareThemeCss(
     const value = light === dark ? light : `light-dark(${light},${dark})`;
     return `${key}:${value}`;
   }).join(";");
+
+  if (options?.colorSchemeSelector === "scope") {
+    return `.${AFTERCARE_THEME_SCOPE}{color-scheme:${colorScheme};${tokens}}`;
+  }
 
   return `html{color-scheme:${colorScheme}}.${AFTERCARE_THEME_SCOPE}{${tokens}}`;
 }

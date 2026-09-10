@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ClinicMembershipRole } from "@prisma/client";
 
+import { ExternalLinkIcon } from "@/app/(staff)/components/icons";
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
 import { getClinicPortalOverview } from "@/lib/clinic-portal/get-clinic-portal";
 import { listClinicPortalGuides } from "@/lib/clinic-portal/list-clinic-guides";
@@ -30,17 +31,14 @@ export default async function ClinicGuidesPage() {
             Guides
           </p>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-staff-ink">
-            My guides
+            Guides
           </h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-staff-muted">
             Patient aftercare instructions for {displayName}.
           </p>
         </div>
         {canManage ? (
-          <Link
-            href="/guides/new"
-            className="inline-flex h-10 items-center justify-center rounded-md bg-staff-brand px-4 text-sm font-medium text-staff-on-brand shadow-sm transition hover:bg-staff-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
-          >
+          <Link href="/guides/new" className="staffBtn staffBtnPrimary">
             Create guide
           </Link>
         ) : null}
@@ -70,32 +68,30 @@ export default async function ClinicGuidesPage() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
+                <Link
+                  href={`/guides/${guide.id}/preview`}
+                  className="staffBtn staffBtnSecondary"
+                >
+                  Preview
+                </Link>
                 {canManage ? (
                   <Link
                     href={`/guides/${guide.id}/edit`}
-                    className="inline-flex h-10 items-center justify-center rounded-md border border-staff-line px-3 text-sm font-medium text-staff-ink transition hover:border-staff-brand hover:text-staff-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
+                    className="staffBtn staffBtnSecondary"
                   >
                     Edit
                   </Link>
                 ) : null}
-                <Link
-                  href={`/guides/${guide.id}/preview`}
-                  className="inline-flex h-10 items-center justify-center rounded-md border border-staff-line px-3 text-sm font-medium text-staff-ink transition hover:border-staff-brand hover:text-staff-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
-                >
-                  Preview
-                </Link>
                 {guide.previewHref ? (
                   <a
                     href={guide.previewHref}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex h-10 items-center justify-center rounded-md border border-staff-line px-3 text-sm font-medium text-staff-ink transition hover:border-staff-brand hover:text-staff-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
+                    className="staffBtn staffBtnQuiet"
                   >
                     View patient guide
                     <span className="sr-only"> (opens in a new tab)</span>
-                    <span aria-hidden="true" className="ml-1">
-                      ↗
-                    </span>
+                    <ExternalLinkIcon className="ml-1" />
                   </a>
                 ) : null}
               </div>

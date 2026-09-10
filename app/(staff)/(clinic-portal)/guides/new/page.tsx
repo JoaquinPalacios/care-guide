@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { CreateGuideForm } from "@/app/(staff)/(clinic-portal)/guides/create-guide-form";
+import { PortalBreadcrumb } from "@/app/(staff)/components/portal-breadcrumb";
 import { requireClinicAdmin } from "@/lib/auth/require-clinic-admin";
 import { listCanonicalGuideTemplates } from "@/lib/clinic-portal/list-canonical-templates";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
@@ -25,10 +26,10 @@ export default async function CreateGuidePage() {
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
-          Guides
-        </p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">
+        <PortalBreadcrumb
+          items={[{ href: "/guides", label: "Guides" }, { label: "Create" }]}
+        />
+        <h1 className="mt-3 text-2xl font-semibold tracking-tight">
           Create guide
         </h1>
         <p className="mt-2 max-w-xl text-sm leading-6 text-staff-muted">

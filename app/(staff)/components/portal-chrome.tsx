@@ -5,11 +5,10 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 
 import { LogoutButton } from "@/app/(staff)/components/logout-button";
+import { PortalAppearanceControl } from "@/app/(staff)/components/portal-appearance-control";
 import { ProductMark } from "@/app/(staff)/components/product-mark";
+import { ExternalLinkIcon } from "@/app/(staff)/components/icons";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
-
-const MAIN_NAV_CLASS =
-  "flex min-h-11 items-center rounded-md px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand";
 
 export function PortalChrome({
   displayName,
@@ -64,13 +63,22 @@ export function PortalChrome({
     <div className="flex min-h-screen bg-staff-canvas text-staff-ink">
       <aside className="hidden w-64 shrink-0 flex-col border-r border-staff-line bg-staff-panel md:flex">
         <PortalBrand displayName={displayName} />
-        <PortalNav
-          pathname={pathname}
-          patientSiteHref={patientSiteHref}
-          canManagePractice={canManagePractice}
-          onNavigate={() => undefined}
-        />
-        <PortalAccount userLabel={userLabel} roleLabel={roleLabel} />
+        <div className="flex min-h-0 flex-1 flex-col p-3">
+          <PortalNav
+            pathname={pathname}
+            patientSiteHref={patientSiteHref}
+            canManagePractice={canManagePractice}
+            onNavigate={() => undefined}
+          />
+          <div className="mt-auto">
+            <div className="staffNavRule" role="presentation" />
+            <div className="staffNavGroup" aria-label="Preferences">
+              <PortalAppearanceControl />
+            </div>
+            <div className="staffNavRule" role="presentation" />
+            <PortalAccount userLabel={userLabel} roleLabel={roleLabel} />
+          </div>
+        </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -105,6 +113,11 @@ export function PortalChrome({
               canManagePractice={canManagePractice}
               onNavigate={() => menuRef.current?.hidePopover()}
             />
+            <div className="staffNavRule" role="presentation" />
+            <div className="staffNavGroup" aria-label="Preferences">
+              <PortalAppearanceControl />
+            </div>
+            <div className="staffNavRule" role="presentation" />
             <PortalAccount userLabel={userLabel} roleLabel={roleLabel} />
           </div>
         </header>
@@ -154,8 +167,8 @@ function PortalNav({
   ];
 
   return (
-    <nav className="flex flex-1 flex-col p-3" aria-label="Clinic portal">
-      <div className="flex flex-col gap-1">
+    <nav aria-label="Clinic portal">
+      <div className="staffNavGroup">
         {items.map((item) => {
           const current =
             item.href === "/dashboard"
@@ -167,7 +180,7 @@ function PortalNav({
               href={item.href}
               aria-current={current ? "page" : undefined}
               onClick={onNavigate}
-              className={`${MAIN_NAV_CLASS} ${
+              className={`staffNavRow ${
                 current
                   ? "bg-staff-brand/10 text-staff-brand"
                   : "text-staff-ink hover:bg-staff-canvas"
@@ -180,22 +193,17 @@ function PortalNav({
       </div>
       {patientSiteHref ? (
         <>
-          <div
-            className="my-3 border-t border-staff-line"
-            role="presentation"
-          />
-          <div className="flex flex-col gap-1">
+          <div className="staffNavRule" role="presentation" />
+          <div className="staffNavGroup">
             <a
               href={patientSiteHref}
               target="_blank"
               rel="noreferrer"
-              className={`${MAIN_NAV_CLASS} text-staff-muted hover:bg-staff-canvas hover:text-staff-ink`}
+              className="staffNavRow text-staff-muted hover:bg-staff-canvas hover:text-staff-ink"
             >
               View patient site
               <span className="sr-only"> (opens in a new tab)</span>
-              <span aria-hidden="true" className="ml-1">
-                ↗
-              </span>
+              <ExternalLinkIcon className="ml-1" />
             </a>
           </div>
         </>
@@ -212,7 +220,7 @@ function PortalAccount({
   roleLabel: string;
 }) {
   return (
-    <div className="mt-auto border-t border-staff-line p-4">
+    <div className="px-1 pt-1">
       <p className="truncate text-sm font-medium text-staff-ink">{userLabel}</p>
       <p className="mt-0.5 text-xs text-staff-muted">{roleLabel}</p>
       <LogoutButton className="mt-3 flex flex-col items-start gap-2" />

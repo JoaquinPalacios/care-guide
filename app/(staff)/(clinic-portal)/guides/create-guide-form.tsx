@@ -67,7 +67,7 @@ export function CreateGuideForm({
                     <button
                       type="submit"
                       disabled={templatePending}
-                      className="inline-flex h-10 items-center justify-center rounded-md bg-staff-brand px-4 text-sm font-medium text-staff-on-brand hover:bg-staff-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand disabled:opacity-60"
+                      className="staffBtn staffBtnPrimary"
                     >
                       {templatePending ? "Creating…" : "Create from template"}
                     </button>
@@ -128,7 +128,7 @@ export function CreateGuideForm({
           <button
             type="submit"
             disabled={customPending}
-            className="inline-flex h-10 items-center justify-center rounded-md bg-staff-brand px-4 text-sm font-medium text-staff-on-brand hover:bg-staff-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand disabled:opacity-60"
+            className="staffBtn staffBtnPrimary"
           >
             {customPending ? "Creating…" : "Create custom guide"}
           </button>

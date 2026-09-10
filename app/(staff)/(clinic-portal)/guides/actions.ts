@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { requireClinicAdmin } from "@/lib/auth/require-clinic-admin";
+import { fieldErrorsFromZod } from "@/lib/clinic-portal/field-errors";
 import {
   createCustomPracticeGuide,
   createPracticeGuideFromTemplate,
@@ -122,7 +123,8 @@ export async function saveGuideDraftAction(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.issues[0]?.message ?? "Please review the form.",
+      error: "Please review the form and try again.",
+      fieldErrors: fieldErrorsFromZod(parsed.error),
     };
   }
 

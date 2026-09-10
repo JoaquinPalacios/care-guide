@@ -8,6 +8,7 @@ export type ClinicThemeMode = (typeof CLINIC_THEME_MODES)[number];
 
 export const MARKETING_THEME_STORAGE_KEY = "aftercare-guide-marketing-theme";
 export const PATIENT_THEME_STORAGE_KEY = "aftercare-guide-patient-theme";
+export const PORTAL_THEME_STORAGE_KEY = "aftercare-guide-portal-theme";
 
 export function parseThemeMode(
   value: string | null | undefined

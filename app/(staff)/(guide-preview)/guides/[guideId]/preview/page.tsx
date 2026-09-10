@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { ClinicMembershipRole } from "@prisma/client";
 import { notFound } from "next/navigation";
 
 import { GuideDocument } from "@/app/(aftercare)/components/guide-document";
 import { PatientPage } from "@/app/(aftercare)/components/patient-page";
+import { StaffPreviewToolbar } from "@/app/(staff)/(guide-preview)/guides/[guideId]/preview/staff-preview-toolbar";
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
 import { isClinicPortalError } from "@/lib/clinic-portal/errors";
 import { loadPracticeGuideEditor } from "@/lib/clinic-portal/load-practice-guide-editor";
@@ -31,6 +33,7 @@ export default async function GuidePreviewPage({
 }: GuidePreviewPageProps) {
   const { guideId } = await params;
   const { clinicMembership } = await requireStaffSession();
+  const canEdit = clinicMembership.role === ClinicMembershipRole.ADMIN;
 
   try {
     const [guide, clinic] = await Promise.all([
@@ -60,19 +63,24 @@ export default async function GuidePreviewPage({
     const theme = resolveAftercareTheme(clinic.profile);
 
     return (
-      <>
+      <div className="staffPreviewShell">
         <style
           dangerouslySetInnerHTML={{
-            __html: serializeAftercareThemeCss(theme, {
-              themeMode: clinic.profile?.themeMode,
-            }),
+            __html: `body{background:var(--staff-canvas);color:var(--staff-ink)}${serializeAftercareThemeCss(
+              theme,
+              {
+                themeMode: clinic.profile?.themeMode,
+                colorSchemeSelector: "scope",
+              }
+            )}`,
           }}
         />
+        <StaffPreviewToolbar
+          backHref={canEdit ? `/guides/${guide.id}/edit` : "/guides"}
+          backLabel={canEdit ? "Back to guide" : "Back to guides"}
+          editHref={canEdit ? `/guides/${guide.id}/edit` : undefined}
+        />
         <div className={AFTERCARE_THEME_SCOPE}>
-          <div className="border-b border-staff-line bg-staff-panel px-4 py-3 text-sm text-staff-ink">
-            Draft preview — not public. Patients cannot see these changes until
-            you publish.
-          </div>
           <PatientPage chrome={chrome}>
             <header className={styles.hero}>
               <p className={styles.kicker}>{chrome.instructionsLabel}</p>
@@ -85,7 +93,7 @@ export default async function GuidePreviewPage({
             <GuideDocument sections={guide.sections} />
           </PatientPage>
         </div>
-      </>
+      </div>
     );
   } catch (error) {
     if (isClinicPortalError(error) && error.code === "not_found") {
