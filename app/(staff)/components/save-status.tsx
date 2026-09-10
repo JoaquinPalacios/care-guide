@@ -33,7 +33,9 @@ export function SaveStatus({
 
   return (
     <div className="flex min-w-0 flex-col gap-1">
-      <p className="text-sm text-staff-muted">{formSaveStatusLabel(status)}</p>
+      <p className="text-sm text-staff-muted" data-save-state={status}>
+        {formSaveStatusLabel(status)}
+      </p>
       <p className="sr-only" aria-live="polite">
         {live}
       </p>

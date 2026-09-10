@@ -228,7 +228,7 @@ test.describe("clinic portal", () => {
     await expect(
       page.getByRole("button", { name: "Cancel" }).filter({ visible: true })
     ).toBeVisible();
-    await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+    await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await expect(page.getByRole("button", { name: "Add stage" })).toBeVisible();
     await page.screenshot({
       path: "test-results/artifacts/staff-guide-editor-1440.png",
@@ -362,7 +362,7 @@ test.describe("clinic portal UX polish", () => {
     await expect(
       page.getByRole("heading", { name: "Edit guide" })
     ).toBeVisible();
-    await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+    await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.screenshot({
       path: "test-results/artifacts/staff-guide-editor-clean-1440.png",
@@ -379,9 +379,7 @@ test.describe("clinic portal UX polish", () => {
     await page.getByRole("link", { name: "Edit" }).first().click();
     const introduction = page.getByLabel("Short introduction");
     await introduction.fill(`${await introduction.inputValue()} `);
-    await expect(
-      page.getByText("Unsaved changes", { exact: true })
-    ).toBeVisible();
+    await expect(page.locator("[data-save-state=unsaved]")).toBeVisible();
     await page.screenshot({
       path: "test-results/artifacts/staff-guide-editor-unsaved-1440.png",
       fullPage: true,
@@ -404,9 +402,7 @@ test.describe("clinic portal UX polish", () => {
     await discardDialog.getByRole("button", { name: "Keep editing" }).click();
     await expect(discardDialog).toHaveCount(0);
     await expect(page).toHaveURL(/\/guides\/.+\/edit/);
-    await expect(
-      page.getByText("Unsaved changes", { exact: true })
-    ).toBeVisible();
+    await expect(page.locator("[data-save-state=unsaved]")).toBeVisible();
 
     await page
       .getByRole("button", { name: "Cancel" })
@@ -416,7 +412,7 @@ test.describe("clinic portal UX polish", () => {
     await expect(page).toHaveURL(staffUrl("/guides"));
 
     await page.getByRole("link", { name: "Edit" }).first().click();
-    await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+    await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await page
       .getByRole("button", { name: "Publish guide" })
       .filter({ visible: true })
@@ -448,16 +444,14 @@ test.describe("clinic portal UX polish", () => {
     await page.getByLabel("Public slug").fill(slug);
     await page.getByRole("button", { name: "Create custom guide" }).click();
     await expect(page).toHaveURL(/\/guides\/.+\/edit/);
-    await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+    await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await page.getByLabel("Short introduction").fill("Draft only copy.");
-    await expect(
-      page.getByText("Unsaved changes", { exact: true })
-    ).toBeVisible();
+    await expect(page.locator("[data-save-state=unsaved]")).toBeVisible();
     await page
       .getByRole("button", { name: "Save draft" })
       .filter({ visible: true })
       .click();
-    await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+    await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await expect(
       page.getByText(
         "Draft saved. The public guide is unchanged until you publish."
@@ -466,9 +460,7 @@ test.describe("clinic portal UX polish", () => {
     await page
       .getByLabel("Short introduction")
       .fill("Draft only copy, edited.");
-    await expect(
-      page.getByText("Unsaved changes", { exact: true })
-    ).toBeVisible();
+    await expect(page.locator("[data-save-state=unsaved]")).toBeVisible();
   });
 
   test("portal appearance is a sidebar preference separate from patient theme", async ({
@@ -540,14 +532,12 @@ test.describe("clinic portal UX polish", () => {
     await expect(
       page.getByRole("heading", { name: "Patient presentation" })
     ).toBeVisible();
-    await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+    await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await expect(
       page.getByText("Upload logo — coming before launch")
     ).toBeVisible();
     await page.getByLabel("Display name").fill("Riverside Dental Demo ");
-    await expect(
-      page.getByText("Unsaved changes", { exact: true })
-    ).toBeVisible();
+    await expect(page.locator("[data-save-state=unsaved]")).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.screenshot({
       path: "test-results/artifacts/staff-practice-sections-1440.png",
