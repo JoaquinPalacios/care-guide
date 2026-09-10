@@ -1100,8 +1100,8 @@ Measured 2026-09-10 against `cursor/clinic-self-service-ux-polish-eed5` producti
 
 | Chunk              | Role                                             |    raw | gzip -9 | Brotli q11 |
 | ------------------ | ------------------------------------------------ | -----: | ------: | ---------: |
-| `2hezqkrcvt1w3.js` | Guide editor (dirty/cancel/publish, breadcrumbs) | 16,269 |   5,106 |      4,409 |
-| `3zu_vb6z-x7je.js` | Practice settings form                           | 15,592 |   4,546 |      3,925 |
+| `322al9fglpbjk.js` | Guide editor (dirty/cancel/publish, breadcrumbs) | 16,289 |   5,116 |      4,405 |
+| `3zn_kjw7_l50y.js` | Practice settings form                           | 15,612 |   4,559 |      3,935 |
 | `3ezgriosqx2_q.js` | Portal appearance + logout                       | 11,306 |   4,548 |      3,972 |
 | `42jbjdl7-dgw9.js` | Operator shell (logout + icons)                  | 17,029 |   6,159 |      5,420 |
 

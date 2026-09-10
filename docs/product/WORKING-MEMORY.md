@@ -56,7 +56,7 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 | Marketing final polish    | COMPLETE — READY FOR JOAQUÍN REVIEW                            |
 | UX polish + clinic portal | COMPLETE — READY FOR JOAQUÍN REVIEW                            |
 | 2A                        | LOCAL — CLINIC SELF-SERVICE FOUNDATION                         |
-| 2A.1                      | LOCAL — CLINIC PORTAL UX POLISH                                |
+| 2A.1                      | LOCAL — CLINIC PORTAL UX READY FOR JOAQUÍN REVIEW              |
 | 2+ remainder              | Not started                                                    |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
@@ -821,4 +821,4 @@ Staff/operator shell and editor ergonomics. No billing, analytics, Check-ins, or
 | Portal theme    | Device preference `aftercare-guide-portal-theme` (`System` / `Light` / `Dark`). Blocking bootstrap. Separate from `ClinicProfile.themeMode`.                        |
 | Appearance      | Sidebar/mobile nav preference row above account/sign-out. Not a primary route.                                                                                      |
 | Practice        | Still one `/practice` route. Sections: Identity, Branding, Contact, Emergency, Presentation. Save-state + Save changes. Logo upload still blocked.                  |
-| Operator        | All Clinics breadcrumb and ← All clinics on clinic detail. No impersonation.                                                                                        |
+| Operator        | All Clinics breadcrumb and labelled “Back to all clinics” control. No impersonation.                                                                                |
