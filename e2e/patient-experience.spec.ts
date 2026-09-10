@@ -277,4 +277,69 @@ test.describe("tenant light and dark screenshots", () => {
       fullPage: true,
     });
   });
+
+  test("guide cards and inactive tabs use restrained hover", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(HOME, { waitUntil: "load" });
+    const card = page.getByRole("link", { name: "Tooth Extraction" });
+    const before = await card.evaluate((element) => {
+      const styles = getComputedStyle(element);
+      return { transform: styles.transform, boxShadow: styles.boxShadow };
+    });
+    await card.hover();
+    await page.screenshot({
+      path: "test-results/artifacts/tenant-guide-card-hover-1440.png",
+    });
+    const after = await card.evaluate((element) => {
+      const styles = getComputedStyle(element);
+      const after = getComputedStyle(element, "::after");
+      return {
+        transform: styles.transform,
+        boxShadow: styles.boxShadow,
+        afterTransform: after.transform,
+      };
+    });
+    expect(
+      after.transform === "none" ||
+        after.transform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+    expect(before.transform).toBe(after.transform);
+    expect(after.afterTransform).toMatch(/matrix\(1, 0, 0, 1, 2, 0\)|none/);
+    await card.focus();
+    await expect(card).toBeFocused();
+
+    await page.goto(EXTRACTION, { waitUntil: "load" });
+    const timeline = page.getByRole("tab", { name: "Timeline" });
+    const today = page.getByRole("tab", { name: "Today" });
+    await expect(today).toHaveAttribute("aria-selected", "true");
+    const activeBefore = await today.evaluate(
+      (element) => getComputedStyle(element).color
+    );
+    await today.hover();
+    const activeAfter = await today.evaluate(
+      (element) => getComputedStyle(element).color
+    );
+    expect(activeAfter).toBe(activeBefore);
+
+    const inactiveBefore = await timeline.evaluate(
+      (element) => getComputedStyle(element).color
+    );
+    await timeline.hover();
+    await page.screenshot({
+      path: "test-results/artifacts/tenant-timeline-tab-hover-1440.png",
+    });
+    const inactiveAfter = await timeline.evaluate((element) => {
+      const styles = getComputedStyle(element);
+      return { color: styles.color, transform: styles.transform };
+    });
+    expect(inactiveAfter.color).not.toBe(inactiveBefore);
+    expect(
+      inactiveAfter.transform === "none" ||
+        inactiveAfter.transform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+    await timeline.focus();
+    await expect(timeline).toBeFocused();
+  });
 });

@@ -157,9 +157,9 @@
   color: var(--cg-text);
   text-decoration: none;
   transition:
-    transform 180ms ease,
     box-shadow 180ms ease,
-    border-color 180ms ease;
+    border-color 180ms ease,
+    background-color 180ms ease;
 }
 
 .guideLink::after {
@@ -169,14 +169,19 @@
   transition: transform 180ms ease;
 }
 
-.guideLink:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--cg-brand) 28%, var(--cg-border));
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--cg-text) 10%, transparent);
-}
+@media (hover: hover) and (pointer: fine) {
+  .guideLink:hover {
+    border-color: color-mix(in srgb, var(--cg-brand) 32%, var(--cg-border));
+    background: light-dark(
+      color-mix(in srgb, var(--cg-brand) 4%, #ffffff),
+      color-mix(in srgb, var(--cg-brand) 8%, var(--cg-surface-subtle))
+    );
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--cg-text) 8%, transparent);
+  }
 
-.guideLink:hover::after {
-  transform: translateX(4px);
+  .guideLink:hover::after {
+    transform: translateX(2px);
+  }
 }
 
 .guideLink:focus-visible {
@@ -185,7 +190,7 @@
 }
 
 .guideLink:active {
-  transform: translateY(0);
+  border-color: color-mix(in srgb, var(--cg-brand) 38%, var(--cg-border));
 }
 
 .guideTitle {
@@ -422,6 +427,7 @@
   padding: 0.45rem 0.85rem;
   border: 0;
   border-bottom: 2px solid transparent;
+  border-radius: calc(var(--cg-radius) * 0.45);
   background: transparent;
   color: var(--cg-text-muted);
   font: inherit;
@@ -432,6 +438,18 @@
 .demoTab[aria-selected="true"] {
   color: var(--cg-text);
   border-bottom-color: var(--cg-brand);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .demoTab:not([aria-selected="true"]):hover {
+    color: var(--cg-brand);
+    background: color-mix(in srgb, var(--cg-brand) 7%, transparent);
+  }
+}
+
+.demoTab:focus-visible {
+  outline: 2px solid var(--cg-focus);
+  outline-offset: 2px;
 }
 
 .demoPrint {
@@ -591,7 +609,6 @@
     transition: none;
   }
 
-  .guideLink:hover,
   .guideLink:hover::after {
     transform: none;
   }
