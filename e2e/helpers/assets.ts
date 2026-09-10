@@ -174,9 +174,9 @@ export function expectCssWithinPhase1Budget(css: AssetMeasurement[]): void {
   const gzip = sumMetric(css, "gzip");
   const brotli = sumMetric(css, "brotli");
 
-  // Phase 1G.1: demo nav, Today/Timeline, print document, no Check-in.
+  // UX polish: restrained guide-card and inactive-tab hover. No Tailwind.
   // Review if tenant CSS grows well beyond the last measured payload.
-  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(16_384);
+  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(17_408);
   expect(gzip, `CSS gzip ${gzip}`).toBeLessThanOrEqual(4_500);
   expect(brotli, `CSS brotli ${brotli}`).toBeLessThanOrEqual(4_000);
 }

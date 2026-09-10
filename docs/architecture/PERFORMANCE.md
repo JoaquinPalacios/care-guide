@@ -1079,3 +1079,5 @@ Contact island vs conversion polish `0-i9vkpe7y6f8.js` (18,939 / 6,823 / 5,948):
 No new UI or animation library. Motion remains marketing-only (`motion@13.2.0`). Tenant still has no Tailwind and no Motion. Staff/admin continues to load the isolated Tailwind stylesheet.
 
 Clinic Overview (`/dashboard`) and Guides (`/guides`) are server-rendered from membership-scoped loaders. `PortalChrome` is a small client shell for navigation, the mobile menu, and sign-out; page bodies are not client components.
+
+Tenant CSS grew slightly for restrained guide-card and inactive-tab hover. Playwright now allows **≤ 17,408 raw** (gzip/Brotli ceilings unchanged). Measured raw on this revision: **16,734**.

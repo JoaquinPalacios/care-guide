@@ -273,10 +273,12 @@ test.describe("Phase 1F.11 story clarity", () => {
 
     await page.setViewportSize({ width: 390, height: 844 });
     await showMarketingScheme(page, "light");
-    await trigger.click();
-    const mobileMenu = page.getByRole("menu", { name: "Colour theme" });
-    await expect(mobileMenu).toBeVisible();
-    const mobileBox = await mobileMenu.boundingBox();
+    await page.getByRole("button", { name: "Site menu" }).click();
+    await page.getByRole("button", { name: "Theme" }).click();
+    await expect(page.getByRole("radio", { name: "Light" })).toBeVisible();
+    const mobilePanel = page.locator("[class*='navMenuPanel']");
+    await expect(mobilePanel).toBeVisible();
+    const mobileBox = await mobilePanel.boundingBox();
     expect(mobileBox).not.toBeNull();
     expect(mobileBox!.x).toBeGreaterThanOrEqual(0);
     expect(mobileBox!.x + mobileBox!.width).toBeLessThanOrEqual(391);

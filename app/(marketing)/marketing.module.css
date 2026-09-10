@@ -309,6 +309,7 @@
   color: var(--mk-ink);
 }
 
+.navMenuRow:focus,
 .navMenuRow:focus-visible {
   outline: 2.5px solid var(--mk-focus);
   outline-offset: -2px;
@@ -2259,7 +2260,7 @@
   }
 
   .nav a.navRoute,
-  .navStaff,
+  .nav a.navStaff,
   .navTheme {
     display: none;
   }

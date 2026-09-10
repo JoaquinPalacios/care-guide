@@ -306,7 +306,14 @@ test.describe("tenant light and dark screenshots", () => {
         after.transform === "matrix(1, 0, 0, 1, 0, 0)"
     ).toBe(true);
     expect(before.transform).toBe(after.transform);
-    expect(after.afterTransform).toMatch(/matrix\(1, 0, 0, 1, 2, 0\)|none/);
+    await expect
+      .poll(async () => {
+        const afterTransform = await card.evaluate(
+          (element) => getComputedStyle(element, "::after").transform
+        );
+        return afterTransform;
+      })
+      .toMatch(/matrix\(1, 0, 0, 1, 2, 0\)/);
     await card.focus();
     await expect(card).toBeFocused();
 
