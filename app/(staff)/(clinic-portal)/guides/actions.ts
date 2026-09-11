@@ -11,6 +11,7 @@ import {
 import { deletePracticeGuideDraft } from "@/lib/clinic-portal/delete-practice-guide-draft";
 import { discardPracticeGuideDraftChanges } from "@/lib/clinic-portal/discard-practice-guide-draft-changes";
 import { isClinicPortalError } from "@/lib/clinic-portal/errors";
+import { loadPracticeGuideEditor } from "@/lib/clinic-portal/load-practice-guide-editor";
 import {
   createCustomGuideSchema,
   createTemplateGuideSchema,
@@ -20,10 +21,18 @@ import { publishPracticeGuide } from "@/lib/clinic-portal/publish-practice-guide
 import { savePracticeGuideDraft } from "@/lib/clinic-portal/save-practice-guide-draft";
 import { revalidatePath } from "next/cache";
 
+import type { ComposedGuideSection } from "@/lib/aftercare/types";
+
 export interface GuideActionState {
   error?: string;
   fieldErrors?: Record<string, string>;
   ok?: boolean;
+  restored?: {
+    title: string;
+    publicSlug: string;
+    introduction: string;
+    sections: ComposedGuideSection[];
+  };
 }
 
 function errorState(error: unknown): GuideActionState {
@@ -207,8 +216,21 @@ export async function discardGuideDraftChangesAction(
       actorUserId: user.id,
       guideId,
     });
+    const editor = await loadPracticeGuideEditor({
+      clinicId: clinicMembership.clinic.id,
+      guideId,
+    });
     revalidatePath("/guides");
-    return { ok: true };
+    revalidatePath(`/guides/${guideId}/edit`);
+    return {
+      ok: true,
+      restored: {
+        title: editor.title,
+        publicSlug: editor.publicSlug,
+        introduction: editor.introduction ?? "",
+        sections: editor.sections,
+      },
+    };
   } catch (error) {
     return errorState(error);
   }

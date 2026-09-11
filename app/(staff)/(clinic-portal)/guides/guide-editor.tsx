@@ -17,6 +17,7 @@ import {
   type GuideActionState,
 } from "@/app/(staff)/(clinic-portal)/guides/actions";
 import { EditorLivePreview } from "@/app/(staff)/(clinic-portal)/guides/editor-live-preview";
+import { GuideLifecycleActions } from "@/app/(staff)/(clinic-portal)/guides/guide-lifecycle-actions";
 import {
   TimelineAccordion,
   type EditorSection,
@@ -27,7 +28,10 @@ import { PortalBreadcrumb } from "@/app/(staff)/components/portal-breadcrumb";
 import { SaveStatus } from "@/app/(staff)/components/save-status";
 import { useUnsavedChangesGuard } from "@/app/(staff)/components/use-unsaved-changes-guard";
 import { formSaveStatus } from "@/lib/clinic-portal/form-save-status";
-import { clinicGuideStatusPills } from "@/lib/clinic-portal/guide-status";
+import {
+  clinicGuideDestructiveAction,
+  clinicGuideStatusPills,
+} from "@/lib/clinic-portal/guide-status";
 import type { PracticeGuideEditorRecord } from "@/lib/clinic-portal/load-practice-guide-editor";
 import type { GuideSectionKind } from "@/lib/aftercare/types";
 
@@ -252,6 +256,25 @@ export function GuideEditor({
           >
             {publishing ? "Publishing…" : "Publish guide"}
           </button>
+          <GuideLifecycleActions
+            guideId={guide.id}
+            destructiveAction={clinicGuideDestructiveAction(guide.lifecycle)}
+            onDiscarded={(restored) => {
+              setTitle(restored.title);
+              setPublicSlug(restored.publicSlug);
+              setIntroduction(restored.introduction);
+              setSections(toEditorSections(restored.sections));
+              setConfirmed(
+                JSON.stringify({
+                  title: restored.title,
+                  publicSlug: restored.publicSlug,
+                  introduction: restored.introduction,
+                  sections: toEditorSections(restored.sections),
+                })
+              );
+              router.refresh();
+            }}
+          />
         </>
       ) : null}
     </div>

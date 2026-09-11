@@ -21,16 +21,27 @@ describe("guide destructive actions authorization", () => {
       "utf8"
     );
 
+    const editor = readFileSync(
+      "app/(staff)/(clinic-portal)/guides/guide-editor.tsx",
+      "utf8"
+    );
+    const lifecycle = readFileSync(
+      "app/(staff)/(clinic-portal)/guides/guide-lifecycle-actions.tsx",
+      "utf8"
+    );
+
     expect(actions).toContain("deleteGuideDraftAction");
     expect(actions).toContain("discardGuideDraftChangesAction");
     expect(actions).toContain("requireClinicAdmin");
     expect(actions).not.toContain('formData.get("clinicId")');
-    expect(page).toContain("canManage");
-    expect(row).toContain("canManage && destructiveAction");
+    expect(menu).toContain("aria-label");
     expect(menu).toContain("getBoundingClientRect");
-    expect(row).toContain("Delete this draft guide?");
-    expect(row).toContain("Discard draft changes?");
-    expect(row).toContain(
+    expect(row).toContain("GuideLifecycleActions");
+    expect(editor).toContain("GuideLifecycleActions");
+    expect(lifecycle).toContain("More actions");
+    expect(lifecycle).toContain("Delete this draft guide?");
+    expect(lifecycle).toContain("Discard draft changes?");
+    expect(lifecycle).toContain(
       "Patients will continue seeing the currently published version."
     );
   });

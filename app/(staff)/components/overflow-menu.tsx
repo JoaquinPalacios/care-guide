@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 
 export function OverflowMenu({
   label,
@@ -31,6 +31,24 @@ export function OverflowMenu({
     menu.style.left = `${left}px`;
   }
 
+  useEffect(() => {
+    const menu = menuRef.current;
+    const button = buttonRef.current;
+    if (!menu || !button) {
+      return;
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && menu.matches(":popover-open")) {
+        menu.hidePopover();
+        button.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   return (
     <div className="relative">
       <button
@@ -59,7 +77,12 @@ export function OverflowMenu({
         onToggle={(event) => {
           if (event.newState === "open") {
             placeMenu();
+            const first =
+              menuRef.current?.querySelector<HTMLElement>("[role='menuitem']");
+            first?.focus();
+            return;
           }
+          buttonRef.current?.focus();
         }}
       >
         {children}
