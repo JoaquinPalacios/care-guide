@@ -843,6 +843,8 @@ Staff/operator workflow polish. No Check-ins, RecoveryPlan persistence, billing,
 | Practice          | Header rhythm ~2.25rem before the form. Section index with IntersectionObserver `aria-current`, smooth scroll (immediate under reduced motion). One native colour control + hex. Select chevron padding. Compact sticky save row in the form column.       |
 | Visual artifacts  | [docs/product/artifacts/phase-2a.2/](artifacts/phase-2a.2/)                                                                                                                                                                                                |
 
+Guide editor client island grew from **16,289** to **23,986** raw bytes for the accordion + live preview. No Motion, no new dependency. See [PERFORMANCE.md](../architecture/PERFORMANCE.md).
+
 ### Next clinic-portal work (not built)
 
 Archive/unpublish of published guides, QR, invitations/team management, canonical library authoring, object-storage logo upload, Check-ins, RecoveryPlan, messaging, PMS integrations, billing.

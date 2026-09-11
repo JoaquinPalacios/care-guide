@@ -1106,3 +1106,16 @@ Measured 2026-09-10 against `cursor/clinic-self-service-ux-polish-eed5` producti
 | `42jbjdl7-dgw9.js` | Operator shell (logout + icons)                  | 17,029 |   6,159 |      5,420 |
 
 Framework/React chunks are shared App Router runtime and are not counted as product islands. Authenticated preview toolbar is a Server Component.
+
+## Phase 2A.2 portal workflow polish (staff client islands)
+
+Measured 2026-09-11 against `cursor/portal-editor-practice-polish-57d2` production `next build` (Next.js 16.3.4 / Turbopack). No new npm dependency. No Motion. Tenant still has no Tailwind. Public patient routes remain server-first; the editor live preview reuses a presentational timeline list with staff-only CSS.
+
+| Chunk              | Role                                                                      |    raw | gzip -9 | Brotli q11 | Δ raw vs 2A.1 |
+| ------------------ | ------------------------------------------------------------------------- | -----: | ------: | ---------: | ------------: |
+| `2dbnsa5c1qafu.js` | Guide editor (accordion + live preview rail, replaces `322al9fglpbjk.js`) | 23,986 |   7,310 |      6,377 |        +7,697 |
+| `15_8_mnqu0xf3.js` | Practice settings form (replaces `3zn_kjw7_l50y.js`)                      | 15,905 |   4,779 |      4,133 |          +293 |
+| `2ffi2y95klk0k.js` | Portal chrome (viewport-fixed shell + account)                            | 16,963 |   6,135 |      5,394 |             — |
+| `3ezgriosqx2_q.js` | Operator appearance + logout                                              | 11,306 |   4,548 |      3,972 |             0 |
+
+The guide-editor increase is the exclusive timeline accordion plus the compact live patient timeline preview. Playwright patient CSS budget still passed on this revision.
