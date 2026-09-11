@@ -968,6 +968,12 @@ body {
   padding: 0.45rem 0.75rem 0.25rem;
 }
 
+.staffAccountRole {
+  margin: 0.125rem 0 0;
+  font-size: 0.75rem;
+  color: var(--staff-muted);
+}
+
 .staffSignOut {
   width: 100%;
   border: 0;

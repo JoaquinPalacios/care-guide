@@ -33,7 +33,7 @@ export default async function OperatorLayout({
               href="/operator/clinics"
               className="staffNavRow bg-staff-brand/10 text-staff-brand"
             >
-              All Clinics
+              Clinics
             </Link>
           </nav>
           <div className="mt-auto">
@@ -42,14 +42,16 @@ export default async function OperatorLayout({
               <PortalAppearanceControl />
             </div>
             <div className="staffNavRule" role="presentation" />
-            <div className="px-1 pt-1">
-              <p className="truncate text-sm font-medium">
-                {user.name?.trim() || user.email}
-              </p>
-              <p className="mt-0.5 text-xs text-staff-muted">
-                {PLATFORM_OPERATOR_ROLE_LABEL}
-              </p>
-              <LogoutButton className="mt-3 flex flex-col items-start gap-2" />
+            <div className="staffAccountBlock">
+              <div className="staffAccountMeta">
+                <p className="truncate text-sm font-medium">
+                  {user.name?.trim() || user.email}
+                </p>
+                <p className="staffAccountRole">
+                  {PLATFORM_OPERATOR_ROLE_LABEL}
+                </p>
+              </div>
+              <LogoutButton />
             </div>
           </div>
         </div>

@@ -19,7 +19,10 @@ export function EditorLivePreview({
 
   if (sections.length === 0) {
     return (
-      <div className={`${styles.preview} ${styles.emptyState}`}>
+      <div
+        className={`${styles.preview} ${styles.emptyState}`}
+        data-live-preview=""
+      >
         <h2 id="editor-live-timeline-heading" className={styles.heading}>
           Patient timeline preview
         </h2>

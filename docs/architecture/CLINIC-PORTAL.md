@@ -26,7 +26,7 @@ Preferences, separated by a divider, above account:
 
 - Appearance — System / Light / Dark for the **staff/operator shell**. Stored as `aftercare-guide-portal-theme` on this device. Does **not** change `ClinicProfile.themeMode` (patient presentation).
 
-Account/sign-out stay below Appearance.
+Account/sign-out stay below Appearance. Sign out uses the same full-row hit area as other sidebar utility rows (minimum 44px). It is account navigation, not a high-prominence destructive action.
 
 ### User-facing role labels
 
@@ -51,19 +51,19 @@ From Phase 2A.2 the desktop portal is an application shell:
 
 ### Guide editor
 
-Page header is a normal document header: `Guides / {title} / Edit`, the guide title, and status pills (`Draft` / `Published` / `Draft changes`) plus source.
+Desktop: a slim sticky application toolbar (about 56–64px) holds the guide title, Draft status pill, quiet save-state (`Saved` / `Unsaved changes` / `Saving…`), and Cancel / Save draft / Publish guide. The right column is the live patient timeline preview, sticky, with viewport-based max-height. Status and actions no longer live in a large preview-rail card.
 
-Desktop uses a two-column layout: editor (~60–65%) and a sticky right rail (~35–40%) with Cancel (quiet), Save draft (secondary), Publish guide (primary), save status, and a live patient timeline preview. The previous full-width sticky editor action chrome is gone.
+Mobile/tablet: heading plus Draft/Saved state stay with the editor; the compact bottom action bar remains; patient-timeline preview is a collapsible section. There is no sticky horizontal toolbar that consumes phone height.
 
 Timeline stages are an exclusive accordion (one open at a time). Add stage creates and opens the new stage. Collapse does not auto-save. Errors remain visible on the collapsed header as “Needs attention”.
 
-The live preview reuses the presentational recovery timeline list used by the public patient renderer. It reflects the current unsaved editor state. Public patient routes stay server-first.
-
-Mobile: editor first, compact sticky bottom actions, collapsible “Preview patient timeline”.
+The live preview reuses the presentational recovery timeline list used by the public patient renderer. It reflects the current unsaved editor state. Empty preview copy is quiet on the patient-preview surface. Public patient routes stay server-first.
 
 Authenticated draft preview uses a staff toolbar outside `PatientPage`, including the same status pills. Public tenant URLs never render that toolbar.
 
 Cancel returns to `/guides`. Unsaved edits open a discard confirmation (Keep editing / Discard changes). Save draft does not change the public pinned revision. Publish asks for confirmation, then pins an immutable snapshot.
+
+Destructive confirmations use the native `<dialog>` element with Aftercare Guide application chrome (not a browser/native alert look). One `ConfirmDialog` covers dirty cancel, publish, delete draft, and discard draft changes.
 
 ### Practice
 
@@ -71,7 +71,7 @@ One route with internal sections: Practice identity, Branding, Contact, Emergenc
 
 Header uses portal spacing (eyebrow / title / description, then ~2.25rem before the form). Desktop has a section index with consistent row height, hover/focus, and `aria-current` for the section in view (IntersectionObserver). Section-nav clicks smooth-scroll unless `prefers-reduced-motion: reduce`. Sections use `scroll-margin-top`.
 
-Colour fields are one native colour control plus a hex input. Portal selects use extra padding for the chevron (`staffSelect`). Save status and Save changes sit compactly at the top of the form column (sticky within the scrolling document, not a full-bleed marketing bar).
+Colour fields are one native colour control plus a hex input. Portal selects use extra padding for the chevron (`staffSelect`). Save status and Save changes sit compactly at the top of the form column (sticky within the scrolling document, not a full-bleed marketing bar). The form column is width-capped so large screens do not stretch fields unnecessarily. Grid/flex children use `min-width: 0` so the page does not overflow horizontally.
 
 ### Permissions
 
@@ -107,4 +107,30 @@ Public generic guides have no patient-specific treatment date. Timeline copy sta
 
 ## Logo
 
-Upload is **blocked** until production object storage exists. Practice shows the current mark plus “Upload logo — coming before launch”. There is no file input. See [ADR 0019](../adr/0019-clinic-logo-upload-requires-object-storage.md).
+Upload is **blocked** until production object storage is provisioned. Practice shows the current mark and an explicit unavailable state. There is no file input. See [ADR 0019](../adr/0019-clinic-logo-upload-requires-object-storage.md) and [CLINIC-ASSETS.md](CLINIC-ASSETS.md).
+
+## Operator console
+
+The operator console is the Aftercare Guide operational control plane. Page identity is **PLATFORM / All Clinics**. Local seed identity may show **Demo Operator** as the account name; that is not a demo product.
+
+Current primary destination: **Clinics**. Do not add dead navigation. Canonical **Templates** management is the next operator-console capability and is not implemented here.
+
+All Clinics may show real derived counts: total clinics, configured clinics, published guides, needs attention. No invented analytics.
+
+Clinic table rows use a real practice link that covers the row for pointer users while remaining a semantic link.
+
+## Clinic seats (provisional policy — not enforced)
+
+Do not share one clinic login. Named membership accounts are required for accountability, revocation, ADMIN vs STAFF, and future audit.
+
+| Plan      | Named users included |
+| --------- | -------------------- |
+| Essential | 2                    |
+| Practice  | 5                    |
+| Group     | custom               |
+
+Current roles remain Clinic ADMIN and Clinic STAFF only. Invitations, seat-limit enforcement, and Team / Users management are later portal work.
+
+## Application architecture
+
+Launch backend remains Next.js App Router + Server Actions + Prisma. See [APPLICATION.md](APPLICATION.md). NestJS is not part of MVP.

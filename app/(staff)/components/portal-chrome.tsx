@@ -221,10 +221,14 @@ function PortalAccount({
   roleLabel: string;
 }) {
   return (
-    <div className="px-1 pt-1">
-      <p className="truncate text-sm font-medium text-staff-ink">{userLabel}</p>
-      <p className="mt-0.5 text-xs text-staff-muted">{roleLabel}</p>
-      <LogoutButton className="mt-3 flex flex-col items-start gap-2" />
+    <div className="staffAccountBlock">
+      <div className="staffAccountMeta">
+        <p className="truncate text-sm font-medium text-staff-ink">
+          {userLabel}
+        </p>
+        <p className="staffAccountRole">{roleLabel}</p>
+      </div>
+      <LogoutButton />
     </div>
   );
 }

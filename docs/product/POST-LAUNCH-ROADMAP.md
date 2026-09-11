@@ -28,6 +28,43 @@ Until then, keep the current baseline: server Zod validation, honeypot (`website
 
 ---
 
+## Pre-launch clinic operations (not implemented)
+
+### Object storage for clinic logos
+
+**Status: blocked on external provisioning.** See [CLINIC-ASSETS.md](../architecture/CLINIC-ASSETS.md) and [ADR 0019](../adr/0019-clinic-logo-upload-requires-object-storage.md).
+
+### Team / Users
+
+Do **not** implement invitations or seat enforcement from this note.
+
+Later portal capability:
+
+- invite user
+- remove user
+- ADMIN / STAFF role
+- seat-limit enforcement
+- resend invitation
+- transfer admin
+
+Provisional named-seat policy (documentation only, not billed or enforced):
+
+| Plan      | Named users included |
+| --------- | -------------------- |
+| Essential | 2                    |
+| Practice  | 5                    |
+| Group     | custom               |
+
+Do not recommend a shared clinic login. Named membership accounts are required for accountability, revocation, ADMIN vs STAFF distinction, and future audit.
+
+Current roles remain Clinic ADMIN and Clinic STAFF only.
+
+### Operator Templates
+
+The operator console currently exposes **Clinics** only. Canonical template management is the next operator-console capability. Do not add a dead Templates navigation item before that work exists.
+
+---
+
 ## Launch vs post-launch
 
 **Current production launch contains no persisted patient check-ins.**

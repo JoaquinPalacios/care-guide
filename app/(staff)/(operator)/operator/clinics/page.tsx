@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { requirePlatformOperator } from "@/lib/auth/require-platform-operator";
 import { listOperatorClinics } from "@/lib/operator/list-operator-clinics";
+import { summarizeOperatorClinics } from "@/lib/operator/summarize-operator-clinics";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 
 export const metadata: Metadata = {
@@ -12,9 +13,10 @@ export const metadata: Metadata = {
 export default async function OperatorClinicsPage() {
   await requirePlatformOperator();
   const clinics = await listOperatorClinics();
+  const summary = summarizeOperatorClinics(clinics);
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
+    <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-col gap-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
@@ -24,7 +26,7 @@ export default async function OperatorClinicsPage() {
             All Clinics
           </h1>
           <p className="mt-2 text-sm text-staff-muted">
-            Subscribing practices on Aftercare Guide.
+            Operational control plane for Aftercare Guide clinics.
           </p>
         </div>
         <Link href="/operator/clinics/new" className="staffBtn staffBtnPrimary">
@@ -32,12 +34,31 @@ export default async function OperatorClinicsPage() {
         </Link>
       </header>
 
+      <dl className="staffOperatorSummary">
+        <div className="staffOperatorStat">
+          <dt>Total clinics</dt>
+          <dd>{summary.totalClinics}</dd>
+        </div>
+        <div className="staffOperatorStat">
+          <dt>Configured clinics</dt>
+          <dd>{summary.configuredClinics}</dd>
+        </div>
+        <div className="staffOperatorStat">
+          <dt>Published guides</dt>
+          <dd>{summary.publishedGuides}</dd>
+        </div>
+        <div className="staffOperatorStat">
+          <dt>Needs attention</dt>
+          <dd>{summary.needsAttention}</dd>
+        </div>
+      </dl>
+
       {clinics.length === 0 ? (
         <p className="rounded-xl border border-dashed border-staff-line bg-staff-panel px-5 py-8 text-sm text-staff-muted">
           No clinics are registered yet.
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-staff-line bg-staff-panel shadow-sm">
+        <div className="staffOperatorTableWrap">
           <table className="min-w-full text-left text-sm">
             <caption className="sr-only">Registered clinics</caption>
             <thead className="border-b border-staff-line text-staff-muted">
@@ -54,12 +75,12 @@ export default async function OperatorClinicsPage() {
               {clinics.map((clinic) => (
                 <tr
                   key={clinic.id}
-                  className="border-b border-staff-line last:border-0"
+                  className="staffOperatorRow border-b border-staff-line last:border-0"
                 >
                   <td className="px-4 py-3">
                     <Link
                       href={`/operator/clinics/${clinic.id}`}
-                      className="font-medium text-staff-ink hover:text-staff-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
+                      className="staffOperatorRowLink"
                     >
                       {clinic.displayName}
                     </Link>

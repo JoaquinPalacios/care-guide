@@ -76,3 +76,5 @@ export async function listOperatorClinics(): Promise<OperatorClinicListItem[]> {
     };
   });
 }
+
+export { summarizeOperatorClinics } from "@/lib/operator/summarize-operator-clinics";
