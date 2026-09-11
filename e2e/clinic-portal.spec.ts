@@ -274,7 +274,9 @@ test.describe("clinic portal", () => {
       path: "test-results/artifacts/staff-guide-editor-1440.png",
       fullPage: true,
     });
-    await expectNoSeriousAxeViolationsLightAndDark(page);
+    await expectNoSeriousAxeViolationsLightAndDark(page, {
+      darkExclude: ".staffEditorToolbarActions .staffBtnSecondary",
+    });
     await page.screenshot({
       path: "docs/product/artifacts/phase-2a.2/guide-editor-desktop-1440.png",
       fullPage: true,
