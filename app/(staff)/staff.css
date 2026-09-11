@@ -253,7 +253,7 @@ body {
   padding-bottom: 5.5rem;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .staffEditorActionsDesktop {
     display: flex;
   }
@@ -407,4 +407,396 @@ body {
 .ptlOption:focus-visible {
   outline: 2px solid var(--staff-brand);
   outline-offset: 2px;
+}
+
+.staffAppShell {
+  display: flex;
+  min-height: 100dvh;
+  background: var(--staff-canvas);
+  color: var(--staff-ink);
+}
+
+.staffAppSidebar {
+  display: none;
+  width: 16rem;
+  flex-shrink: 0;
+  flex-direction: column;
+  border-right: 1px solid var(--staff-line);
+  background: var(--staff-panel);
+}
+
+.staffAppMain {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.staffAppContent {
+  min-width: 0;
+  flex: 1;
+  padding: 1.5rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .staffAppContent {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .staffAppContent {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .staffAppShell {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .staffAppSidebar {
+    display: flex;
+    height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .staffAppMain {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .staffAppScroller {
+    min-height: 0;
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+.staffStatusPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.staffStatusPill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--staff-line);
+  border-radius: 999px;
+  background: var(--staff-canvas);
+  color: var(--staff-ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.staffStatusPill[data-tone="published"] {
+  border-color: color-mix(in srgb, var(--staff-brand) 35%, var(--staff-line));
+}
+
+.staffStatusPill[data-tone="changes"],
+.staffStatusPill[data-tone="draft"] {
+  background: var(--staff-panel);
+}
+
+.staffField {
+  height: 2.75rem;
+  width: 100%;
+  border: 1px solid var(--staff-line);
+  border-radius: 0.375rem;
+  background: var(--staff-panel);
+  padding: 0 0.75rem;
+  color: var(--staff-ink);
+  font-size: 0.875rem;
+}
+
+.staffField:focus,
+.staffSelect:focus {
+  border-color: var(--staff-brand);
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--staff-brand) 20%, transparent);
+}
+
+.staffField:disabled,
+.staffSelect:disabled {
+  opacity: 0.6;
+}
+
+.staffFieldNarrow {
+  max-width: 16rem;
+}
+
+.staffSelect {
+  appearance: none;
+  height: 2.75rem;
+  width: 100%;
+  max-width: 24rem;
+  border: 1px solid var(--staff-line);
+  border-radius: 0.375rem;
+  background-color: var(--staff-panel);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'><path stroke='%235c6573' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.4' d='m1 1.5 5 5 5-5'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  background-size: 0.75rem 0.5rem;
+  padding: 0 2.75rem 0 0.75rem;
+  color: var(--staff-ink);
+  font-size: 0.875rem;
+}
+
+.staffColorControl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.staffColorSwatch {
+  display: block;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--staff-line);
+  border-radius: 0.375rem;
+  background: var(--staff-panel);
+  cursor: pointer;
+}
+
+.staffColorSwatch::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.staffColorSwatch::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(0.375rem - 1px);
+}
+
+.staffColorSwatch::-moz-color-swatch {
+  border: 0;
+  border-radius: calc(0.375rem - 1px);
+}
+
+.staffColorSwatch:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.staffColorHex {
+  max-width: 10rem;
+}
+
+.staffOverflowMenu {
+  inset: unset;
+  margin: 0;
+  min-width: 14rem;
+  padding: 0.35rem;
+  border: 1px solid var(--staff-line);
+  border-radius: 0.75rem;
+  background: var(--staff-panel);
+  color: var(--staff-ink);
+  box-shadow: light-dark(
+    0 12px 32px rgb(10 13 20 / 12%),
+    0 12px 32px rgb(0 0 0 / 45%)
+  );
+}
+
+.staffOverflowItem {
+  display: flex;
+  width: 100%;
+  min-height: 2.5rem;
+  align-items: center;
+  padding: 0 0.75rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--staff-ink);
+  font-size: 0.875rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.staffOverflowItem:hover,
+.staffOverflowItem:focus-visible {
+  background: var(--staff-canvas);
+}
+
+.staffOverflowItemDanger {
+  color: var(--staff-danger);
+}
+
+.staffGuideMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin: 0.4rem 0 0;
+  color: var(--staff-muted);
+  font-size: 0.875rem;
+}
+
+.staffGuideSource {
+  margin: 0;
+}
+
+.staffAttention {
+  color: var(--staff-danger);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.staffAccordionCard {
+  overflow: hidden;
+  border: 1px solid var(--staff-line);
+  border-radius: 0.75rem;
+  background: var(--staff-panel);
+}
+
+.staffAccordionTrigger {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.staffAccordionTrigger:hover {
+  background: color-mix(in srgb, var(--staff-canvas) 70%, transparent);
+}
+
+.staffAccordionTrigger:focus-visible {
+  outline: 2px solid var(--staff-brand);
+  outline-offset: -2px;
+}
+
+.staffAccordionWhen {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--staff-muted);
+}
+
+.staffAccordionWhat {
+  margin: 0.2rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.staffAccordionExcerpt {
+  margin: 0.25rem 0 0;
+  color: var(--staff-muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.staffAccordionPanel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 180ms ease;
+}
+
+.staffAccordionPanel[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+.staffAccordionPanelInner {
+  overflow: hidden;
+}
+
+.staffAccordionFields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0 1rem 1rem;
+  border-top: 1px solid var(--staff-line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .staffAccordionPanel {
+    transition: none;
+  }
+}
+
+.staffEditorLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.staffEditorRail {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.staffEditorRailCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0;
+}
+
+.staffEditorActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.staffEditorPreviewToggle {
+  display: flex;
+}
+
+@media (min-width: 1024px) {
+  .staffEditorLayout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) minmax(17rem, 1fr);
+    align-items: start;
+    gap: 1.75rem;
+  }
+
+  .staffEditorRail {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .staffEditorPreviewToggle {
+    display: none;
+  }
+}
+
+.staffPracticeHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2.25rem;
+}
+
+.staffPracticeSave {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.staffSectionNavRow[aria-current="true"] {
+  background: color-mix(in srgb, var(--staff-brand) 10%, transparent);
+  color: var(--staff-brand);
 }

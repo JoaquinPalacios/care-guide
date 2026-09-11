@@ -60,8 +60,8 @@ export function PortalChrome({
   }, [open]);
 
   return (
-    <div className="flex min-h-screen bg-staff-canvas text-staff-ink">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-staff-line bg-staff-panel md:flex">
+    <div className="staffAppShell">
+      <aside className="staffAppSidebar">
         <PortalBrand displayName={displayName} />
         <div className="flex min-h-0 flex-1 flex-col p-3">
           <PortalNav
@@ -81,7 +81,7 @@ export function PortalChrome({
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="staffAppMain">
         <header className="flex items-center justify-between gap-3 border-b border-staff-line bg-staff-panel px-4 py-3 md:hidden">
           <PortalBrand displayName={displayName} compact />
           <button
@@ -121,9 +121,9 @@ export function PortalChrome({
             <PortalAccount userLabel={userLabel} roleLabel={roleLabel} />
           </div>
         </header>
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          {children}
-        </main>
+        <div className="staffAppScroller">
+          <main className="staffAppContent">{children}</main>
+        </div>
       </div>
     </div>
   );

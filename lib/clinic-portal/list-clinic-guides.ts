@@ -6,9 +6,11 @@ import { headers } from "next/headers";
 import { WORKING_DRAFT_VERSION } from "@/lib/aftercare/practice-revision-document";
 import { clinicPatientSiteUrl } from "@/lib/clinic-portal/patient-site-url";
 import {
+  clinicGuideDestructiveAction,
   clinicGuideLifecycleStatus,
   clinicGuideStatusLabel,
   type ClinicGuideLifecycleStatus,
+  type GuideDestructiveAction,
 } from "@/lib/clinic-portal/guide-status";
 import { prisma } from "@/lib/prisma";
 
@@ -25,6 +27,7 @@ export interface ClinicPortalGuide {
   specialty: string | null;
   updatedAt: Date;
   previewHref: string | null;
+  destructiveAction: GuideDestructiveAction | null;
 }
 
 export async function listClinicPortalGuides(
@@ -140,6 +143,7 @@ export async function listClinicPortalGuides(
       specialty: guide.guideTemplate?.specialty ?? null,
       updatedAt: draft?.updatedAt ?? guide.updatedAt,
       previewHref,
+      destructiveAction: clinicGuideDestructiveAction(lifecycle),
     };
   });
 }

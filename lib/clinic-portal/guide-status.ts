@@ -3,6 +3,16 @@ import { GuideRevisionStatus, PracticeGuideStatus } from "@prisma/client";
 export type ClinicGuideLifecycleStatus =
   "draft" | "published" | "published_disabled" | "published_draft_changes";
 
+export type GuideStatusPillTone =
+  "draft" | "published" | "changes" | "disabled";
+
+export interface GuideStatusPill {
+  label: string;
+  tone: GuideStatusPillTone;
+}
+
+export type GuideDestructiveAction = "delete_draft" | "discard_draft_changes";
+
 export function clinicGuideLifecycleStatus(input: {
   status: PracticeGuideStatus;
   isEnabled: boolean;
@@ -30,17 +40,44 @@ export function clinicGuideLifecycleStatus(input: {
   return "published";
 }
 
+export function clinicGuideStatusPills(
+  status: ClinicGuideLifecycleStatus
+): GuideStatusPill[] {
+  switch (status) {
+    case "published":
+      return [{ label: "Published", tone: "published" }];
+    case "published_disabled":
+      return [
+        { label: "Published", tone: "published" },
+        { label: "Disabled", tone: "disabled" },
+      ];
+    case "published_draft_changes":
+      return [
+        { label: "Published", tone: "published" },
+        { label: "Draft changes", tone: "changes" },
+      ];
+    default:
+      return [{ label: "Draft", tone: "draft" }];
+  }
+}
+
 export function clinicGuideStatusLabel(
   status: ClinicGuideLifecycleStatus
 ): string {
+  return clinicGuideStatusPills(status)
+    .map((pill) => pill.label)
+    .join(" · ");
+}
+
+export function clinicGuideDestructiveAction(
+  status: ClinicGuideLifecycleStatus
+): GuideDestructiveAction | null {
   switch (status) {
-    case "published":
-      return "Published";
-    case "published_disabled":
-      return "Published, disabled";
+    case "draft":
+      return "delete_draft";
     case "published_draft_changes":
-      return "Published · Draft changes";
+      return "discard_draft_changes";
     default:
-      return "Draft";
+      return null;
   }
 }

@@ -8,6 +8,8 @@ import {
   createCustomPracticeGuide,
   createPracticeGuideFromTemplate,
 } from "@/lib/clinic-portal/create-practice-guide";
+import { deletePracticeGuideDraft } from "@/lib/clinic-portal/delete-practice-guide-draft";
+import { discardPracticeGuideDraftChanges } from "@/lib/clinic-portal/discard-practice-guide-draft-changes";
 import { isClinicPortalError } from "@/lib/clinic-portal/errors";
 import {
   createCustomGuideSchema,
@@ -16,6 +18,7 @@ import {
 } from "@/lib/clinic-portal/guide-schemas";
 import { publishPracticeGuide } from "@/lib/clinic-portal/publish-practice-guide";
 import { savePracticeGuideDraft } from "@/lib/clinic-portal/save-practice-guide-draft";
+import { revalidatePath } from "next/cache";
 
 export interface GuideActionState {
   error?: string;
@@ -156,6 +159,55 @@ export async function publishGuideAction(
       actorUserId: user.id,
       guideId,
     });
+    return { ok: true };
+  } catch (error) {
+    return errorState(error);
+  }
+}
+
+export async function deleteGuideDraftAction(
+  _previous: GuideActionState,
+  formData: FormData
+): Promise<GuideActionState> {
+  const { user, clinicMembership } = await requireClinicAdmin();
+  const guideId = String(formData.get("guideId") ?? "");
+  if (!guideId) {
+    return { error: "Missing guide." };
+  }
+
+  try {
+    await deletePracticeGuideDraft({
+      clinicId: clinicMembership.clinic.id,
+      actorUserId: user.id,
+      guideId,
+    });
+    revalidatePath("/guides");
+    redirect("/guides");
+  } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+    return errorState(error);
+  }
+}
+
+export async function discardGuideDraftChangesAction(
+  _previous: GuideActionState,
+  formData: FormData
+): Promise<GuideActionState> {
+  const { user, clinicMembership } = await requireClinicAdmin();
+  const guideId = String(formData.get("guideId") ?? "");
+  if (!guideId) {
+    return { error: "Missing guide." };
+  }
+
+  try {
+    await discardPracticeGuideDraftChanges({
+      clinicId: clinicMembership.clinic.id,
+      actorUserId: user.id,
+      guideId,
+    });
+    revalidatePath("/guides");
     return { ok: true };
   } catch (error) {
     return errorState(error);

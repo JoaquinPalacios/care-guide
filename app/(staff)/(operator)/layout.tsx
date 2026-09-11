@@ -6,6 +6,7 @@ import { PortalAppearanceControl } from "@/app/(staff)/components/portal-appeara
 import { ProductMark } from "@/app/(staff)/components/product-mark";
 import { requirePlatformOperator } from "@/lib/auth/require-platform-operator";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
+import { PLATFORM_OPERATOR_ROLE_LABEL } from "@/lib/clinic-portal/role-labels";
 
 export default async function OperatorLayout({
   children,
@@ -15,14 +16,16 @@ export default async function OperatorLayout({
   const { user } = await requirePlatformOperator();
 
   return (
-    <div className="flex min-h-screen bg-staff-canvas text-staff-ink">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-staff-line bg-staff-panel md:flex">
+    <div className="staffAppShell">
+      <aside className="staffAppSidebar">
         <div className="border-b border-staff-line px-5 py-5">
           <p className="flex items-center gap-2 text-sm font-semibold tracking-tight">
             <ProductMark className="h-5 w-5 text-staff-brand" />
             {PRODUCT_NAME}
           </p>
-          <p className="mt-1 text-sm text-staff-muted">Platform operator</p>
+          <p className="mt-1 text-sm text-staff-muted">
+            {PLATFORM_OPERATOR_ROLE_LABEL}
+          </p>
         </div>
         <div className="flex min-h-0 flex-1 flex-col p-3">
           <nav className="staffNavGroup" aria-label="Platform">
@@ -43,15 +46,19 @@ export default async function OperatorLayout({
               <p className="truncate text-sm font-medium">
                 {user.name?.trim() || user.email}
               </p>
-              <p className="mt-0.5 text-xs text-staff-muted">Operator</p>
+              <p className="mt-0.5 text-xs text-staff-muted">
+                {PLATFORM_OPERATOR_ROLE_LABEL}
+              </p>
               <LogoutButton className="mt-3 flex flex-col items-start gap-2" />
             </div>
           </div>
         </div>
       </aside>
-      <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-        {children}
-      </main>
+      <div className="staffAppMain">
+        <div className="staffAppScroller">
+          <main className="staffAppContent">{children}</main>
+        </div>
+      </div>
     </div>
   );
 }

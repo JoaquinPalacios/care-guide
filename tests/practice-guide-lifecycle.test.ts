@@ -8,6 +8,8 @@ import {
   createCustomPracticeGuide,
   createPracticeGuideFromTemplate,
 } from "@/lib/clinic-portal/create-practice-guide";
+import { deletePracticeGuideDraft } from "@/lib/clinic-portal/delete-practice-guide-draft";
+import { discardPracticeGuideDraftChanges } from "@/lib/clinic-portal/discard-practice-guide-draft-changes";
 import { publishPracticeGuide } from "@/lib/clinic-portal/publish-practice-guide";
 import { savePracticeGuideDraft } from "@/lib/clinic-portal/save-practice-guide-draft";
 import { updatePracticeSettings } from "@/lib/clinic-portal/update-practice-settings";
@@ -463,5 +465,194 @@ describe("practice guide lifecycle and isolation", () => {
       select: { status: true },
     });
     expect(publishedGuide.status).toBe(PracticeGuideStatus.PUBLISHED);
+  });
+});
+
+describe("draft delete and discard", () => {
+  const PREFIX = "test_p2a2_";
+  const CLINIC_A_ID = `${PREFIX}clinic_a`;
+  const CLINIC_B_ID = `${PREFIX}clinic_b`;
+  const USER_ID = `${PREFIX}admin`;
+
+  async function cleanup() {
+    await prisma.practiceGuide.deleteMany({
+      where: { clinicId: { in: [CLINIC_A_ID, CLINIC_B_ID] } },
+    });
+    await prisma.clinicProfile.deleteMany({
+      where: { clinicId: { in: [CLINIC_A_ID, CLINIC_B_ID] } },
+    });
+    await prisma.clinic.deleteMany({
+      where: { id: { in: [CLINIC_A_ID, CLINIC_B_ID] } },
+    });
+    await prisma.user.deleteMany({
+      where: { id: USER_ID },
+    });
+  }
+
+  async function seedClinics() {
+    await cleanup();
+    await prisma.user.create({
+      data: {
+        id: USER_ID,
+        email: `${PREFIX}admin@example.test`,
+        name: "Phase 2A.2 Test Admin",
+        platformRole: "NONE",
+      },
+    });
+    await prisma.clinic.create({
+      data: {
+        id: CLINIC_A_ID,
+        name: "Phase 2A.2 Clinic A",
+        slug: "testp2a2-clinic-a",
+        profile: { create: { displayName: "Clinic A" } },
+      },
+    });
+    await prisma.clinic.create({
+      data: {
+        id: CLINIC_B_ID,
+        name: "Phase 2A.2 Clinic B",
+        slug: "testp2a2-clinic-b",
+        profile: { create: { displayName: "Clinic B" } },
+      },
+    });
+  }
+
+  afterAll(async () => {
+    await cleanup();
+  });
+
+  it("lets ADMIN delete a never-published draft and refuses published deletion", async () => {
+    await seedClinics();
+    const draft = await createCustomPracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      values: { title: "Unpublished socket care", publicSlug: "socket-draft" },
+    });
+
+    await deletePracticeGuideDraft({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      guideId: draft.id,
+    });
+
+    expect(
+      await prisma.practiceGuide.findUnique({ where: { id: draft.id } })
+    ).toBeNull();
+
+    const published = await createCustomPracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      values: { title: "Published socket care", publicSlug: "socket-live" },
+    });
+    await publishPracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      guideId: published.id,
+    });
+
+    await expect(
+      deletePracticeGuideDraft({
+        clinicId: CLINIC_A_ID,
+        actorUserId: USER_ID,
+        guideId: published.id,
+      })
+    ).rejects.toSatisfy(
+      (error: unknown) =>
+        error instanceof ClinicPortalError && error.code === "conflict"
+    );
+    expect(
+      await prisma.practiceGuide.findUnique({ where: { id: published.id } })
+    ).not.toBeNull();
+  });
+
+  it("refuses cross-clinic delete and restores published drafts without unpinning", async () => {
+    await seedClinics();
+    const guide = await createCustomPracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      values: { title: "Public pin", publicSlug: "public-pin" },
+    });
+    await savePracticeGuideDraft({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      values: {
+        guideId: guide.id,
+        title: "Public pin",
+        publicSlug: "public-pin",
+        introduction: "Published intro.",
+        sections: [
+          {
+            key: "introduction",
+            kind: "INTRODUCTION",
+            title: "After treatment",
+            body: "Published body.",
+            periodLabel: null,
+            startDay: null,
+            endDay: null,
+          },
+        ],
+      },
+    });
+    await publishPracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      guideId: guide.id,
+    });
+
+    await savePracticeGuideDraft({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      values: {
+        guideId: guide.id,
+        title: "Draft title patients must not see",
+        publicSlug: "public-pin",
+        introduction: "Draft intro.",
+        sections: [
+          {
+            key: "introduction",
+            kind: "INTRODUCTION",
+            title: "Changed intro",
+            body: "Draft body that must be discarded.",
+            periodLabel: null,
+            startDay: null,
+            endDay: null,
+          },
+        ],
+      },
+    });
+
+    await expect(
+      deletePracticeGuideDraft({
+        clinicId: CLINIC_B_ID,
+        actorUserId: USER_ID,
+        guideId: guide.id,
+      })
+    ).rejects.toSatisfy(
+      (error: unknown) =>
+        error instanceof ClinicPortalError && error.code === "not_found"
+    );
+
+    await discardPracticeGuideDraftChanges({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      guideId: guide.id,
+    });
+
+    const publicDoc = await getPublishedPracticeGuide({
+      clinicSlug: "testp2a2-clinic-a",
+      publicSlug: "public-pin",
+    });
+    expect(publicDoc?.title).toBe("Public pin");
+    expect(
+      publicDoc?.sections.find((section) => section.key === "introduction")
+        ?.body
+    ).toBe("Published body.");
+
+    const draft = await prisma.practiceGuideRevision.findFirst({
+      where: { practiceGuideId: guide.id, version: 0 },
+      include: { sections: true },
+    });
+    expect(draft?.title).toBe("Public pin");
+    expect(draft?.sections[0]?.body).toBe("Published body.");
   });
 });
