@@ -7,6 +7,7 @@ import { ConfirmDialog } from "@/app/(staff)/components/confirm-dialog";
 import { ExternalLinkIcon } from "@/app/(staff)/components/icons";
 import { SaveStatus } from "@/app/(staff)/components/save-status";
 import { useUnsavedChangesGuard } from "@/app/(staff)/components/use-unsaved-changes-guard";
+import { PracticeLogoField } from "@/app/(staff)/(clinic-portal)/practice/practice-logo-field";
 import {
   savePracticeSettingsAction,
   type PracticeActionState,
@@ -33,6 +34,7 @@ function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({
     behavior: reduce ? "auto" : "smooth",
     block: "start",
+    inline: "nearest",
   });
 }
 
@@ -40,10 +42,12 @@ export function PracticeSettingsForm({
   values,
   canEdit,
   patientSiteHref,
+  storageAvailable,
 }: {
   values: PracticeSettingsInput;
   canEdit: boolean;
   patientSiteHref: string | null;
+  storageAvailable: boolean;
 }) {
   const pendingSnapshot = useRef(snapshot(values));
   const [state, action, pending] = useActionState(
@@ -122,7 +126,7 @@ export function PracticeSettingsForm({
   }
 
   return (
-    <div className="staffEditorPage lg:grid lg:grid-cols-[11rem_minmax(0,1fr)] lg:items-start lg:gap-8">
+    <div className="staffEditorPage lg:grid lg:grid-cols-[minmax(0,11rem)_minmax(0,1fr)] lg:items-start lg:gap-8">
       <nav
         aria-label="Practice sections"
         className="mb-6 hidden lg:sticky lg:top-4 lg:mb-0 lg:block"
@@ -201,31 +205,19 @@ export function PracticeSettingsForm({
             />
             <FieldError message={state.fieldErrors?.displayName} />
           </Field>
-          <div className="flex flex-col gap-2">
-            <p className="text-sm font-medium" id="logo-label">
-              Logo
-            </p>
-            {form.logoUrl ? (
-              // Same-origin clinic mark; next/image is unnecessary for this path preview.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={form.logoUrl}
-                alt={`${form.displayName || "Practice"} logo`}
-                width={48}
-                height={48}
-                className="staffLogoPreview"
-              />
-            ) : (
-              <p className="text-sm text-staff-muted">No logo configured.</p>
-            )}
-            <p className="text-sm text-staff-muted">Current logo preview</p>
-            <input type="hidden" name="logoUrl" value={form.logoUrl ?? ""} />
-            <p className="staffLogoUnavailable">
-              Logo upload is unavailable until production object storage is
-              provisioned. Clinics will then upload PNG, JPEG, or WebP files up
-              to 2 MB. SVG is not accepted.
-            </p>
-          </div>
+          <PracticeLogoField
+            displayName={form.displayName}
+            logoUrl={form.logoUrl}
+            canEdit={canEdit}
+            storageAvailable={storageAvailable}
+            onLogoUrlChange={(logoUrl) => {
+              setForm((current) => {
+                const next = { ...current, logoUrl };
+                setConfirmed(snapshot(next));
+                return next;
+              });
+            }}
+          />
         </section>
 
         <section id="practice-branding" className="staffPracticeSection">

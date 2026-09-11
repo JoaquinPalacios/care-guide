@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { PracticeSettingsForm } from "@/app/(staff)/(clinic-portal)/practice/practice-settings-form";
 import { requireClinicAdmin } from "@/lib/auth/require-clinic-admin";
+import { isClinicAssetStorageConfigured } from "@/lib/clinic-assets/config";
 import { getClinicPortalOverview } from "@/lib/clinic-portal/get-clinic-portal";
 import { prisma } from "@/lib/prisma";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
@@ -27,7 +28,7 @@ export default async function PracticePage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl">
+    <div className="mx-auto min-w-0 w-full max-w-5xl">
       <header className="staffPracticeHeader">
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
           Practice
@@ -43,6 +44,7 @@ export default async function PracticePage() {
       <PracticeSettingsForm
         canEdit={clinicMembership.role === ClinicMembershipRole.ADMIN}
         patientSiteHref={overview.patientSiteHref}
+        storageAvailable={isClinicAssetStorageConfigured()}
         values={{
           displayName: profile?.displayName || overview.displayName,
           logoUrl: profile?.logoUrl ?? null,

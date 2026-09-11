@@ -60,7 +60,117 @@ export async function expectHeadingDoesNotOverflow(
   expect(overflow).toBeLessThanOrEqual(1);
 }
 
+export async function measurePracticeOverflow(page: Page): Promise<{
+  rootScrollWidth: number;
+  rootClientWidth: number;
+  mainScrollWidth: number;
+  mainClientWidth: number;
+  scrollerScrollWidth: number;
+  scrollerClientWidth: number;
+  overflowing: Array<{
+    tag: string;
+    className: string;
+    id: string;
+    rectRight: number;
+    containerRight: number;
+    width: number;
+    minWidth: string;
+    parentDisplay: string;
+  }>;
+}> {
+  return page.evaluate(() => {
+    const root = document.documentElement;
+    const main = document.querySelector(".staffAppContent");
+    const scroller = document.querySelector(".staffAppScroller");
+    const container = scroller ?? main ?? root;
+    const containerRight = container.getBoundingClientRect().right;
+    const overflowing: Array<{
+      tag: string;
+      className: string;
+      id: string;
+      rectRight: number;
+      containerRight: number;
+      width: number;
+      minWidth: string;
+      parentDisplay: string;
+    }> = [];
+
+    for (const element of document.querySelectorAll("body *")) {
+      if (!(element instanceof HTMLElement)) {
+        continue;
+      }
+      const style = getComputedStyle(element);
+      if (style.display === "none" || style.visibility === "hidden") {
+        continue;
+      }
+      if (style.position === "fixed") {
+        continue;
+      }
+      const rect = element.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) {
+        continue;
+      }
+      if (rect.right > containerRight + 1) {
+        overflowing.push({
+          tag: element.tagName.toLowerCase(),
+          className: element.className.toString().slice(0, 120),
+          id: element.id,
+          rectRight: Math.round(rect.right * 10) / 10,
+          containerRight: Math.round(containerRight * 10) / 10,
+          width: Math.round(rect.width * 10) / 10,
+          minWidth: style.minWidth,
+          parentDisplay: element.parentElement
+            ? getComputedStyle(element.parentElement).display
+            : "",
+        });
+      }
+    }
+
+    return {
+      rootScrollWidth: root.scrollWidth,
+      rootClientWidth: root.clientWidth,
+      mainScrollWidth: main?.scrollWidth ?? 0,
+      mainClientWidth: main?.clientWidth ?? 0,
+      scrollerScrollWidth: scroller?.scrollWidth ?? 0,
+      scrollerClientWidth: scroller?.clientWidth ?? 0,
+      overflowing: overflowing.slice(0, 25),
+    };
+  });
+}
+
+export async function expectPracticePageDoesNotOverflow(
+  page: Page,
+  viewportLabel: string
+): Promise<void> {
+  const metrics = await measurePracticeOverflow(page);
+  const detail = `${viewportLabel} root=${metrics.rootScrollWidth}/${metrics.rootClientWidth} main=${metrics.mainScrollWidth}/${metrics.mainClientWidth} scroller=${metrics.scrollerScrollWidth}/${metrics.scrollerClientWidth} overflowing=${JSON.stringify(metrics.overflowing)}`;
+  expect(
+    metrics.rootScrollWidth,
+    `document overflow ${detail}`
+  ).toBeLessThanOrEqual(metrics.rootClientWidth);
+  expect(
+    metrics.mainScrollWidth,
+    `main overflow ${detail}`
+  ).toBeLessThanOrEqual(metrics.mainClientWidth);
+  expect(
+    metrics.scrollerScrollWidth,
+    `scroller overflow ${detail}`
+  ).toBeLessThanOrEqual(metrics.scrollerClientWidth);
+  expect(metrics.overflowing, `overflowing elements ${detail}`).toEqual([]);
+}
+
 export function relativeLuminance(rgb: string): number {
+  const hex = rgb.trim().match(/^#([0-9a-f]{6})$/i);
+  if (hex) {
+    const value = Number.parseInt(hex[1], 16);
+    return (
+      (0.2126 * ((value >> 16) & 255) +
+        0.7152 * ((value >> 8) & 255) +
+        0.0722 * (value & 255)) /
+      255
+    );
+  }
+
   const match = rgb.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/);
   if (!match) {
     return -1;
@@ -68,4 +178,15 @@ export function relativeLuminance(rgb: string): number {
 
   const [red, green, blue] = match.slice(1).map((value) => Number(value) / 255);
   return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
+
+export function contrastRatio(first: string, second: string): number {
+  const a = relativeLuminance(first);
+  const b = relativeLuminance(second);
+  if (a < 0 || b < 0) {
+    return 0;
+  }
+  const lighter = Math.max(a, b);
+  const darker = Math.min(a, b);
+  return (lighter + 0.05) / (darker + 0.05);
 }
