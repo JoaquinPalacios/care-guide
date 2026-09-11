@@ -129,12 +129,14 @@ body {
 }
 
 .staffBtnPrimary {
-  background: var(--staff-brand);
-  color: var(--staff-on-brand);
+  /* Keep a dark chip + light label in both themes. --staff-brand lightens
+     in dark mode for text/accents and fails contrast on filled buttons. */
+  background: #3b4bd1;
+  color: #fff;
 }
 
 .staffBtnPrimary:hover:not(:disabled) {
-  background: var(--staff-brand-hover);
+  background: #3342c6;
 }
 
 .staffBtnSecondary {
@@ -160,12 +162,12 @@ body {
 }
 
 .staffBtnDanger {
-  background: var(--staff-danger);
-  color: var(--staff-on-danger);
+  background: #b42318;
+  color: #fff;
 }
 
 .staffBtnDanger:hover:not(:disabled) {
-  background: var(--staff-danger-hover);
+  background: #912018;
 }
 
 .staffDialog {
