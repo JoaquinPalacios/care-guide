@@ -656,6 +656,19 @@ test.describe("clinic portal UX polish", () => {
       path: "test-results/artifacts/staff-guide-editor-empty-preview-1440.png",
       fullPage: true,
     });
+    await page
+      .getByRole("button", { name: "Cancel" })
+      .filter({ visible: true })
+      .click();
+    await expect(page).toHaveURL(staffUrl("/guides"));
+    const row = page.locator("li").filter({ hasText: "Empty preview draft" });
+    await row.getByRole("button", { name: "More actions" }).click();
+    await row.getByRole("menuitem", { name: "Delete draft" }).click();
+    await page
+      .getByRole("dialog", { name: "Delete this draft guide?" })
+      .getByRole("button", { name: "Delete draft" })
+      .click();
+    await expect(page.getByText("Empty preview draft")).toHaveCount(0);
   });
 
   test("desktop sidebar stays viewport-fixed while the page scrolls", async ({
