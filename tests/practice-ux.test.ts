@@ -31,7 +31,10 @@ describe("practice configuration polish", () => {
     expect(color).not.toContain("aria-hidden");
     expect(form).toContain("staffSelect");
     expect(form).toContain("PracticeSectionNav");
+    expect(form).toContain("staffPracticeForm");
+    expect(form).toContain("staffPracticeGrid3");
     expect(css).toContain("padding-right: 2.75rem");
     expect(css).toContain(".staffColorPicker");
+    expect(css).toContain("minmax(0, 1fr)");
   });
 });
