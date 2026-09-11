@@ -22,8 +22,15 @@ describe("clinic portal layout roles and shell", () => {
     expect(operator).not.toContain(">Operator<");
     expect(chrome).toContain("staffAppShell");
     expect(chrome).toContain("staffAppSidebar");
+    expect(chrome).toContain('<main className="staffAppScroller">');
+    expect(chrome).toContain('<div className="staffAppContent">');
     expect(chrome).toContain("inert={!open || undefined}");
+    expect(operator).toContain('<main className="staffAppScroller">');
+    expect(operator).toContain('<div className="staffAppContent">');
     expect(css).toContain("height: 100dvh");
-    expect(css).toContain(".staffAppScroller");
+    expect(css).toContain("flex: 1 1 0");
+    expect(css).toContain("overflow-x: clip");
+    expect(css).toContain("scrollbar-gutter: stable");
+    expect(css).not.toContain("overflow-x: auto;\n    overflow-y: auto");
   });
 });

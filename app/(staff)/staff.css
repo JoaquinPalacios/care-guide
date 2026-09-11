@@ -73,6 +73,12 @@ html[data-theme-mode="system"] {
   --font-mono: var(--font-geist-mono);
 }
 
+html,
+body {
+  width: 100%;
+  min-width: 0;
+}
+
 body {
   background: var(--staff-canvas);
   color: var(--staff-ink);
@@ -545,6 +551,8 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
 
 .staffAppShell {
   display: flex;
+  width: 100%;
+  min-width: 0;
   min-height: 100dvh;
   background: var(--staff-canvas);
   color: var(--staff-ink);
@@ -553,6 +561,7 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
 .staffAppSidebar {
   display: none;
   width: 16rem;
+  flex: 0 0 16rem;
   flex-shrink: 0;
   flex-direction: column;
   border-right: 1px solid var(--staff-line);
@@ -562,13 +571,23 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
 .staffAppMain {
   display: flex;
   min-width: 0;
-  flex: 1;
+  flex: 1 1 0;
   flex-direction: column;
 }
 
-.staffAppContent {
+.staffAppScroller {
+  display: block;
+  width: 100%;
   min-width: 0;
-  flex: 1;
+  flex: 1 1 0;
+}
+
+.staffAppContent {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin-inline: auto;
   padding: 1.5rem 1rem;
 }
 
@@ -595,20 +614,21 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
   .staffAppSidebar {
     display: flex;
     height: 100dvh;
-    overflow-x: auto;
+    overflow-x: clip;
     overflow-y: auto;
   }
 
   .staffAppMain {
     min-height: 0;
+    height: 100dvh;
     overflow: hidden;
   }
 
   .staffAppScroller {
     min-height: 0;
-    flex: 1;
-    overflow-x: auto;
+    overflow-x: clip;
     overflow-y: auto;
+    scrollbar-gutter: stable;
   }
 }
 

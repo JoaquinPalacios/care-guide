@@ -42,12 +42,20 @@ Sidebar account area shows the person's name (or email) plus that role on a seco
 
 ### Desktop shell
 
-From Phase 2A.2 the desktop portal is an application shell:
+From Phase 2A.5 the desktop portal width contract is:
 
-- Sidebar is viewport height (`100dvh`), anchored, and does not scroll away with the document.
-- Main content scrolls independently.
-- If the sidebar cannot fit on a short viewport, it may scroll internally.
-- Mobile keeps the responsive drawer. The fixed desktop layout is not forced below the `md` breakpoint.
+```
+.staffAppShell          flex row, width 100%, min-width 0, height 100dvh, overflow hidden
+  aside.staffAppSidebar flex 0 0 16rem, overflow-x clip, overflow-y auto
+  .staffAppMain         flex 1 1 0, min-width 0, height 100dvh, overflow hidden
+    header              mobile only
+    main.staffAppScroller  min-width 0, width 100%, overflow-y auto, overflow-x clip
+      .staffAppContent  width 100%, min-width 0, max-width 100%, padding, box-sizing border-box
+```
+
+`<main>` is the primary scroll region and the one main landmark. `.staffAppContent` owns padding. Inner pages may still cap reading width (`max-w-5xl`). Do not use `100vw` inside the desktop shell. Do not clip overflow with a global `overflow-x: hidden`. Horizontal overflow is a flex `min-width` bug until proven otherwise.
+
+The sidebar stays viewport height and does not scroll away with the document. If the sidebar cannot fit on a short viewport, it may scroll internally. Mobile keeps the drawer; the fixed desktop layout is not forced below the `md` breakpoint.
 
 ### Guide editor
 

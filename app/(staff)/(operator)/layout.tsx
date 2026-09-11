@@ -57,9 +57,9 @@ export default async function OperatorLayout({
         </div>
       </aside>
       <div className="staffAppMain">
-        <div className="staffAppScroller">
-          <main className="staffAppContent">{children}</main>
-        </div>
+        <main className="staffAppScroller">
+          <div className="staffAppContent">{children}</div>
+        </main>
       </div>
     </div>
   );

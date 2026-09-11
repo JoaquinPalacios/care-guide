@@ -1,0 +1,126 @@
+import { expect, test } from "@playwright/test";
+
+import { setPortalColorScheme } from "./helpers/axe";
+import {
+  PORTAL_OVERFLOW_VIEWPORTS,
+  expectNoPortalShellOverflow,
+} from "./helpers/portal-shell";
+import { staffUrl } from "./helpers/origins";
+import {
+  signInAsLocalAdmin,
+  signInAsLocalOperator,
+} from "./helpers/staff-auth";
+
+test.describe("portal shell overflow contract", () => {
+  test("clinic portal routes stay within the shell at core viewports", async ({
+    page,
+  }) => {
+    await signInAsLocalAdmin(page);
+    await page.goto(staffUrl("/guides"), { waitUntil: "load" });
+    const editorHref = await page
+      .getByRole("link", { name: "Edit" })
+      .first()
+      .getAttribute("href");
+    expect(editorHref).toBeTruthy();
+
+    const routes = [
+      { name: "Overview", path: "/dashboard" },
+      { name: "Guides", path: "/guides" },
+      { name: "Guide editor", path: editorHref! },
+      { name: "Practice", path: "/practice" },
+    ];
+
+    for (const route of routes) {
+      await page.goto(staffUrl(route.path), { waitUntil: "load" });
+      await setPortalColorScheme(page, "light");
+      for (const viewport of PORTAL_OVERFLOW_VIEWPORTS) {
+        await page.setViewportSize({
+          width: viewport.width,
+          height: viewport.height,
+        });
+        await expectNoPortalShellOverflow(
+          page,
+          `light ${viewport.label}`,
+          route.path
+        );
+      }
+
+      if (route.path === "/practice") {
+        await page.setViewportSize({ width: 1728, height: 877 });
+        await page.screenshot({
+          path: "test-results/artifacts/phase-2a.5-practice-1728.png",
+        });
+        await page.setViewportSize({ width: 360, height: 800 });
+        await page.screenshot({
+          path: "test-results/artifacts/phase-2a.5-practice-360.png",
+        });
+      }
+      if (route.path === "/dashboard") {
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await page.screenshot({
+          path: "test-results/artifacts/phase-2a.5-overview-1440.png",
+        });
+      }
+      if (route.name === "Guide editor") {
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await page.screenshot({
+          path: "test-results/artifacts/phase-2a.5-guide-editor-1440.png",
+        });
+      }
+
+      if (route.path === "/dashboard" || route.path === "/practice") {
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await setPortalColorScheme(page, "dark");
+        await expectNoPortalShellOverflow(page, "dark 1440x900", route.path);
+        await page.setViewportSize({ width: 360, height: 800 });
+        await expectNoPortalShellOverflow(page, "dark 360x800", route.path);
+      }
+    }
+  });
+
+  test("operator routes stay within the shell at core viewports", async ({
+    page,
+  }) => {
+    await signInAsLocalOperator(page);
+    await expect(
+      page.getByRole("heading", { name: "All Clinics" })
+    ).toBeVisible();
+    const clinicHref = await page
+      .getByRole("link", { name: /Riverside Dental Demo/i })
+      .first()
+      .getAttribute("href");
+    expect(clinicHref).toBeTruthy();
+
+    const routes = [
+      { name: "Operator All Clinics", path: "/operator/clinics" },
+      { name: "Operator clinic detail", path: clinicHref! },
+    ];
+
+    for (const route of routes) {
+      await page.goto(staffUrl(route.path), { waitUntil: "load" });
+      await setPortalColorScheme(page, "light");
+      for (const viewport of PORTAL_OVERFLOW_VIEWPORTS) {
+        await page.setViewportSize({
+          width: viewport.width,
+          height: viewport.height,
+        });
+        await expectNoPortalShellOverflow(
+          page,
+          `light ${viewport.label}`,
+          route.path
+        );
+      }
+
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await setPortalColorScheme(page, "dark");
+      await expectNoPortalShellOverflow(page, "dark 1440x900", route.path);
+      if (route.path === "/operator/clinics") {
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await setPortalColorScheme(page, "light");
+        await page.screenshot({
+          path: "test-results/artifacts/phase-2a.5-operator-clinics-1440.png",
+        });
+      }
+    }
+  });
+});

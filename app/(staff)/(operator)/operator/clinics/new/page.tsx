@@ -13,7 +13,7 @@ export default async function CreateClinicPage() {
   await requirePlatformOperator();
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+    <div className="mx-auto flex w-full min-w-0 max-w-3xl flex-col gap-6">
       <header>
         <PortalBreadcrumb
           items={[

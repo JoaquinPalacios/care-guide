@@ -305,7 +305,7 @@ export function GuideEditor({
   );
 
   return (
-    <div className="staffEditorPage mx-auto flex w-full max-w-6xl flex-col">
+    <div className="staffEditorPage mx-auto flex w-full min-w-0 max-w-6xl flex-col">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <PortalBreadcrumb
           items={[

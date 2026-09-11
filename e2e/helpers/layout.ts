@@ -1,12 +1,17 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
+import { expectNoPortalShellOverflow } from "./portal-shell";
+
 export async function expectNoHorizontalOverflow(page: Page): Promise<void> {
+  const hasStaffShell = await page.locator(".staffAppShell").count();
+  if (hasStaffShell > 0) {
+    await expectNoPortalShellOverflow(page, "current", page.url());
+    return;
+  }
+
   const metrics = await page.evaluate(() => {
     const root = document.documentElement;
-    const main =
-      document.querySelector(".staffAppContent") ??
-      document.querySelector(".staffAppScroller") ??
-      document.querySelector(".staffPortalMain");
+    const main = document.querySelector("main");
     return {
       rootScrollWidth: root.scrollWidth,
       rootClientWidth: root.clientWidth,
@@ -31,8 +36,8 @@ export async function measureHorizontalOverflow(page: Page): Promise<{
 }> {
   return page.evaluate(() => {
     const main =
-      document.querySelector(".staffAppContent") ??
       document.querySelector(".staffAppScroller") ??
+      document.querySelector(".staffAppContent") ??
       document.querySelector(".staffPortalMain");
     const root = document.documentElement;
     const target = main ?? root;
@@ -142,21 +147,7 @@ export async function expectPracticePageDoesNotOverflow(
   page: Page,
   viewportLabel: string
 ): Promise<void> {
-  const metrics = await measurePracticeOverflow(page);
-  const detail = `${viewportLabel} root=${metrics.rootScrollWidth}/${metrics.rootClientWidth} main=${metrics.mainScrollWidth}/${metrics.mainClientWidth} scroller=${metrics.scrollerScrollWidth}/${metrics.scrollerClientWidth} overflowing=${JSON.stringify(metrics.overflowing)}`;
-  expect(
-    metrics.rootScrollWidth,
-    `document overflow ${detail}`
-  ).toBeLessThanOrEqual(metrics.rootClientWidth);
-  expect(
-    metrics.mainScrollWidth,
-    `main overflow ${detail}`
-  ).toBeLessThanOrEqual(metrics.mainClientWidth);
-  expect(
-    metrics.scrollerScrollWidth,
-    `scroller overflow ${detail}`
-  ).toBeLessThanOrEqual(metrics.scrollerClientWidth);
-  expect(metrics.overflowing, `overflowing elements ${detail}`).toEqual([]);
+  await expectNoPortalShellOverflow(page, viewportLabel, "/practice");
 }
 
 export function relativeLuminance(rgb: string): number {

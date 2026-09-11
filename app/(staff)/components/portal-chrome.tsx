@@ -122,9 +122,9 @@ export function PortalChrome({
             <PortalAccount userLabel={userLabel} roleLabel={roleLabel} />
           </div>
         </header>
-        <div className="staffAppScroller">
-          <main className="staffAppContent">{children}</main>
-        </div>
+        <main className="staffAppScroller">
+          <div className="staffAppContent">{children}</div>
+        </main>
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ export default async function CreateGuidePage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
+    <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-col gap-6">
       <header>
         <PortalBreadcrumb
           items={[{ href: "/guides", label: "Guides" }, { label: "Create" }]}
