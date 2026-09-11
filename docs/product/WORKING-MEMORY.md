@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-11 (Phase 2A.2 portal workflow / editor / Practice polish)
+Last updated: 2026-09-11 (Phase 2A.3 editor/practice/operator polish; logo upload still blocked)
 
 ---
 
@@ -58,6 +58,7 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 | 2A                        | LOCAL — CLINIC SELF-SERVICE FOUNDATION                         |
 | 2A.1                      | LOCAL — CLINIC PORTAL UX READY FOR JOAQUÍN REVIEW              |
 | 2A.2                      | LOCAL — PORTAL WORKFLOW POLISH READY FOR JOAQUÍN REVIEW        |
+| 2A.3                      | LOCAL — EDITOR / PRACTICE / OPERATOR POLISH                    |
 | 2+ remainder              | Not started                                                    |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
@@ -703,6 +704,8 @@ Archive/unpublish of a public guide, QR, invitations/team management, canonical 
 - Staff auth: `auth.ts`, `lib/auth/*`, `/login`, clinic portal `/dashboard` + `/guides` + `/practice` (`requireStaffSession()` / `requireClinicAdmin()`)
 - Platform operator: `User.platformRole`, `/operator/clinics` (`requirePlatformOperator()`)
 - Clinic portal loaders/mutations: `lib/clinic-portal/*` (membership `clinicId` only)
+- Clinic logo storage boundary: `lib/clinic-assets/*` (upload blocked until a bucket exists)
+- Platform operator: `User.platformRole`, `/operator/clinics` (`requirePlatformOperator()`)
 - Clinic-scoped query patterns (membership-derived clinic id)
 - Aftercare domain: `GuideTemplate` → `GuideTemplateRevision` → `GuideTemplateSection`; `PracticeGuide` + clinic-owned `PracticeGuideRevision` (draft v0 / published 1+) + legacy override/addition
 - Tenancy: `lib/tenancy/*`, `proxy.ts`, `app/(aftercare)/%5Fsites/[tenant]`, `app/(marketing)/%5Fmarketing` (`/`, `/pricing`, `/contact`)
@@ -787,6 +790,8 @@ This temporarily means we do not have the same TypeScript-aware ESLint rule cove
 | `docs/architecture/PERFORMANCE.md`       | Patient CSS/JS measurement contract, Phase 1E budget, and 1F.4 Motion isolation |
 | `docs/architecture/MARKETING-CONTACT.md` | Clinic enquiry form fields, SMTP env, and launch mailbox recommendation         |
 | `docs/architecture/CLINIC-PORTAL.md`     | Clinic portal IA, permissions, publication, logo blocker                        |
+| `docs/architecture/APPLICATION.md`       | Next.js monolith launch architecture and extraction triggers                    |
+| `docs/architecture/CLINIC-ASSETS.md`     | Logo storage interface and provisioning (upload blocked)                        |
 | `README.md`                              | Repo entry; direction vs implementation                                         |
 
 ## Phase 2A clinic self-service foundation (implemented)
@@ -841,5 +846,26 @@ Clinic portal UX refinement. No Check-ins, RecoveryPlan persistence, billing, an
 | Editor          | Accordion timeline (one open; Add stage opens the new stage). Sticky right rail: status, Cancel / Save draft / Publish, live `GuideTimeline` preview of unsaved stages. Old full-width sticky chrome removed.                              |
 | Dates           | Generic public guides stay relative (`Day 0 · Procedure day`). Demo Today may show `Day 1 · 11 Sep` from explicit `DEMO_RECOVERY_FIXTURE.simulatedStartDate` (`2026-09-10`). Not `Date.now()`. Calendar dates require future RecoveryPlan. |
 | Practice        | Header rhythm, IntersectionObserver active section, smooth scroll with reduced-motion instant jump, one colour picker + hex, select chevron padding, compact sticky save row.                                                              |
+
+---
+
+## Phase 2A.3 editor / practice / operator polish (implemented)
+
+Date: 2026-09-11
+
+Portal composition and operational polish. No Check-ins, RecoveryPlan, billing, analytics, NestJS, or production logo upload.
+
+| Area           | Behaviour                                                                                                                                                                                             |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Editor         | Slim sticky toolbar: title, Draft pill, Saved/Unsaved/Saving…, Cancel / Save draft / Publish. Right rail is the live patient timeline preview. Mobile keeps the bottom bar and a collapsible preview. |
+| Practice       | Horizontal overflow removed via `min-width: 0` / `minmax(0, …)` on fields, selects, colour row, and the 3-column address grid. Form max-width ~42rem.                                                 |
+| Dialogs        | Native `<dialog>` with application surface, header/body/footer, portal tokens, light/dark.                                                                                                            |
+| Sign out       | Full sidebar utility row: entire row click/hover/focus, ≥44px, not a red destructive control.                                                                                                         |
+| Logo           | **BLOCKED** by external storage provisioning. `ClinicAssetStorage` + Supabase adapter exist; Practice shows preview + unavailable copy; no file input; no filesystem upload. See CLINIC-ASSETS.md.    |
+| Operator       | PLATFORM / All Clinics. Real summary: total / configured / published guides / needs attention. Clickable clinic rows via a real link. Nav remains Clinics only. Templates is next, not built.         |
+| Architecture   | Next.js App Router remains the launch backend. Extraction triggers documented in APPLICATION.md.                                                                                                      |
+| Seats (policy) | Essential 2, Practice 5, Group custom named users. No shared clinic login. Team/Users management is later.                                                                                            |
+
+---
 
 ---

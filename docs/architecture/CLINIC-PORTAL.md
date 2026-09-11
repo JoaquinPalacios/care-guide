@@ -26,7 +26,7 @@ Preferences, separated by a divider, above account:
 
 - Appearance — System / Light / Dark for the **staff/operator shell**. Stored as `aftercare-guide-portal-theme` on this device. Does **not** change `ClinicProfile.themeMode` (patient presentation).
 
-Account/sign-out stay below Appearance.
+Account/sign-out stay below Appearance. Sign out uses the same full-row hit area as other sidebar utility rows (minimum 44px). It is account navigation, not a high-prominence destructive action.
 
 Visible role labels (text, not colour-only):
 
@@ -56,15 +56,19 @@ Delete removes an unpublished clinic guide after confirmation. Discard restores 
 
 ### Guide editor
 
-Desktop: editor column (~60–65%) plus a sticky right rail (~35–40%) for status, Cancel / Save draft / Publish, and a live patient timeline preview. The old full-width sticky editor chrome is gone. Mobile/tablet: editor first, compact bottom action bar, collapsible patient-timeline preview.
+Desktop: a slim sticky application toolbar (about 56–64px) holds the guide title, Draft status pill, quiet save-state (`Saved` / `Unsaved changes` / `Saving…`), and Cancel / Save draft / Publish guide. The right column is the live patient timeline preview, sticky, with viewport-based max-height. Status and actions no longer live in a large preview-rail card.
+
+Mobile/tablet: heading plus Draft/Saved state stay with the editor; the compact bottom action bar remains; patient-timeline preview is a collapsible section. There is no sticky horizontal toolbar that consumes phone height.
 
 Timeline stages are an accordion (one open at a time). Add stage opens the new stage. Collapsed cards show when/what plus **Needs attention** when invalid. Draft save stays explicit.
 
-The live preview reuses `GuideTimeline` (compact) from the patient surface, fed from the same editor island state. The public patient route remains server-first.
+The live preview reuses `GuideTimeline` (compact) from the patient surface, fed from the same editor island state. Empty preview copy is quiet on the patient-preview surface. The public patient route remains server-first.
+
+Destructive confirmations use the native `<dialog>` element with Aftercare Guide application chrome (not a browser/native alert look). One `ConfirmDialog` covers dirty cancel, publish, delete draft, and discard draft changes.
 
 ### Practice
 
-One route with internal sections: Practice identity, Branding, Contact, Emergency / urgent help, Patient presentation. Section index uses IntersectionObserver for the active section, smooth scrolling (instant when `prefers-reduced-motion: reduce`), and `scroll-margin-top`. Colour controls are one native picker plus hex input. Native selects keep keyboard behaviour with extra chevron padding. Save-state is a compact sticky row: `Saved` / `Unsaved changes` / `Saving…` plus Save changes.
+One route with internal sections: Practice identity, Branding, Contact, Emergency / urgent help, Patient presentation. Section index uses IntersectionObserver for the active section, smooth scrolling (instant when `prefers-reduced-motion: reduce`), and `scroll-margin-top`. Colour controls are one native picker plus hex input. Native selects keep keyboard behaviour with extra chevron padding. Save-state is a compact sticky row: `Saved` / `Unsaved changes` / `Saving…` plus Save changes. The form column is width-capped so large screens do not stretch fields unnecessarily. Grid/flex children use `min-width: 0` so the page does not overflow horizontally.
 
 ### Permissions
 
@@ -88,4 +92,30 @@ Generic public guides use relative recovery language (`Day 0 · Procedure day`, 
 
 ## Logo
 
-Upload is **blocked** until production object storage exists. Practice shows the current mark plus “Upload logo — coming before launch”. There is no file input. See [ADR 0019](../adr/0019-clinic-logo-upload-requires-object-storage.md).
+Upload is **blocked** until production object storage is provisioned. Practice shows the current mark and an explicit unavailable state. There is no file input. See [ADR 0019](../adr/0019-clinic-logo-upload-requires-object-storage.md) and [CLINIC-ASSETS.md](CLINIC-ASSETS.md).
+
+## Operator console
+
+The operator console is the Aftercare Guide operational control plane. Page identity is **PLATFORM / All Clinics**. Local seed identity may show **Demo Operator** as the account name; that is not a demo product.
+
+Current primary destination: **Clinics**. Do not add dead navigation. Canonical **Templates** management is the next operator-console capability and is not implemented here.
+
+All Clinics may show real derived counts: total clinics, configured clinics, published guides, needs attention. No invented analytics.
+
+Clinic table rows use a real practice link that covers the row for pointer users while remaining a semantic link.
+
+## Clinic seats (provisional policy — not enforced)
+
+Do not share one clinic login. Named membership accounts are required for accountability, revocation, ADMIN vs STAFF, and future audit.
+
+| Plan      | Named users included |
+| --------- | -------------------- |
+| Essential | 2                    |
+| Practice  | 5                    |
+| Group     | custom               |
+
+Current roles remain Clinic ADMIN and Clinic STAFF only. Invitations, seat-limit enforcement, and Team / Users management are later portal work.
+
+## Application architecture
+
+Launch backend remains Next.js App Router + Server Actions + Prisma. See [APPLICATION.md](APPLICATION.md). NestJS is not part of MVP.

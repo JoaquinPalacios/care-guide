@@ -17,7 +17,9 @@ describe("guide editor UX", () => {
     expect(editor).toContain("Discard changes");
     expect(editor).toContain("Publish this guide?");
     expect(editor).toContain("staffComposerRail");
+    expect(editor).toContain("staffEditorToolbar");
     expect(editor).not.toContain("staffEditorChrome");
+    expect(editor).not.toContain("staffRailCard");
     expect(editor).toContain("useUnsavedChangesGuard");
     expect(editor).toContain("formSaveStatus");
     expect(editor).toContain("EditorTimelinePreview");
@@ -51,6 +53,10 @@ describe("guide editor UX", () => {
     expect(preview).toContain("GuideTimeline");
     expect(preview).toContain("compact");
     expect(preview).toContain("Patient timeline preview");
+    expect(preview).toContain("staffEditorPreviewEmpty");
+    expect(preview).toContain(
+      "Add a recovery stage to see the patient timeline here."
+    );
     expect(preview).toContain("editorStagesToComposed");
   });
 });

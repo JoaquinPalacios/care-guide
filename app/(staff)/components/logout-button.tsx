@@ -17,13 +17,13 @@ export function LogoutButton({ className }: { className?: string }) {
           method: "POST",
         });
 
-        if (!response.ok) {
-          setError("Unable to sign out right now.");
+        if (response.ok) {
+          router.replace("/login");
+          router.refresh();
           return;
         }
 
-        router.replace("/login");
-        router.refresh();
+        setError("Unable to sign out right now.");
       } catch {
         setError("Unable to sign out right now.");
       }
@@ -31,17 +31,17 @@ export function LogoutButton({ className }: { className?: string }) {
   }
 
   return (
-    <div className={className ?? "flex flex-col items-start gap-2"}>
+    <div className={className ?? "flex min-w-0 flex-col"}>
       <button
         type="button"
         onClick={handleLogout}
         disabled={isPending}
-        className="staffBtn staffBtnQuiet px-0"
+        className="staffNavRow staffSignOut"
       >
         {isPending ? "Signing out..." : "Sign out"}
       </button>
       {error ? (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="px-3 text-sm text-red-600" role="alert">
           {error}
         </p>
       ) : null}

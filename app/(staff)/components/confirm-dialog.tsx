@@ -62,9 +62,11 @@ export function ConfirmDialog({
         }
       }}
     >
-      <h2 id={titleId} className="staffDialogTitle">
-        {title}
-      </h2>
+      <div className="staffDialogHeader">
+        <h2 id={titleId} className="staffDialogTitle">
+          {title}
+        </h2>
+      </div>
       <p id={descriptionId} className="staffDialogBody">
         {description}
       </p>
@@ -72,6 +74,7 @@ export function ConfirmDialog({
         <button
           type="button"
           className="staffBtn staffBtnQuiet"
+          autoFocus={confirmTone === "danger"}
           onClick={onCancel}
         >
           {cancelLabel}
@@ -81,6 +84,7 @@ export function ConfirmDialog({
           className={`staffBtn ${
             confirmTone === "primary" ? "staffBtnPrimary" : "staffBtnDanger"
           }`}
+          autoFocus={confirmTone === "primary"}
           onClick={onConfirm}
         >
           {confirmLabel}
