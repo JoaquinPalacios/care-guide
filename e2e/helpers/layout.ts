@@ -3,13 +3,44 @@ import { expect, type Locator, type Page } from "@playwright/test";
 export async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   const metrics = await page.evaluate(() => {
     const root = document.documentElement;
+    const main =
+      document.querySelector(".staffAppContent") ??
+      document.querySelector(".staffAppScroller") ??
+      document.querySelector(".staffPortalMain");
     return {
-      scrollWidth: root.scrollWidth,
-      clientWidth: root.clientWidth,
+      rootScrollWidth: root.scrollWidth,
+      rootClientWidth: root.clientWidth,
+      mainScrollWidth: main?.scrollWidth ?? 0,
+      mainClientWidth: main?.clientWidth ?? 0,
     };
   });
 
-  expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1);
+  expect(metrics.rootScrollWidth).toBeLessThanOrEqual(
+    metrics.rootClientWidth + 1
+  );
+  if (metrics.mainClientWidth > 0) {
+    expect(metrics.mainScrollWidth).toBeLessThanOrEqual(
+      metrics.mainClientWidth + 1
+    );
+  }
+}
+
+export async function measureHorizontalOverflow(page: Page): Promise<{
+  scrollWidth: number;
+  clientWidth: number;
+}> {
+  return page.evaluate(() => {
+    const main =
+      document.querySelector(".staffAppContent") ??
+      document.querySelector(".staffAppScroller") ??
+      document.querySelector(".staffPortalMain");
+    const root = document.documentElement;
+    const target = main ?? root;
+    return {
+      scrollWidth: target.scrollWidth,
+      clientWidth: target.clientWidth,
+    };
+  });
 }
 
 export async function expectUsableTapTarget(locator: Locator): Promise<void> {

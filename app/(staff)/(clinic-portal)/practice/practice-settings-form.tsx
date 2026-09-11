@@ -156,7 +156,7 @@ export function PracticeSettingsForm({
 
       <form
         action={action}
-        className="flex flex-col gap-8"
+        className="staffPracticeForm"
         onSubmit={() => {
           pendingSnapshot.current = serialized;
         }}
@@ -186,10 +186,7 @@ export function PracticeSettingsForm({
           )}
         </div>
 
-        <section
-          id="practice-identity"
-          className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
-        >
+        <section id="practice-identity" className="staffPracticeSection">
           <h2 className="text-base font-semibold">Practice identity</h2>
           <Field label="Display name" htmlFor="displayName">
             <input
@@ -213,30 +210,25 @@ export function PracticeSettingsForm({
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={form.logoUrl}
-                alt=""
+                alt={`${form.displayName || "Practice"} logo`}
                 width={48}
                 height={48}
-                className="h-12 w-12 rounded-md border border-staff-line bg-white object-contain"
+                className="staffLogoPreview"
               />
             ) : (
               <p className="text-sm text-staff-muted">No logo configured.</p>
             )}
             <p className="text-sm text-staff-muted">Current logo preview</p>
             <input type="hidden" name="logoUrl" value={form.logoUrl ?? ""} />
-            <p className="rounded-md border border-dashed border-staff-line px-3 py-2 text-sm text-staff-muted">
-              Upload logo — coming before launch
-            </p>
-            <p className="text-sm text-staff-muted">
-              Logo upload waits for production object storage. The current
-              clinic mark stays in use.
+            <p className="staffLogoUnavailable">
+              Logo upload is unavailable until production object storage is
+              provisioned. Clinics will then upload PNG, JPEG, or WebP files up
+              to 2 MB. SVG is not accepted.
             </p>
           </div>
         </section>
 
-        <section
-          id="practice-branding"
-          className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
-        >
+        <section id="practice-branding" className="staffPracticeSection">
           <h2 className="text-base font-semibold">Branding</h2>
           <ColorField
             id="primaryColor"
@@ -315,10 +307,7 @@ export function PracticeSettingsForm({
           </Field>
         </section>
 
-        <section
-          id="practice-contact"
-          className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
-        >
+        <section id="practice-contact" className="staffPracticeSection">
           <h2 className="text-base font-semibold">Contact</h2>
           <Field label="Clinic phone" htmlFor="phone">
             <input
@@ -372,7 +361,7 @@ export function PracticeSettingsForm({
               className="staffField"
             />
           </Field>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="staffPracticeGrid3">
             <Field label="City" htmlFor="city">
               <input
                 id="city"
@@ -410,10 +399,7 @@ export function PracticeSettingsForm({
           </div>
         </section>
 
-        <section
-          id="practice-emergency"
-          className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
-        >
+        <section id="practice-emergency" className="staffPracticeSection">
           <h2 className="text-base font-semibold">Emergency / urgent help</h2>
           <Field label="Emergency instructions" htmlFor="emergencyInstructions">
             <textarea
@@ -435,10 +421,7 @@ export function PracticeSettingsForm({
           </Field>
         </section>
 
-        <section
-          id="practice-presentation"
-          className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
-        >
+        <section id="practice-presentation" className="staffPracticeSection">
           <h2 className="text-base font-semibold">Patient presentation</h2>
           <Field label="Default appearance" htmlFor="themeMode">
             <select

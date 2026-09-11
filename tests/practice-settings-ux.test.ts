@@ -17,11 +17,15 @@ describe("practice settings polish", () => {
       "utf8"
     );
 
+    const css = readFileSync("app/(staff)/staff.css", "utf8");
+
     expect(form).toContain("IntersectionObserver");
     expect(form).toContain("prefers-reduced-motion");
     expect(form).toContain('aria-current={current ? "true" : undefined}');
     expect(form).toContain("staffSelect");
     expect(form).toContain("staffPracticeSave");
+    expect(form).toContain("staffPracticeForm");
+    expect(form).toContain("staffPracticeGrid3");
     expect(form).not.toContain("staffEditorChrome");
     expect(page).toContain("staffPracticeHeader");
     expect(color).toContain('type="color"');
@@ -29,5 +33,6 @@ describe("practice settings polish", () => {
     expect(color).not.toContain("aria-hidden");
     expect(color).not.toContain("aria-labelledby");
     expect(color).toContain("staffColorHex");
+    expect(css).toContain("minmax(0, 1fr)");
   });
 });
