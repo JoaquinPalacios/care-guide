@@ -1106,3 +1106,16 @@ Measured 2026-09-10 against `cursor/clinic-self-service-ux-polish-eed5` producti
 | `42jbjdl7-dgw9.js` | Operator shell (logout + icons)                  | 17,029 |   6,159 |      5,420 |
 
 Framework/React chunks are shared App Router runtime and are not counted as product islands. Authenticated preview toolbar is a Server Component.
+
+## Phase 2A.2 portal workflow polish (staff client islands)
+
+No new dependency. Accordion/live preview uses CSS + the existing editor island. Patient `GuideTimeline` stays a Server Component on the public tenant; the staff editor imports it into the existing client island for the live preview.
+
+Measured 2026-09-11 against `cursor/portal-editor-practice-polish` production `next build` (Next.js 16.3.4 / Turbopack).
+
+| Chunk              | Role                                                                |    raw | gzip -9 | Brotli q11 |
+| ------------------ | ------------------------------------------------------------------- | -----: | ------: | ---------: |
+| `35qh8ejpox9l_.js` | Guide editor (accordion, action rail, live `GuideTimeline` preview) | 26,533 |   7,822 |      6,884 |
+| `1_ojev58fjv5v.js` | Practice settings form (section observer, colour/select polish)     | 15,846 |   4,732 |      4,068 |
+
+Guide editor vs Phase 2A.1 `322al9fglpbjk.js` (16,289 / 5,116 / 4,405): **+10,244 raw / +2,706 gzip / +2,479 Brotli**. The increase is the live patient timeline preview sharing `GuideTimeline` plus accordion state. No Motion. Tenant still has no Tailwind.

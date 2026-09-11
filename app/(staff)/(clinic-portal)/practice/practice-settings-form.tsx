@@ -11,18 +11,11 @@ import {
   savePracticeSettingsAction,
   type PracticeActionState,
 } from "@/app/(staff)/(clinic-portal)/practice/actions";
+import { PracticeSectionNav } from "@/app/(staff)/(clinic-portal)/practice/practice-section-nav";
 import { formSaveStatus } from "@/lib/clinic-portal/form-save-status";
 import type { PracticeSettingsInput } from "@/lib/clinic-portal/practice-settings-schema";
 
 const initial: PracticeActionState = {};
-
-const SECTIONS = [
-  { id: "practice-identity", label: "Identity" },
-  { id: "practice-branding", label: "Branding" },
-  { id: "practice-contact", label: "Contact" },
-  { id: "practice-emergency", label: "Emergency" },
-  { id: "practice-presentation", label: "Presentation" },
-] as const;
 
 function snapshot(values: PracticeSettingsInput): string {
   return JSON.stringify(values);
@@ -77,24 +70,8 @@ export function PracticeSettingsForm({
   }
 
   return (
-    <div className="staffEditorPage lg:grid lg:grid-cols-[11rem_minmax(0,1fr)] lg:items-start lg:gap-8">
-      <nav
-        aria-label="Practice sections"
-        className="mb-6 hidden lg:sticky lg:top-4 lg:mb-0 lg:block"
-      >
-        <ul className="staffNavGroup">
-          {SECTIONS.map((section) => (
-            <li key={section.id}>
-              <a
-                href={`#${section.id}`}
-                className="staffNavRow text-staff-muted hover:bg-staff-panel hover:text-staff-ink"
-              >
-                {section.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+    <div className="staffEditorPage staffPracticeColumns">
+      <PracticeSectionNav />
 
       <form
         action={action}
@@ -103,36 +80,34 @@ export function PracticeSettingsForm({
           pendingSnapshot.current = serialized;
         }}
       >
-        <div className="sticky top-0 z-20 border-b border-staff-line bg-staff-panel/95 py-3 backdrop-blur-sm">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <SaveStatus
-              status={saveStatus}
-              error={state.error}
-              success={
-                state.saved && !dirty
-                  ? "Practice settings saved. The patient site uses these values."
-                  : undefined
-              }
-            />
-            {canEdit ? (
-              <button
-                type="submit"
-                disabled={pending}
-                className="staffBtn staffBtnPrimary hidden sm:inline-flex"
-              >
-                {pending ? "Saving…" : "Save changes"}
-              </button>
-            ) : (
-              <p className="text-sm text-staff-muted">
-                Staff can view practice settings but cannot change them.
-              </p>
-            )}
-          </div>
+        <div className="staffPracticeSave">
+          <SaveStatus
+            status={saveStatus}
+            error={state.error}
+            success={
+              state.saved && !dirty
+                ? "Practice settings saved. The patient site uses these values."
+                : undefined
+            }
+          />
+          {canEdit ? (
+            <button
+              type="submit"
+              disabled={pending}
+              className="staffBtn staffBtnPrimary hidden sm:inline-flex"
+            >
+              {pending ? "Saving…" : "Save changes"}
+            </button>
+          ) : (
+            <p className="text-sm text-staff-muted">
+              Staff can view practice settings but cannot change them.
+            </p>
+          )}
         </div>
 
         <section
           id="practice-identity"
-          className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
+          className="flex scroll-mt-28 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
         >
           <h2 className="text-base font-semibold">Practice identity</h2>
           <Field label="Display name" htmlFor="displayName">
@@ -144,7 +119,7 @@ export function PracticeSettingsForm({
               onChange={(event) => patch("displayName", event.target.value)}
               disabled={!canEdit}
               aria-invalid={state.fieldErrors?.displayName ? "true" : "false"}
-              className={fieldClass}
+              className="staffField"
             />
             <FieldError message={state.fieldErrors?.displayName} />
           </Field>
@@ -179,7 +154,7 @@ export function PracticeSettingsForm({
 
         <section
           id="practice-branding"
-          className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
+          className="flex scroll-mt-28 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
         >
           <h2 className="text-base font-semibold">Branding</h2>
           <ColorField
@@ -221,7 +196,7 @@ export function PracticeSettingsForm({
                 )
               }
               disabled={!canEdit}
-              className={fieldClass}
+              className="staffSelect staffFieldNarrow"
             >
               <option value="SHARP">Sharp</option>
               <option value="MEDIUM">Medium</option>
@@ -241,7 +216,7 @@ export function PracticeSettingsForm({
                 )
               }
               disabled={!canEdit}
-              className={fieldClass}
+              className="staffSelect"
             >
               <option value="AFTERCARE">Aftercare instructions</option>
               <option value="POST_TREATMENT">
@@ -260,7 +235,7 @@ export function PracticeSettingsForm({
 
         <section
           id="practice-contact"
-          className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
+          className="flex scroll-mt-28 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
         >
           <h2 className="text-base font-semibold">Contact</h2>
           <Field label="Clinic phone" htmlFor="phone">
@@ -272,7 +247,7 @@ export function PracticeSettingsForm({
               onChange={(event) => patch("phone", event.target.value || null)}
               disabled={!canEdit}
               aria-invalid={state.fieldErrors?.phone ? "true" : "false"}
-              className={fieldClass}
+              className="staffField staffFieldNarrow"
             />
             <FieldError message={state.fieldErrors?.phone} />
           </Field>
@@ -287,7 +262,7 @@ export function PracticeSettingsForm({
               }
               disabled={!canEdit}
               aria-invalid={state.fieldErrors?.contactUrl ? "true" : "false"}
-              className={fieldClass}
+              className="staffField"
             />
             <FieldError message={state.fieldErrors?.contactUrl} />
           </Field>
@@ -300,7 +275,7 @@ export function PracticeSettingsForm({
                 patch("addressLine1", event.target.value || null)
               }
               disabled={!canEdit}
-              className={fieldClass}
+              className="staffField"
             />
           </Field>
           <Field label="Address line 2" htmlFor="addressLine2">
@@ -312,7 +287,7 @@ export function PracticeSettingsForm({
                 patch("addressLine2", event.target.value || null)
               }
               disabled={!canEdit}
-              className={fieldClass}
+              className="staffField"
             />
           </Field>
           <div className="grid gap-4 sm:grid-cols-3">
@@ -323,7 +298,7 @@ export function PracticeSettingsForm({
                 value={form.city ?? ""}
                 onChange={(event) => patch("city", event.target.value || null)}
                 disabled={!canEdit}
-                className={fieldClass}
+                className="staffField"
               />
             </Field>
             <Field label="Region" htmlFor="region">
@@ -335,7 +310,7 @@ export function PracticeSettingsForm({
                   patch("region", event.target.value || null)
                 }
                 disabled={!canEdit}
-                className={fieldClass}
+                className="staffField"
               />
             </Field>
             <Field label="Postal code" htmlFor="postalCode">
@@ -347,7 +322,7 @@ export function PracticeSettingsForm({
                   patch("postalCode", event.target.value || null)
                 }
                 disabled={!canEdit}
-                className={fieldClass}
+                className="staffField staffFieldTiny"
               />
             </Field>
           </div>
@@ -355,7 +330,7 @@ export function PracticeSettingsForm({
 
         <section
           id="practice-emergency"
-          className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
+          className="flex scroll-mt-28 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
         >
           <h2 className="text-base font-semibold">Emergency / urgent help</h2>
           <Field label="Emergency instructions" htmlFor="emergencyInstructions">
@@ -372,7 +347,7 @@ export function PracticeSettingsForm({
               aria-invalid={
                 state.fieldErrors?.emergencyInstructions ? "true" : "false"
               }
-              className={`${fieldClass} h-auto py-2`}
+              className="staffField h-auto py-2"
             />
             <FieldError message={state.fieldErrors?.emergencyInstructions} />
           </Field>
@@ -380,7 +355,7 @@ export function PracticeSettingsForm({
 
         <section
           id="practice-presentation"
-          className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
+          className="flex scroll-mt-28 flex-col gap-4 rounded-xl border border-staff-line bg-staff-panel p-5"
         >
           <h2 className="text-base font-semibold">Patient presentation</h2>
           <Field label="Default appearance" htmlFor="themeMode">
@@ -395,7 +370,7 @@ export function PracticeSettingsForm({
                 )
               }
               disabled={!canEdit}
-              className={fieldClass}
+              className="staffSelect staffFieldNarrow"
             >
               <option value="SYSTEM">System</option>
               <option value="LIGHT">Light</option>
@@ -459,9 +434,6 @@ export function PracticeSettingsForm({
     </div>
   );
 }
-
-const fieldClass =
-  "h-11 w-full rounded-md border border-staff-line bg-staff-panel px-3 text-sm focus:border-staff-brand focus:ring-2 focus:ring-staff-brand/20 disabled:opacity-60";
 
 function Field({
   label,

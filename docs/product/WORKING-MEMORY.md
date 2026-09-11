@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-10 (Phase 2A.1 clinic portal UX polish: editor cancel/dirty state, preview toolbar, portal appearance)
+Last updated: 2026-09-11 (Phase 2A.2 portal workflow / editor / Practice polish)
 
 ---
 
@@ -57,6 +57,7 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 | UX polish + clinic portal | COMPLETE — READY FOR JOAQUÍN REVIEW                            |
 | 2A                        | LOCAL — CLINIC SELF-SERVICE FOUNDATION                         |
 | 2A.1                      | LOCAL — CLINIC PORTAL UX READY FOR JOAQUÍN REVIEW              |
+| 2A.2                      | LOCAL — PORTAL WORKFLOW POLISH READY FOR JOAQUÍN REVIEW        |
 | 2+ remainder              | Not started                                                    |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
@@ -678,7 +679,7 @@ Staff `/dashboard` is the Aftercare Guide clinic portal, not the parked chairsid
 
 ### Next clinic-portal work (not built)
 
-Archive/delete, QR, invitations/team management, canonical library authoring, object-storage logo upload, unpublish, Check-ins, RecoveryPlan, messaging, PMS integrations, billing.
+Archive/unpublish of a public guide, QR, invitations/team management, canonical library authoring, object-storage logo upload, Check-ins, RecoveryPlan, messaging, PMS integrations, billing.
 
 ---
 
@@ -822,3 +823,23 @@ Staff/operator shell and editor ergonomics. No billing, analytics, Check-ins, or
 | Appearance      | Sidebar/mobile nav preference row above account/sign-out. Not a primary route.                                                                                      |
 | Practice        | Still one `/practice` route. Sections: Identity, Branding, Contact, Emergency, Presentation. Save-state + Save changes. Logo upload still blocked.                  |
 | Operator        | All Clinics breadcrumb and labelled “Back to all clinics” control. No impersonation.                                                                                |
+
+---
+
+## Phase 2A.2 portal workflow / editor / Practice polish (implemented)
+
+Date: 2026-09-11
+
+Clinic portal UX refinement. No Check-ins, RecoveryPlan persistence, billing, analytics, logo object storage, or public-guide unpublish.
+
+| Area            | Behaviour                                                                                                                                                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Role labels     | Clinic admin / Clinic staff / Platform operator as text (not colour-only). Clinic admin is not a platform administrator.                                                                                                                   |
+| Desktop shell   | Sidebar `height: 100dvh`, independently scrollable; main content scrolls. Mobile drawer unchanged.                                                                                                                                         |
+| Guides list     | Title, status pills, source, slug, updated date. Edit principal, Preview secondary, View patient guide quiet. More actions: Delete draft or Discard draft changes.                                                                         |
+| Draft lifecycle | Never-published: Delete draft. Published + draft changes: Discard draft changes (public pin unchanged). Published with no draft changes: no destructive action.                                                                            |
+| Editor          | Accordion timeline (one open; Add stage opens the new stage). Sticky right rail: status, Cancel / Save draft / Publish, live `GuideTimeline` preview of unsaved stages. Old full-width sticky chrome removed.                              |
+| Dates           | Generic public guides stay relative (`Day 0 · Procedure day`). Demo Today may show `Day 1 · 11 Sep` from explicit `DEMO_RECOVERY_FIXTURE.simulatedStartDate` (`2026-09-10`). Not `Date.now()`. Calendar dates require future RecoveryPlan. |
+| Practice        | Header rhythm, IntersectionObserver active section, smooth scroll with reduced-motion instant jump, one colour picker + hex, select chevron padding, compact sticky save row.                                                              |
+
+---

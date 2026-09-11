@@ -54,6 +54,9 @@ test.describe("clinic portal", () => {
     await expect(
       page.getByRole("navigation", { name: "Clinic portal" })
     ).toBeVisible();
+    await expect(
+      page.locator("aside").getByText("Clinic admin", { exact: true })
+    ).toBeVisible();
 
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.screenshot({
@@ -97,7 +100,9 @@ test.describe("clinic portal", () => {
       page.getByText("Tooth Extraction", { exact: true })
     ).toBeVisible();
     await expect(page.getByText("/extraction")).toBeVisible();
-    await expect(page.getByText("Published")).toBeVisible();
+    await expect(
+      page.getByText("Published", { exact: true }).first()
+    ).toBeVisible();
     await expect(page.getByText("Wisdom Teeth")).toHaveCount(0);
     await expect(page.getByText("Root Canal")).toHaveCount(0);
     await expect(
@@ -179,6 +184,7 @@ test.describe("clinic portal", () => {
     await expect(
       page.getByLabel("Primary brand colour", { exact: true })
     ).toBeVisible();
+    await expect(page.locator('input[type="color"]')).toHaveCount(3);
     await expect(
       page
         .getByRole("button", { name: "Save changes" })
@@ -209,6 +215,7 @@ test.describe("clinic portal", () => {
       page.getByRole("heading", { name: "Start from a template" })
     ).toBeVisible();
     await expect(page.getByText("Tooth Extraction")).toBeVisible();
+    await expect(page.getByText("Already in your guides")).toBeVisible();
     await expect(page.getByText("Wisdom Teeth")).toHaveCount(0);
     await page.screenshot({
       path: "test-results/artifacts/staff-create-guide-1440.png",
@@ -217,6 +224,9 @@ test.describe("clinic portal", () => {
 
     await page.goto(staffUrl("/guides"), { waitUntil: "load" });
     await page.getByRole("link", { name: "Edit" }).first().click();
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Tooth Extraction" })
+    ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Save draft" }).filter({ visible: true })
     ).toBeVisible();
@@ -230,11 +240,22 @@ test.describe("clinic portal", () => {
     ).toBeVisible();
     await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await expect(page.getByRole("button", { name: "Add stage" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Patient timeline preview" })
+    ).toBeVisible();
+    await expect(page.locator("[data-editor-preview]")).toBeVisible();
     await page.screenshot({
       path: "test-results/artifacts/staff-guide-editor-1440.png",
       fullPage: true,
     });
     await expectNoSeriousAxeViolations(page);
+
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await expectNoHorizontalOverflow(page);
+    await page.screenshot({
+      path: "test-results/artifacts/staff-guide-editor-1280.png",
+      fullPage: true,
+    });
 
     await page.setViewportSize({ width: 768, height: 1024 });
     await expectNoHorizontalOverflow(page);
@@ -319,6 +340,9 @@ test.describe("platform operator", () => {
     await expect(
       page.getByRole("heading", { name: "All Clinics" })
     ).toBeVisible();
+    await expect(
+      page.getByText("Platform operator", { exact: true }).first()
+    ).toBeVisible();
     await expect(page.getByRole("table")).toBeVisible();
     await expect(page.getByText("Riverside Dental Demo")).toBeVisible();
     await expect(page.getByText("demodental")).toBeVisible();
@@ -360,7 +384,7 @@ test.describe("clinic portal UX polish", () => {
     await page.goto(staffUrl("/guides"), { waitUntil: "load" });
     await page.getByRole("link", { name: "Edit" }).first().click();
     await expect(
-      page.getByRole("heading", { name: "Edit guide" })
+      page.getByRole("heading", { name: "Tooth Extraction" })
     ).toBeVisible();
     await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -536,9 +560,19 @@ test.describe("clinic portal UX polish", () => {
     await expect(
       page.getByText("Upload logo — coming before launch")
     ).toBeVisible();
+    await expect(page.locator('input[type="color"]')).toHaveCount(3);
     await page.getByLabel("Display name").fill("Riverside Dental Demo ");
     await expect(page.locator("[data-save-state=unsaved]")).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 900 });
+    await page
+      .getByRole("navigation", { name: "Practice sections" })
+      .getByRole("link", { name: "Emergency" })
+      .click();
+    await expect(
+      page
+        .getByRole("navigation", { name: "Practice sections" })
+        .getByRole("link", { name: "Emergency" })
+    ).toHaveAttribute("aria-current", "true");
     await page.screenshot({
       path: "test-results/artifacts/staff-practice-sections-1440.png",
       fullPage: true,
@@ -549,6 +583,102 @@ test.describe("clinic portal UX polish", () => {
     ).toBeVisible();
     await page.getByRole("button", { name: "Discard changes" }).click();
     await expect(page).toHaveURL(staffUrl("/guides"));
+  });
+
+  test("never-published drafts can be deleted from More actions", async ({
+    page,
+  }) => {
+    await signInAsLocalAdmin(page);
+    await page.goto(staffUrl("/guides/new"), { waitUntil: "load" });
+    const slug = `draft-delete-${Date.now()}`;
+    await page.getByLabel("Guide title").fill("Temporary draft");
+    await page.getByLabel("Public slug").fill(slug);
+    await page.getByRole("button", { name: "Create custom guide" }).click();
+    await expect(page).toHaveURL(/\/guides\/.+\/edit/);
+    await page
+      .getByRole("button", { name: "Cancel" })
+      .filter({ visible: true })
+      .click();
+    await expect(page).toHaveURL(staffUrl("/guides"));
+    const row = page.locator("li").filter({ hasText: "Temporary draft" });
+    await expect(row.getByText("Draft", { exact: true })).toBeVisible();
+    await row.getByRole("button", { name: "More actions" }).click();
+    await row.getByRole("menuitem", { name: "Delete draft" }).click();
+    const dialog = page.getByRole("dialog", {
+      name: "Delete this draft guide?",
+    });
+    await expect(dialog).toBeVisible();
+    await page.screenshot({
+      path: "test-results/artifacts/staff-guides-delete-dialog-1440.png",
+    });
+    await dialog.getByRole("button", { name: "Delete draft" }).click();
+    await expect(page.getByText("Temporary draft")).toHaveCount(0);
+  });
+
+  test("timeline accordion opens one stage and live preview follows titles", async ({
+    page,
+  }) => {
+    await signInAsLocalAdmin(page);
+    await page.goto(staffUrl("/guides"), { waitUntil: "load" });
+    await page.getByRole("link", { name: "Edit" }).first().click();
+    const firstStage = page.locator("[data-stage-key]").first();
+    const secondStage = page.locator("[data-stage-key]").nth(1);
+    await expect(firstStage).toHaveAttribute("data-open", "true");
+    await secondStage.getByRole("button").first().click();
+    await expect(secondStage).toHaveAttribute("data-open", "true");
+    await expect(firstStage).toHaveAttribute("data-open", "false");
+    await page.getByRole("button", { name: "Add stage" }).click();
+    const newest = page.locator("[data-stage-key]").last();
+    await expect(newest).toHaveAttribute("data-open", "true");
+    await expect(newest.getByText("New stage")).toBeVisible();
+    await expect(page.locator("[data-editor-preview]")).toContainText(
+      "New stage"
+    );
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.screenshot({
+      path: "test-results/artifacts/staff-guide-editor-accordion-1440.png",
+      fullPage: true,
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expectNoHorizontalOverflow(page);
+    await page.screenshot({
+      path: "test-results/artifacts/staff-guide-editor-mobile.png",
+      fullPage: true,
+    });
+  });
+
+  test("clinic staff sees the staff role and cannot delete drafts", async ({
+    page,
+  }) => {
+    await signInAsLocalStaff(page);
+    await expect(
+      page.locator("aside").getByText("Clinic staff", { exact: true })
+    ).toBeVisible();
+    await page.goto(staffUrl("/guides"), { waitUntil: "load" });
+    await expect(
+      page.getByRole("button", { name: "More actions" })
+    ).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Edit" })).toHaveCount(0);
+  });
+
+  test("desktop sidebar stays viewport-fixed while the page scrolls", async ({
+    page,
+  }) => {
+    await signInAsLocalAdmin(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(staffUrl("/practice"), { waitUntil: "load" });
+    const sidebar = page.locator("aside").first();
+    const before = await sidebar.boundingBox();
+    await page.locator(".staffPortalMain").evaluate((node) => {
+      node.scrollTop = 800;
+    });
+    const after = await sidebar.boundingBox();
+    expect(before?.y).toBeCloseTo(after?.y ?? -1, 0);
+    expect(before?.height).toBeGreaterThan(700);
+    await page.screenshot({
+      path: "test-results/artifacts/staff-practice-fixed-sidebar-1440.png",
+      fullPage: true,
+    });
   });
 
   test("public patient guide has no staff preview chrome", async ({ page }) => {
