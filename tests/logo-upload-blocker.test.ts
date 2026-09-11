@@ -37,8 +37,10 @@ describe("logo upload infrastructure", () => {
       "utf8"
     );
 
+    const fieldText = field.replace(/\s+/g, " ");
+
     expect(field).toContain('type="file"');
-    expect(field).toContain("clinic object storage is not configured");
+    expect(fieldText).toContain("clinic object storage is not configured");
     expect(field).not.toContain("public/uploads");
     expect(field).not.toContain("coming before launch");
     expect(header).toContain("<img");
