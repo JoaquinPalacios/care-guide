@@ -102,7 +102,7 @@ describe("clinic portal pages", () => {
     expect(preview).toContain("requireStaffSession");
     expect(preview).toContain("PatientPage");
     expect(preview).toContain("GuideDocument");
-    expect(preview).toContain("StaffPreviewToolbar");
+    expect(preview).toContain("StaffPreviewShell");
     expect(preview).not.toContain("Wisdom Teeth");
   });
 });

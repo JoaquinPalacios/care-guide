@@ -1,7 +1,12 @@
-/* Patient aftercare surface only. Do not import Tailwind here. */
+/* Patient aftercare surface only. Do not import Tailwind here.
+   Document chrome is scoped to html.aftercareDocument so authenticated
+   preview can embed the patient renderer without mutating portal html/body. */
 
-:root {
+.aftercareTheme {
+  position: relative;
+  min-height: 100%;
   color-scheme: light dark;
+  isolation: isolate;
   --cg-brand: #1e293b;
   --cg-on-brand: #ffffff;
   --cg-accent: #b45309;
@@ -16,17 +21,31 @@
   --cg-emergency-surface: light-dark(#fdf6f6, #1c1416);
   --cg-focus: #1e293b;
   --cg-radius: 0.75rem;
+  background: var(--cg-surface);
+  color: var(--cg-text);
 }
 
-html[data-theme-mode="light"] {
+html.aftercareDocument[data-theme-mode="light"] {
   color-scheme: light;
 }
 
-html[data-theme-mode="dark"] {
+html.aftercareDocument[data-theme-mode="dark"] {
   color-scheme: dark;
 }
 
-html[data-theme-mode="system"] {
+html.aftercareDocument[data-theme-mode="system"] {
+  color-scheme: light dark;
+}
+
+.aftercareTheme[data-patient-theme="light"] {
+  color-scheme: light;
+}
+
+.aftercareTheme[data-patient-theme="dark"] {
+  color-scheme: dark;
+}
+
+.aftercareTheme[data-patient-theme="system"] {
   color-scheme: light dark;
 }
 
@@ -36,24 +55,19 @@ html[data-theme-mode="system"] {
   box-sizing: border-box;
 }
 
-html {
+html.aftercareDocument {
   height: 100%;
   overflow-x: hidden;
 }
 
-body {
+html.aftercareDocument body {
   margin: 0;
   min-height: 100%;
-  background: var(--cg-surface);
-  color: var(--cg-text);
+  background: var(--cg-surface, Canvas);
+  color: var(--cg-text, CanvasText);
   font-family: ui-sans-serif, system-ui, sans-serif;
   line-height: 1.55;
   overflow-wrap: break-word;
-}
-
-.aftercareTheme {
-  position: relative;
-  min-height: 100%;
 }
 
 .patientThemeSlot {
@@ -148,7 +162,7 @@ body {
   max-width: 42rem;
 }
 
-:focus-visible {
+.aftercareTheme :focus-visible {
   outline: 2px solid var(--cg-focus);
   outline-offset: 3px;
 }
@@ -166,8 +180,9 @@ body {
     display: none !important;
   }
 
-  html,
-  body {
+  html.aftercareDocument,
+  html.aftercareDocument body,
+  .aftercareTheme {
     background: #ffffff;
     color: #111318;
   }

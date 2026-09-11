@@ -256,7 +256,7 @@ describe("serializeAftercareThemeCss", () => {
     expect(css).toContain("--cg-surface:light-dark(#ffffff,");
     expect(css).toContain(`--cg-radius:${RADIUS_PRESET_VALUES.SOFT}`);
     expect(css).toContain("--cg-text:light-dark(#111318,#f4f1ea)");
-    expect(css).not.toContain("@media (prefers-color-scheme: dark)");
+    expect(css).toContain("@media (prefers-color-scheme:dark)");
     expect(css).not.toContain("customCss");
     expect(css).not.toContain("<");
     expect(css).not.toContain("url(");
@@ -284,8 +284,15 @@ describe("serializeAftercareThemeCss", () => {
       colorSchemeSelector: "scope",
     });
 
-    expect(css).toContain(`.${AFTERCARE_THEME_SCOPE}{color-scheme:light;`);
+    expect(css).toContain(
+      `.${AFTERCARE_THEME_SCOPE}[data-patient-theme="light"]{color-scheme:light;`
+    );
+    expect(css).toContain(
+      `.${AFTERCARE_THEME_SCOPE}[data-patient-theme="dark"]{color-scheme:dark;`
+    );
     expect(css).not.toContain("html{color-scheme");
+    expect(css).not.toContain("html[data-theme-mode");
+    expect(css).not.toContain("html.aftercareDocument");
   });
 });
 

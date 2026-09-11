@@ -15,7 +15,7 @@ export default function AftercareRootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="aftercareDocument" suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );

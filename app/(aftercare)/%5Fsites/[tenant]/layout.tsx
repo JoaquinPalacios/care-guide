@@ -1,5 +1,5 @@
+import { PatientThemeBoundary } from "@/app/(aftercare)/components/patient-theme-boundary";
 import {
-  AFTERCARE_THEME_SCOPE,
   resolveAftercareTheme,
   serializeAftercareThemeCss,
 } from "@/lib/branding/aftercare-theme";
@@ -48,14 +48,14 @@ export default async function TenantLayout({
           }),
         }}
       />
-      <div className={AFTERCARE_THEME_SCOPE}>
+      <PatientThemeBoundary themeMode={clinic.profile?.themeMode}>
         {ThemeControl ? (
           <div className="patientThemeSlot">
             <ThemeControl />
           </div>
         ) : null}
         {children}
-      </div>
+      </PatientThemeBoundary>
     </>
   );
 }

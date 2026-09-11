@@ -4,13 +4,12 @@ import { notFound } from "next/navigation";
 
 import { GuideDocument } from "@/app/(aftercare)/components/guide-document";
 import { PatientPage } from "@/app/(aftercare)/components/patient-page";
-import { StaffPreviewToolbar } from "@/app/(staff)/(guide-preview)/guides/[guideId]/preview/staff-preview-toolbar";
+import { StaffPreviewShell } from "@/app/(staff)/(guide-preview)/guides/[guideId]/preview/staff-preview-shell";
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
 import { isClinicPortalError } from "@/lib/clinic-portal/errors";
 import { loadPracticeGuideEditor } from "@/lib/clinic-portal/load-practice-guide-editor";
 import { resolvePracticeChrome } from "@/lib/aftercare/practice-chrome";
 import {
-  AFTERCARE_THEME_SCOPE,
   resolveAftercareTheme,
   serializeAftercareThemeCss,
 } from "@/lib/branding/aftercare-theme";
@@ -63,25 +62,22 @@ export default async function GuidePreviewPage({
     const theme = resolveAftercareTheme(clinic.profile);
 
     return (
-      <div className="staffPreviewShell">
+      <>
         <style
           dangerouslySetInnerHTML={{
-            __html: `body{background:var(--staff-canvas);color:var(--staff-ink)}${serializeAftercareThemeCss(
-              theme,
-              {
-                themeMode: clinic.profile?.themeMode,
-                colorSchemeSelector: "scope",
-              }
-            )}`,
+            __html: serializeAftercareThemeCss(theme, {
+              themeMode: clinic.profile?.themeMode,
+              colorSchemeSelector: "scope",
+            }),
           }}
         />
-        <StaffPreviewToolbar
+        <StaffPreviewShell
           backHref={canEdit ? `/guides/${guide.id}/edit` : "/guides"}
           backLabel={canEdit ? "Back to guide" : "Back to guides"}
           editHref={canEdit ? `/guides/${guide.id}/edit` : undefined}
           lifecycle={guide.lifecycle}
-        />
-        <div className={AFTERCARE_THEME_SCOPE}>
+          clinicThemeMode={clinic.profile?.themeMode}
+        >
           <PatientPage chrome={chrome}>
             <header className={styles.hero}>
               <p className={styles.kicker}>{chrome.instructionsLabel}</p>
@@ -93,8 +89,8 @@ export default async function GuidePreviewPage({
             </header>
             <GuideDocument sections={guide.sections} />
           </PatientPage>
-        </div>
-      </div>
+        </StaffPreviewShell>
+      </>
     );
   } catch (error) {
     if (isClinicPortalError(error) && error.code === "not_found") {

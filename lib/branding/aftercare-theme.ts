@@ -53,6 +53,8 @@ export interface AftercareThemeInput {
   themeMode?: string | null;
 }
 
+export type AftercareThemeAppearance = "light" | "dark" | "system";
+
 export interface AftercareThemeCssOptions {
   themeMode?: string | null;
   colorSchemeSelector?: "html" | "scope";
@@ -176,24 +178,80 @@ export function toAftercareThemeStyle(theme: AftercareTheme): CSSProperties {
   return theme.light as CSSProperties;
 }
 
+export function clinicThemeModeToAppearance(
+  themeMode: string | null | undefined
+): AftercareThemeAppearance {
+  const mode = parseThemeMode(themeMode);
+  if (mode === "LIGHT") {
+    return "light";
+  }
+  if (mode === "DARK") {
+    return "dark";
+  }
+  return "system";
+}
+
+function serializeTokenBlock(tokens: AftercareThemeTokens): string {
+  return AFTERCARE_THEME_TOKEN_KEYS.map((key) => `${key}:${tokens[key]}`).join(
+    ";"
+  );
+}
+
+function serializeMixedTokenBlock(theme: AftercareTheme): string {
+  return AFTERCARE_THEME_TOKEN_KEYS.map((key) => {
+    const light = theme.light[key];
+    const dark = theme.dark[key];
+    const value = light === dark ? light : `light-dark(${light},${dark})`;
+    return `${key}:${value}`;
+  }).join(";");
+}
+
+function boundaryDeclarations(tokens: string, colorScheme: string): string {
+  return `color-scheme:${colorScheme};background:var(--cg-surface);color:var(--cg-text);${tokens}`;
+}
+
+/**
+ * Patient tokens live on `.aftercareTheme`, not on `html`, so an embedded
+ * preview can keep a coherent patient surface while portal chrome uses a
+ * different color-scheme.
+ */
 export function serializeAftercareThemeCss(
   theme: AftercareTheme,
   options?: AftercareThemeCssOptions
 ): string {
   const mode = parseThemeMode(options?.themeMode);
   const colorScheme = colorSchemeForThemeMode(mode);
-  const tokens = AFTERCARE_THEME_TOKEN_KEYS.map((key) => {
-    const light = theme.light[key];
-    const dark = theme.dark[key];
-    const value = light === dark ? light : `light-dark(${light},${dark})`;
-    return `${key}:${value}`;
-  }).join(";");
+  const light = serializeTokenBlock(theme.light);
+  const dark = serializeTokenBlock(theme.dark);
+  const mixed = serializeMixedTokenBlock(theme);
+  const scope = `.${AFTERCARE_THEME_SCOPE}`;
+
+  const scoped =
+    options?.colorSchemeSelector === "scope"
+      ? [
+          `${scope}[data-patient-theme="light"]{${boundaryDeclarations(light, "light")}}`,
+          `${scope}[data-patient-theme="dark"]{${boundaryDeclarations(dark, "dark")}}`,
+          `${scope}[data-patient-theme="system"]{${boundaryDeclarations(mixed, "light dark")}}`,
+          `@media (prefers-color-scheme:light){${scope}[data-patient-theme="system"]{${boundaryDeclarations(light, "light")}}}`,
+          `@media (prefers-color-scheme:dark){${scope}[data-patient-theme="system"]{${boundaryDeclarations(dark, "dark")}}}`,
+        ].join("")
+      : mode === "LIGHT"
+        ? `${scope}{${boundaryDeclarations(light, "light")}}`
+        : mode === "DARK"
+          ? `${scope}{${boundaryDeclarations(dark, "dark")}}`
+          : [
+              `${scope}{${boundaryDeclarations(mixed, "light dark")}}`,
+              `@media (prefers-color-scheme:light){html.aftercareDocument:not([data-theme-mode]) ${scope},html.aftercareDocument[data-theme-mode="system"] ${scope}{${boundaryDeclarations(light, "light")}}}`,
+              `@media (prefers-color-scheme:dark){html.aftercareDocument:not([data-theme-mode]) ${scope},html.aftercareDocument[data-theme-mode="system"] ${scope}{${boundaryDeclarations(dark, "dark")}}}`,
+              `html.aftercareDocument[data-theme-mode="light"] ${scope}{${boundaryDeclarations(light, "light")}}`,
+              `html.aftercareDocument[data-theme-mode="dark"] ${scope}{${boundaryDeclarations(dark, "dark")}}`,
+            ].join("");
 
   if (options?.colorSchemeSelector === "scope") {
-    return `.${AFTERCARE_THEME_SCOPE}{color-scheme:${colorScheme};${tokens}}`;
+    return scoped;
   }
 
-  return `html{color-scheme:${colorScheme}}.${AFTERCARE_THEME_SCOPE}{${tokens}}`;
+  return `html{color-scheme:${colorScheme}}${scoped}`;
 }
 
 function parseRadiusPreset(value: string | null | undefined): string {

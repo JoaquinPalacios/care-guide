@@ -8,6 +8,10 @@ describe("authenticated guide preview toolbar", () => {
       "app/(staff)/(guide-preview)/guides/[guideId]/preview/page.tsx",
       "utf8"
     );
+    const shell = readFileSync(
+      "app/(staff)/(guide-preview)/guides/[guideId]/preview/staff-preview-shell.tsx",
+      "utf8"
+    );
     const toolbar = readFileSync(
       "app/(staff)/(guide-preview)/guides/[guideId]/preview/staff-preview-toolbar.tsx",
       "utf8"
@@ -19,17 +23,21 @@ describe("authenticated guide preview toolbar", () => {
 
     expect(toolbar).toContain("backLabel");
     expect(toolbar).toContain("Draft preview");
-    expect(toolbar).toContain("Edit guide");
+    expect(toolbar).toContain("Patient preview");
+    expect(toolbar).toContain("Patient preview appearance");
     expect(preview).toContain(
       'backLabel={canEdit ? "Back to guide" : "Back to guides"}'
     );
-    expect(preview).toContain("StaffPreviewToolbar");
-    expect(preview).toContain("PatientPage");
+    expect(preview).toContain("StaffPreviewShell");
+    expect(preview).toContain("<PatientPage");
     expect(preview).toContain("GuideDocument");
     expect(preview).toContain('colorSchemeSelector: "scope"');
-    expect(preview.indexOf("StaffPreviewToolbar")).toBeLessThan(
-      preview.indexOf("AFTERCARE_THEME_SCOPE")
+    expect(shell).toContain("PatientThemeBoundary");
+    expect(shell).toContain("StaffPreviewToolbar");
+    expect(preview.lastIndexOf("<StaffPreviewShell")).toBeLessThan(
+      preview.lastIndexOf("<PatientPage")
     );
+    expect(preview).not.toContain("StaffPreviewToolbar");
     expect(publicGuide).not.toContain("StaffPreviewToolbar");
     expect(publicGuide).not.toContain("Back to guide");
     expect(publicGuide).not.toContain("Draft preview");
