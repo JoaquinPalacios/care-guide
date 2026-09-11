@@ -14,6 +14,8 @@ import {
   createTemplateGuideSchema,
   saveGuideDraftSchema,
 } from "@/lib/clinic-portal/guide-schemas";
+import { deleteUnpublishedPracticeGuide } from "@/lib/clinic-portal/delete-practice-guide";
+import { discardPracticeGuideDraft } from "@/lib/clinic-portal/discard-practice-guide-draft";
 import { publishPracticeGuide } from "@/lib/clinic-portal/publish-practice-guide";
 import { savePracticeGuideDraft } from "@/lib/clinic-portal/save-practice-guide-draft";
 
@@ -158,6 +160,55 @@ export async function publishGuideAction(
     });
     return { ok: true };
   } catch (error) {
+    return errorState(error);
+  }
+}
+
+export async function deleteGuideDraftAction(
+  _previous: GuideActionState,
+  formData: FormData
+): Promise<GuideActionState> {
+  const { clinicMembership } = await requireClinicAdmin();
+  const guideId = String(formData.get("guideId") ?? "");
+  if (!guideId) {
+    return { error: "Missing guide." };
+  }
+
+  try {
+    await deleteUnpublishedPracticeGuide({
+      clinicId: clinicMembership.clinic.id,
+      guideId,
+    });
+    redirect("/guides");
+  } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+    return errorState(error);
+  }
+}
+
+export async function discardGuideDraftAction(
+  _previous: GuideActionState,
+  formData: FormData
+): Promise<GuideActionState> {
+  const { user, clinicMembership } = await requireClinicAdmin();
+  const guideId = String(formData.get("guideId") ?? "");
+  if (!guideId) {
+    return { error: "Missing guide." };
+  }
+
+  try {
+    await discardPracticeGuideDraft({
+      clinicId: clinicMembership.clinic.id,
+      actorUserId: user.id,
+      guideId,
+    });
+    redirect("/guides");
+  } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
     return errorState(error);
   }
 }

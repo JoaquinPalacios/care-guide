@@ -60,10 +60,10 @@ export function PortalChrome({
   }, [open]);
 
   return (
-    <div className="flex min-h-screen bg-staff-canvas text-staff-ink">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-staff-line bg-staff-panel md:flex">
+    <div className="staffPortalShell">
+      <aside className="staffPortalSidebar">
         <PortalBrand displayName={displayName} />
-        <div className="flex min-h-0 flex-1 flex-col p-3">
+        <div className="staffPortalSidebarBody">
           <PortalNav
             pathname={pathname}
             patientSiteHref={patientSiteHref}
@@ -81,7 +81,7 @@ export function PortalChrome({
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="staffPortalMain">
         <header className="flex items-center justify-between gap-3 border-b border-staff-line bg-staff-panel px-4 py-3 md:hidden">
           <PortalBrand displayName={displayName} compact />
           <button
@@ -121,9 +121,7 @@ export function PortalChrome({
             <PortalAccount userLabel={userLabel} roleLabel={roleLabel} />
           </div>
         </header>
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          {children}
-        </main>
+        <main className="staffPortalContent">{children}</main>
       </div>
     </div>
   );
@@ -222,7 +220,7 @@ function PortalAccount({
   return (
     <div className="px-1 pt-1">
       <p className="truncate text-sm font-medium text-staff-ink">{userLabel}</p>
-      <p className="mt-0.5 text-xs text-staff-muted">{roleLabel}</p>
+      <p className="staffAccountRole">{roleLabel}</p>
       <LogoutButton className="mt-3 flex flex-col items-start gap-2" />
     </div>
   );

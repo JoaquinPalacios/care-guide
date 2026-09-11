@@ -195,45 +195,6 @@ body {
   margin-top: 1.15rem;
 }
 
-.staffEditorChrome {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin: -1.5rem -1rem 0;
-  padding: 0.85rem 1rem 0.9rem;
-  border-bottom: 1px solid var(--staff-line);
-  background: color-mix(in srgb, var(--staff-panel) 92%, transparent);
-  backdrop-filter: blur(10px);
-}
-
-@media (min-width: 640px) {
-  .staffEditorChrome {
-    margin-left: -1.5rem;
-    margin-right: -1.5rem;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .staffEditorChrome {
-    margin-left: -2rem;
-    margin-right: -2rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-}
-
-.staffEditorActionsDesktop {
-  display: none;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0.5rem;
-}
-
 .staffEditorActionsMobile {
   position: fixed;
   right: 0;
@@ -253,11 +214,7 @@ body {
   padding-bottom: 5.5rem;
 }
 
-@media (min-width: 768px) {
-  .staffEditorActionsDesktop {
-    display: flex;
-  }
-
+@media (min-width: 1024px) {
   .staffEditorActionsMobile {
     display: none;
   }
@@ -320,6 +277,10 @@ body {
 
 .staffPreviewStatus {
   justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
   margin: 0;
   font-size: 0.8125rem;
   font-weight: 500;
@@ -407,4 +368,493 @@ body {
 .ptlOption:focus-visible {
   outline: 2px solid var(--staff-brand);
   outline-offset: 2px;
+}
+
+.staffPortalShell {
+  display: flex;
+  min-height: 100dvh;
+  background: var(--staff-canvas);
+  color: var(--staff-ink);
+}
+
+.staffPortalSidebar {
+  display: none;
+  width: 16rem;
+  flex-shrink: 0;
+  flex-direction: column;
+  border-right: 1px solid var(--staff-line);
+  background: var(--staff-panel);
+}
+
+.staffPortalMain {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.staffPortalContent {
+  min-width: 0;
+  flex: 1;
+  padding: 1.5rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .staffPortalContent {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .staffPortalContent {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .staffPortalShell {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .staffPortalSidebar {
+    display: flex;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .staffPortalSidebarBody {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 0.75rem;
+  }
+
+  .staffPortalMain {
+    height: 100dvh;
+    overflow-y: auto;
+  }
+}
+
+.staffAccountRole {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: var(--staff-muted);
+}
+
+.staffField,
+.staffSelect {
+  height: 2.75rem;
+  width: 100%;
+  border: 1px solid var(--staff-line);
+  border-radius: 0.375rem;
+  background: var(--staff-panel);
+  padding: 0 0.75rem;
+  color: var(--staff-ink);
+  font-size: 0.875rem;
+}
+
+.staffField:focus,
+.staffSelect:focus {
+  border-color: var(--staff-brand);
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--staff-brand) 20%, transparent);
+}
+
+.staffField:disabled,
+.staffSelect:disabled {
+  opacity: 0.6;
+}
+
+.staffFieldNarrow {
+  max-width: 16rem;
+}
+
+.staffFieldTiny {
+  max-width: 7.5rem;
+}
+
+.staffSelect {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%235c6573' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 16 16'%3E%3Cpath d='M4 6.25 8 10.25 12 6.25'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.75rem;
+}
+
+.staffColorControl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.staffColorPicker {
+  display: block;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--staff-line);
+  border-radius: 0.375rem;
+  background: var(--staff-panel);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.staffColorPicker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.staffColorPicker::-webkit-color-swatch {
+  border: 0;
+  border-radius: 0.25rem;
+}
+
+.staffColorPicker::-moz-color-swatch {
+  border: 0;
+  border-radius: 0.25rem;
+}
+
+.staffColorPicker:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.staffColorHex {
+  width: 8.5rem;
+  flex: 0 0 auto;
+}
+
+.staffStatusPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.staffStatusPill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--staff-line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--staff-canvas) 80%, transparent);
+  color: var(--staff-ink);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.staffGuideRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .staffGuideRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 1rem 1.25rem;
+  }
+}
+
+.staffGuideActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.staffMore {
+  position: relative;
+}
+
+.staffMoreMenu {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  right: 0;
+  z-index: 30;
+  min-width: 13.5rem;
+  padding: 0.3rem;
+  border: 1px solid var(--staff-line);
+  border-radius: 0.5rem;
+  background: var(--staff-panel);
+  box-shadow: light-dark(
+    0 12px 28px rgb(10 13 20 / 10%),
+    0 12px 28px rgb(0 0 0 / 38%)
+  );
+}
+
+.staffMoreItem {
+  display: flex;
+  width: 100%;
+  min-height: 2.5rem;
+  align-items: center;
+  padding: 0 0.7rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--staff-ink);
+  font-size: 0.875rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.staffMoreItem:hover,
+.staffMoreItem:focus-visible {
+  background: var(--staff-canvas);
+}
+
+.staffMoreItemDanger {
+  color: var(--staff-danger);
+}
+
+.staffComposer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.staffComposerMain {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.staffComposerRail {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.staffRailCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid var(--staff-line);
+  border-radius: 0.75rem;
+  background: var(--staff-panel);
+}
+
+.staffRailActions {
+  display: none;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.staffRailActions .staffBtn {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .staffRailActions {
+    display: flex;
+  }
+}
+
+.staffPreviewDetails {
+  border: 1px solid var(--staff-line);
+  border-radius: 0.75rem;
+  background: var(--staff-panel);
+}
+
+.staffPreviewDetails summary {
+  cursor: pointer;
+  list-style: none;
+  min-height: 2.75rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.staffPreviewDetails summary::-webkit-details-marker {
+  display: none;
+}
+
+.staffPreviewDetailsBody {
+  padding: 0 1rem 1rem;
+}
+
+@media (min-width: 1024px) {
+  .staffComposer {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) minmax(17.5rem, 1fr);
+    align-items: start;
+    gap: 1.75rem;
+  }
+
+  .staffComposerRail {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .staffPreviewDetails {
+    border: 0;
+    background: transparent;
+  }
+
+  .staffPreviewDetails summary {
+    display: none;
+  }
+
+  .staffPreviewDetailsBody {
+    padding: 0;
+  }
+}
+
+.staffStageList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.staffStage {
+  border: 1px solid var(--staff-line);
+  border-radius: 0.75rem;
+  background: var(--staff-panel);
+  overflow: hidden;
+}
+
+.staffStageHeader {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.staffStageHeader:hover {
+  background: color-mix(in srgb, var(--staff-canvas) 70%, transparent);
+}
+
+.staffStageHeader:focus-visible {
+  outline: 2px solid var(--staff-brand);
+  outline-offset: -2px;
+}
+
+.staffStageWhen {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--staff-muted);
+}
+
+.staffStageWhat {
+  margin: 0.2rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.staffStageExcerpt {
+  margin: 0.2rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--staff-muted);
+}
+
+.staffStageAlert {
+  margin: 0.35rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--staff-danger);
+}
+
+.staffStagePanel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 160ms ease;
+}
+
+.staffStagePanel[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+.staffStagePanelInner {
+  overflow: hidden;
+}
+
+.staffStageFields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0 1rem 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .staffStagePanel {
+    transition: none;
+  }
+}
+
+.staffEditorPreview {
+  color: var(--cg-text, var(--staff-ink));
+  background: var(--cg-surface, var(--staff-panel));
+  border: 1px solid var(--cg-border, var(--staff-line));
+  border-radius: var(--cg-radius, 0.75rem);
+  padding: 0.85rem 1rem;
+}
+
+.staffEditorPreview .timeline {
+  margin: 0;
+}
+
+.staffPracticeLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+}
+
+.staffPracticeNav {
+  display: none;
+}
+
+.staffPracticeNavLink[aria-current="true"] {
+  background: color-mix(in srgb, var(--staff-brand) 10%, transparent);
+  color: var(--staff-brand);
+}
+
+.staffPracticeSave {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0 0 0.25rem;
+  padding: 0.65rem 0;
+  background: color-mix(in srgb, var(--staff-canvas) 88%, transparent);
+}
+
+@media (min-width: 1024px) {
+  .staffPracticeColumns {
+    display: grid;
+    grid-template-columns: 12.5rem minmax(0, 1fr);
+    align-items: start;
+    gap: 2rem;
+  }
+
+  .staffPracticeNav {
+    display: block;
+    position: sticky;
+    top: 1rem;
+  }
 }

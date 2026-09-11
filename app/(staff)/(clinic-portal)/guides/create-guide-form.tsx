@@ -49,7 +49,7 @@ export function CreateGuideForm({
                 <p className="font-medium text-staff-ink">{template.title}</p>
                 <p className="mt-1 text-sm text-staff-muted">
                   {template.alreadyEnabled
-                    ? "Already in My guides"
+                    ? "Already in your guides"
                     : "Canonical template"}
                 </p>
                 {template.alreadyEnabled ? null : (

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ClinicMembershipRole } from "@prisma/client";
 
-import { ExternalLinkIcon } from "@/app/(staff)/components/icons";
+import { GuideListItem } from "@/app/(staff)/(clinic-portal)/guides/guide-list-item";
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
 import { getClinicPortalOverview } from "@/lib/clinic-portal/get-clinic-portal";
 import { listClinicPortalGuides } from "@/lib/clinic-portal/list-clinic-guides";
@@ -51,60 +51,10 @@ export default async function ClinicGuidesPage() {
       ) : (
         <ul className="divide-y divide-staff-line overflow-hidden rounded-xl border border-staff-line bg-staff-panel shadow-sm">
           {guides.map((guide) => (
-            <li
-              key={guide.id}
-              className="flex flex-col gap-3 px-5 py-4 lg:flex-row lg:items-center lg:justify-between"
-            >
-              <div className="min-w-0">
-                <p className="font-medium text-staff-ink">{guide.title}</p>
-                <p className="mt-1 text-sm text-staff-muted">
-                  /{guide.publicSlug}
-                  <span aria-hidden="true"> · </span>
-                  {guide.statusLabel}
-                  <span aria-hidden="true"> · </span>
-                  {guide.sourceLabel}
-                  <span aria-hidden="true"> · </span>
-                  Updated {formatUpdatedAt(guide.updatedAt)}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Link
-                  href={`/guides/${guide.id}/preview`}
-                  className="staffBtn staffBtnSecondary"
-                >
-                  Preview
-                </Link>
-                {canManage ? (
-                  <Link
-                    href={`/guides/${guide.id}/edit`}
-                    className="staffBtn staffBtnSecondary"
-                  >
-                    Edit
-                  </Link>
-                ) : null}
-                {guide.previewHref ? (
-                  <a
-                    href={guide.previewHref}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="staffBtn staffBtnQuiet"
-                  >
-                    View patient guide
-                    <span className="sr-only"> (opens in a new tab)</span>
-                    <ExternalLinkIcon className="ml-1" />
-                  </a>
-                ) : null}
-              </div>
-            </li>
+            <GuideListItem key={guide.id} guide={guide} canManage={canManage} />
           ))}
         </ul>
       )}
     </div>
   );
-}
-
-function formatUpdatedAt(date: Date): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    dateStyle: "medium",
-  }).format(date);
 }

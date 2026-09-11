@@ -12,6 +12,10 @@ describe("clinic portal pages", () => {
       "app/(staff)/(clinic-portal)/guides/page.tsx",
       "utf8"
     );
+    const listItem = readFileSync(
+      "app/(staff)/(clinic-portal)/guides/guide-list-item.tsx",
+      "utf8"
+    );
     const layout = readFileSync(
       "app/(staff)/(clinic-portal)/layout.tsx",
       "utf8"
@@ -30,6 +34,11 @@ describe("clinic portal pages", () => {
     expect(guides).toContain("Create guide");
     expect(guides).not.toContain("Add guide");
     expect(guides).not.toContain("Duplicate");
+    expect(listItem).toContain("StatusPills");
+    expect(listItem).toContain("MoreActionsMenu");
+    expect(listItem).toContain("Delete draft");
+    expect(listItem).toContain("Discard draft changes");
+    expect(layout).toContain("clinicMembershipRoleLabel");
     expect(layout).toContain("requireStaffSession");
     expect(layout).toContain("clinicMembership.clinic.id");
   });
@@ -97,6 +106,8 @@ describe("clinic portal pages", () => {
     expect(practiceActions).not.toContain('formData.get("clinicId")');
     expect(guideActions).toContain("requireClinicAdmin");
     expect(guideActions).not.toContain('formData.get("clinicId")');
+    expect(guideActions).toContain("deleteUnpublishedPracticeGuide");
+    expect(guideActions).toContain("discardPracticeGuideDraft");
     expect(operatorPage).toContain("requirePlatformOperator");
     expect(operatorActions).toContain("requirePlatformOperator");
     expect(preview).toContain("requireStaffSession");

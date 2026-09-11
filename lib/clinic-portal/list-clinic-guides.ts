@@ -6,9 +6,13 @@ import { headers } from "next/headers";
 import { WORKING_DRAFT_VERSION } from "@/lib/aftercare/practice-revision-document";
 import { clinicPatientSiteUrl } from "@/lib/clinic-portal/patient-site-url";
 import {
+  clinicGuideDestructiveAction,
   clinicGuideLifecycleStatus,
   clinicGuideStatusLabel,
+  clinicGuideStatusPills,
+  type ClinicGuideDestructiveAction,
   type ClinicGuideLifecycleStatus,
+  type ClinicGuideStatusPill,
 } from "@/lib/clinic-portal/guide-status";
 import { prisma } from "@/lib/prisma";
 
@@ -19,6 +23,8 @@ export interface ClinicPortalGuide {
   status: PracticeGuideStatus;
   lifecycle: ClinicGuideLifecycleStatus;
   statusLabel: string;
+  statusPills: ClinicGuideStatusPill[];
+  destructiveAction: ClinicGuideDestructiveAction | null;
   isEnabled: boolean;
   sourceLabel: string;
   templateSlug: string | null;
@@ -132,6 +138,8 @@ export async function listClinicPortalGuides(
       status: guide.status,
       lifecycle,
       statusLabel: clinicGuideStatusLabel(lifecycle),
+      statusPills: clinicGuideStatusPills(lifecycle),
+      destructiveAction: clinicGuideDestructiveAction(lifecycle),
       isEnabled: guide.isEnabled,
       sourceLabel: guide.guideTemplate
         ? `Template · ${guide.guideTemplate.title}`
