@@ -30,7 +30,6 @@ import { SaveStatus } from "@/app/(staff)/components/save-status";
 import { StatusPills } from "@/app/(staff)/components/status-pills";
 import { useUnsavedChangesGuard } from "@/app/(staff)/components/use-unsaved-changes-guard";
 import { formSaveStatus } from "@/lib/clinic-portal/form-save-status";
-import { formatPortalDate } from "@/lib/clinic-portal/format-portal-date";
 import type { PracticeGuideEditorRecord } from "@/lib/clinic-portal/load-practice-guide-editor";
 import type { GuideSectionKind } from "@/lib/aftercare/types";
 
@@ -206,6 +205,9 @@ export function GuideEditor({
           <button
             type="button"
             disabled={publishing || dirty}
+            title={
+              dirty ? "Save the current draft before publishing." : undefined
+            }
             className="staffBtn staffBtnPrimary"
             onClick={() => setPublishOpen(true)}
           >
@@ -220,9 +222,23 @@ export function GuideEditor({
     <EditorTimelinePreview stages={timeline} themeStyle={previewThemeStyle} />
   );
 
+  const saveFeedback = (
+    <SaveStatus
+      status={saveStatus}
+      error={saveState.error ?? publishState.error}
+      success={
+        publishState.ok
+          ? "Guide published. Patients now see this version."
+          : saveState.ok && !dirty
+            ? "Draft saved. The public guide is unchanged until you publish."
+            : undefined
+      }
+    />
+  );
+
   return (
     <div className="staffEditorPage mx-auto flex w-full max-w-6xl flex-col">
-      <header className="flex flex-col gap-3">
+      <header className="flex flex-wrap items-center justify-between gap-3">
         <PortalBreadcrumb
           items={[
             { href: "/guides", label: "Guides" },
@@ -230,29 +246,29 @@ export function GuideEditor({
             { label: "Edit" },
           ]}
         />
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {title || guide.title || "Edit guide"}
-            </h1>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <StatusPills pills={guide.statusPills} />
-              <p className="text-sm text-staff-muted">{sourceLabel}</p>
-            </div>
-            <p className="mt-2 text-sm text-staff-muted">
-              Updated {formatPortalDate(guide.updatedAt)}
-            </p>
-          </div>
-          <Link
-            href={`/guides/${guide.id}/preview`}
-            className="staffBtn staffBtnSecondary self-start"
-          >
-            Preview
-          </Link>
-        </div>
+        <Link
+          href={`/guides/${guide.id}/preview`}
+          className="staffBtn staffBtnQuiet"
+        >
+          Preview
+        </Link>
       </header>
 
-      <div className="staffComposer mt-8">
+      <div className="staffEditorToolbar">
+        <div className="staffEditorToolbarStart">
+          <h1 className="staffEditorToolbarTitle">
+            {title || guide.title || "Edit guide"}
+          </h1>
+          <div className="staffEditorToolbarMeta">
+            <StatusPills pills={guide.statusPills} />
+            <p className="staffEditorToolbarContext">{sourceLabel}</p>
+            {saveFeedback}
+          </div>
+        </div>
+        <div className="staffEditorToolbarActions">{actions}</div>
+      </div>
+
+      <div className="staffComposer">
         <form
           id="guide-draft-form"
           action={saveAction}
@@ -388,27 +404,10 @@ export function GuideEditor({
           )}
         </form>
 
-        <aside className="staffComposerRail" aria-label="Guide actions">
-          <div className="staffRailCard">
-            <StatusPills pills={guide.statusPills} />
-            <SaveStatus
-              status={saveStatus}
-              error={saveState.error ?? publishState.error}
-              success={
-                publishState.ok
-                  ? "Guide published. Patients now see this version."
-                  : saveState.ok && !dirty
-                    ? "Draft saved. The public guide is unchanged until you publish."
-                    : undefined
-              }
-            />
-            <div className="staffRailActions">{actions}</div>
-            {canEdit && dirty ? (
-              <p className="text-sm text-staff-muted">
-                Save the current draft before publishing.
-              </p>
-            ) : null}
-          </div>
+        <aside
+          className="staffComposerRail"
+          aria-label="Patient timeline preview"
+        >
           <details className="staffPreviewDetails" open>
             <summary>Preview patient timeline</summary>
             <div className="staffPreviewDetailsBody">{preview}</div>

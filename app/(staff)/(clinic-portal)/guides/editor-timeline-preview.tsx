@@ -37,17 +37,28 @@ export function EditorTimelinePreview({
   themeStyle?: CSSProperties;
 }) {
   const sections = editorStagesToComposed(stages);
+  const empty = sections.length === 0;
 
   return (
     <div
-      className={`${AFTERCARE_THEME_SCOPE} staffEditorPreview`}
+      className={`${AFTERCARE_THEME_SCOPE} staffEditorPreview${
+        empty ? " staffEditorPreviewEmpty" : ""
+      }`}
       style={themeStyle}
       data-editor-preview=""
     >
-      {sections.length === 0 ? (
-        <p className="text-sm text-staff-muted">
-          Add recovery stages to preview the patient timeline.
-        </p>
+      {empty ? (
+        <>
+          <h2
+            id="editor-timeline-preview-heading"
+            className="staffEditorPreviewHeading"
+          >
+            Patient timeline preview
+          </h2>
+          <p className="staffEditorPreviewHint">
+            Add a recovery stage to see the patient timeline here.
+          </p>
+        </>
       ) : (
         <GuideTimeline
           sections={sections}
