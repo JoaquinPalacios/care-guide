@@ -7,6 +7,7 @@ export function ColorField({
   value,
   disabled,
   error,
+  hint,
   onChange,
 }: {
   id: string;
@@ -15,6 +16,7 @@ export function ColorField({
   value: string;
   disabled?: boolean;
   error?: string;
+  hint?: string;
   onChange: (value: string) => void;
 }) {
   const pickerValue = /^#([0-9a-fA-F]{6})$/.test(value) ? value : "#155e75";
@@ -24,20 +26,16 @@ export function ColorField({
       <label className="text-sm font-medium" htmlFor={id} id={`${id}-label`}>
         {label}
       </label>
-      <div className="flex flex-wrap items-center gap-3">
-        <span
-          className="h-10 w-10 rounded-md border border-staff-line"
-          style={{ background: pickerValue }}
-          aria-hidden="true"
-        />
+      <div className="staffColorControl">
         <input
           id={`${id}-picker`}
           type="color"
           value={pickerValue}
           disabled={disabled}
+          aria-labelledby={`${id}-label`}
           aria-label={`${label} picker`}
           onChange={(event) => onChange(event.target.value)}
-          className="h-10 w-14 cursor-pointer rounded-md border border-staff-line bg-staff-panel disabled:opacity-60"
+          className="staffColorSwatch"
         />
         <input
           id={id}
@@ -45,14 +43,18 @@ export function ColorField({
           value={value}
           disabled={disabled}
           aria-invalid={error ? "true" : "false"}
-          aria-describedby={error ? `${id}-error` : `${id}-value`}
+          aria-describedby={
+            error ? `${id}-error` : hint ? `${id}-hint` : undefined
+          }
           onChange={(event) => onChange(event.target.value)}
-          className="h-11 min-w-[8rem] flex-1 rounded-md border border-staff-line bg-staff-panel px-3 text-sm focus:border-staff-brand focus:ring-2 focus:ring-staff-brand/20 disabled:opacity-60"
+          className="staffField staffColorHex"
         />
       </div>
-      <p id={`${id}-value`} className="text-sm text-staff-muted">
-        Value: {value || "not set"}
-      </p>
+      {hint ? (
+        <p id={`${id}-hint`} className="text-sm text-staff-muted">
+          {hint}
+        </p>
+      ) : null}
       {error ? (
         <p id={`${id}-error`} className="text-sm text-red-600">
           {error}

@@ -54,11 +54,15 @@ test.describe("clinic portal", () => {
     await expect(
       page.getByRole("navigation", { name: "Clinic portal" })
     ).toBeVisible();
+    await expect(page.getByText("Clinic admin")).toBeVisible();
 
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.screenshot({
       path: "test-results/artifacts/staff-dashboard-1440.png",
       fullPage: true,
+    });
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/portal-sidebar-role-1440.png",
     });
     await expectNoSeriousAxeViolations(page);
 
@@ -97,7 +101,9 @@ test.describe("clinic portal", () => {
       page.getByText("Tooth Extraction", { exact: true })
     ).toBeVisible();
     await expect(page.getByText("/extraction")).toBeVisible();
-    await expect(page.getByText("Published")).toBeVisible();
+    await expect(
+      page.getByText("Published", { exact: true }).first()
+    ).toBeVisible();
     await expect(page.getByText("Wisdom Teeth")).toHaveCount(0);
     await expect(page.getByText("Root Canal")).toHaveCount(0);
     await expect(
@@ -120,6 +126,10 @@ test.describe("clinic portal", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.screenshot({
       path: "test-results/artifacts/staff-guides-1440.png",
+      fullPage: true,
+    });
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/guides-list-1440.png",
       fullPage: true,
     });
     await expectNoSeriousAxeViolations(page);
@@ -179,6 +189,8 @@ test.describe("clinic portal", () => {
     await expect(
       page.getByLabel("Primary brand colour", { exact: true })
     ).toBeVisible();
+    await expect(page.locator("#primaryColor-picker")).toHaveCount(1);
+    await expect(page.getByLabel("Corner radius")).toHaveClass(/staffSelect/);
     await expect(
       page
         .getByRole("button", { name: "Save changes" })
@@ -186,6 +198,10 @@ test.describe("clinic portal", () => {
     ).toBeVisible();
     await page.screenshot({
       path: "test-results/artifacts/staff-practice-1440.png",
+      fullPage: true,
+    });
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/practice-header-1440.png",
       fullPage: true,
     });
     await expectNoSeriousAxeViolations(page);
@@ -230,8 +246,16 @@ test.describe("clinic portal", () => {
     ).toBeVisible();
     await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await expect(page.getByRole("button", { name: "Add stage" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Tooth Extraction" }).first()
+    ).toBeVisible();
+    await expect(page.getByText("Live patient timeline").first()).toBeVisible();
     await page.screenshot({
       path: "test-results/artifacts/staff-guide-editor-1440.png",
+      fullPage: true,
+    });
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/guide-editor-desktop-1440.png",
       fullPage: true,
     });
     await expectNoSeriousAxeViolations(page);
@@ -245,6 +269,10 @@ test.describe("clinic portal", () => {
 
     await page.setViewportSize({ width: 360, height: 800 });
     await expectNoHorizontalOverflow(page);
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/guide-editor-mobile-360.png",
+      fullPage: true,
+    });
 
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.getByRole("link", { name: "Preview" }).first().click();
@@ -270,6 +298,7 @@ test.describe("clinic portal", () => {
     page,
   }) => {
     await signInAsLocalStaff(page);
+    await expect(page.getByText("Clinic staff")).toBeVisible();
     await expect(
       page
         .getByRole("navigation", { name: "Clinic portal" })
@@ -282,6 +311,9 @@ test.describe("clinic portal", () => {
       0
     );
     await expect(page.getByRole("link", { name: "Edit" })).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: "More actions" })
+    ).toHaveCount(0);
     await page.getByRole("link", { name: "Preview" }).first().click();
     await expect(page).toHaveURL(/\/guides\/.+\/preview/);
     await expect(
@@ -319,6 +351,7 @@ test.describe("platform operator", () => {
     await expect(
       page.getByRole("heading", { name: "All Clinics" })
     ).toBeVisible();
+    await expect(page.getByText("Platform operator").first()).toBeVisible();
     await expect(page.getByRole("table")).toBeVisible();
     await expect(page.getByText("Riverside Dental Demo")).toBeVisible();
     await expect(page.getByText("demodental")).toBeVisible();
@@ -360,7 +393,7 @@ test.describe("clinic portal UX polish", () => {
     await page.goto(staffUrl("/guides"), { waitUntil: "load" });
     await page.getByRole("link", { name: "Edit" }).first().click();
     await expect(
-      page.getByRole("heading", { name: "Edit guide" })
+      page.getByRole("heading", { name: "Tooth Extraction" }).first()
     ).toBeVisible();
     await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -568,5 +601,69 @@ test.describe("clinic portal UX polish", () => {
     await expect(page.getByRole("link", { name: "Back to staff" })).toHaveCount(
       0
     );
+  });
+
+  test("timeline accordion is exclusive and live preview follows unsaved titles", async ({
+    page,
+  }) => {
+    await signInAsLocalAdmin(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(staffUrl("/guides"), { waitUntil: "load" });
+    await page.getByRole("link", { name: "Edit" }).first().click();
+
+    const firstStage = page.locator("[data-stage-key]").first();
+    const secondStage = page.locator("[data-stage-key]").nth(1);
+    await expect(firstStage).toHaveAttribute("data-expanded", "true");
+    await secondStage.getByRole("button").first().click();
+    await expect(firstStage).toHaveAttribute("data-expanded", "false");
+    await expect(secondStage).toHaveAttribute("data-expanded", "true");
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/editor-stage-expanded-1440.png",
+      fullPage: true,
+    });
+
+    const titleField = secondStage.getByLabel("Title");
+    const original = await titleField.inputValue();
+    await titleField.fill("Live preview stage title");
+    await expect(
+      page.locator("[data-live-preview]").getByText("Live preview stage title")
+    ).toBeVisible();
+    await titleField.fill(original);
+
+    await page.getByRole("button", { name: "Add stage" }).click();
+    const newest = page.locator("[data-stage-key]").last();
+    await expect(newest).toHaveAttribute("data-expanded", "true");
+    await expect(newest.getByLabel("Title")).toHaveValue("New stage");
+    await newest.getByRole("button", { name: "Remove stage" }).click();
+  });
+
+  test("admin can delete an unpublished custom draft from the overflow menu", async ({
+    page,
+  }) => {
+    await signInAsLocalAdmin(page);
+    await page.goto(staffUrl("/guides/new"), { waitUntil: "load" });
+    const slug = `delete-draft-${Date.now()}`;
+    await page.getByLabel("Guide title").fill("Delete me draft");
+    await page.getByLabel("Public slug").fill(slug);
+    await page.getByRole("button", { name: "Create custom guide" }).click();
+    await expect(page).toHaveURL(/\/guides\/.+\/edit/);
+    await page
+      .getByRole("button", { name: "Cancel" })
+      .filter({ visible: true })
+      .click();
+    await expect(page).toHaveURL(staffUrl("/guides"));
+    const row = page.locator("li", { hasText: "Delete me draft" });
+    await expect(row).toBeVisible();
+    await row.getByRole("button", { name: "More actions" }).click();
+    await page.getByRole("menuitem", { name: "Delete draft" }).click();
+    const dialog = page.getByRole("dialog", {
+      name: "Delete this draft guide?",
+    });
+    await expect(dialog).toBeVisible();
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/delete-draft-dialog-1440.png",
+    });
+    await dialog.getByRole("button", { name: "Delete draft" }).click();
+    await expect(page.getByText("Delete me draft")).toHaveCount(0);
   });
 });

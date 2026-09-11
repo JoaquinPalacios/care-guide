@@ -27,15 +27,15 @@ export default async function PracticePage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-      <header>
+    <div className="mx-auto w-full max-w-5xl">
+      <header className="staffPracticeHeader">
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
           Practice
         </p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight">
           {overview.displayName}
         </h1>
-        <p className="mt-2 text-sm leading-6 text-staff-muted">
+        <p className="max-w-xl text-sm leading-6 text-staff-muted">
           Identity, branding, contact, and emergency details used on the patient
           site. Tenant hostname stays operator-controlled.
         </p>

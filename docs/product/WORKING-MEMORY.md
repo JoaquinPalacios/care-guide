@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-10 (Phase 2A.1 clinic portal UX polish: editor cancel/dirty state, preview toolbar, portal appearance)
+Last updated: 2026-09-11 (Phase 2A.2 portal workflow, editor, and Practice polish)
 
 ---
 
@@ -57,6 +57,7 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 | UX polish + clinic portal | COMPLETE — READY FOR JOAQUÍN REVIEW                            |
 | 2A                        | LOCAL — CLINIC SELF-SERVICE FOUNDATION                         |
 | 2A.1                      | LOCAL — CLINIC PORTAL UX READY FOR JOAQUÍN REVIEW              |
+| 2A.2                      | LOCAL — PORTAL WORKFLOW POLISH READY FOR JOAQUÍN REVIEW        |
 | 2+ remainder              | Not started                                                    |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
@@ -666,19 +667,19 @@ Marketing motion/navigation polish, calmer patient interactions, and the first A
 
 Staff `/dashboard` is the Aftercare Guide clinic portal, not the parked chairside dashboard.
 
-| Area      | Behaviour                                                                                                                                                                                                                                                |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Auth      | Unchanged `requireStaffSession()`. Unauthenticated `/dashboard` and `/guides` redirect to `/login`. Authenticated `app.` `/` redirects to `/dashboard`.                                                                                                  |
-| Shell     | Platform periwinkle/cobalt. Primary: Overview / Guides / Practice. Utility: View patient site. Preferences: Appearance (System/Light/Dark). Account and Sign out.                                                                                        |
-| Overview  | Real published/draft guide counts. Setup checks: identity, branding, contact, emergency, published guide. Statuses are Configured / Needs attention. Patient-site link uses the real tenant renderer.                                                    |
-| Guides    | `/guides` lists the authenticated clinic's actual `PracticeGuide` rows. ADMIN can create from a real canonical template or as a custom guide, edit draft, preview, and publish. STAFF can view and preview. No fake template library. No delete/archive. |
-| Practice  | `/practice` (ADMIN). Identity, controlled branding colours/radius/terminology/theme, contact, emergency. Tenant slug is not editable here. Logo path remains; upload is blocked.                                                                         |
-| Isolation | Loaders and mutations query by membership `clinicId` only. No client-provided clinic IDs.                                                                                                                                                                |
-| Chairside | `/dashboard/procedures`, `/sessions/new`, `/session/[id]/control`, `/display/[token]` remain. Not linked from portal nav. Not shown on Overview.                                                                                                         |
+| Area      | Behaviour                                                                                                                                                                                                                                                                                                                                                                            |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Auth      | Unchanged `requireStaffSession()`. Unauthenticated `/dashboard` and `/guides` redirect to `/login`. Authenticated `app.` `/` redirects to `/dashboard`.                                                                                                                                                                                                                              |
+| Shell     | Platform periwinkle/cobalt. Primary: Overview / Guides / Practice. Utility: View patient site. Preferences: Appearance (System/Light/Dark). Account and Sign out.                                                                                                                                                                                                                    |
+| Overview  | Real published/draft guide counts. Setup checks: identity, branding, contact, emergency, published guide. Statuses are Configured / Needs attention. Patient-site link uses the real tenant renderer.                                                                                                                                                                                |
+| Guides    | `/guides` lists the authenticated clinic's actual `PracticeGuide` rows. ADMIN can create from a real canonical template or as a custom guide, edit draft, preview, publish, **delete never-published drafts**, and **discard unpublished draft changes** on a published guide. STAFF can view and preview. No fake template library. Published-guide deletion/unpublish is deferred. |
+| Practice  | `/practice` (ADMIN). Identity, controlled branding colours/radius/terminology/theme, contact, emergency. Tenant slug is not editable here. Logo path remains; upload is blocked.                                                                                                                                                                                                     |
+| Isolation | Loaders and mutations query by membership `clinicId` only. No client-provided clinic IDs.                                                                                                                                                                                                                                                                                            |
+| Chairside | `/dashboard/procedures`, `/sessions/new`, `/session/[id]/control`, `/display/[token]` remain. Not linked from portal nav. Not shown on Overview.                                                                                                                                                                                                                                     |
 
 ### Next clinic-portal work (not built)
 
-Archive/delete, QR, invitations/team management, canonical library authoring, object-storage logo upload, unpublish, Check-ins, RecoveryPlan, messaging, PMS integrations, billing.
+Archive/unpublish of **published** guides, QR, invitations/team management, canonical library authoring, object-storage logo upload, Check-ins, RecoveryPlan, messaging, PMS integrations, billing.
 
 ---
 
@@ -822,3 +823,26 @@ Staff/operator shell and editor ergonomics. No billing, analytics, Check-ins, or
 | Appearance      | Sidebar/mobile nav preference row above account/sign-out. Not a primary route.                                                                                      |
 | Practice        | Still one `/practice` route. Sections: Identity, Branding, Contact, Emergency, Presentation. Save-state + Save changes. Logo upload still blocked.                  |
 | Operator        | All Clinics breadcrumb and labelled “Back to all clinics” control. No impersonation.                                                                                |
+
+---
+
+## Phase 2A.2 portal workflow polish (implemented)
+
+Date: 2026-09-11
+
+Staff/operator workflow polish. No Check-ins, RecoveryPlan persistence, billing, analytics, or logo object storage. Aftercare still does not depend on `ProcedureSession`.
+
+| Area              | Behaviour                                                                                                                                                                                                                                                  |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Role labels       | Clinic membership ADMIN → **Clinic admin**; STAFF → **Clinic staff**; platform OPERATOR → **Platform operator**. Accessible text in the sidebar account area. Clinic admin is not a platform administrator.                                                |
+| Desktop shell     | Viewport-fixed sidebar (`100dvh`). Main document scrolls independently. Sidebar may scroll internally on short viewports. Mobile keeps the drawer.                                                                                                         |
+| Guides list       | Title + actions row; status pills `[Published]` `[Draft changes]` then source; secondary `/slug · Updated {date}`. ADMIN: Edit principal, Preview secondary, View patient guide quiet. Destructive actions in a compact overflow menu.                     |
+| Draft delete      | Never-published: Delete draft (confirm). Published + draft changes: Discard draft changes (public pin unchanged). Published with no draft changes: no unpublish/archive this phase. STAFF cannot delete/discard. Membership-scoped Prisma.                 |
+| Guide editor      | Normal page header. Desktop 2-column editor + sticky action/preview rail. Exclusive timeline accordion. Live preview reuses the patient presentational timeline list from unsaved state. Mobile: editor first, sticky bottom actions, collapsible preview. |
+| Day/date contract | Generic public guides stay relative (`Day 0 · Procedure day`). Calendar dates require future RecoveryPlan. Demo fixture has explicit `simulatedStartDate: 2026-09-10` and `simulatedDay: 1`. No `Date.now()` for recovery day.                             |
+| Practice          | Header rhythm ~2.25rem before the form. Section index with IntersectionObserver `aria-current`, smooth scroll (immediate under reduced motion). One native colour control + hex. Select chevron padding. Compact sticky save row in the form column.       |
+| Visual artifacts  | [docs/product/artifacts/phase-2a.2/](artifacts/phase-2a.2/)                                                                                                                                                                                                |
+
+### Next clinic-portal work (not built)
+
+Archive/unpublish of published guides, QR, invitations/team management, canonical library authoring, object-storage logo upload, Check-ins, RecoveryPlan, messaging, PMS integrations, billing.
