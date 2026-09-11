@@ -24,14 +24,25 @@
 
 html[data-theme-mode="light"] {
   color-scheme: light;
+  --staff-on-brand: #ffffff;
+  --staff-on-danger: #ffffff;
 }
 
 html[data-theme-mode="dark"] {
   color-scheme: dark;
+  --staff-on-brand: #0a0d14;
+  --staff-on-danger: #1a0b0a;
 }
 
 html[data-theme-mode="system"] {
   color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme-mode="system"] {
+    --staff-on-brand: #0a0d14;
+    --staff-on-danger: #1a0b0a;
+  }
 }
 
 @theme inline {
