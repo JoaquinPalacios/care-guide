@@ -25,6 +25,12 @@ export const DEMO_PRINT_SAMPLE_NOTICE = "SAMPLE / NOT CLINICAL ADVICE";
 export const DEMO_RECOVERY_FIXTURE = {
   simulatedDay: 1,
   recoveryWindowDays: 7,
+  /**
+   * Explicit Day 0 calendar date for the product demo only.
+   * ISO `YYYY-MM-DD`. Never inferred from Date.now() or the browser clock.
+   * Day 1 of this fixture is therefore 11 Sep 2026.
+   */
+  simulatedStartDate: "2026-09-10",
 } as const;
 
 const DEMO_AFTERCARE_TENANT_SLUGS = new Set([DEMO_AFTERCARE_TENANT_SLUG]);

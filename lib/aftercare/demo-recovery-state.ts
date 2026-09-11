@@ -4,6 +4,8 @@ import { normalizeDayRange } from "@/lib/aftercare/timeline-range";
 export interface DemoRecoveryFixture {
   simulatedDay: number;
   recoveryWindowDays: number;
+  /** Explicit ISO `YYYY-MM-DD` for Day 0. Never inferred from the system clock. */
+  simulatedStartDate?: string;
 }
 
 export type TimelineStageStatus = "earlier" | "current" | "upcoming";
@@ -21,6 +23,7 @@ export interface ResolvedTimelineStage {
 export interface ResolvedRecoveryState {
   simulatedDay: number;
   windowDays: number;
+  simulatedStartDate: string | null;
   progress: number | null;
   hasTimeline: boolean;
   currentStage: ResolvedTimelineStage | null;
@@ -137,6 +140,7 @@ export function resolveDemoRecoveryState(
     (section) => section.kind === "RECOVERY_TIMELINE"
   );
   const simulatedDay = Math.max(0, fixture.simulatedDay);
+  const simulatedStartDate = fixture.simulatedStartDate ?? null;
   const parsedRanges = timelineSections.map((section, index) => {
     const structured = normalizeDayRange(section.startDay, section.endDay);
     if (structured.startDay !== null && structured.endDay !== null) {
@@ -163,6 +167,7 @@ export function resolveDemoRecoveryState(
     return {
       simulatedDay,
       windowDays,
+      simulatedStartDate,
       progress: null,
       hasTimeline: false,
       currentStage: null,
@@ -205,6 +210,7 @@ export function resolveDemoRecoveryState(
   return {
     simulatedDay,
     windowDays,
+    simulatedStartDate,
     progress: clamp(simulatedDay / windowDays, 0, 1),
     hasTimeline: true,
     currentStage,

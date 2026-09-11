@@ -2,18 +2,33 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useActionState,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   publishGuideAction,
   saveGuideDraftAction,
   type GuideActionState,
 } from "@/app/(staff)/(clinic-portal)/guides/actions";
+import { EditorLivePreview } from "@/app/(staff)/(clinic-portal)/guides/editor-live-preview";
+import {
+  TimelineAccordion,
+  type EditorSection,
+} from "@/app/(staff)/(clinic-portal)/guides/timeline-accordion";
 import { ConfirmDialog } from "@/app/(staff)/components/confirm-dialog";
+import { GuideStatusPills } from "@/app/(staff)/components/guide-status-pills";
 import { PortalBreadcrumb } from "@/app/(staff)/components/portal-breadcrumb";
 import { SaveStatus } from "@/app/(staff)/components/save-status";
 import { useUnsavedChangesGuard } from "@/app/(staff)/components/use-unsaved-changes-guard";
 import { formSaveStatus } from "@/lib/clinic-portal/form-save-status";
+import { formatPortalDate } from "@/lib/clinic-portal/format-portal-date";
+import { clinicGuideStatusPills } from "@/lib/clinic-portal/guide-status";
 import type { PracticeGuideEditorRecord } from "@/lib/clinic-portal/load-practice-guide-editor";
 import type { GuideSectionKind } from "@/lib/aftercare/types";
 
@@ -35,16 +50,6 @@ const WARNING_KINDS: GuideSectionKind[] = [
   "CONTACT_PRACTICE",
   "EMERGENCY",
 ];
-
-interface EditorSection {
-  key: string;
-  kind: GuideSectionKind;
-  title: string;
-  body: string;
-  periodLabel: string;
-  startDay: string;
-  endDay: string;
-}
 
 const emptyAction: GuideActionState = {};
 
@@ -79,6 +84,7 @@ export function GuideEditor({
   const router = useRouter();
   const errorSummaryRef = useRef<HTMLParagraphElement>(null);
   const pendingSnapshot = useRef<string>("");
+  const previewId = useId().replace(/:/g, "");
   const [title, setTitle] = useState(guide.title);
   const [publicSlug, setPublicSlug] = useState(guide.publicSlug);
   const [introduction, setIntroduction] = useState(guide.introduction ?? "");
@@ -86,6 +92,7 @@ export function GuideEditor({
     toEditorSections(guide.sections)
   );
   const [publishOpen, setPublishOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [saveState, saveAction, saving] = useActionState(
     saveGuideDraftAction,
     emptyAction
@@ -125,6 +132,19 @@ export function GuideEditor({
     discard,
   } = useUnsavedChangesGuard(dirty);
 
+  const timeline = sections.filter(
+    (section) => section.kind === "RECOVERY_TIMELINE"
+  );
+  const additional = sections.filter((section) =>
+    ADDITIONAL_KINDS.includes(section.kind)
+  );
+  const warnings = sections.filter((section) =>
+    WARNING_KINDS.includes(section.kind)
+  );
+  const [expandedStageKey, setExpandedStageKey] = useState<string | null>(
+    () => timeline[0]?.key ?? null
+  );
+
   useEffect(() => {
     setConfirmed(serverSerialized);
   }, [serverSerialized]);
@@ -156,16 +176,6 @@ export function GuideEditor({
     errorSummaryRef.current?.focus();
   }, [saveState]);
 
-  const timeline = sections.filter(
-    (section) => section.kind === "RECOVERY_TIMELINE"
-  );
-  const additional = sections.filter((section) =>
-    ADDITIONAL_KINDS.includes(section.kind)
-  );
-  const warnings = sections.filter((section) =>
-    WARNING_KINDS.includes(section.kind)
-  );
-
   function replaceGroup(
     predicate: (section: EditorSection) => boolean,
     nextGroup: EditorSection[]
@@ -188,8 +198,33 @@ export function GuideEditor({
     }));
   }
 
+  function addStage() {
+    const key = newKey("stage");
+    replaceGroup(
+      (section) => section.kind === "RECOVERY_TIMELINE",
+      [
+        ...timeline,
+        {
+          key,
+          kind: "RECOVERY_TIMELINE",
+          title: "New stage",
+          body: "Add recovery instructions for this period.",
+          periodLabel: "",
+          startDay: "",
+          endDay: "",
+        },
+      ]
+    );
+    setExpandedStageKey(key);
+  }
+
+  const sourceLabel = guide.template
+    ? `Template · ${guide.template.title}`
+    : "Custom guide";
+  const statusPills = clinicGuideStatusPills(guide.lifecycle);
+
   const actions = (
-    <>
+    <div className="staffEditorActions">
       <button
         type="button"
         className="staffBtn staffBtnQuiet"
@@ -217,12 +252,14 @@ export function GuideEditor({
           </button>
         </>
       ) : null}
-    </>
+    </div>
   );
 
+  const preview = <EditorLivePreview stages={timeline} />;
+
   return (
-    <div className="staffEditorPage mx-auto flex w-full max-w-5xl flex-col">
-      <header className="staffEditorChrome">
+    <div className="staffEditorPage mx-auto flex w-full max-w-6xl flex-col">
+      <header className="flex flex-col gap-3">
         <PortalBreadcrumb
           items={[
             { href: "/guides", label: "Guides" },
@@ -230,186 +267,220 @@ export function GuideEditor({
             { label: "Edit" },
           ]}
         />
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Edit guide
-            </h1>
-            <p className="mt-1 text-sm text-staff-muted">
-              {guide.statusLabel}
-              {guide.template
-                ? ` · Template ${guide.template.title}`
-                : " · Custom guide"}
-            </p>
-            <div className="mt-2">
-              <SaveStatus
-                status={saveStatus}
-                error={saveState.error ?? publishState.error}
-                success={
-                  publishState.ok
-                    ? "Guide published. Patients now see this version."
-                    : saveState.ok && !dirty
-                      ? "Draft saved. The public guide is unchanged until you publish."
-                      : undefined
-                }
-              />
-            </div>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {title || guide.title}
+          </h1>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <GuideStatusPills pills={statusPills} />
+            <p className="text-sm text-staff-muted">{sourceLabel}</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href={`/guides/${guide.id}/preview`}
-              className="staffBtn staffBtnSecondary"
-            >
-              Preview
-            </Link>
-            <div className="staffEditorActionsDesktop">{actions}</div>
-          </div>
+          <p className="mt-1 text-sm text-staff-muted">
+            Updated {formatPortalDate(guide.updatedAt)}
+          </p>
         </div>
       </header>
 
-      <form
-        id="guide-draft-form"
-        action={saveAction}
-        className="mt-6 flex flex-col gap-8"
-        onSubmit={() => {
-          pendingSnapshot.current = serialized;
-        }}
-      >
-        <input type="hidden" name="guideId" value={guide.id} />
-        <input
-          type="hidden"
-          name="sections"
-          value={JSON.stringify(payloadSections())}
-        />
+      <div className="staffEditorLayout mt-8">
+        <form
+          id="guide-draft-form"
+          action={saveAction}
+          className="flex flex-col gap-8"
+          onSubmit={() => {
+            pendingSnapshot.current = serialized;
+          }}
+        >
+          <input type="hidden" name="guideId" value={guide.id} />
+          <input
+            type="hidden"
+            name="sections"
+            value={JSON.stringify(payloadSections())}
+          />
 
-        <EditorSectionHeading title="Basics">
-          <Field label="Guide title" htmlFor="title">
-            <input
-              id="title"
-              name="title"
-              data-guide-field
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              disabled={!canEdit}
-              aria-invalid={saveState.fieldErrors?.title ? "true" : "false"}
-              className={fieldClass}
-            />
-            <FieldError message={saveState.fieldErrors?.title} />
-          </Field>
-          <Field label="Public slug" htmlFor="publicSlug">
-            <input
-              id="publicSlug"
-              name="publicSlug"
-              data-guide-field
-              value={publicSlug}
-              onChange={(event) => setPublicSlug(event.target.value)}
-              disabled={!canEdit || guide.isPublished}
-              aria-invalid={
-                saveState.fieldErrors?.publicSlug ? "true" : "false"
-              }
-              className={fieldClass}
-            />
-            <p className="text-sm text-staff-muted">
-              Patient URL:{" "}
-              {patientUrlExample.replace(/\/[^/]*$/, `/${publicSlug || "…"}`)}
-            </p>
-            {guide.isPublished ? (
+          <EditorSectionHeading title="Basics">
+            <Field label="Guide title" htmlFor="title">
+              <input
+                id="title"
+                name="title"
+                data-guide-field
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                disabled={!canEdit}
+                aria-invalid={saveState.fieldErrors?.title ? "true" : "false"}
+                className="staffField"
+              />
+              <FieldError message={saveState.fieldErrors?.title} />
+            </Field>
+            <Field label="Public slug" htmlFor="publicSlug">
+              <input
+                id="publicSlug"
+                name="publicSlug"
+                data-guide-field
+                value={publicSlug}
+                onChange={(event) => setPublicSlug(event.target.value)}
+                disabled={!canEdit || guide.isPublished}
+                aria-invalid={
+                  saveState.fieldErrors?.publicSlug ? "true" : "false"
+                }
+                className="staffField staffFieldNarrow"
+              />
               <p className="text-sm text-staff-muted">
-                The published public URL is protected so existing patient links
-                keep working.
+                Patient URL:{" "}
+                {patientUrlExample.replace(/\/[^/]*$/, `/${publicSlug || "…"}`)}
+              </p>
+              {guide.isPublished ? (
+                <p className="text-sm text-staff-muted">
+                  The published public URL is protected so existing patient
+                  links keep working.
+                </p>
+              ) : null}
+              <FieldError message={saveState.fieldErrors?.publicSlug} />
+            </Field>
+            <Field label="Short introduction" htmlFor="introduction">
+              <textarea
+                id="introduction"
+                name="introduction"
+                data-guide-field
+                value={introduction}
+                onChange={(event) => setIntroduction(event.target.value)}
+                disabled={!canEdit}
+                rows={4}
+                aria-invalid={
+                  saveState.fieldErrors?.introduction ? "true" : "false"
+                }
+                className="staffField h-auto py-2"
+              />
+              <FieldError message={saveState.fieldErrors?.introduction} />
+            </Field>
+          </EditorSectionHeading>
+
+          <EditorSectionHeading title="Timeline">
+            <TimelineAccordion
+              stages={timeline}
+              disabled={!canEdit}
+              expandedKey={expandedStageKey}
+              onExpandedKeyChange={setExpandedStageKey}
+              onChange={(next) =>
+                replaceGroup(
+                  (section) => section.kind === "RECOVERY_TIMELINE",
+                  next
+                )
+              }
+            />
+            {canEdit ? (
+              <button
+                type="button"
+                onClick={addStage}
+                className="staffBtn staffBtnSecondary self-start"
+              >
+                Add stage
+              </button>
+            ) : null}
+          </EditorSectionHeading>
+
+          <EditorSectionHeading title="Additional guidance">
+            <GenericSectionEditor
+              sections={additional}
+              kinds={ADDITIONAL_KINDS}
+              disabled={!canEdit}
+              addLabel="Add guidance"
+              onChange={(next) =>
+                replaceGroup(
+                  (section) => ADDITIONAL_KINDS.includes(section.kind),
+                  next
+                )
+              }
+            />
+          </EditorSectionHeading>
+
+          <EditorSectionHeading title="Warnings / contact">
+            <GenericSectionEditor
+              sections={warnings}
+              kinds={WARNING_KINDS}
+              disabled={!canEdit}
+              addLabel="Add warning or contact section"
+              onChange={(next) =>
+                replaceGroup(
+                  (section) => WARNING_KINDS.includes(section.kind),
+                  next
+                )
+              }
+            />
+          </EditorSectionHeading>
+
+          {saveState.error || saveState.fieldErrors?.sections ? (
+            <p
+              ref={errorSummaryRef}
+              className="text-sm text-red-600"
+              role="alert"
+              tabIndex={-1}
+            >
+              {saveState.error ?? saveState.fieldErrors?.sections}
+            </p>
+          ) : null}
+
+          {canEdit ? null : (
+            <p className="text-sm text-staff-muted">
+              Staff can view this guide but cannot edit it.
+            </p>
+          )}
+        </form>
+
+        <aside className="staffEditorRail" aria-label="Guide actions">
+          <div className="staffEditorRailCard">
+            <SaveStatus
+              status={saveStatus}
+              error={saveState.error ?? publishState.error}
+              success={
+                publishState.ok
+                  ? "Guide published. Patients now see this version."
+                  : saveState.ok && !dirty
+                    ? "Draft saved. The public guide is unchanged until you publish."
+                    : undefined
+              }
+            />
+            <Link
+              href={`/guides/${guide.id}/preview`}
+              className="staffBtn staffBtnQuiet self-start px-0"
+            >
+              Preview
+            </Link>
+            <div className="hidden lg:flex">{actions}</div>
+            {canEdit && dirty ? (
+              <p className="text-sm text-staff-muted">
+                Save the current draft before publishing.
               </p>
             ) : null}
-            <FieldError message={saveState.fieldErrors?.publicSlug} />
-          </Field>
-          <Field label="Short introduction" htmlFor="introduction">
-            <textarea
-              id="introduction"
-              name="introduction"
-              data-guide-field
-              value={introduction}
-              onChange={(event) => setIntroduction(event.target.value)}
-              disabled={!canEdit}
-              rows={4}
-              aria-invalid={
-                saveState.fieldErrors?.introduction ? "true" : "false"
-              }
-              className={`${fieldClass} h-auto py-2`}
-            />
-            <FieldError message={saveState.fieldErrors?.introduction} />
-          </Field>
-        </EditorSectionHeading>
-
-        <EditorSectionHeading title="Timeline">
-          <TimelineEditor
-            stages={timeline}
-            disabled={!canEdit}
-            onChange={(next) =>
-              replaceGroup(
-                (section) => section.kind === "RECOVERY_TIMELINE",
-                next
-              )
-            }
-          />
-        </EditorSectionHeading>
-
-        <EditorSectionHeading title="Additional guidance">
-          <GenericSectionEditor
-            sections={additional}
-            kinds={ADDITIONAL_KINDS}
-            disabled={!canEdit}
-            addLabel="Add guidance"
-            onChange={(next) =>
-              replaceGroup(
-                (section) => ADDITIONAL_KINDS.includes(section.kind),
-                next
-              )
-            }
-          />
-        </EditorSectionHeading>
-
-        <EditorSectionHeading title="Warnings / contact">
-          <GenericSectionEditor
-            sections={warnings}
-            kinds={WARNING_KINDS}
-            disabled={!canEdit}
-            addLabel="Add warning or contact section"
-            onChange={(next) =>
-              replaceGroup(
-                (section) => WARNING_KINDS.includes(section.kind),
-                next
-              )
-            }
-          />
-        </EditorSectionHeading>
-
-        {saveState.error || saveState.fieldErrors?.sections ? (
-          <p
-            ref={errorSummaryRef}
-            className="text-sm text-red-600"
-            role="alert"
-            tabIndex={-1}
-          >
-            {saveState.error ?? saveState.fieldErrors?.sections}
-          </p>
-        ) : null}
-
-        {canEdit ? null : (
-          <p className="text-sm text-staff-muted">
-            Staff can view this guide but cannot edit it.
-          </p>
-        )}
-      </form>
+          </div>
+          <div className="hidden lg:block">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
+              Live patient timeline
+            </p>
+            {preview}
+          </div>
+          <div className="staffEditorPreviewToggle lg:hidden">
+            <button
+              type="button"
+              className="staffBtn staffBtnSecondary w-full"
+              aria-expanded={previewOpen}
+              aria-controls={`mobile-preview-${previewId}`}
+              onClick={() => setPreviewOpen((open) => !open)}
+            >
+              Preview patient timeline
+            </button>
+          </div>
+          {previewOpen ? (
+            <div id={`mobile-preview-${previewId}`} className="lg:hidden">
+              {preview}
+            </div>
+          ) : null}
+        </aside>
+      </div>
 
       {canEdit ? (
         <form id="guide-publish-form" action={publishAction} className="hidden">
           <input type="hidden" name="guideId" value={guide.id} />
         </form>
-      ) : null}
-
-      {canEdit && dirty ? (
-        <p className="mt-4 text-sm text-staff-muted">
-          Save the current draft before publishing.
-        </p>
       ) : null}
 
       <div className="staffEditorActionsMobile">{actions}</div>
@@ -443,9 +514,6 @@ export function GuideEditor({
     </div>
   );
 }
-
-const fieldClass =
-  "h-11 w-full rounded-md border border-staff-line bg-staff-panel px-3 text-sm text-staff-ink focus:border-staff-brand focus:ring-2 focus:ring-staff-brand/20 focus-visible:outline-none disabled:opacity-60";
 
 function Field({
   label,
@@ -485,154 +553,6 @@ function EditorSectionHeading({
       <h2 className="text-base font-semibold tracking-tight">{title}</h2>
       {children}
     </section>
-  );
-}
-
-function TimelineEditor({
-  stages,
-  disabled,
-  onChange,
-}: {
-  stages: EditorSection[];
-  disabled: boolean;
-  onChange: (stages: EditorSection[]) => void;
-}) {
-  function update(index: number, patch: Partial<EditorSection>) {
-    onChange(
-      stages.map((stage, current) =>
-        current === index ? { ...stage, ...patch } : stage
-      )
-    );
-  }
-
-  function move(index: number, direction: -1 | 1) {
-    const next = index + direction;
-    if (next < 0 || next >= stages.length) {
-      return;
-    }
-    const copy = [...stages];
-    const [removed] = copy.splice(index, 1);
-    copy.splice(next, 0, removed);
-    onChange(copy);
-  }
-
-  return (
-    <div className="flex flex-col gap-4">
-      {stages.map((stage, index) => (
-        <article
-          key={stage.key}
-          className="flex flex-col gap-3 rounded-lg border border-staff-line p-4"
-        >
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Period label" htmlFor={`${stage.key}-period`}>
-              <input
-                id={`${stage.key}-period`}
-                value={stage.periodLabel}
-                onChange={(event) =>
-                  update(index, { periodLabel: event.target.value })
-                }
-                disabled={disabled}
-                className={fieldClass}
-              />
-            </Field>
-            <Field label="Title" htmlFor={`${stage.key}-title`}>
-              <input
-                id={`${stage.key}-title`}
-                value={stage.title}
-                onChange={(event) =>
-                  update(index, { title: event.target.value })
-                }
-                disabled={disabled}
-                className={fieldClass}
-              />
-            </Field>
-            <Field label="Start day" htmlFor={`${stage.key}-start`}>
-              <input
-                id={`${stage.key}-start`}
-                inputMode="numeric"
-                value={stage.startDay}
-                onChange={(event) =>
-                  update(index, { startDay: event.target.value })
-                }
-                disabled={disabled}
-                className={fieldClass}
-              />
-            </Field>
-            <Field label="End day" htmlFor={`${stage.key}-end`}>
-              <input
-                id={`${stage.key}-end`}
-                inputMode="numeric"
-                value={stage.endDay}
-                onChange={(event) =>
-                  update(index, { endDay: event.target.value })
-                }
-                disabled={disabled}
-                className={fieldClass}
-              />
-            </Field>
-          </div>
-          <Field label="Instructions" htmlFor={`${stage.key}-body`}>
-            <textarea
-              id={`${stage.key}-body`}
-              value={stage.body}
-              onChange={(event) => update(index, { body: event.target.value })}
-              disabled={disabled}
-              rows={4}
-              className={`${fieldClass} h-auto py-2`}
-            />
-          </Field>
-          {disabled ? null : (
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => move(index, -1)}
-                className="staffBtn staffBtnSecondary"
-              >
-                Move up
-              </button>
-              <button
-                type="button"
-                onClick={() => move(index, 1)}
-                className="staffBtn staffBtnSecondary"
-              >
-                Move down
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  onChange(stages.filter((_, current) => current !== index))
-                }
-                className="staffBtn staffBtnSecondary"
-              >
-                Remove stage
-              </button>
-            </div>
-          )}
-        </article>
-      ))}
-      {disabled ? null : (
-        <button
-          type="button"
-          onClick={() =>
-            onChange([
-              ...stages,
-              {
-                key: newKey("stage"),
-                kind: "RECOVERY_TIMELINE",
-                title: "New stage",
-                body: "Add recovery instructions for this period.",
-                periodLabel: "",
-                startDay: "",
-                endDay: "",
-              },
-            ])
-          }
-          className="staffBtn staffBtnSecondary self-start"
-        >
-          Add stage
-        </button>
-      )}
-    </div>
   );
 }
 
@@ -686,7 +606,7 @@ function GenericSectionEditor({
                   })
                 }
                 disabled={disabled}
-                className={fieldClass}
+                className="staffSelect"
               >
                 {kinds.map((kind) => (
                   <option key={kind} value={kind}>
@@ -703,7 +623,7 @@ function GenericSectionEditor({
                   update(index, { title: event.target.value })
                 }
                 disabled={disabled}
-                className={fieldClass}
+                className="staffField"
               />
             </Field>
           </div>
@@ -714,7 +634,7 @@ function GenericSectionEditor({
               onChange={(event) => update(index, { body: event.target.value })}
               disabled={disabled}
               rows={4}
-              className={`${fieldClass} h-auto py-2`}
+              className="staffField h-auto py-2"
             />
           </Field>
           {disabled ? null : (
