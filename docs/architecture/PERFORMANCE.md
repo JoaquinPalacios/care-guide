@@ -1133,3 +1133,11 @@ Measured 2026-09-11 against `cursor/portal-editor-practice-polish-2a3-a53d` prod
 | Portal shell | `0bevipaj31uil.js` | 16,883 | 6,129  | 5,352     | chrome + logout + appearance |
 
 Patient demo island `3u_l-4ffhn4i4.js` remains **4,818 raw**. Tenant still has no Tailwind.
+
+## Phase 2A.4 overflow / preview theme / logo sanitizer — 2026-09-12
+
+Staff-only islands plus a **server-only** SVG sanitizer (`jsdom` + `dompurify`). Those packages are listed in `serverExternalPackages` and are not imported from patient Client Components.
+
+Patient CSS grew by about **126 raw bytes** for scoped `data-patient-theme` / `color-scheme` rules so authenticated preview can isolate clinic appearance. Playwright tenant CSS budget is **17,664** raw (was 17,408). Gzip and Brotli stay inside the previous ceilings.
+
+DOMPurify/jsdom must not appear in tenant client JS. Preview appearance control is a tiny staff Client Component (`StaffPreviewShell`); the public tenant renderer remains server-first.

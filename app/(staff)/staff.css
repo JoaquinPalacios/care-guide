@@ -163,27 +163,28 @@ body {
 }
 
 html[data-theme-mode="dark"] .staffBtnSecondary {
-  color-scheme: only light;
-  background: #151822;
-  border-color: #2a3140;
-  color: #f3f4f8;
+  background: #0c0e14;
+  border-color: #8ea0ff;
+  color: #ffffff;
 }
 
 html[data-theme-mode="dark"] .staffBtnSecondary:hover:not(:disabled) {
-  border-color: #8ea0ff;
-  color: #8ea0ff;
+  background: #151822;
+  border-color: #a6b8ff;
+  color: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
   html[data-theme-mode="system"] .staffBtnSecondary {
-    background: #151822;
-    border-color: #2a3140;
-    color: #f3f4f8;
+    background: #0c0e14;
+    border-color: #8ea0ff;
+    color: #ffffff;
   }
 
   html[data-theme-mode="system"] .staffBtnSecondary:hover:not(:disabled) {
-    border-color: #8ea0ff;
-    color: #8ea0ff;
+    background: #151822;
+    border-color: #a6b8ff;
+    color: #ffffff;
   }
 }
 
@@ -883,6 +884,7 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .staffBtn,
   .staffAccordionPanel {
     transition: none;
   }

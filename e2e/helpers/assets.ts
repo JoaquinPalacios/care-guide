@@ -176,7 +176,7 @@ export function expectCssWithinPhase1Budget(css: AssetMeasurement[]): void {
 
   // UX polish: restrained guide-card and inactive-tab hover. No Tailwind.
   // Review if tenant CSS grows well beyond the last measured payload.
-  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(17_408);
+  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(17_664);
   expect(gzip, `CSS gzip ${gzip}`).toBeLessThanOrEqual(4_500);
   expect(brotli, `CSS brotli ${brotli}`).toBeLessThanOrEqual(4_000);
 }

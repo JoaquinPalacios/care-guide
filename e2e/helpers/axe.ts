@@ -22,21 +22,80 @@ export async function setPortalColorScheme(
         .getByRole("radio", { name: scheme === "dark" ? "Dark" : "Light" })
         .click();
     }
-    await expect(page.locator("html")).toHaveAttribute(
-      "data-theme-mode",
-      scheme
-    );
-    return;
+  } else {
+    await page.evaluate((mode) => {
+      try {
+        window.localStorage.setItem("aftercare-guide-portal-theme", mode);
+      } catch {
+        // Ignore storage failures in restricted contexts.
+      }
+      document.documentElement.setAttribute("data-theme-mode", mode);
+    }, scheme);
   }
 
-  await page.evaluate((mode) => {
-    try {
-      window.localStorage.setItem("aftercare-guide-portal-theme", mode);
-    } catch {
-      // Ignore storage failures in restricted contexts.
-    }
-    document.documentElement.setAttribute("data-theme-mode", mode);
-  }, scheme);
+  await expect(page.locator("html")).toHaveAttribute("data-theme-mode", scheme);
+  await expect
+    .poll(async () =>
+      page
+        .locator("html")
+        .evaluate((element) => getComputedStyle(element).colorScheme)
+    )
+    .toBe(scheme);
+  await expect
+    .poll(async () =>
+      page.evaluate((mode) => {
+        const parseRgb = (value: string) => {
+          const match = value.match(
+            /rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/
+          );
+          if (!match) {
+            return null;
+          }
+          return {
+            r: Number(match[1]) / 255,
+            g: Number(match[2]) / 255,
+            b: Number(match[3]) / 255,
+          };
+        };
+        const luminance = (rgb: { r: number; g: number; b: number }) =>
+          0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b;
+
+        const visible = [
+          ...document.querySelectorAll(".staffBtnSecondary"),
+        ].filter(
+          (element): element is HTMLButtonElement =>
+            element instanceof HTMLButtonElement &&
+            !element.disabled &&
+            element.checkVisibility({
+              opacityProperty: true,
+              visibilityProperty: true,
+              contentVisibilityAuto: true,
+            })
+        );
+        if (visible.length === 0) {
+          return true;
+        }
+        return visible.every((element) => {
+          const style = getComputedStyle(element);
+          const background = parseRgb(style.backgroundColor);
+          const foreground = parseRgb(style.color);
+          if (!background || !foreground) {
+            return false;
+          }
+          const backgroundLum = luminance(background);
+          const foregroundLum = luminance(foreground);
+          const lighter = Math.max(backgroundLum, foregroundLum);
+          const darker = Math.min(backgroundLum, foregroundLum);
+          const contrast = (lighter + 0.05) / (darker + 0.05);
+          const backgroundSettled =
+            mode === "dark" ? backgroundLum < 0.3 : backgroundLum > 0.7;
+          const foregroundSettled =
+            mode === "dark" ? foregroundLum > 0.7 : foregroundLum < 0.3;
+          return backgroundSettled && foregroundSettled && contrast >= 4.5;
+        });
+      }, scheme)
+    )
+    .toBe(true);
 }
 
 export async function expectNoSeriousAxeViolations(
