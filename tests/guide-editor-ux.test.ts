@@ -27,5 +27,6 @@ describe("guide editor UX", () => {
     expect(editor).not.toContain("window.confirm");
     expect(editor).toContain("slugLocked");
     expect(editor).toContain('<input type="hidden" name="publicSlug"');
+    expect(editor).toContain("ignoreNextServerSnapshot");
   });
 });

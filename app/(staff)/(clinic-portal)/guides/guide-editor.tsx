@@ -128,6 +128,7 @@ export function GuideEditor({
   const [confirmed, setConfirmed] = useState(serverSerialized);
   const dirty = serialized !== confirmed;
   const saveStatus = formSaveStatus({ dirty, pending: saving });
+  const ignoreNextServerSnapshot = useRef(false);
   const {
     open: discardOpen,
     requestLeave,
@@ -149,12 +150,17 @@ export function GuideEditor({
   );
 
   useEffect(() => {
+    if (ignoreNextServerSnapshot.current) {
+      ignoreNextServerSnapshot.current = false;
+      return;
+    }
     setConfirmed(serverSerialized);
   }, [serverSerialized]);
 
   useEffect(() => {
     if (saveState.ok) {
       setConfirmed(pendingSnapshot.current);
+      ignoreNextServerSnapshot.current = true;
       router.refresh();
     }
   }, [saveState, router]);
@@ -261,19 +267,20 @@ export function GuideEditor({
             guideId={guide.id}
             destructiveAction={clinicGuideDestructiveAction(guide.lifecycle)}
             onDiscarded={(restored) => {
+              const restoredSections = toEditorSections(restored.sections);
               setTitle(restored.title);
               setPublicSlug(restored.publicSlug);
               setIntroduction(restored.introduction);
-              setSections(toEditorSections(restored.sections));
+              setSections(restoredSections);
               setConfirmed(
                 JSON.stringify({
                   title: restored.title,
                   publicSlug: restored.publicSlug,
                   introduction: restored.introduction,
-                  sections: toEditorSections(restored.sections),
+                  sections: restoredSections,
                 })
               );
-              router.refresh();
+              ignoreNextServerSnapshot.current = true;
             }}
           />
         </>

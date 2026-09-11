@@ -914,19 +914,20 @@ test.describe("clinic portal UX polish", () => {
     page,
   }) => {
     await signInAsLocalAdmin(page);
-    await page.goto(staffUrl("/guides"), { waitUntil: "load" });
-    await page.getByRole("link", { name: "Edit" }).first().click();
-    await expect(page).toHaveURL(/\/guides\/.+\/edit/);
+    await page.goto(
+      staffUrl("/guides/practice_guide_demo_rivers_extraction/edit"),
+      { waitUntil: "load" }
+    );
     const title = page.getByLabel("Guide title");
-    const original = await title.inputValue();
-    await title.fill(`${original} draft change`);
+    const publishedTitle = "Tooth Extraction";
+    await title.fill(`${publishedTitle} draft change`);
     await page
       .getByRole("button", { name: "Save draft" })
       .filter({ visible: true })
       .click();
     await expect(page.getByText("Please review the form")).toHaveCount(0);
-    await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await expect(page.getByText("Draft changes").first()).toBeVisible();
+    await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await page
       .locator(".staffEditorToolbarActions")
       .getByRole("button", { name: "More actions" })
@@ -943,7 +944,7 @@ test.describe("clinic portal UX polish", () => {
       path: "test-results/artifacts/staff-editor-discard-dialog.png",
     });
     await dialog.getByRole("button", { name: "Discard changes" }).click();
-    await expect(title).toHaveValue(original);
+    await expect(title).toHaveValue(publishedTitle);
     await expect(page.getByText("Draft changes")).toHaveCount(0);
     await expect(
       page.locator(".staffEditorToolbarActions").getByRole("button", {
