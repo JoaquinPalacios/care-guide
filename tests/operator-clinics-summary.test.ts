@@ -7,24 +7,12 @@ describe("operator clinic summary", () => {
     expect(
       summarizeOperatorClinics([
         {
-          id: "clinic_a",
-          name: "Riverside",
-          displayName: "Riverside Dental Demo",
-          slug: "demodental",
-          guideCount: 2,
           publishedGuideCount: 1,
           setupLabel: "Configured",
-          updatedAt: new Date("2026-09-11"),
         },
         {
-          id: "clinic_b",
-          name: "Harbor",
-          displayName: "Harbor Family Dental",
-          slug: "harbor",
-          guideCount: 1,
           publishedGuideCount: 0,
           setupLabel: "Needs attention",
-          updatedAt: new Date("2026-09-11"),
         },
       ])
     ).toEqual({

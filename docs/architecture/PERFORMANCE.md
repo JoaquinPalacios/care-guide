@@ -1119,3 +1119,17 @@ Measured 2026-09-11 against `cursor/portal-editor-practice-polish-57d2` producti
 | `3ezgriosqx2_q.js` | Operator appearance + logout                                              | 11,306 |   4,548 |      3,972 |             0 |
 
 The guide-editor increase is the exclusive timeline accordion plus the compact live patient timeline preview. Playwright patient CSS budget still passed on this revision.
+
+## Phase 2A.3 editor composition / practice overflow / operator polish — 2026-09-11
+
+Staff-only islands. No new UI, dialog, or image-processing library. Native `<dialog>` styling only. Patient demo island **unchanged**.
+
+Measured 2026-09-11 against `cursor/portal-editor-practice-polish-2a3-a53d` production `next build` (Next.js 16.3.4 / Turbopack), then reconciled onto rewritten Phase 2A.2 on `main`.
+
+| Island       | Chunk              | raw    | gzip-9 | brotli-11 | vs Phase 2A.2 cloud lineage  |
+| ------------ | ------------------ | ------ | ------ | --------- | ---------------------------- |
+| Guide editor | `1kt9kssn1xh0d.js` | 26,321 | 7,776  | 6,820     | 26,533 → **−212**            |
+| Practice     | `2_l5j804g3jw9.js` | 15,492 | 4,731  | 4,055     | 15,846 → **−354**            |
+| Portal shell | `0bevipaj31uil.js` | 16,883 | 6,129  | 5,352     | chrome + logout + appearance |
+
+Patient demo island `3u_l-4ffhn4i4.js` remains **4,818 raw**. Tenant still has no Tailwind.

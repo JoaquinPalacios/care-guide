@@ -219,6 +219,13 @@ test.describe("clinic portal", () => {
       path: "docs/product/artifacts/phase-2a.2/practice-colour-and-selects-1440.png",
     });
     await expectNoSeriousAxeViolations(page);
+    await page.evaluate(() => {
+      document.documentElement.setAttribute("data-theme-mode", "dark");
+    });
+    await expectNoSeriousAxeViolations(page);
+    await page.evaluate(() => {
+      document.documentElement.setAttribute("data-theme-mode", "light");
+    });
 
     await page.setViewportSize({ width: 390, height: 844 });
     await expectNoHorizontalOverflow(page);
@@ -270,11 +277,18 @@ test.describe("clinic portal", () => {
       path: "test-results/artifacts/staff-guide-editor-1440.png",
       fullPage: true,
     });
+    await expectNoSeriousAxeViolations(page);
+    await page.evaluate(() => {
+      document.documentElement.setAttribute("data-theme-mode", "dark");
+    });
+    await expectNoSeriousAxeViolations(page);
+    await page.evaluate(() => {
+      document.documentElement.setAttribute("data-theme-mode", "light");
+    });
     await page.screenshot({
       path: "docs/product/artifacts/phase-2a.2/guide-editor-desktop-1440.png",
       fullPage: true,
     });
-    await expectNoSeriousAxeViolations(page);
 
     await page.setViewportSize({ width: 768, height: 1024 });
     await expectNoHorizontalOverflow(page);
@@ -373,10 +387,18 @@ test.describe("platform operator", () => {
       page.getByRole("complementary").getByText("Platform operator").first()
     ).toBeVisible();
     await expect(page.getByRole("table")).toBeVisible();
-    await expect(page.getByText("Total clinics")).toBeVisible();
-    await expect(page.getByText("Configured clinics")).toBeVisible();
-    await expect(page.getByText("Published guides")).toBeVisible();
-    await expect(page.getByText("Needs attention")).toBeVisible();
+    await expect(
+      page.locator(".staffOperatorStat dt", { hasText: "Total clinics" })
+    ).toBeVisible();
+    await expect(
+      page.locator(".staffOperatorStat dt", { hasText: "Configured clinics" })
+    ).toBeVisible();
+    await expect(
+      page.locator(".staffOperatorStat dt", { hasText: "Published guides" })
+    ).toBeVisible();
+    await expect(
+      page.locator(".staffOperatorStat dt", { hasText: "Needs attention" })
+    ).toBeVisible();
     await expect(
       page
         .getByRole("navigation", { name: "Platform" })
@@ -389,6 +411,13 @@ test.describe("platform operator", () => {
       fullPage: true,
     });
     await expectNoSeriousAxeViolations(page);
+    await page.evaluate(() => {
+      document.documentElement.setAttribute("data-theme-mode", "dark");
+    });
+    await expectNoSeriousAxeViolations(page);
+    await page.evaluate(() => {
+      document.documentElement.setAttribute("data-theme-mode", "light");
+    });
 
     await page.getByRole("link", { name: "Riverside Dental Demo" }).click();
     await expect(
@@ -409,6 +438,13 @@ test.describe("platform operator", () => {
       fullPage: true,
     });
     await expectNoSeriousAxeViolations(page);
+    await page.evaluate(() => {
+      document.documentElement.setAttribute("data-theme-mode", "dark");
+    });
+    await expectNoSeriousAxeViolations(page);
+    await page.evaluate(() => {
+      document.documentElement.setAttribute("data-theme-mode", "light");
+    });
     await page.getByRole("link", { name: "Back to all clinics" }).click();
     await expect(page).toHaveURL(staffUrl("/operator/clinics"));
   });
@@ -461,19 +497,15 @@ test.describe("clinic portal UX polish", () => {
     await page.screenshot({
       path: "test-results/artifacts/staff-guide-editor-cancel-dialog-1440.png",
     });
-    await page
-      .locator("aside")
-      .getByRole("button", { name: /Appearance, colour theme currently/ })
-      .click();
-    await page.getByRole("radio", { name: "Dark" }).click();
+    await page.evaluate(() => {
+      document.documentElement.setAttribute("data-theme-mode", "dark");
+    });
     await page.screenshot({
       path: "test-results/artifacts/staff-guide-editor-cancel-dialog-dark-1440.png",
     });
-    await page
-      .locator("aside")
-      .getByRole("button", { name: /Appearance, colour theme currently/ })
-      .click();
-    await page.getByRole("radio", { name: "Light" }).click();
+    await page.evaluate(() => {
+      document.documentElement.setAttribute("data-theme-mode", "light");
+    });
     await discardDialog.getByRole("button", { name: "Keep editing" }).click();
     await expect(discardDialog).toHaveCount(0);
     await expect(page).toHaveURL(/\/guides\/.+\/edit/);
@@ -696,6 +728,9 @@ test.describe("clinic portal UX polish", () => {
         height: viewport.height,
       });
       const metrics = await measureHorizontalOverflow(page);
+      console.log(
+        `practice overflow ${viewport.width}x${viewport.height} scrollWidth=${metrics.scrollWidth} clientWidth=${metrics.clientWidth}`
+      );
       expect(
         metrics.scrollWidth,
         `${viewport.width}x${viewport.height} scrollWidth=${metrics.scrollWidth} clientWidth=${metrics.clientWidth}`
