@@ -266,7 +266,7 @@ describe("tenant homepage", () => {
     expect(metadata.title).toBe(
       "Riverside Dental Demo — Post-treatment instructions"
     );
-    expect(metadata.robots).toEqual({ index: false, follow: false });
+    expect(metadata.robots).toEqual({ index: false, follow: true });
     expect(metadata.alternates?.canonical).toBe(
       "http://demodental.localhost:3000/"
     );

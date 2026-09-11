@@ -41,7 +41,8 @@ export async function generateMetadata({
 
   return aftercarePageMetadata({
     title,
-    description: `${instructionLabel(listed.profile?.instructionTerminology)} from ${displayName}. Revisit this page after treatment for practice-branded recovery information.`,
+    description: `${instructionLabel(listed.profile?.instructionTerminology)} from ${displayName}.`,
+    siteName: displayName,
     canonicalUrl: await publicTenantCanonicalUrl("/"),
   });
 }

@@ -162,10 +162,12 @@ test.describe("tenant homepage and guide", () => {
       .locator('meta[name="robots"]')
       .getAttribute("content");
     expect(homeRobots).toMatch(/noindex/i);
-    expect(homeRobots).toMatch(/nofollow/i);
+    expect(homeRobots).not.toMatch(/nofollow/i);
 
     await page.goto(EXTRACTION, { waitUntil: "load" });
-    await expect(page).toHaveTitle("Tooth Extraction · Riverside Dental Demo");
+    await expect(page).toHaveTitle(
+      "Tooth Extraction Post-treatment | Riverside Dental Demo"
+    );
     const guideRobots = await page
       .locator('meta[name="robots"]')
       .getAttribute("content");

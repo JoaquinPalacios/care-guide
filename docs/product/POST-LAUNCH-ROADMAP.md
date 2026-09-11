@@ -63,6 +63,12 @@ Current roles remain Clinic ADMIN and Clinic STAFF only.
 
 The operator console currently exposes **Clinics** only. Canonical template management is the next operator-console capability. Do not add a dead Templates navigation item before that work exists.
 
+SEO/search metadata should later live on Guide Template defaults, optional clinic Guide overrides, and Practice identity — not a miscellaneous Operator SEO tab. Do not add an empty SEO screen.
+
+### Future per-guide search visibility
+
+Launch tenant pages are `noindex`. A later explicit field (for example `searchVisibility: PRIVATE_FROM_SEARCH | INDEXABLE`, default `PRIVATE_FROM_SEARCH`) would let a clinic opt a published guide into indexing, with operator policy above it. Do not add that schema until the opt-in UI exists. See [SEO.md](../architecture/SEO.md).
+
 ---
 
 ## Launch vs post-launch

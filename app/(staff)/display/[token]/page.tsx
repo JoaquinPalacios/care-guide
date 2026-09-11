@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { DisplayLiveRefresh } from "@/app/(staff)/display/[token]/display-live-refresh";
+import { PRIVATE_ROBOTS } from "@/lib/seo/robots-policy";
 import { loadPatientDisplay } from "@/lib/sessions/load-patient-display";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +10,7 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Patient display",
   description: "Patient-facing procedure display. Token-scoped and read-only.",
-  robots: { index: false, follow: false },
+  robots: PRIVATE_ROBOTS,
 };
 
 interface DisplayPageProps {

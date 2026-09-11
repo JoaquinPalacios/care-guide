@@ -14,7 +14,9 @@ import { marketingPublicLinks } from "@/lib/marketing/public-links";
 
 import styles from "../../marketing.module.css";
 
-export const metadata = marketingPageMetadata(CONTACT_METADATA);
+export const metadata = marketingPageMetadata(CONTACT_METADATA, {
+  pathname: "/contact",
+});
 
 export default async function MarketingContactPage() {
   const { demoHref, staffHref } = await marketingPublicLinks();

@@ -19,6 +19,8 @@ import { timelineSectionsOf } from "@/lib/aftercare/section-body";
 import {
   aftercarePageMetadata,
   publicTenantCanonicalUrl,
+  tenantGuideDescription,
+  tenantGuideDocumentTitle,
 } from "@/lib/aftercare/tenant-metadata";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -48,8 +50,17 @@ export async function generateMetadata({
   const displayName = document.profile?.displayName ?? document.clinic.name;
 
   return aftercarePageMetadata({
-    title: `${document.title} · ${displayName}`,
-    description: `${document.title} ${instructionLabel(document.profile?.instructionTerminology).toLowerCase()} from ${displayName}.`,
+    title: tenantGuideDocumentTitle(
+      document.title,
+      displayName,
+      document.profile?.instructionTerminology
+    ),
+    description: tenantGuideDescription(
+      document.title,
+      displayName,
+      document.profile?.instructionTerminology
+    ),
+    siteName: displayName,
     canonicalUrl: await publicTenantCanonicalUrl(
       `/${document.practiceGuide.publicSlug}`
     ),

@@ -25,7 +25,9 @@ import { editorialRevealDelay } from "@/lib/marketing/reveal-timing";
 
 import styles from "../../marketing.module.css";
 
-export const metadata = marketingPageMetadata(PRICING_METADATA);
+export const metadata = marketingPageMetadata(PRICING_METADATA, {
+  pathname: "/pricing",
+});
 
 export default async function MarketingPricingPage() {
   const { staffHref } = await marketingPublicLinks();

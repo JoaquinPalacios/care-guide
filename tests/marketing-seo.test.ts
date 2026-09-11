@@ -71,7 +71,15 @@ describe("marketing crawl files", () => {
     const document = robots();
     expect(document.rules).toMatchObject({
       allow: ["/", "/pricing", "/contact"],
-      disallow: expect.arrayContaining(["/_marketing", "/_sites"]),
+      disallow: expect.arrayContaining([
+        "/_marketing",
+        "/_sites",
+        "/login",
+        "/dashboard",
+        "/guides",
+        "/practice",
+        "/operator",
+      ]),
     });
     expect(document.sitemap).toBe("http://localhost/sitemap.xml");
     expect(HOME_METADATA.title).toContain("Branded patient aftercare");

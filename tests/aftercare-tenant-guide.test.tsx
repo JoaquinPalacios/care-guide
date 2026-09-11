@@ -275,9 +275,14 @@ describe("tenant guide page", () => {
       }),
     });
 
-    expect(metadata.title).toBe("Tooth Extraction · Riverside Dental Demo");
-    expect(metadata.robots).toEqual({ index: false, follow: false });
+    expect(metadata.title).toBe(
+      "Tooth Extraction Post-treatment | Riverside Dental Demo"
+    );
+    expect(metadata.robots).toEqual({ index: false, follow: true });
     expect(metadata.alternates?.canonical).toBe(
+      "http://demodental.localhost:3000/extraction"
+    );
+    expect(metadata.openGraph?.url).toBe(
       "http://demodental.localhost:3000/extraction"
     );
     expect(JSON.stringify(metadata)).not.toContain("/_sites");

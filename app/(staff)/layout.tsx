@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
+import { PRODUCT_ICONS } from "@/lib/seo/icons";
+import { PRIVATE_ROBOTS } from "@/lib/seo/robots-policy";
 import {
   PORTAL_THEME_STORAGE_KEY,
   themePreferenceBootstrapScript,
@@ -22,6 +24,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: PRODUCT_NAME,
   description: "Clinic aftercare portal for Aftercare Guide.",
+  robots: PRIVATE_ROBOTS,
+  icons: PRODUCT_ICONS,
 };
 
 export default function RootLayout({

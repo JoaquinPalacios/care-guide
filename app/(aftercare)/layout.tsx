@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { PRODUCT_ICONS } from "@/lib/seo/icons";
+import { TENANT_LAUNCH_ROBOTS } from "@/lib/seo/robots-policy";
+
 import "./aftercare.css";
 
 export const metadata: Metadata = {
   title: "Aftercare",
   description: "Patient aftercare guides.",
-  robots: { index: false, follow: false },
+  robots: TENANT_LAUNCH_ROBOTS,
+  icons: PRODUCT_ICONS,
 };
 
 export default function AftercareRootLayout({

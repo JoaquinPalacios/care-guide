@@ -15,6 +15,7 @@ import {
 } from "@/lib/branding/aftercare-theme";
 import { prisma } from "@/lib/prisma";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
+import { PRIVATE_ROBOTS } from "@/lib/seo/robots-policy";
 
 import styles from "@/app/(aftercare)/patient.module.css";
 
@@ -24,7 +25,7 @@ interface GuidePreviewPageProps {
 
 export const metadata: Metadata = {
   title: `Draft preview · ${PRODUCT_NAME}`,
-  robots: { index: false, follow: false },
+  robots: PRIVATE_ROBOTS,
 };
 
 export default async function GuidePreviewPage({

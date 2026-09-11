@@ -14,7 +14,7 @@ This directory is the product and architecture documentation for Care Guide.
 | [architecture/MARKETING-CONTACT.md](architecture/MARKETING-CONTACT.md) | Clinic enquiry delivery, SMTP env, and the recommended public mailbox.                                                          |
 | [architecture/CLINIC-PORTAL.md](architecture/CLINIC-PORTAL.md)         | Clinic portal IA, permissions, guide lifecycle, and logo storage blocker.                                                       |
 | [architecture/APPLICATION.md](architecture/APPLICATION.md)             | Next.js monolith launch architecture and future API extraction triggers.                                                        |
-| [architecture/CLINIC-ASSETS.md](architecture/CLINIC-ASSETS.md)         | Clinic logo storage interface, env contract, and provisioning. Upload is blocked.                                               |
+| [architecture/SEO.md](architecture/SEO.md)                             | Launch indexing policy, tenant metadata, and future search visibility.                                                          |
 
 ## How to read these documents
 

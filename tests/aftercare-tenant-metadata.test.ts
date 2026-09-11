@@ -27,6 +27,6 @@ describe("tenant metadata helpers", () => {
     await expect(
       publicTenantCanonicalUrl("/_sites/demodental/extraction")
     ).resolves.toBeUndefined();
-    expect(AFTERCARE_ROBOTS).toEqual({ index: false, follow: false });
+    expect(AFTERCARE_ROBOTS).toEqual({ index: false, follow: true });
   });
 });

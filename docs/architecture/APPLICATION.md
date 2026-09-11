@@ -8,7 +8,7 @@ Do **not** introduce NestJS, `apps/api`, a REST façade, or a second authenticat
 
 | Layer                             | Role                                                                                        |
 | --------------------------------- | ------------------------------------------------------------------------------------------- |
-| App Router routes                 | Hosts, layouts, Server Components, metadata                                                 |
+| App Router routes                 | Hosts, layouts, Server Components, metadata. Launch indexing policy: [SEO.md](SEO.md).      |
 | Server Actions / server functions | Authorize, validate input, call a domain module, map the result                             |
 | Prisma + PostgreSQL               | Persistence                                                                                 |
 | Domain modules                    | Guides, publication, practice configuration, authorization, operator queries, asset storage |

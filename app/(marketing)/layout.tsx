@@ -5,7 +5,10 @@ import { PRODUCT_NAME } from "@/lib/branding/product-name";
 import {
   HOME_METADATA,
   MARKETING_TITLE_TEMPLATE,
+  marketingMetadataBase,
+  marketingPageMetadata,
 } from "@/lib/marketing/metadata";
+import { PRODUCT_ICONS } from "@/lib/seo/icons";
 import { marketingMotionBootstrapScript } from "@/lib/marketing/motion-bootstrap";
 import {
   MARKETING_THEME_STORAGE_KEY,
@@ -14,12 +17,23 @@ import {
 
 import "./marketing.css";
 
+const homeMetadata = marketingPageMetadata(HOME_METADATA, {
+  pathname: "/",
+  absoluteTitle: true,
+});
+
 export const metadata: Metadata = {
+  metadataBase: marketingMetadataBase(),
   title: {
     default: HOME_METADATA.title,
     template: MARKETING_TITLE_TEMPLATE,
   },
   description: HOME_METADATA.description,
+  robots: homeMetadata.robots,
+  icons: PRODUCT_ICONS,
+  alternates: homeMetadata.alternates,
+  openGraph: homeMetadata.openGraph,
+  twitter: homeMetadata.twitter,
 };
 
 const softwareJsonLd = {

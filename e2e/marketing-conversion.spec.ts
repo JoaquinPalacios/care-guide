@@ -99,6 +99,8 @@ test.describe("marketing conversion routes", () => {
     expect(robotsBody).toContain("Allow: /pricing");
     expect(robotsBody).toContain("Disallow: /_marketing");
     expect(robotsBody).toContain("Disallow: /_sites");
+    expect(robotsBody).toContain("Disallow: /operator");
+    expect(robotsBody).toContain("Disallow: /guides");
 
     const sitemap = await page.goto(marketingUrl("/sitemap.xml"), {
       waitUntil: "domcontentloaded",
@@ -109,6 +111,8 @@ test.describe("marketing conversion routes", () => {
     expect(sitemapBody).toContain("/contact");
     expect(sitemapBody).not.toContain("/_marketing");
     expect(sitemapBody).not.toContain("/_sites");
+    expect(sitemapBody).not.toContain("/dashboard");
+    expect(sitemapBody).not.toContain("/operator");
   });
 
   test("desktop nav includes pricing, contact, staff, and theme", async ({

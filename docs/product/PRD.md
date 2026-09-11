@@ -844,7 +844,7 @@ Published guide URLs are durable commercial artefacts. They must not depend on e
 - No staff session requirement on patient hosts.
 - Cookie isolation between admin and patient hosts where practical.
 - Public pages must not leak unpublished content, other tenants’ data, or staff-only fields.
-- Existing `/display/[token]` anti-indexing posture is a parked-product concern; aftercare SEO/robots policy is a Phase 3 decision (§25).
+- Existing `/display/[token]` anti-indexing posture is a parked-product concern. Aftercare launch SEO is **closed in Phase 2A.5**: tenant pages `noindex` by default; marketing indexable; staff/operator private. See [SEO.md](../architecture/SEO.md). Future per-guide opt-in remains post-launch.
 
 ### 17.4 Accessibility
 
@@ -1200,7 +1200,7 @@ These are intentionally unresolved in PRD v1.0. Implementation must not pretend 
 | OD-3  | Exact 3–5 guides for the first technical slice                        | Planning library exists; slice set can be chosen in Phase 1.                                                                                                                                            |
 | OD-4  | Canonical-template update rollout UX                                  | The pin invariant is closed: a library update must never silently mutate a published Practice Guide (ADR 0010). Remaining open: notify / auto-draft / freeze UX when a newer canonical revision exists. |
 | OD-5  | Operator identity model                                               | **Closed in Phase 2A:** `User.platformRole` `NONE` \| `OPERATOR`, distinct from clinic `ADMIN`. See ADR 0016.                                                                                           |
-| OD-6  | Public robots / SEO policy                                            | Index tenant aftercare vs `noindex` during controlled testing. Phase 3.                                                                                                                                 |
+| OD-6  | Public robots / SEO policy                                            | **Closed in Phase 2A.5:** marketing indexable; staff/operator/preview `noindex`; tenant aftercare `noindex` by default with future opt-in. See [SEO.md](../architecture/SEO.md).                        |
 | OD-7  | QR encoding details                                                   | Product requires a QR for the durable URL. Image format, print sizes, and whether a `?src=qr` (or similar) marker is used are implementation/product follow-ups.                                        |
 | OD-8  | Analytics implementation                                              | Vendor vs first-party; retention; dashboard density. Product metrics are defined; stack is not.                                                                                                         |
 | OD-9  | Demo clinic naming for aftercare                                      | Keep “Rivers Care Demo Clinic” or introduce another fictional aftercare demo. Must not impersonate Pacific Dental.                                                                                      |
