@@ -59,9 +59,21 @@ Timeline stages are an exclusive accordion (one open at a time). Add stage creat
 
 The live preview reuses the presentational recovery timeline list used by the public patient renderer. It reflects the current unsaved editor state. Empty preview copy is quiet on the patient-preview surface. Public patient routes stay server-first.
 
-Authenticated draft preview uses a staff toolbar outside `PatientPage`, including the same status pills. Public tenant URLs never render that toolbar.
+Authenticated draft preview uses a staff toolbar outside `PatientPage`, including the same status pills and a preview-only patient appearance selector (Default / Light / Dark). That selector does not persist `ClinicProfile.themeMode`. Public tenant URLs never render that toolbar.
+
+The patient renderer is wrapped in `PatientThemeBoundary` so clinic tokens and `color-scheme` can live on a scoped surface. Portal Light/Dark must not force the embedded patient document.
 
 Cancel returns to `/guides`. Unsaved edits open a discard confirmation (Keep editing / Discard changes). Save draft does not change the public pinned revision. Publish asks for confirmation, then pins an immutable snapshot.
+
+Lifecycle destructive actions reuse the Guides-list domain actions from a compact **More actions** (`⋯`) control in the editor toolbar:
+
+| Lifecycle                 | More actions                                                            |
+| ------------------------- | ----------------------------------------------------------------------- |
+| Never published           | Delete draft → `/guides`                                                |
+| Published + draft changes | Discard draft changes → stay in editor, restore published working state |
+| Published, no draft       | no destructive action                                                   |
+
+There is no public-guide delete or unpublish.
 
 Destructive confirmations use the native `<dialog>` element with Aftercare Guide application chrome (not a browser/native alert look). One `ConfirmDialog` covers dirty cancel, publish, delete draft, and discard draft changes.
 
@@ -71,7 +83,7 @@ One route with internal sections: Practice identity, Branding, Contact, Emergenc
 
 Header uses portal spacing (eyebrow / title / description, then ~2.25rem before the form). Desktop has a section index with consistent row height, hover/focus, and `aria-current` for the section in view (IntersectionObserver). Section-nav clicks smooth-scroll unless `prefers-reduced-motion: reduce`. Sections use `scroll-margin-top`.
 
-Colour fields are one native colour control plus a hex input. Portal selects use extra padding for the chevron (`staffSelect`). Save status and Save changes sit compactly at the top of the form column (sticky within the scrolling document, not a full-bleed marketing bar). The form column is width-capped so large screens do not stretch fields unnecessarily. Grid/flex children use `min-width: 0` so the page does not overflow horizontally.
+Colour fields are one native colour control plus a hex input. Portal selects use extra padding for the chevron (`staffSelect`). Save status and Save changes sit compactly at the top of the form column (sticky within the scrolling document, not a full-bleed marketing bar). The form column is width-capped so large screens do not stretch fields unnecessarily. Grid/flex children use `min-width: 0` so the page does not overflow horizontally. Logo upload/replace/remove is shown when object storage is configured; otherwise Practice states that storage is not configured in this environment.
 
 ### Permissions
 

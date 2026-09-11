@@ -6,9 +6,12 @@ import {
   setPortalColorScheme,
 } from "./helpers/axe";
 import {
+  contrastRatio,
   expectNoHorizontalOverflow,
+  expectPracticePageDoesNotOverflow,
   expectUsableTapTarget,
   measureHorizontalOverflow,
+  relativeLuminance,
 } from "./helpers/layout";
 import { DEMO_TENANT_SLUG, staffUrl, tenantUrl } from "./helpers/origins";
 import {
@@ -274,12 +277,7 @@ test.describe("clinic portal", () => {
       path: "test-results/artifacts/staff-guide-editor-1440.png",
       fullPage: true,
     });
-    await expectNoSeriousAxeViolationsLightAndDark(page, {
-      darkExclude: [
-        ".staffEditorToolbarActions .staffBtnSecondary",
-        ".staffBtnQuiet",
-      ],
-    });
+    await expectNoSeriousAxeViolationsLightAndDark(page);
     await page.screenshot({
       path: "docs/product/artifacts/phase-2a.2/guide-editor-desktop-1440.png",
       fullPage: true,
@@ -620,7 +618,7 @@ test.describe("clinic portal UX polish", () => {
     await expect(page.getByText("Current logo preview")).toBeVisible();
     await expect(
       page.getByText(
-        "Logo upload is unavailable until production object storage"
+        "Logo upload is unavailable because clinic object storage is not configured"
       )
     ).toBeVisible();
     await expect(page.locator('input[type="file"]')).toHaveCount(0);
@@ -701,6 +699,11 @@ test.describe("clinic portal UX polish", () => {
     await page.goto(staffUrl("/practice"), { waitUntil: "load" });
     const viewports = [
       {
+        width: 1728,
+        height: 877,
+        artifact: "staff-practice-1728-overflow.png",
+      },
+      {
         width: 1440,
         height: 900,
         artifact: "staff-practice-1440-overflow.png",
@@ -717,15 +720,27 @@ test.describe("clinic portal UX polish", () => {
         width: viewport.width,
         height: viewport.height,
       });
-      const metrics = await measureHorizontalOverflow(page);
-      console.log(
-        `practice overflow ${viewport.width}x${viewport.height} scrollWidth=${metrics.scrollWidth} clientWidth=${metrics.clientWidth}`
+      await expectPracticePageDoesNotOverflow(
+        page,
+        `${viewport.width}x${viewport.height}`
       );
-      expect(
-        metrics.scrollWidth,
-        `${viewport.width}x${viewport.height} scrollWidth=${metrics.scrollWidth} clientWidth=${metrics.clientWidth}`
-      ).toBeLessThanOrEqual(metrics.clientWidth);
-      await expectNoHorizontalOverflow(page);
+      if (viewport.width >= 1024) {
+        await page
+          .getByRole("navigation", { name: "Practice sections" })
+          .getByRole("link", { name: "Contact" })
+          .click();
+        await expectPracticePageDoesNotOverflow(
+          page,
+          `${viewport.width}x${viewport.height} after section nav`
+        );
+      }
+      await page
+        .getByLabel("Display name")
+        .fill("Riverside Dental Demo overflow");
+      await expectPracticePageDoesNotOverflow(
+        page,
+        `${viewport.width}x${viewport.height} after edit`
+      );
       await page.screenshot({
         path: `test-results/artifacts/${viewport.artifact}`,
         fullPage: true,
@@ -860,5 +875,172 @@ test.describe("clinic portal UX polish", () => {
     });
     await dialog.getByRole("button", { name: "Delete draft" }).click();
     await expect(page.getByText("Delete me draft")).toHaveCount(0);
+  });
+
+  test("admin can delete an unpublished draft from the editor more actions menu", async ({
+    page,
+  }) => {
+    await signInAsLocalAdmin(page);
+    await page.goto(staffUrl("/guides/new"), { waitUntil: "load" });
+    const slug = `editor-delete-${Date.now()}`;
+    await page.getByLabel("Guide title").fill("Editor delete draft");
+    await page.getByLabel("Public slug").fill(slug);
+    await page.getByRole("button", { name: "Create custom guide" }).click();
+    await expect(page).toHaveURL(/\/guides\/.+\/edit/);
+    await page
+      .locator(".staffEditorToolbarActions")
+      .getByRole("button", { name: "More actions" })
+      .click();
+    await expect(
+      page.getByRole("menuitem", { name: "Delete draft" })
+    ).toBeVisible();
+    await page.screenshot({
+      path: "test-results/artifacts/staff-editor-more-actions-delete.png",
+    });
+    await page.getByRole("menuitem", { name: "Delete draft" }).click();
+    const dialog = page.getByRole("dialog", {
+      name: "Delete this draft guide?",
+    });
+    await expect(dialog).toBeVisible();
+    await page.screenshot({
+      path: "test-results/artifacts/staff-editor-delete-draft-dialog.png",
+    });
+    await dialog.getByRole("button", { name: "Delete draft" }).click();
+    await expect(page).toHaveURL(staffUrl("/guides"));
+    await expect(page.getByText("Editor delete draft")).toHaveCount(0);
+  });
+
+  test("admin can discard draft changes from the editor more actions menu", async ({
+    page,
+  }) => {
+    await signInAsLocalAdmin(page);
+    await page.goto(staffUrl("/guides"), { waitUntil: "load" });
+    await page.getByRole("link", { name: "Edit" }).first().click();
+    await expect(page).toHaveURL(/\/guides\/.+\/edit/);
+    const title = page.getByLabel("Guide title");
+    const original = await title.inputValue();
+    await title.fill(`${original} draft change`);
+    await page
+      .getByRole("button", { name: "Save draft" })
+      .filter({ visible: true })
+      .click();
+    await expect(page.getByText("Draft changes").first()).toBeVisible();
+    await page
+      .locator(".staffEditorToolbarActions")
+      .getByRole("button", { name: "More actions" })
+      .click();
+    await expect(
+      page.getByRole("menuitem", { name: "Discard draft changes" })
+    ).toBeVisible();
+    await page.getByRole("menuitem", { name: "Discard draft changes" }).click();
+    const dialog = page.getByRole("dialog", {
+      name: "Discard draft changes?",
+    });
+    await expect(dialog).toBeVisible();
+    await page.screenshot({
+      path: "test-results/artifacts/staff-editor-discard-dialog.png",
+    });
+    await dialog.getByRole("button", { name: "Discard changes" }).click();
+    await expect(title).toHaveValue(original);
+    await expect(page.getByText("Draft changes")).toHaveCount(0);
+    await expect(
+      page.locator(".staffEditorToolbarActions").getByRole("button", {
+        name: "More actions",
+      })
+    ).toHaveCount(0);
+  });
+
+  test("authenticated preview isolates patient appearance from the portal", async ({
+    page,
+  }) => {
+    await signInAsLocalAdmin(page);
+    await page.goto(staffUrl("/guides"), { waitUntil: "load" });
+    await page.getByRole("link", { name: "Preview" }).first().click();
+    await expect(page).toHaveURL(/\/guides\/.+\/preview/);
+    const surface = page.locator(".aftercareTheme").first();
+    await expect(surface).toBeVisible();
+    await expect(
+      page.getByRole("combobox", { name: "Patient preview appearance" })
+    ).toBeVisible();
+
+    for (const portal of ["light", "dark"] as const) {
+      await setPortalColorScheme(page, portal);
+      for (const patient of ["light", "dark"] as const) {
+        await page
+          .getByRole("combobox", { name: "Patient preview appearance" })
+          .selectOption(patient);
+        await expect(surface).toHaveAttribute("data-patient-theme", patient);
+        const tokens = await surface.evaluate((element) => {
+          const style = getComputedStyle(element);
+          return {
+            surface: style.getPropertyValue("--cg-surface").trim(),
+            text: style.getPropertyValue("--cg-text").trim(),
+            muted: style.getPropertyValue("--cg-text-muted").trim(),
+            border: style.getPropertyValue("--cg-border").trim(),
+            warning: style.getPropertyValue("--cg-warning").trim(),
+            emergency: style.getPropertyValue("--cg-emergency").trim(),
+            brand: style.getPropertyValue("--cg-brand").trim(),
+            colorScheme: style.colorScheme,
+            background: style.backgroundColor,
+            color: style.color,
+          };
+        });
+        expect(tokens.colorScheme, `${portal}/${patient}`).toContain(patient);
+        expect(
+          contrastRatio(tokens.background, tokens.color),
+          `${portal}/${patient} text`
+        ).toBeGreaterThanOrEqual(4.5);
+        expect(
+          contrastRatio(tokens.surface || tokens.background, tokens.text),
+          `${portal}/${patient} token text`
+        ).toBeGreaterThan(3);
+        expect(tokens.brand.length).toBeGreaterThan(0);
+        expect(tokens.warning.length).toBeGreaterThan(0);
+        expect(tokens.emergency.length).toBeGreaterThan(0);
+        expect(tokens.muted.length).toBeGreaterThan(0);
+        expect(tokens.border.length).toBeGreaterThan(0);
+        await page.screenshot({
+          path: `test-results/artifacts/staff-preview-portal-${portal}-patient-${patient}.png`,
+        });
+      }
+    }
+
+    await page
+      .getByRole("combobox", { name: "Patient preview appearance" })
+      .selectOption("default");
+    await expect(surface).toHaveAttribute("data-patient-theme", "system");
+    for (const [portal, os] of [
+      ["dark", "light"],
+      ["light", "dark"],
+    ] as const) {
+      await page.evaluate((mode) => {
+        try {
+          window.localStorage.setItem("aftercare-guide-portal-theme", mode);
+        } catch {
+          // Ignore storage failures in restricted contexts.
+        }
+        document.documentElement.setAttribute("data-theme-mode", mode);
+      }, portal);
+      await page.emulateMedia({ colorScheme: os });
+      const tokens = await surface.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          colorScheme: style.colorScheme,
+          background: style.backgroundColor,
+          color: style.color,
+        };
+      });
+      expect(tokens.colorScheme, `portal ${portal} / OS ${os}`).toBeTruthy();
+      const backgroundIsDark = relativeLuminance(tokens.background) < 0.4;
+      expect(backgroundIsDark, `portal ${portal} / OS ${os} follows OS`).toBe(
+        os === "dark"
+      );
+      expect(
+        contrastRatio(tokens.background, tokens.color),
+        `portal ${portal} / OS ${os} text`
+      ).toBeGreaterThanOrEqual(4.5);
+    }
+
+    await expectNoSeriousAxeViolations(page);
   });
 });
