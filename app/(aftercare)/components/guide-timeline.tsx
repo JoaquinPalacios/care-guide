@@ -1,4 +1,8 @@
-import { sectionBodyParagraphs } from "@/lib/aftercare/section-body";
+import { relativeTimelinePeriodLabel } from "@/lib/aftercare/relative-day-label";
+import {
+  firstSectionParagraph,
+  sectionBodyParagraphs,
+} from "@/lib/aftercare/section-body";
 import type { TimelineStageStatus } from "@/lib/aftercare/demo-recovery-state";
 import type { ComposedGuideSection } from "@/lib/aftercare/types";
 
@@ -15,11 +19,13 @@ export function GuideTimeline({
   stageStatusByKey,
   heading = "Recovery guide",
   headingId = "recovery-timeline-heading",
+  compact = false,
 }: {
   sections: ComposedGuideSection[];
   stageStatusByKey?: Readonly<Record<string, TimelineStageStatus>>;
   heading?: string;
   headingId?: string;
+  compact?: boolean;
 }) {
   if (sections.length === 0) {
     return null;
@@ -35,9 +41,10 @@ export function GuideTimeline({
       <ol className={styles.timelineList}>
         {sections.map((section, index) => {
           const headingKey = `section-${section.key}`;
-          const period = section.periodLabel;
+          const period = relativeTimelinePeriodLabel(section);
           const status = stageStatusByKey?.[section.key];
           const isLast = index === lastIndex;
+          const excerpt = compact ? firstSectionParagraph(section.body) : null;
 
           return (
             <li
@@ -64,14 +71,20 @@ export function GuideTimeline({
                     {STATUS_LABEL[status]}
                   </p>
                 ) : null}
-                {sectionBodyParagraphs(section.body).map(
-                  (paragraph, bodyIndex) => (
-                    <p
-                      key={`${section.key}-${bodyIndex}`}
-                      className={styles.body}
-                    >
-                      {paragraph}
-                    </p>
+                {compact ? (
+                  excerpt ? (
+                    <p className={styles.body}>{excerpt}</p>
+                  ) : null
+                ) : (
+                  sectionBodyParagraphs(section.body).map(
+                    (paragraph, bodyIndex) => (
+                      <p
+                        key={`${section.key}-${bodyIndex}`}
+                        className={styles.body}
+                      >
+                        {paragraph}
+                      </p>
+                    )
                   )
                 )}
                 {isLast ? null : (

@@ -78,6 +78,7 @@ describe("demo recovery-state resolver", () => {
 
     expect(recovery.hasTimeline).toBe(true);
     expect(recovery.simulatedDay).toBe(1);
+    expect(recovery.simulatedStartDate).toBe("2026-09-10");
     expect(recovery.windowDays).toBe(7);
     expect(recovery.progress).toBeCloseTo(1 / 7);
     expect(recovery.currentStage?.key).toBe("first-24-hours");

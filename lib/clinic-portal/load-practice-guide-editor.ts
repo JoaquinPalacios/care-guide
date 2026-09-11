@@ -10,6 +10,9 @@ import { ClinicPortalError } from "@/lib/clinic-portal/errors";
 import {
   clinicGuideLifecycleStatus,
   clinicGuideStatusLabel,
+  clinicGuideStatusPills,
+  type ClinicGuideLifecycleStatus,
+  type ClinicGuideStatusPill,
 } from "@/lib/clinic-portal/guide-status";
 import type { ComposedGuideSection } from "@/lib/aftercare/types";
 import { prisma } from "@/lib/prisma";
@@ -24,7 +27,9 @@ export interface PracticeGuideEditorRecord {
   isEnabled: boolean;
   isPublished: boolean;
   hasDraftChanges: boolean;
+  lifecycle: ClinicGuideLifecycleStatus;
   statusLabel: string;
+  statusPills: ClinicGuideStatusPill[];
   template: {
     id: string;
     slug: string;
@@ -195,7 +200,9 @@ export async function loadPracticeGuideEditor(input: {
     isEnabled: guide.isEnabled,
     isPublished: guide.status === PracticeGuideStatus.PUBLISHED,
     hasDraftChanges: lifecycle === "published_draft_changes",
+    lifecycle,
     statusLabel: clinicGuideStatusLabel(lifecycle),
+    statusPills: clinicGuideStatusPills(lifecycle),
     template: guide.guideTemplate,
     sections: composedSectionsFromPracticeRevision(draft.sections),
     updatedAt: draft.updatedAt,

@@ -6,6 +6,7 @@ import {
   firstSectionParagraph,
   sectionBodyParagraphs,
 } from "@/lib/aftercare/section-body";
+import { simulatedRecoveryDateLabel } from "@/lib/aftercare/simulated-recovery-date";
 
 import styles from "../patient.module.css";
 
@@ -24,6 +25,12 @@ export function DemoToday({
 }) {
   const progressPercent =
     recovery.progress === null ? null : Math.round(recovery.progress * 100);
+  const simulatedDateLabel =
+    recovery.simulatedStartDate &&
+    simulatedRecoveryDateLabel({
+      simulatedStartDate: recovery.simulatedStartDate,
+      simulatedDay: recovery.simulatedDay,
+    });
   const comingNextLabel = today.comingNext
     ? [today.comingNext.periodLabel, today.comingNext.title]
         .filter(Boolean)
@@ -40,6 +47,9 @@ export function DemoToday({
         <h2 id="today-focus-heading" className={styles.todayDay}>
           Day {recovery.simulatedDay} of {recovery.windowDays}
         </h2>
+        {simulatedDateLabel ? (
+          <p className={styles.todayStage}>{simulatedDateLabel}</p>
+        ) : null}
         {recovery.currentStage ? (
           <p className={styles.todayStage}>{recovery.currentStage.title}</p>
         ) : null}

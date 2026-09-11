@@ -18,6 +18,9 @@ export const DEMO_PRINT_SAMPLE_NOTICE = "SAMPLE / NOT CLINICAL ADVICE";
  * A future product version requires a persisted RecoveryPlan with startedAt —
  * not Date.now() and not the parked chairside session model.
  *
+ * `simulatedStartDate` is the calendar date of Day 0 (procedure day) for the
+ * interactive demo only. Generic public guides must not use this date.
+ *
  * The generic /extraction guide does not know a real patient's treatment day.
  * Before Today is sold as a per-patient capability, an anonymous RecoveryPlan
  * / share-link domain must exist.
@@ -25,6 +28,7 @@ export const DEMO_PRINT_SAMPLE_NOTICE = "SAMPLE / NOT CLINICAL ADVICE";
 export const DEMO_RECOVERY_FIXTURE = {
   simulatedDay: 1,
   recoveryWindowDays: 7,
+  simulatedStartDate: "2026-09-10",
 } as const;
 
 const DEMO_AFTERCARE_TENANT_SLUGS = new Set([DEMO_AFTERCARE_TENANT_SLUG]);

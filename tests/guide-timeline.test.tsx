@@ -76,4 +76,29 @@ describe("GuideTimeline", () => {
     expect(html).toContain('data-status="current"');
     expect(html).toContain('data-status="upcoming"');
   });
+
+  it("labels unstructured Day 0 relatively instead of using today's date", () => {
+    const html = renderToStaticMarkup(
+      <GuideTimeline
+        sections={[
+          {
+            key: "procedure-day",
+            kind: "RECOVERY_TIMELINE",
+            title: "Immediate care",
+            body: "Rest after the procedure.",
+            periodLabel: null,
+            startDay: 0,
+            endDay: 0,
+            provenance: "canonical",
+          },
+        ]}
+      />
+    );
+
+    expect(html).toContain("Day 0 · Procedure day");
+    expect(html).not.toContain("Date.now");
+    expect(html).not.toMatch(
+      /\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}/
+    );
+  });
 });

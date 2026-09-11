@@ -79,6 +79,7 @@ export default async function GuidePreviewPage({
           backHref={canEdit ? `/guides/${guide.id}/edit` : "/guides"}
           backLabel={canEdit ? "Back to guide" : "Back to guides"}
           editHref={canEdit ? `/guides/${guide.id}/edit` : undefined}
+          statusPills={guide.statusPills}
         />
         <div className={AFTERCARE_THEME_SCOPE}>
           <PatientPage chrome={chrome}>

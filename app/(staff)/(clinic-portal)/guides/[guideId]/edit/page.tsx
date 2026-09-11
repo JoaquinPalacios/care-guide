@@ -9,6 +9,11 @@ import { isClinicPortalError } from "@/lib/clinic-portal/errors";
 import { loadPracticeGuideEditor } from "@/lib/clinic-portal/load-practice-guide-editor";
 import { clinicPatientSiteUrl } from "@/lib/clinic-portal/patient-site-url";
 import { getClinicPortalOverview } from "@/lib/clinic-portal/get-clinic-portal";
+import {
+  resolveAftercareTheme,
+  toAftercareThemeStyle,
+} from "@/lib/branding/aftercare-theme";
+import { prisma } from "@/lib/prisma";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 
 interface GuideEditPageProps {
@@ -23,6 +28,16 @@ export default async function GuideEditPage({ params }: GuideEditPageProps) {
   const { guideId } = await params;
   const { clinicMembership } = await requireStaffSession();
   const overview = await getClinicPortalOverview(clinicMembership.clinic.id);
+  const profile = await prisma.clinicProfile.findUnique({
+    where: { clinicId: clinicMembership.clinic.id },
+    select: {
+      primaryColor: true,
+      accentColor: true,
+      neutralColor: true,
+      radiusPreset: true,
+      themeMode: true,
+    },
+  });
 
   try {
     const guide = await loadPracticeGuideEditor({
@@ -54,6 +69,9 @@ export default async function GuideEditPage({ params }: GuideEditPageProps) {
         guide={guide}
         patientUrlExample={patientUrlExample}
         canEdit={clinicMembership.role === ClinicMembershipRole.ADMIN}
+        previewThemeStyle={toAftercareThemeStyle(
+          resolveAftercareTheme(profile)
+        )}
       />
     );
   } catch (error) {

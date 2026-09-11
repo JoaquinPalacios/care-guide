@@ -27,6 +27,9 @@ test.describe("interactive recovery demo", () => {
     await expect(
       page.getByRole("tabpanel", { name: "Today" }).getByText("Day 1 of 7")
     ).toBeVisible();
+    await expect(
+      page.getByRole("tabpanel", { name: "Today" }).getByText("Day 1 · 11 Sep")
+    ).toBeVisible();
     await expect(page.getByRole("tab", { name: "Check-in" })).toHaveCount(0);
   });
 

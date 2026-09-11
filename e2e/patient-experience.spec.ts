@@ -94,6 +94,11 @@ test.describe("tenant homepage and guide", () => {
     await expect(page.getByText("Days 2–3", { exact: true })).toBeVisible();
     await expect(page.getByText("Days 4–7")).toBeVisible();
     await expect(
+      page.getByRole("tabpanel", { name: "Timeline" })
+    ).not.toContainText(
+      /Day 0 · \d{1,2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/
+    );
+    await expect(
       page.getByRole("heading", { name: "Recovery overview" })
     ).toBeVisible();
     await expect(page.locator("text=Important.")).toHaveCount(1);
