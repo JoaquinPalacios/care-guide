@@ -11,11 +11,30 @@ export function OverflowMenu({
 }) {
   const reactId = useId().replace(/:/g, "");
   const menuId = `overflow-${reactId}`;
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  function placeMenu() {
+    const menu = menuRef.current;
+    const button = buttonRef.current;
+    if (!menu || !button) {
+      return;
+    }
+
+    const rect = button.getBoundingClientRect();
+    const width = Math.max(menu.offsetWidth, 224);
+    const left = Math.min(
+      Math.max(8, rect.right - width),
+      window.innerWidth - width - 8
+    );
+    menu.style.top = `${rect.bottom + 6}px`;
+    menu.style.left = `${left}px`;
+  }
 
   return (
     <div className="relative">
       <button
+        ref={buttonRef}
         type="button"
         className="staffBtn staffBtnQuiet px-2"
         popoverTarget={menuId}
@@ -32,6 +51,16 @@ export function OverflowMenu({
         popover="auto"
         role="menu"
         className="staffOverflowMenu"
+        onBeforeToggle={(event) => {
+          if (event.newState === "open") {
+            placeMenu();
+          }
+        }}
+        onToggle={(event) => {
+          if (event.newState === "open") {
+            placeMenu();
+          }
+        }}
       >
         {children}
       </div>

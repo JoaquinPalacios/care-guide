@@ -16,6 +16,10 @@ describe("guide destructive actions authorization", () => {
       "app/(staff)/(clinic-portal)/guides/guide-row-actions.tsx",
       "utf8"
     );
+    const menu = readFileSync(
+      "app/(staff)/components/overflow-menu.tsx",
+      "utf8"
+    );
 
     expect(actions).toContain("deleteGuideDraftAction");
     expect(actions).toContain("discardGuideDraftChangesAction");
@@ -23,6 +27,7 @@ describe("guide destructive actions authorization", () => {
     expect(actions).not.toContain('formData.get("clinicId")');
     expect(page).toContain("canManage");
     expect(row).toContain("canManage && destructiveAction");
+    expect(menu).toContain("getBoundingClientRect");
     expect(row).toContain("Delete this draft guide?");
     expect(row).toContain("Discard draft changes?");
     expect(row).toContain(
