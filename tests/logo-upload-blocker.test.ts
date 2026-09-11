@@ -11,9 +11,12 @@ describe("logo upload infrastructure", () => {
     );
     expect(toSafeLogoSrc("/branding/logo.png")).toBe("/branding/logo.png");
     expect(toSafeLogoSrc("/branding/logo.webp")).toBe("/branding/logo.webp");
+    expect(toSafeLogoSrc("/clinic-branding/clinic_demo_rivers/logo.webp")).toBe(
+      "/clinic-branding/clinic_demo_rivers/logo.webp"
+    );
   });
 
-  it("documents the production object-storage blocker instead of a fake upload", () => {
+  it("does not ship a fake filesystem or in-form upload while storage is unconfigured", () => {
     const form = readFileSync(
       "app/(staff)/(clinic-portal)/practice/practice-settings-form.tsx",
       "utf8"
@@ -22,12 +25,19 @@ describe("logo upload infrastructure", () => {
       "lib/clinic-portal/practice-settings-schema.ts",
       "utf8"
     );
+    const adapter = readFileSync(
+      "lib/clinic-assets/supabase-clinic-asset-storage.ts",
+      "utf8"
+    );
 
-    expect(form).toContain("Upload logo — coming before launch");
     expect(form).toContain("production object storage");
+    expect(form).toContain("Current logo preview");
     expect(form).not.toContain('type="file"');
+    expect(form).not.toContain("public/uploads");
     expect(form).toContain('type="hidden"');
     expect(schema).toContain("toSafeLogoSrc");
     expect(schema).not.toContain("base64");
+    expect(adapter).toContain("createClient");
+    expect(adapter).not.toContain("fs.writeFile");
   });
 });
