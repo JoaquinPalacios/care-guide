@@ -1,7 +1,11 @@
 import { expect, test } from "@playwright/test";
 
 import { expectNoSeriousAxeViolations } from "./helpers/axe";
-import { expectNoHorizontalOverflow } from "./helpers/layout";
+import {
+  expectNoHorizontalOverflow,
+  expectUsableTapTarget,
+  measureHorizontalOverflow,
+} from "./helpers/layout";
 import { DEMO_TENANT_SLUG, staffUrl, tenantUrl } from "./helpers/origins";
 import {
   signInAsLocalAdmin,
@@ -244,6 +248,8 @@ test.describe("clinic portal", () => {
       page.getByRole("heading", { name: "Patient timeline preview" })
     ).toBeVisible();
     await expect(page.locator("[data-editor-preview]")).toBeVisible();
+    await expect(page.locator(".staffEditorToolbar")).toBeVisible();
+    await expect(page.locator(".staffRailCard")).toHaveCount(0);
     await page.screenshot({
       path: "test-results/artifacts/staff-guide-editor-1440.png",
       fullPage: true,
@@ -266,6 +272,10 @@ test.describe("clinic portal", () => {
 
     await page.setViewportSize({ width: 360, height: 800 });
     await expectNoHorizontalOverflow(page);
+    await page.screenshot({
+      path: "test-results/artifacts/staff-guide-editor-360.png",
+      fullPage: true,
+    });
 
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.getByRole("link", { name: "Preview" }).first().click();
@@ -344,6 +354,15 @@ test.describe("platform operator", () => {
       page.getByText("Platform operator", { exact: true }).first()
     ).toBeVisible();
     await expect(page.getByRole("table")).toBeVisible();
+    await expect(page.getByText("Total clinics")).toBeVisible();
+    await expect(page.getByText("Configured clinics")).toBeVisible();
+    await expect(page.getByText("Published guides")).toBeVisible();
+    await expect(page.getByText("Needs attention")).toBeVisible();
+    await expect(
+      page
+        .getByRole("navigation", { name: "Platform" })
+        .getByRole("link", { name: "Clinics" })
+    ).toBeVisible();
     await expect(page.getByText("Riverside Dental Demo")).toBeVisible();
     await expect(page.getByText("demodental")).toBeVisible();
     await page.screenshot({
@@ -423,6 +442,19 @@ test.describe("clinic portal UX polish", () => {
     await page.screenshot({
       path: "test-results/artifacts/staff-guide-editor-cancel-dialog-1440.png",
     });
+    await page
+      .locator("aside")
+      .getByRole("button", { name: /Appearance, colour theme currently/ })
+      .click();
+    await page.getByRole("radio", { name: "Dark" }).click();
+    await page.screenshot({
+      path: "test-results/artifacts/staff-guide-editor-cancel-dialog-dark-1440.png",
+    });
+    await page
+      .locator("aside")
+      .getByRole("button", { name: /Appearance, colour theme currently/ })
+      .click();
+    await page.getByRole("radio", { name: "Light" }).click();
     await discardDialog.getByRole("button", { name: "Keep editing" }).click();
     await expect(discardDialog).toHaveCount(0);
     await expect(page).toHaveURL(/\/guides\/.+\/edit/);
@@ -557,9 +589,13 @@ test.describe("clinic portal UX polish", () => {
       page.getByRole("heading", { name: "Patient presentation" })
     ).toBeVisible();
     await expect(page.locator("[data-save-state=saved]")).toBeVisible();
+    await expect(page.getByText("Current logo preview")).toBeVisible();
     await expect(
-      page.getByText("Upload logo — coming before launch")
+      page.getByText(
+        "Logo upload is unavailable until production object storage"
+      )
     ).toBeVisible();
+    await expect(page.locator('input[type="file"]')).toHaveCount(0);
     await expect(page.locator('input[type="color"]')).toHaveCount(3);
     await page.getByLabel("Display name").fill("Riverside Dental Demo ");
     await expect(page.locator("[data-save-state=unsaved]")).toBeVisible();
@@ -595,6 +631,17 @@ test.describe("clinic portal UX polish", () => {
     await page.getByLabel("Public slug").fill(slug);
     await page.getByRole("button", { name: "Create custom guide" }).click();
     await expect(page).toHaveURL(/\/guides\/.+\/edit/);
+    await expect(
+      page.getByRole("heading", { name: "Patient timeline preview" })
+    ).toBeVisible();
+    await expect(
+      page.getByText("Add a recovery stage to see the patient timeline here.")
+    ).toBeVisible();
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.screenshot({
+      path: "test-results/artifacts/staff-guide-editor-empty-preview-1440.png",
+      fullPage: true,
+    });
     await page
       .getByRole("button", { name: "Cancel" })
       .filter({ visible: true })
@@ -678,6 +725,65 @@ test.describe("clinic portal UX polish", () => {
     await page.screenshot({
       path: "test-results/artifacts/staff-practice-fixed-sidebar-1440.png",
       fullPage: true,
+    });
+  });
+
+  test("practice page does not overflow horizontally at core viewports", async ({
+    page,
+  }) => {
+    await signInAsLocalAdmin(page);
+    await page.goto(staffUrl("/practice"), { waitUntil: "load" });
+    const viewports = [
+      {
+        width: 1440,
+        height: 900,
+        artifact: "staff-practice-1440-overflow.png",
+      },
+      { width: 1280, height: 800, artifact: "staff-practice-1280.png" },
+      { width: 1024, height: 768, artifact: "staff-practice-1024.png" },
+      { width: 768, height: 1024, artifact: "staff-practice-768.png" },
+      { width: 390, height: 844, artifact: "staff-practice-390.png" },
+      { width: 360, height: 800, artifact: "staff-practice-360.png" },
+    ] as const;
+
+    for (const viewport of viewports) {
+      await page.setViewportSize({
+        width: viewport.width,
+        height: viewport.height,
+      });
+      const metrics = await measureHorizontalOverflow(page);
+      expect(
+        metrics.scrollWidth,
+        `${viewport.width}x${viewport.height} scrollWidth=${metrics.scrollWidth} clientWidth=${metrics.clientWidth}`
+      ).toBeLessThanOrEqual(metrics.clientWidth);
+      await expectNoHorizontalOverflow(page);
+      await page.screenshot({
+        path: `test-results/artifacts/${viewport.artifact}`,
+        fullPage: true,
+      });
+    }
+  });
+
+  test("sign out occupies the full sidebar utility row", async ({ page }) => {
+    await signInAsLocalAdmin(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const signOut = page.locator("aside").getByRole("button", {
+      name: "Sign out",
+    });
+    await expect(signOut).toBeVisible();
+    await expectUsableTapTarget(signOut);
+    const row = await signOut.boundingBox();
+    const sidebar = await page.locator("aside").first().boundingBox();
+    expect(row, "sign out row should be visible").not.toBeNull();
+    expect(sidebar, "sidebar should be visible").not.toBeNull();
+    expect(row!.width).toBeGreaterThan(180);
+    await signOut.hover();
+    await page.screenshot({
+      path: "test-results/artifacts/staff-sign-out-hover-1440.png",
+    });
+    await signOut.focus();
+    await page.screenshot({
+      path: "test-results/artifacts/staff-sign-out-focus-1440.png",
     });
   });
 
