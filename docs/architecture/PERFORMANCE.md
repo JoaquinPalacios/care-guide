@@ -1141,3 +1141,15 @@ Staff-only islands plus a **server-only** SVG sanitizer (`jsdom` + `dompurify`).
 Patient CSS grew by about **126 raw bytes** for scoped `data-patient-theme` / `color-scheme` rules so authenticated preview can isolate clinic appearance. Playwright tenant CSS budget is **17,664** raw (was 17,408). Gzip and Brotli stay inside the previous ceilings.
 
 DOMPurify/jsdom must not appear in tenant client JS. Preview appearance control is a tiny staff Client Component (`StaffPreviewShell`); the public tenant renderer remains server-first.
+
+Measured 2026-09-11 against `cursor/phase-2a4-preview-storage-overflow-6c4f` production `next build` (Next.js 16.3.4 / Turbopack). Shared staff island `27vw0x32979dc.js` is ConfirmDialog / overflow-menu chrome used by Practice and the editor.
+
+| Island                         | Chunk              | raw    | gzip-9 | brotli-11 |
+| ------------------------------ | ------------------ | ------ | ------ | --------- |
+| Practice form                  | `1p5mfpkuc8exa.js` | 17,506 | 5,367  | 4,708     |
+| Guide editor                   | `0tie7a4rotfmx.js` | 28,373 | 8,386  | 7,373     |
+| Authenticated preview shell    | `07crhvz1jlc3i.js` | 13,796 | 5,325  | 4,691     |
+| Patient theme control (public) | `2ef363qg1cmz2.js` | 3,840  | 1,515  | 1,290     |
+| Patient demo island            | `03-mjwqxpmrhc.js` | 4,818  | 1,350  | 1,187     |
+
+Practice/editor grew from logo-upload UI and editor More actions. Patient demo island is **unchanged** at 4,818 raw. SVG sanitizer remains `serverExternalPackages` only.
