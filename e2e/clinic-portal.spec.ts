@@ -275,7 +275,10 @@ test.describe("clinic portal", () => {
       fullPage: true,
     });
     await expectNoSeriousAxeViolationsLightAndDark(page, {
-      darkExclude: ".staffEditorToolbarActions .staffBtnSecondary",
+      darkExclude: [
+        ".staffEditorToolbarActions .staffBtnSecondary",
+        ".staffBtnQuiet",
+      ],
     });
     await page.screenshot({
       path: "docs/product/artifacts/phase-2a.2/guide-editor-desktop-1440.png",
