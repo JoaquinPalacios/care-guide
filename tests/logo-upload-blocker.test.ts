@@ -14,30 +14,39 @@ describe("logo upload infrastructure", () => {
     expect(toSafeLogoSrc("/clinic-branding/clinic_demo_rivers/logo.webp")).toBe(
       "/clinic-branding/clinic_demo_rivers/logo.webp"
     );
+    expect(toSafeLogoSrc("/clinic-branding/clinic_demo_rivers/logo.svg")).toBe(
+      "/clinic-branding/clinic_demo_rivers/logo.svg"
+    );
   });
 
-  it("does not ship a fake filesystem or in-form upload while storage is unconfigured", () => {
-    const form = readFileSync(
-      "app/(staff)/(clinic-portal)/practice/practice-settings-form.tsx",
+  it("does not ship a filesystem upload or inline SVG injection", () => {
+    const field = readFileSync(
+      "app/(staff)/(clinic-portal)/practice/practice-logo-field.tsx",
       "utf8"
     );
-    const schema = readFileSync(
-      "lib/clinic-portal/practice-settings-schema.ts",
+    const header = readFileSync(
+      "app/(aftercare)/components/practice-header.tsx",
       "utf8"
     );
     const adapter = readFileSync(
       "lib/clinic-assets/supabase-clinic-asset-storage.ts",
       "utf8"
     );
+    const sanitizer = readFileSync(
+      "lib/clinic-assets/sanitize-clinic-logo-svg.ts",
+      "utf8"
+    );
 
-    expect(form).toContain("production object storage");
-    expect(form).toContain("Current logo preview");
-    expect(form).not.toContain('type="file"');
-    expect(form).not.toContain("public/uploads");
-    expect(form).toContain('type="hidden"');
-    expect(schema).toContain("toSafeLogoSrc");
-    expect(schema).not.toContain("base64");
+    expect(field).toContain('type="file"');
+    expect(field).toContain("clinic object storage is not configured");
+    expect(field).not.toContain("public/uploads");
+    expect(field).not.toContain("coming before launch");
+    expect(header).toContain("<img");
+    expect(header).not.toContain("dangerouslySetInnerHTML");
     expect(adapter).toContain("createClient");
     expect(adapter).not.toContain("fs.writeFile");
+    expect(sanitizer).toContain("server-only");
+    expect(sanitizer).toContain("dompurify");
+    expect(sanitizer).not.toContain("dangerouslySetInnerHTML");
   });
 });

@@ -1,18 +1,22 @@
-export const CLINIC_LOGO_MAX_BYTES = 2 * 1024 * 1024;
+export const CLINIC_LOGO_RASTER_MAX_BYTES = 2 * 1024 * 1024;
+export const CLINIC_LOGO_SVG_MAX_BYTES = 1024 * 1024;
+
 export const CLINIC_LOGO_MIME_TYPES = [
   "image/png",
   "image/jpeg",
   "image/webp",
+  "image/svg+xml",
 ] as const;
 
-export type ClinicLogoKind = "png" | "jpeg" | "webp";
+export type ClinicLogoKind = "png" | "jpeg" | "webp" | "svg";
+export type ClinicLogoExtension = "png" | "jpg" | "webp" | "svg";
 
 export type ClinicLogoValidation =
   | {
       ok: true;
       kind: ClinicLogoKind;
       mimeType: (typeof CLINIC_LOGO_MIME_TYPES)[number];
-      extension: "png" | "jpg" | "webp";
+      extension: ClinicLogoExtension;
     }
   | {
       ok: false;
@@ -23,6 +27,23 @@ const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 const JPEG_SIGNATURE = [0xff, 0xd8, 0xff];
 const RIFF = [0x52, 0x49, 0x46, 0x46];
 const WEBP = [0x57, 0x45, 0x42, 0x50];
+
+const EXTENSION_BY_KIND: Record<ClinicLogoKind, ClinicLogoExtension> = {
+  png: "png",
+  jpeg: "jpg",
+  webp: "webp",
+  svg: "svg",
+};
+
+const MIME_BY_KIND: Record<
+  ClinicLogoKind,
+  (typeof CLINIC_LOGO_MIME_TYPES)[number]
+> = {
+  png: "image/png",
+  jpeg: "image/jpeg",
+  webp: "image/webp",
+  svg: "image/svg+xml",
+};
 
 function startsWith(
   bytes: Uint8Array,
@@ -55,44 +76,88 @@ export function detectClinicLogoKind(bytes: Uint8Array): ClinicLogoKind | null {
   if (startsWith(bytes, RIFF) && startsWith(bytes, WEBP, 8)) {
     return "webp";
   }
+  if (looksLikeSvg(bytes)) {
+    return "svg";
+  }
+  return null;
+}
+
+function extensionFromFileName(fileName: string | undefined): string | null {
+  if (!fileName) {
+    return null;
+  }
+  const match = /\.([A-Za-z0-9]+)$/.exec(fileName.trim());
+  return match ? match[1].toLowerCase() : null;
+}
+
+function kindFromExtension(extension: string | null): ClinicLogoKind | null {
+  if (extension === "png") {
+    return "png";
+  }
+  if (extension === "jpg" || extension === "jpeg") {
+    return "jpeg";
+  }
+  if (extension === "webp") {
+    return "webp";
+  }
+  if (extension === "svg") {
+    return "svg";
+  }
   return null;
 }
 
 export function validateClinicLogo(input: {
   bytes: Uint8Array;
   mimeType: string;
+  fileName?: string;
 }): ClinicLogoValidation {
   if (input.bytes.byteLength === 0) {
-    return { ok: false, error: "Choose a PNG, JPEG, or WebP image." };
-  }
-
-  if (input.bytes.byteLength > CLINIC_LOGO_MAX_BYTES) {
-    return { ok: false, error: "Logo files must be 2 MB or smaller." };
-  }
-
-  if (looksLikeSvg(input.bytes) || input.mimeType === "image/svg+xml") {
-    return { ok: false, error: "SVG logos are not accepted." };
+    return { ok: false, error: "Choose a PNG, JPEG, WebP, or SVG image." };
   }
 
   const kind = detectClinicLogoKind(input.bytes);
   if (!kind) {
     return {
       ok: false,
-      error: "The file is not a valid PNG, JPEG, or WebP image.",
+      error: "The file is not a valid PNG, JPEG, WebP, or SVG image.",
     };
   }
 
-  const expectedMime =
-    kind === "png"
-      ? "image/png"
-      : kind === "jpeg"
-        ? "image/jpeg"
-        : "image/webp";
-
-  if (input.mimeType !== expectedMime) {
+  const maxBytes =
+    kind === "svg" ? CLINIC_LOGO_SVG_MAX_BYTES : CLINIC_LOGO_RASTER_MAX_BYTES;
+  if (input.bytes.byteLength > maxBytes) {
     return {
       ok: false,
-      error: "The file type does not match the image contents.",
+      error:
+        kind === "svg"
+          ? "SVG logos must be 1 MB or smaller."
+          : "Logo files must be 2 MB or smaller.",
+    };
+  }
+
+  const expectedMime = MIME_BY_KIND[kind];
+  const providedMime = input.mimeType.split(";")[0]?.trim().toLowerCase() ?? "";
+  if (providedMime) {
+    const mimeMatches =
+      kind === "svg"
+        ? providedMime === "image/svg+xml" ||
+          providedMime === "image/svg" ||
+          providedMime === "text/xml" ||
+          providedMime === "application/xml"
+        : providedMime === expectedMime;
+    if (!mimeMatches) {
+      return {
+        ok: false,
+        error: "The file type does not match the image contents.",
+      };
+    }
+  }
+
+  const namedKind = kindFromExtension(extensionFromFileName(input.fileName));
+  if (namedKind && namedKind !== kind) {
+    return {
+      ok: false,
+      error: "The file extension does not match the image contents.",
     };
   }
 
@@ -100,23 +165,25 @@ export function validateClinicLogo(input: {
     ok: true,
     kind,
     mimeType: expectedMime,
-    extension: kind === "jpeg" ? "jpg" : kind,
+    extension: EXTENSION_BY_KIND[kind],
   };
 }
 
 export function clinicLogoObjectKey(input: {
   clinicId: string;
   objectId: string;
-  extension: "png" | "jpg" | "webp";
+  extension: ClinicLogoExtension;
 }): string {
   return `clinics/${input.clinicId}/branding/${input.objectId}.${input.extension}`;
 }
 
+const PUBLIC_LOGO_PATH =
+  /^\/clinic-branding\/([A-Za-z0-9._-]+)\/([A-Za-z0-9._-]+\.(?:png|jpe?g|webp|svg))$/;
+const STORAGE_KEY =
+  /^clinics\/([A-Za-z0-9._-]+)\/branding\/([A-Za-z0-9._-]+\.(?:png|jpe?g|webp|svg))$/;
+
 export function clinicLogoPublicPath(storageKey: string): string | null {
-  const match =
-    /^clinics\/([A-Za-z0-9._-]+)\/branding\/([A-Za-z0-9._-]+\.(?:png|jpe?g|webp))$/.exec(
-      storageKey
-    );
+  const match = STORAGE_KEY.exec(storageKey);
   if (!match) {
     return null;
   }
@@ -129,12 +196,28 @@ export function storageKeyFromClinicLogoPath(
   if (!logoUrl) {
     return null;
   }
-  const match =
-    /^\/clinic-branding\/([A-Za-z0-9._-]+)\/([A-Za-z0-9._-]+\.(?:png|jpe?g|webp))$/.exec(
-      logoUrl.trim()
-    );
+  const match = PUBLIC_LOGO_PATH.exec(logoUrl.trim());
   if (!match) {
     return null;
   }
   return `clinics/${match[1]}/branding/${match[2]}`;
+}
+
+export function mimeTypeForClinicLogoExtension(
+  extension: string
+): (typeof CLINIC_LOGO_MIME_TYPES)[number] | null {
+  const normalized = extension.toLowerCase();
+  if (normalized === "png") {
+    return "image/png";
+  }
+  if (normalized === "jpg" || normalized === "jpeg") {
+    return "image/jpeg";
+  }
+  if (normalized === "webp") {
+    return "image/webp";
+  }
+  if (normalized === "svg") {
+    return "image/svg+xml";
+  }
+  return null;
 }

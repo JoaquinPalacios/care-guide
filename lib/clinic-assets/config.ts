@@ -2,6 +2,7 @@ export const CLINIC_ASSET_STORAGE_BUCKET = "clinic-branding";
 
 export type ClinicAssetStorageStatus =
   | { available: true; driver: "supabase"; bucket: string }
+  | { available: true; driver: "memory"; bucket: string }
   | { available: false; reason: "unconfigured" };
 
 function readEnv(name: string): string | null {
@@ -15,6 +16,10 @@ export function clinicAssetStorageStatus(): ClinicAssetStorageStatus {
   const serviceRoleKey = readEnv("SUPABASE_SERVICE_ROLE_KEY");
   const bucket =
     readEnv("CLINIC_ASSET_STORAGE_BUCKET") ?? CLINIC_ASSET_STORAGE_BUCKET;
+
+  if (driver === "memory") {
+    return { available: true, driver: "memory", bucket };
+  }
 
   if (driver === "supabase" && url && serviceRoleKey && bucket) {
     return { available: true, driver: "supabase", bucket };
@@ -33,7 +38,7 @@ export function supabaseClinicAssetConfig(): {
   bucket: string;
 } | null {
   const status = clinicAssetStorageStatus();
-  if (!status.available) {
+  if (!status.available || status.driver !== "supabase") {
     return null;
   }
 

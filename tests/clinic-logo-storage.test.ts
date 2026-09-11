@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { authorizeClinicLogoMutation } from "@/lib/clinic-assets/authorize-clinic-logo";
 import {
-  CLINIC_LOGO_MAX_BYTES,
+  CLINIC_LOGO_RASTER_MAX_BYTES,
   clinicLogoObjectKey,
   clinicLogoPublicPath,
   storageKeyFromClinicLogoPath,
@@ -20,7 +20,7 @@ const WEBP = Uint8Array.from([
 ]);
 
 describe("clinic logo validation", () => {
-  it("accepts PNG, JPEG, and WebP magic bytes with matching MIME types", () => {
+  it("accepts PNG, JPEG, WebP, and SVG magic/markup with matching MIME types", () => {
     expect(
       validateClinicLogo({ bytes: PNG, mimeType: "image/png" })
     ).toMatchObject({ ok: true, extension: "png" });
@@ -30,20 +30,38 @@ describe("clinic logo validation", () => {
     expect(
       validateClinicLogo({ bytes: WEBP, mimeType: "image/webp" })
     ).toMatchObject({ ok: true, extension: "webp" });
-  });
-
-  it("rejects SVG, mismatched MIME, and oversized files", () => {
     const svg = new TextEncoder().encode(
-      "<svg xmlns='http://www.w3.org/2000/svg'></svg>"
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"></svg>'
     );
     expect(
-      validateClinicLogo({ bytes: svg, mimeType: "image/svg+xml" }).ok
-    ).toBe(false);
+      validateClinicLogo({
+        bytes: svg,
+        mimeType: "image/svg+xml",
+        fileName: "mark.svg",
+      })
+    ).toMatchObject({ ok: true, extension: "svg" });
+  });
+
+  it("rejects mismatched MIME, fake extensions, and oversized files", () => {
     expect(validateClinicLogo({ bytes: PNG, mimeType: "image/jpeg" }).ok).toBe(
       false
     );
+    expect(
+      validateClinicLogo({
+        bytes: PNG,
+        mimeType: "image/png",
+        fileName: "logo.svg",
+      }).ok
+    ).toBe(false);
+    expect(
+      validateClinicLogo({
+        bytes: PNG,
+        mimeType: "",
+        fileName: "mark.png",
+      })
+    ).toMatchObject({ ok: true, extension: "png" });
 
-    const oversized = new Uint8Array(CLINIC_LOGO_MAX_BYTES + 1);
+    const oversized = new Uint8Array(CLINIC_LOGO_RASTER_MAX_BYTES + 1);
     oversized.set(PNG.slice(0, 8));
     expect(
       validateClinicLogo({ bytes: oversized, mimeType: "image/png" })
@@ -64,6 +82,11 @@ describe("clinic logo validation", () => {
     expect(clinicLogoPublicPath(key)).toBe(
       "/clinic-branding/clinic_demo_rivers/logo_abc123.webp"
     );
+    expect(
+      clinicLogoPublicPath(
+        "clinics/clinic_demo_rivers/branding/logo_abc123.svg"
+      )
+    ).toBe("/clinic-branding/clinic_demo_rivers/logo_abc123.svg");
     expect(
       storageKeyFromClinicLogoPath(
         "/clinic-branding/clinic_demo_rivers/logo_abc123.webp"

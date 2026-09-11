@@ -56,6 +56,21 @@ export function createSupabaseClinicAssetStorage(): ClinicAssetStorage {
       }
     },
 
+    async readLogo(input) {
+      const { data, error } = await client.storage
+        .from(config.bucket)
+        .download(input.storageKey);
+
+      if (error || !data) {
+        return null;
+      }
+
+      return {
+        bytes: new Uint8Array(await data.arrayBuffer()),
+        mimeType: data.type || "application/octet-stream",
+      };
+    },
+
     getPublicLogoUrl(input) {
       const publicPath = clinicLogoPublicPath(input.storageKey);
       if (!publicPath) {
