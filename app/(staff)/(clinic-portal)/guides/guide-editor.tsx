@@ -225,6 +225,7 @@ export function GuideEditor({
     ? `Template · ${guide.template.title}`
     : "Custom guide";
   const statusPills = clinicGuideStatusPills(guide.lifecycle);
+  const slugLocked = !canEdit || guide.isPublished;
 
   const actions = (
     <div className="staffEditorActions">
@@ -359,13 +360,16 @@ export function GuideEditor({
               <FieldError message={saveState.fieldErrors?.title} />
             </Field>
             <Field label="Public slug" htmlFor="publicSlug">
+              {slugLocked ? (
+                <input type="hidden" name="publicSlug" value={publicSlug} />
+              ) : null}
               <input
                 id="publicSlug"
-                name="publicSlug"
+                name={slugLocked ? undefined : "publicSlug"}
                 data-guide-field
                 value={publicSlug}
                 onChange={(event) => setPublicSlug(event.target.value)}
-                disabled={!canEdit || guide.isPublished}
+                disabled={slugLocked}
                 aria-invalid={
                   saveState.fieldErrors?.publicSlug ? "true" : "false"
                 }

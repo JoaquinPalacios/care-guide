@@ -924,6 +924,8 @@ test.describe("clinic portal UX polish", () => {
       .getByRole("button", { name: "Save draft" })
       .filter({ visible: true })
       .click();
+    await expect(page.getByText("Please review the form")).toHaveCount(0);
+    await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await expect(page.getByText("Draft changes").first()).toBeVisible();
     await page
       .locator(".staffEditorToolbarActions")
