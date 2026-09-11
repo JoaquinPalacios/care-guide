@@ -133,6 +133,7 @@ export function TimelineAccordion({
               aria-labelledby={headerId}
               className="staffAccordionPanel"
               data-open={expanded ? "true" : "false"}
+              inert={!expanded || undefined}
             >
               <div className="staffAccordionPanelInner">
                 <div className="staffAccordionFields">

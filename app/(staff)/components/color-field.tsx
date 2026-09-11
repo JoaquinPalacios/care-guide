@@ -32,7 +32,6 @@ export function ColorField({
           type="color"
           value={pickerValue}
           disabled={disabled}
-          aria-labelledby={`${id}-label`}
           aria-label={`${label} picker`}
           onChange={(event) => onChange(event.target.value)}
           className="staffColorSwatch"

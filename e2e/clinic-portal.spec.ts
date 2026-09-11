@@ -54,7 +54,9 @@ test.describe("clinic portal", () => {
     await expect(
       page.getByRole("navigation", { name: "Clinic portal" })
     ).toBeVisible();
-    await expect(page.getByText("Clinic admin")).toBeVisible();
+    await expect(
+      page.getByRole("complementary").getByText("Clinic admin")
+    ).toBeVisible();
 
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.screenshot({
@@ -63,6 +65,10 @@ test.describe("clinic portal", () => {
     });
     await page.screenshot({
       path: "docs/product/artifacts/phase-2a.2/portal-sidebar-role-1440.png",
+    });
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/portal-fixed-sidebar-1440.png",
+      fullPage: true,
     });
     await expectNoSeriousAxeViolations(page);
 
@@ -204,6 +210,10 @@ test.describe("clinic portal", () => {
       path: "docs/product/artifacts/phase-2a.2/practice-header-1440.png",
       fullPage: true,
     });
+    await page.locator("#primaryColor-picker").scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/practice-colour-and-selects-1440.png",
+    });
     await expectNoSeriousAxeViolations(page);
 
     await page.setViewportSize({ width: 390, height: 844 });
@@ -298,7 +308,9 @@ test.describe("clinic portal", () => {
     page,
   }) => {
     await signInAsLocalStaff(page);
-    await expect(page.getByText("Clinic staff")).toBeVisible();
+    await expect(
+      page.getByRole("complementary").getByText("Clinic staff")
+    ).toBeVisible();
     await expect(
       page
         .getByRole("navigation", { name: "Clinic portal" })
@@ -351,7 +363,9 @@ test.describe("platform operator", () => {
     await expect(
       page.getByRole("heading", { name: "All Clinics" })
     ).toBeVisible();
-    await expect(page.getByText("Platform operator").first()).toBeVisible();
+    await expect(
+      page.getByRole("complementary").getByText("Platform operator").first()
+    ).toBeVisible();
     await expect(page.getByRole("table")).toBeVisible();
     await expect(page.getByText("Riverside Dental Demo")).toBeVisible();
     await expect(page.getByText("demodental")).toBeVisible();
@@ -601,6 +615,10 @@ test.describe("clinic portal UX polish", () => {
     await expect(page.getByRole("link", { name: "Back to staff" })).toHaveCount(
       0
     );
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/patient-extraction-1440.png",
+      fullPage: true,
+    });
   });
 
   test("timeline accordion is exclusive and live preview follows unsaved titles", async ({
@@ -611,9 +629,14 @@ test.describe("clinic portal UX polish", () => {
     await page.goto(staffUrl("/guides"), { waitUntil: "load" });
     await page.getByRole("link", { name: "Edit" }).first().click();
 
-    const firstStage = page.locator("[data-stage-key]").first();
-    const secondStage = page.locator("[data-stage-key]").nth(1);
+    const stages = page.locator("article[data-stage-key]");
+    const firstStage = stages.nth(0);
+    const secondStage = stages.nth(1);
     await expect(firstStage).toHaveAttribute("data-expanded", "true");
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/editor-stages-collapsed-1440.png",
+      fullPage: true,
+    });
     await secondStage.getByRole("button").first().click();
     await expect(firstStage).toHaveAttribute("data-expanded", "false");
     await expect(secondStage).toHaveAttribute("data-expanded", "true");
@@ -621,8 +644,14 @@ test.describe("clinic portal UX polish", () => {
       path: "docs/product/artifacts/phase-2a.2/editor-stage-expanded-1440.png",
       fullPage: true,
     });
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/editor-live-preview-rail-1440.png",
+    });
 
-    const titleField = secondStage.getByLabel("Title");
+    const titleField = secondStage.getByRole("textbox", {
+      name: "Title",
+      exact: true,
+    });
     const original = await titleField.inputValue();
     await titleField.fill("Live preview stage title");
     await expect(
@@ -631,9 +660,11 @@ test.describe("clinic portal UX polish", () => {
     await titleField.fill(original);
 
     await page.getByRole("button", { name: "Add stage" }).click();
-    const newest = page.locator("[data-stage-key]").last();
+    const newest = stages.last();
     await expect(newest).toHaveAttribute("data-expanded", "true");
-    await expect(newest.getByLabel("Title")).toHaveValue("New stage");
+    await expect(
+      newest.getByRole("textbox", { name: "Title", exact: true })
+    ).toHaveValue("New stage");
     await newest.getByRole("button", { name: "Remove stage" }).click();
   });
 
@@ -655,6 +686,12 @@ test.describe("clinic portal UX polish", () => {
     const row = page.locator("li", { hasText: "Delete me draft" });
     await expect(row).toBeVisible();
     await row.getByRole("button", { name: "More actions" }).click();
+    await expect(
+      page.getByRole("menuitem", { name: "Delete draft" })
+    ).toBeVisible();
+    await page.screenshot({
+      path: "docs/product/artifacts/phase-2a.2/guides-overflow-menu-1440.png",
+    });
     await page.getByRole("menuitem", { name: "Delete draft" }).click();
     const dialog = page.getByRole("dialog", {
       name: "Delete this draft guide?",

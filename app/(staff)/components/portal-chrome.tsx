@@ -105,6 +105,7 @@ export function PortalChrome({
             ref={menuRef}
             id={menuId}
             popover="auto"
+            inert={!open || undefined}
             className="inset-auto top-[3.6rem] right-3 left-3 m-0 w-auto max-w-none overflow-hidden rounded-xl border border-staff-line bg-staff-panel p-2 text-staff-ink shadow-lg"
           >
             <PortalNav

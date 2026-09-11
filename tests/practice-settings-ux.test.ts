@@ -27,6 +27,7 @@ describe("practice settings polish", () => {
     expect(color).toContain('type="color"');
     expect(color).toContain("staffColorSwatch");
     expect(color).not.toContain("aria-hidden");
+    expect(color).not.toContain("aria-labelledby");
     expect(color).toContain("staffColorHex");
   });
 });

@@ -595,6 +595,12 @@ body {
   max-width: 10rem;
 }
 
+/* Closed popovers must not remain in the accessibility tree or layout.
+   Some utility classes can otherwise override the UA `display: none`. */
+[popover]:not(:popover-open) {
+  display: none !important;
+}
+
 .staffOverflowMenu {
   inset: unset;
   margin: 0;

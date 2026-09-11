@@ -15,6 +15,7 @@ describe("guide editor accordion and live preview", () => {
 
     expect(accordion).toContain("aria-expanded");
     expect(accordion).toContain("aria-controls");
+    expect(accordion).toContain("inert={!expanded || undefined}");
     expect(accordion).toContain("Needs attention");
     expect(accordion).toContain("staffAccordionTrigger");
     expect(editor).toContain("setExpandedStageKey(key)");

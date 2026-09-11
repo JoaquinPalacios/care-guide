@@ -5,6 +5,10 @@ export async function expectNoSeriousAxeViolations(
   page: Page,
   options: { exclude?: string | string[] } = {}
 ): Promise<void> {
+  await expect
+    .poll(async () => (await page.title()).trim(), { timeout: 10_000 })
+    .not.toBe("");
+
   let builder = new AxeBuilder({ page });
   const exclude = options.exclude;
   if (exclude) {

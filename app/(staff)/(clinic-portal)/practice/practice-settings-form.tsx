@@ -242,7 +242,7 @@ export function PracticeSettingsForm({
             id="primaryColor"
             name="primaryColor"
             label="Primary brand colour"
-            hint="Primary brand colour"
+            hint="Shown on the patient site"
             value={form.primaryColor ?? ""}
             disabled={!canEdit}
             error={state.fieldErrors?.primaryColor}
