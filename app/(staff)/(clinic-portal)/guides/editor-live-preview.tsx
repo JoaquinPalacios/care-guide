@@ -19,9 +19,12 @@ export function EditorLivePreview({
 
   if (sections.length === 0) {
     return (
-      <div className={styles.preview}>
+      <div className={`${styles.preview} ${styles.emptyState}`}>
+        <h2 id="editor-live-timeline-heading" className={styles.heading}>
+          Patient timeline preview
+        </h2>
         <p className={styles.empty}>
-          Add recovery stages to preview the patient timeline.
+          Add a recovery stage to see the patient timeline here.
         </p>
       </div>
     );

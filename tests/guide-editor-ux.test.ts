@@ -16,8 +16,10 @@ describe("guide editor UX", () => {
     expect(editor).toContain("Keep editing");
     expect(editor).toContain("Discard changes");
     expect(editor).toContain("Publish this guide?");
+    expect(editor).toContain("staffEditorToolbar");
     expect(editor).toContain("staffEditorRail");
     expect(editor).not.toContain("staffEditorChrome");
+    expect(editor).not.toContain("staffEditorRailCard");
     expect(editor).toContain("useUnsavedChangesGuard");
     expect(editor).toContain("formSaveStatus");
     expect(editor).toContain("EditorLivePreview");

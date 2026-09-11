@@ -78,8 +78,15 @@
   color: var(--preview-ink);
 }
 
+.emptyState {
+  background: color-mix(in srgb, var(--staff-canvas) 82%, transparent);
+  border-style: dashed;
+}
+
 .empty {
-  margin: 0;
+  margin: 0.55rem 0 0;
+  max-width: 16rem;
   color: var(--staff-muted);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
 }

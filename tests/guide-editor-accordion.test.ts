@@ -41,6 +41,10 @@ describe("guide editor accordion and live preview", () => {
     expect(preview).toContain("RecoveryTimelineList");
     expect(preview).toContain("editorStagesToPreviewSections");
     expect(preview).toContain("Live patient timeline");
+    expect(preview).toContain("Patient timeline preview");
+    expect(preview).toContain(
+      "Add a recovery stage to see the patient timeline here."
+    );
     expect(patient).toContain("RecoveryTimelineList");
     expect(list).not.toContain("patient.module.css");
     expect(preview).not.toContain("patient.module.css");

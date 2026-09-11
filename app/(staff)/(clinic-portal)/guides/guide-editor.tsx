@@ -27,7 +27,6 @@ import { PortalBreadcrumb } from "@/app/(staff)/components/portal-breadcrumb";
 import { SaveStatus } from "@/app/(staff)/components/save-status";
 import { useUnsavedChangesGuard } from "@/app/(staff)/components/use-unsaved-changes-guard";
 import { formSaveStatus } from "@/lib/clinic-portal/form-save-status";
-import { formatPortalDate } from "@/lib/clinic-portal/format-portal-date";
 import { clinicGuideStatusPills } from "@/lib/clinic-portal/guide-status";
 import type { PracticeGuideEditorRecord } from "@/lib/clinic-portal/load-practice-guide-editor";
 import type { GuideSectionKind } from "@/lib/aftercare/types";
@@ -245,6 +244,9 @@ export function GuideEditor({
           <button
             type="button"
             disabled={publishing || dirty}
+            title={
+              dirty ? "Save the current draft before publishing." : undefined
+            }
             className="staffBtn staffBtnPrimary"
             onClick={() => setPublishOpen(true)}
           >
@@ -257,9 +259,23 @@ export function GuideEditor({
 
   const preview = <EditorLivePreview stages={timeline} />;
 
+  const saveFeedback = (
+    <SaveStatus
+      status={saveStatus}
+      error={saveState.error ?? publishState.error}
+      success={
+        publishState.ok
+          ? "Guide published. Patients now see this version."
+          : saveState.ok && !dirty
+            ? "Draft saved. The public guide is unchanged until you publish."
+            : undefined
+      }
+    />
+  );
+
   return (
     <div className="staffEditorPage mx-auto flex w-full max-w-6xl flex-col">
-      <header className="flex flex-col gap-3">
+      <header className="flex flex-wrap items-center justify-between gap-3">
         <PortalBreadcrumb
           items={[
             { href: "/guides", label: "Guides" },
@@ -267,21 +283,29 @@ export function GuideEditor({
             { label: "Edit" },
           ]}
         />
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {title || guide.title}
-          </h1>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <GuideStatusPills pills={statusPills} />
-            <p className="text-sm text-staff-muted">{sourceLabel}</p>
-          </div>
-          <p className="mt-1 text-sm text-staff-muted">
-            Updated {formatPortalDate(guide.updatedAt)}
-          </p>
-        </div>
+        <Link
+          href={`/guides/${guide.id}/preview`}
+          className="staffBtn staffBtnQuiet"
+        >
+          Preview
+        </Link>
       </header>
 
-      <div className="staffEditorLayout mt-8">
+      <div className="staffEditorToolbar">
+        <div className="staffEditorToolbarStart">
+          <h1 className="staffEditorToolbarTitle">
+            {title || guide.title || "Edit guide"}
+          </h1>
+          <div className="staffEditorToolbarMeta">
+            <GuideStatusPills pills={statusPills} />
+            <p className="staffEditorToolbarContext">{sourceLabel}</p>
+            {saveFeedback}
+          </div>
+        </div>
+        <div className="staffEditorToolbarActions">{actions}</div>
+      </div>
+
+      <div className="staffEditorLayout">
         <form
           id="guide-draft-form"
           action={saveAction}
@@ -426,36 +450,11 @@ export function GuideEditor({
           )}
         </form>
 
-        <aside className="staffEditorRail" aria-label="Guide actions">
-          <div className="staffEditorRailCard">
-            <SaveStatus
-              status={saveStatus}
-              error={saveState.error ?? publishState.error}
-              success={
-                publishState.ok
-                  ? "Guide published. Patients now see this version."
-                  : saveState.ok && !dirty
-                    ? "Draft saved. The public guide is unchanged until you publish."
-                    : undefined
-              }
-            />
-            <Link
-              href={`/guides/${guide.id}/preview`}
-              className="staffBtn staffBtnQuiet self-start px-0"
-            >
-              Preview
-            </Link>
-            <div className="hidden lg:flex">{actions}</div>
-            {canEdit && dirty ? (
-              <p className="text-sm text-staff-muted">
-                Save the current draft before publishing.
-              </p>
-            ) : null}
-          </div>
-          <div className="hidden lg:block">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-staff-muted">
-              Live patient timeline
-            </p>
+        <aside
+          className="staffEditorRail"
+          aria-label="Patient timeline preview"
+        >
+          <div className="hidden min-h-0 flex-1 overflow-auto lg:block">
             {preview}
           </div>
           <div className="staffEditorPreviewToggle lg:hidden">
