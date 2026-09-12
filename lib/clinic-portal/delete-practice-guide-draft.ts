@@ -1,9 +1,9 @@
-import { GuideRevisionStatus, PracticeGuideStatus } from "@prisma/client";
+import { PracticeGuideStatus } from "@prisma/client";
 
 import { ClinicPortalError } from "@/lib/clinic-portal/errors";
 import { prisma } from "@/lib/prisma";
 
-export async function deletePracticeGuideDraft(input: {
+export async function deletePracticeGuide(input: {
   clinicId: string;
   actorUserId: string;
   guideId: string;
@@ -16,12 +16,7 @@ export async function deletePracticeGuideDraft(input: {
     select: {
       id: true,
       status: true,
-      contentRevisions: {
-        select: {
-          version: true,
-          status: true,
-        },
-      },
+      guideTemplateId: true,
     },
   });
 
@@ -29,14 +24,9 @@ export async function deletePracticeGuideDraft(input: {
     throw new ClinicPortalError("Guide not found.", "not_found");
   }
 
-  const hasPublishedRevision = guide.contentRevisions.some(
-    (revision) =>
-      revision.status === GuideRevisionStatus.PUBLISHED && revision.version > 0
-  );
-
-  if (guide.status === PracticeGuideStatus.PUBLISHED || hasPublishedRevision) {
+  if (guide.status === PracticeGuideStatus.PUBLISHED) {
     throw new ClinicPortalError(
-      "Published guides cannot be deleted in this version of the portal.",
+      "Unpublish this guide before deleting it.",
       "conflict"
     );
   }
@@ -45,6 +35,7 @@ export async function deletePracticeGuideDraft(input: {
     where: {
       id: guide.id,
       clinicId: input.clinicId,
+      status: { not: PracticeGuideStatus.PUBLISHED },
     },
   });
 

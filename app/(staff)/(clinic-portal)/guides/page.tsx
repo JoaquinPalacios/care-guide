@@ -74,6 +74,7 @@ export default async function ClinicGuidesPage() {
                   previewHref={guide.previewHref}
                   destructiveAction={guide.destructiveAction}
                   canUnpublish={guide.canUnpublish}
+                  lifecycle={guide.lifecycle}
                 />
               </div>
             </li>

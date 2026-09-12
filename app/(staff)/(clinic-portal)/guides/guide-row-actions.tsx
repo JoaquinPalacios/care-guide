@@ -4,7 +4,10 @@ import Link from "next/link";
 
 import { GuideLifecycleActions } from "@/app/(staff)/(clinic-portal)/guides/guide-lifecycle-actions";
 import { ExternalLinkIcon } from "@/app/(staff)/components/icons";
-import type { GuideDestructiveAction } from "@/lib/clinic-portal/guide-status";
+import type {
+  ClinicGuideLifecycleStatus,
+  GuideDestructiveAction,
+} from "@/lib/clinic-portal/guide-status";
 
 export function GuideRowActions({
   guideId,
@@ -13,6 +16,7 @@ export function GuideRowActions({
   previewHref,
   destructiveAction,
   canUnpublish,
+  lifecycle,
 }: {
   guideId: string;
   canManage: boolean;
@@ -20,6 +24,7 @@ export function GuideRowActions({
   previewHref: string | null;
   destructiveAction: GuideDestructiveAction | null;
   canUnpublish: boolean;
+  lifecycle: ClinicGuideLifecycleStatus;
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -52,6 +57,7 @@ export function GuideRowActions({
       {canManage ? (
         <GuideLifecycleActions
           guideId={guideId}
+          lifecycle={lifecycle}
           destructiveAction={destructiveAction}
           canUnpublish={canUnpublish}
         />

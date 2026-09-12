@@ -15,7 +15,7 @@ export interface GuideStatusPill {
   tone: GuideStatusPillTone;
 }
 
-export type GuideDestructiveAction = "delete_draft" | "discard_draft_changes";
+export type GuideDestructiveAction = "delete_guide" | "discard_draft_changes";
 
 export function clinicGuideLifecycleStatus(input: {
   status: PracticeGuideStatus;
@@ -84,7 +84,8 @@ export function clinicGuideDestructiveAction(
 ): GuideDestructiveAction | null {
   switch (status) {
     case "draft":
-      return "delete_draft";
+    case "unpublished":
+      return "delete_guide";
     case "published_draft_changes":
       return "discard_draft_changes";
     default:

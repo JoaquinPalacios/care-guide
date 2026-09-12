@@ -4,25 +4,30 @@ import { useActionState, useEffect, useId, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
-  deleteGuideDraftAction,
+  deleteGuideAction,
   discardGuideDraftChangesAction,
   unpublishGuideAction,
   type GuideActionState,
 } from "@/app/(staff)/(clinic-portal)/guides/actions";
 import { ConfirmDialog } from "@/app/(staff)/components/confirm-dialog";
 import { OverflowMenu } from "@/app/(staff)/components/overflow-menu";
-import type { GuideDestructiveAction } from "@/lib/clinic-portal/guide-status";
+import type {
+  ClinicGuideLifecycleStatus,
+  GuideDestructiveAction,
+} from "@/lib/clinic-portal/guide-status";
 import type { ComposedGuideSection } from "@/lib/aftercare/types";
 
 const empty: GuideActionState = {};
 
 export function GuideLifecycleActions({
   guideId,
+  lifecycle,
   destructiveAction,
   canUnpublish = false,
   onDiscarded,
 }: {
   guideId: string;
+  lifecycle?: ClinicGuideLifecycleStatus;
   destructiveAction: GuideDestructiveAction | null;
   canUnpublish?: boolean;
   onDiscarded?: (restored: {
@@ -34,16 +39,13 @@ export function GuideLifecycleActions({
 }) {
   const router = useRouter();
   const reactId = useId().replace(/:/g, "");
-  const deleteFormId = `delete-draft-${reactId}`;
+  const deleteFormId = `delete-guide-${reactId}`;
   const discardFormId = `discard-draft-${reactId}`;
   const unpublishFormId = `unpublish-guide-${reactId}`;
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
   const [unpublishOpen, setUnpublishOpen] = useState(false);
-  const [deleteState, deleteAction] = useActionState(
-    deleteGuideDraftAction,
-    empty
-  );
+  const [deleteState, deleteAction] = useActionState(deleteGuideAction, empty);
   const [discardState, discardAction, discarding] = useActionState(
     discardGuideDraftChangesAction,
     empty
@@ -71,6 +73,11 @@ export function GuideLifecycleActions({
   }, [unpublishState, router]);
 
   const error = deleteState.error ?? discardState.error ?? unpublishState.error;
+  const unpublishedDelete = lifecycle === "unpublished";
+  const deleteTitle = "Delete this guide?";
+  const deleteDescription = unpublishedDelete
+    ? "This guide is unpublished. Deleting it will permanently remove the clinic guide and its saved history. The patient URL is already unavailable."
+    : "This guide has never been published. Deleting it will permanently remove the clinic guide.";
 
   if (!destructiveAction && !canUnpublish) {
     return error ? (
@@ -83,14 +90,14 @@ export function GuideLifecycleActions({
   return (
     <>
       <OverflowMenu label="More actions">
-        {destructiveAction === "delete_draft" ? (
+        {destructiveAction === "delete_guide" ? (
           <button
             type="button"
             role="menuitem"
             className="staffOverflowItem staffOverflowItemDanger"
             onClick={() => setDeleteOpen(true)}
           >
-            Delete draft
+            Delete guide
           </button>
         ) : null}
         {destructiveAction === "discard_draft_changes" ? (
@@ -133,10 +140,10 @@ export function GuideLifecycleActions({
 
       <ConfirmDialog
         open={deleteOpen}
-        title="Delete this draft guide?"
-        description="This guide has never been published. This action cannot be undone."
+        title={deleteTitle}
+        description={deleteDescription}
         cancelLabel="Cancel"
-        confirmLabel="Delete draft"
+        confirmLabel="Delete guide"
         confirmTone="danger"
         onCancel={() => setDeleteOpen(false)}
         onConfirm={() => {

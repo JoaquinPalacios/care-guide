@@ -30,14 +30,14 @@ describe("guide status pills", () => {
     ]);
   });
 
-  it("only offers delete for never-published drafts and discard for published draft changes", () => {
-    expect(clinicGuideDestructiveAction("draft")).toBe("delete_draft");
+  it("offers delete for drafts and unpublished guides, discard for published draft changes", () => {
+    expect(clinicGuideDestructiveAction("draft")).toBe("delete_guide");
+    expect(clinicGuideDestructiveAction("unpublished")).toBe("delete_guide");
     expect(clinicGuideDestructiveAction("published_draft_changes")).toBe(
       "discard_draft_changes"
     );
     expect(clinicGuideDestructiveAction("published")).toBeNull();
     expect(clinicGuideDestructiveAction("published_disabled")).toBeNull();
-    expect(clinicGuideDestructiveAction("unpublished")).toBeNull();
   });
 
   it("offers unpublish for currently public pins only", () => {

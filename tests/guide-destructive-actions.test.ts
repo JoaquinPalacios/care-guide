@@ -30,6 +30,7 @@ describe("guide destructive actions authorization", () => {
       "utf8"
     );
 
+    expect(actions).toContain("deleteGuideAction");
     expect(actions).toContain("unpublishGuideAction");
     expect(actions).toContain("requireClinicAdmin");
     expect(actions).not.toContain('formData.get("clinicId")');
@@ -38,11 +39,14 @@ describe("guide destructive actions authorization", () => {
     expect(row).toContain("GuideLifecycleActions");
     expect(editor).toContain("GuideLifecycleActions");
     expect(lifecycle).toContain("More actions");
-    expect(lifecycle).toContain("Delete this draft guide?");
+    expect(lifecycle).toContain("Delete this guide?");
     expect(lifecycle).toContain("Discard draft changes?");
     expect(lifecycle).toContain("Unpublish this guide?");
     expect(lifecycle).toContain(
       "Patients using the current public link will no longer be able to open this guide until it is published again."
+    );
+    expect(lifecycle).toContain(
+      "This guide is unpublished. Deleting it will permanently remove the clinic guide and its saved history. The patient URL is already unavailable."
     );
     expect(lifecycle).toContain(
       "Patients will continue seeing the currently published version."

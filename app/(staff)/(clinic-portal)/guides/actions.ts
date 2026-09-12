@@ -8,7 +8,7 @@ import {
   createCustomPracticeGuide,
   createPracticeGuideFromTemplate,
 } from "@/lib/clinic-portal/create-practice-guide";
-import { deletePracticeGuideDraft } from "@/lib/clinic-portal/delete-practice-guide-draft";
+import { deletePracticeGuide } from "@/lib/clinic-portal/delete-practice-guide-draft";
 import { discardPracticeGuideDraftChanges } from "@/lib/clinic-portal/discard-practice-guide-draft-changes";
 import { isClinicPortalError } from "@/lib/clinic-portal/errors";
 import { loadPracticeGuideEditor } from "@/lib/clinic-portal/load-practice-guide-editor";
@@ -175,7 +175,7 @@ export async function publishGuideAction(
   }
 }
 
-export async function deleteGuideDraftAction(
+export async function deleteGuideAction(
   _previous: GuideActionState,
   formData: FormData
 ): Promise<GuideActionState> {
@@ -186,7 +186,7 @@ export async function deleteGuideDraftAction(
   }
 
   try {
-    await deletePracticeGuideDraft({
+    await deletePracticeGuide({
       clinicId: clinicMembership.clinic.id,
       actorUserId: user.id,
       guideId,

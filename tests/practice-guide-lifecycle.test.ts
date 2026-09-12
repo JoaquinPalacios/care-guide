@@ -8,12 +8,13 @@ import {
   createCustomPracticeGuide,
   createPracticeGuideFromTemplate,
 } from "@/lib/clinic-portal/create-practice-guide";
-import { deletePracticeGuideDraft } from "@/lib/clinic-portal/delete-practice-guide-draft";
+import { deletePracticeGuide } from "@/lib/clinic-portal/delete-practice-guide-draft";
 import { discardPracticeGuideDraftChanges } from "@/lib/clinic-portal/discard-practice-guide-draft-changes";
 import { publishPracticeGuide } from "@/lib/clinic-portal/publish-practice-guide";
 import { savePracticeGuideDraft } from "@/lib/clinic-portal/save-practice-guide-draft";
 import { unpublishPracticeGuide } from "@/lib/clinic-portal/unpublish-practice-guide";
 import { updatePracticeSettings } from "@/lib/clinic-portal/update-practice-settings";
+import { listCanonicalGuideTemplates } from "@/lib/clinic-portal/list-canonical-templates";
 import { ClinicPortalError } from "@/lib/clinic-portal/errors";
 import { prisma } from "@/lib/prisma";
 import { getClinicBySlug } from "@/lib/aftercare/get-clinic-by-slug";
@@ -474,10 +475,18 @@ describe("draft delete and discard", () => {
   const CLINIC_A_ID = `${PREFIX}clinic_a`;
   const CLINIC_B_ID = `${PREFIX}clinic_b`;
   const USER_ID = `${PREFIX}admin`;
+  const TEMPLATE_ID = `${PREFIX}tmpl`;
+  const REVISION_ID = `${PREFIX}rev`;
 
   async function cleanup() {
     await prisma.practiceGuide.deleteMany({
       where: { clinicId: { in: [CLINIC_A_ID, CLINIC_B_ID] } },
+    });
+    await prisma.guideTemplateRevision.deleteMany({
+      where: { id: REVISION_ID },
+    });
+    await prisma.guideTemplate.deleteMany({
+      where: { id: TEMPLATE_ID },
     });
     await prisma.clinicProfile.deleteMany({
       where: { clinicId: { in: [CLINIC_A_ID, CLINIC_B_ID] } },
@@ -530,7 +539,7 @@ describe("draft delete and discard", () => {
       values: { title: "Unpublished socket care", publicSlug: "socket-draft" },
     });
 
-    await deletePracticeGuideDraft({
+    await deletePracticeGuide({
       clinicId: CLINIC_A_ID,
       actorUserId: USER_ID,
       guideId: draft.id,
@@ -552,7 +561,7 @@ describe("draft delete and discard", () => {
     });
 
     await expect(
-      deletePracticeGuideDraft({
+      deletePracticeGuide({
         clinicId: CLINIC_A_ID,
         actorUserId: USER_ID,
         guideId: published.id,
@@ -623,7 +632,7 @@ describe("draft delete and discard", () => {
     });
 
     await expect(
-      deletePracticeGuideDraft({
+      deletePracticeGuide({
         clinicId: CLINIC_B_ID,
         actorUserId: USER_ID,
         guideId: guide.id,
@@ -740,17 +749,6 @@ describe("draft delete and discard", () => {
       unpublished?.contentRevisions.some((revision) => revision.version === 0)
     ).toBe(true);
 
-    await expect(
-      deletePracticeGuideDraft({
-        clinicId: CLINIC_A_ID,
-        actorUserId: USER_ID,
-        guideId: guide.id,
-      })
-    ).rejects.toSatisfy(
-      (error: unknown) =>
-        error instanceof ClinicPortalError && error.code === "conflict"
-    );
-
     const republished = await publishPracticeGuide({
       clinicId: CLINIC_A_ID,
       actorUserId: USER_ID,
@@ -764,5 +762,144 @@ describe("draft delete and discard", () => {
     });
     expect(restored?.title).toBe("Public pin");
     expect(restored?.revision.version).toBe(2);
+  });
+
+  it("lets ADMIN delete unpublished guides and leaves canonical templates intact", async () => {
+    await seedClinics();
+    const guide = await createCustomPracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      values: { title: "Soon deleted", publicSlug: "soon-deleted" },
+    });
+    await savePracticeGuideDraft({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      values: {
+        guideId: guide.id,
+        title: "Soon deleted",
+        publicSlug: "soon-deleted",
+        introduction: "Published intro.",
+        sections: [
+          {
+            key: "introduction",
+            kind: "INTRODUCTION",
+            title: "After treatment",
+            body: "Published body.",
+            periodLabel: null,
+            startDay: null,
+            endDay: null,
+          },
+        ],
+      },
+    });
+    await publishPracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      guideId: guide.id,
+    });
+
+    await expect(
+      deletePracticeGuide({
+        clinicId: CLINIC_A_ID,
+        actorUserId: USER_ID,
+        guideId: guide.id,
+      })
+    ).rejects.toSatisfy(
+      (error: unknown) =>
+        error instanceof ClinicPortalError && error.code === "conflict"
+    );
+
+    await unpublishPracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      guideId: guide.id,
+    });
+    await deletePracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      guideId: guide.id,
+    });
+
+    expect(
+      await prisma.practiceGuide.findUnique({ where: { id: guide.id } })
+    ).toBeNull();
+    expect(
+      await getPublishedPracticeGuide({
+        clinicSlug: "testp2a2-clinic-a",
+        publicSlug: "soon-deleted",
+      })
+    ).toBeNull();
+  });
+
+  it("deletes a template-backed practice guide without deleting the canonical template", async () => {
+    await seedClinics();
+    await prisma.guideTemplate.create({
+      data: {
+        id: TEMPLATE_ID,
+        slug: "testp2a2-extraction",
+        title: "Canonical extraction",
+        specialty: "DENTAL",
+        isActive: true,
+        revisions: {
+          create: {
+            id: REVISION_ID,
+            version: 1,
+            status: GuideRevisionStatus.PUBLISHED,
+            publishedAt: new Date("2026-09-01"),
+            sections: {
+              create: {
+                key: "introduction",
+                kind: "INTRODUCTION",
+                title: "After extraction",
+                body: "Canonical body.",
+                sortOrder: 1,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const created = await createPracticeGuideFromTemplate({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      values: { templateId: TEMPLATE_ID },
+    });
+    const listedBefore = await listCanonicalGuideTemplates(CLINIC_A_ID);
+    expect(
+      listedBefore.find((template) => template.id === TEMPLATE_ID)
+        ?.alreadyEnabled
+    ).toBe(true);
+
+    await deletePracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      guideId: created.id,
+    });
+
+    expect(
+      await prisma.practiceGuide.findUnique({ where: { id: created.id } })
+    ).toBeNull();
+    expect(
+      await prisma.guideTemplate.findUnique({ where: { id: TEMPLATE_ID } })
+    ).not.toBeNull();
+    expect(
+      await prisma.guideTemplateRevision.findUnique({
+        where: { id: REVISION_ID },
+      })
+    ).not.toBeNull();
+
+    const listedAfter = await listCanonicalGuideTemplates(CLINIC_A_ID);
+    expect(
+      listedAfter.find((template) => template.id === TEMPLATE_ID)
+        ?.alreadyEnabled
+    ).toBe(false);
+
+    const recreated = await createPracticeGuideFromTemplate({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      values: { templateId: TEMPLATE_ID },
+    });
+    expect(recreated.id).not.toBe(created.id);
   });
 });
