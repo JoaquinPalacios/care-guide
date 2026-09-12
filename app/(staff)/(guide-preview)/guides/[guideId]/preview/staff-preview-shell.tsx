@@ -42,6 +42,7 @@ export function StaffPreviewShell({
         editHref={editHref}
         lifecycle={lifecycle}
         appearance={appearance}
+        clinicThemeMode={clinicThemeMode}
         onAppearanceChange={setAppearance}
       />
       <PatientThemeBoundary appearance={patientTheme}>

@@ -5,6 +5,7 @@ import {
   AFTERCARE_THEME_TOKEN_KEYS,
   DEFAULT_AFTERCARE_THEME,
   RADIUS_PRESET_VALUES,
+  clinicDefaultPreviewLabel,
   resolveAftercareTheme,
   serializeAftercareThemeCss,
   toAftercareThemeStyle,
@@ -293,6 +294,15 @@ describe("serializeAftercareThemeCss", () => {
     expect(css).not.toContain("html{color-scheme");
     expect(css).not.toContain("html[data-theme-mode");
     expect(css).not.toContain("html.aftercareDocument");
+  });
+});
+
+describe("clinicDefaultPreviewLabel", () => {
+  it("names the persisted clinic default instead of a vague Default", () => {
+    expect(clinicDefaultPreviewLabel("SYSTEM")).toBe("Clinic default (System)");
+    expect(clinicDefaultPreviewLabel("LIGHT")).toBe("Clinic default (Light)");
+    expect(clinicDefaultPreviewLabel("DARK")).toBe("Clinic default (Dark)");
+    expect(clinicDefaultPreviewLabel(null)).toBe("Clinic default (System)");
   });
 });
 

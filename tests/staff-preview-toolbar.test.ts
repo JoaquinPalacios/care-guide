@@ -25,6 +25,8 @@ describe("authenticated guide preview toolbar", () => {
     expect(toolbar).toContain("Draft preview");
     expect(toolbar).toContain("Patient preview");
     expect(toolbar).toContain("Patient preview appearance");
+    expect(toolbar).toContain("clinicDefaultPreviewLabel");
+    expect(toolbar).not.toContain('label: "Default"');
     expect(preview).toContain(
       'backLabel={canEdit ? "Back to guide" : "Back to guides"}'
     );

@@ -191,6 +191,19 @@ export function clinicThemeModeToAppearance(
   return "system";
 }
 
+export function clinicDefaultPreviewLabel(
+  themeMode: string | null | undefined
+): string {
+  const appearance = clinicThemeModeToAppearance(themeMode);
+  if (appearance === "light") {
+    return "Clinic default (Light)";
+  }
+  if (appearance === "dark") {
+    return "Clinic default (Dark)";
+  }
+  return "Clinic default (System)";
+}
+
 function serializeTokenBlock(tokens: AftercareThemeTokens): string {
   return AFTERCARE_THEME_TOKEN_KEYS.map((key) => `${key}:${tokens[key]}`).join(
     ";"

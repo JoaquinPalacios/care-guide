@@ -4,18 +4,10 @@ import Link from "next/link";
 
 import { GuideStatusPills } from "@/app/(staff)/components/guide-status-pills";
 import { BackArrowIcon } from "@/app/(staff)/components/icons";
+import { clinicDefaultPreviewLabel } from "@/lib/branding/aftercare-theme";
 import type { ClinicGuideLifecycleStatus } from "@/lib/clinic-portal/guide-status";
 
 export type PreviewAppearanceChoice = "default" | "light" | "dark";
-
-const APPEARANCE_OPTIONS: {
-  value: PreviewAppearanceChoice;
-  label: string;
-}[] = [
-  { value: "default", label: "Default" },
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-];
 
 export function StaffPreviewToolbar({
   backHref,
@@ -23,6 +15,7 @@ export function StaffPreviewToolbar({
   editHref,
   lifecycle,
   appearance = "default",
+  clinicThemeMode,
   onAppearanceChange,
 }: {
   backHref: string;
@@ -30,8 +23,17 @@ export function StaffPreviewToolbar({
   editHref?: string;
   lifecycle?: ClinicGuideLifecycleStatus;
   appearance?: PreviewAppearanceChoice;
+  clinicThemeMode?: string | null;
   onAppearanceChange?: (value: PreviewAppearanceChoice) => void;
 }) {
+  const appearanceOptions: {
+    value: PreviewAppearanceChoice;
+    label: string;
+  }[] = [
+    { value: "default", label: clinicDefaultPreviewLabel(clinicThemeMode) },
+    { value: "light", label: "Light" },
+    { value: "dark", label: "Dark" },
+  ];
   return (
     <header className="staffPreviewToolbar">
       <Link href={backHref} className="staffPreviewBack">
@@ -55,7 +57,7 @@ export function StaffPreviewToolbar({
                 )
               }
             >
-              {APPEARANCE_OPTIONS.map((option) => (
+              {appearanceOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
