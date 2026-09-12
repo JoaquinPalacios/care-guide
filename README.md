@@ -102,7 +102,19 @@ pnpm test:e2e      # Playwright against production `next start` on port 4173
 pnpm test:all      # Vitest then Playwright
 ```
 
-Browser tests expect a seeded database (`pnpm db:seed`), `CARE_GUIDE_ROOT_DOMAIN=localhost`, and RFC 6761 `*.localhost` resolution (no `/etc/hosts`). Install Chromium once with `pnpm exec playwright install chromium`. Playwright and axe are development-only.
+Browser tests use a **dedicated Postgres database** (`care_guide_e2e` by default), not `DATABASE_URL`. Playwright creates that database if needed, runs `prisma migrate deploy` + `prisma db seed` against it, and starts `next start` with `DATABASE_URL` pointed at the e2e database. `CI=1 pnpm test:e2e` therefore must not add guides to the normal local development dataset.
+
+Optional override:
+
+```bash
+E2E_DATABASE_URL="postgresql://postgres:postgres@localhost:5432/care_guide_e2e?schema=public"
+```
+
+Do not set `E2E_DATABASE_URL` to the same database as `DATABASE_URL`. Playwright refuses to start if they match.
+
+If a previous Playwright run left fixture guides in the development database, list them with `node scripts/list-e2e-guide-artifacts.mjs`. Destructive cleanup is opt-in: `node scripts/cleanup-e2e-guide-artifacts.mjs --yes`.
+
+Browser tests also expect a seeded **development** database only for `pnpm dev` (`pnpm db:seed`), `CARE_GUIDE_ROOT_DOMAIN=localhost`, and RFC 6761 `*.localhost` resolution (no `/etc/hosts`). Install Chromium once with `pnpm exec playwright install chromium`. Playwright and axe are development-only.
 
 ## Database workflow
 

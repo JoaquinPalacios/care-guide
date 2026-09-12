@@ -2,9 +2,11 @@ import "dotenv/config";
 
 import { defineConfig } from "@playwright/test";
 
+import { e2eDatabaseUrl } from "./e2e/helpers/database";
 import { E2E_PORT, staffOrigin } from "./e2e/helpers/origins";
 
 const staffUrl = staffOrigin();
+const e2eUrl = e2eDatabaseUrl();
 
 export default defineConfig({
   testDir: "./e2e",
@@ -31,12 +33,13 @@ export default defineConfig({
   webServer: {
     command: `pnpm exec next start --port ${E2E_PORT}`,
     url: staffUrl,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120_000,
     stdout: "pipe",
     stderr: "pipe",
     env: {
       ...process.env,
+      DATABASE_URL: e2eUrl,
       MARKETING_CONTACT_TO_EMAIL:
         process.env.MARKETING_CONTACT_TO_EMAIL ?? "hello@example.test",
       MARKETING_CONTACT_FROM_EMAIL:
