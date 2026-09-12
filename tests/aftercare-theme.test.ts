@@ -291,6 +291,9 @@ describe("serializeAftercareThemeCss", () => {
     expect(css).toContain(
       `.${AFTERCARE_THEME_SCOPE}[data-patient-theme="dark"]{color-scheme:dark;`
     );
+    expect(css).toContain(
+      `.${AFTERCARE_THEME_SCOPE}[data-patient-theme="portal"]{color-scheme:inherit;`
+    );
     expect(css).not.toContain("html{color-scheme");
     expect(css).not.toContain("html[data-theme-mode");
     expect(css).not.toContain("html.aftercareDocument");

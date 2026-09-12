@@ -12,22 +12,24 @@ export function PatientThemeBoundary({
   children,
 }: {
   themeMode?: string | null;
-  appearance?: AftercareThemeAppearance;
+  appearance?: AftercareThemeAppearance | "portal";
   children: ReactNode;
 }) {
   const patientTheme = appearance ?? clinicThemeModeToAppearance(themeMode);
   const colorScheme =
-    patientTheme === "light"
-      ? "light"
-      : patientTheme === "dark"
-        ? "dark"
-        : "light dark";
+    patientTheme === "portal"
+      ? undefined
+      : patientTheme === "light"
+        ? "light"
+        : patientTheme === "dark"
+          ? "dark"
+          : "light dark";
 
   return (
     <div
       className={AFTERCARE_THEME_SCOPE}
       data-patient-theme={patientTheme}
-      style={{ colorScheme }}
+      style={colorScheme ? { colorScheme } : undefined}
     >
       {children}
     </div>

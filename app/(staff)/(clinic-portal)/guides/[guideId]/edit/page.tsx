@@ -9,7 +9,12 @@ import { isClinicPortalError } from "@/lib/clinic-portal/errors";
 import { loadPracticeGuideEditor } from "@/lib/clinic-portal/load-practice-guide-editor";
 import { clinicPatientSiteUrl } from "@/lib/clinic-portal/patient-site-url";
 import { getClinicPortalOverview } from "@/lib/clinic-portal/get-clinic-portal";
+import {
+  resolveAftercareTheme,
+  serializeAftercareThemeCss,
+} from "@/lib/branding/aftercare-theme";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
+import { prisma } from "@/lib/prisma";
 
 interface GuideEditPageProps {
   params: Promise<{ guideId: string }>;
@@ -25,10 +30,16 @@ export default async function GuideEditPage({ params }: GuideEditPageProps) {
   const overview = await getClinicPortalOverview(clinicMembership.clinic.id);
 
   try {
-    const guide = await loadPracticeGuideEditor({
-      clinicId: clinicMembership.clinic.id,
-      guideId,
-    });
+    const [guide, clinic] = await Promise.all([
+      loadPracticeGuideEditor({
+        clinicId: clinicMembership.clinic.id,
+        guideId,
+      }),
+      prisma.clinic.findUnique({
+        where: { id: clinicMembership.clinic.id },
+        select: { profile: true },
+      }),
+    ]);
     const requestHeaders = await headers();
     const host =
       requestHeaders.get("x-forwarded-host") ??
@@ -37,6 +48,7 @@ export default async function GuideEditPage({ params }: GuideEditPageProps) {
     const protocol =
       requestHeaders.get("x-forwarded-proto") ??
       (host.includes("localhost") ? "http" : "https");
+    const theme = resolveAftercareTheme(clinic?.profile);
     const patientUrlExample =
       overview?.patientSiteHref ??
       (host
@@ -50,11 +62,22 @@ export default async function GuideEditPage({ params }: GuideEditPageProps) {
       `/${guide.publicSlug}`;
 
     return (
-      <GuideEditor
-        guide={guide}
-        patientUrlExample={patientUrlExample}
-        canEdit={clinicMembership.role === ClinicMembershipRole.ADMIN}
-      />
+      <>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: serializeAftercareThemeCss(theme, {
+              themeMode: clinic?.profile?.themeMode,
+              colorSchemeSelector: "scope",
+            }),
+          }}
+        />
+        <GuideEditor
+          guide={guide}
+          patientUrlExample={patientUrlExample}
+          canEdit={clinicMembership.role === ClinicMembershipRole.ADMIN}
+          clinicThemeMode={clinic?.profile?.themeMode}
+        />
+      </>
     );
   } catch (error) {
     if (isClinicPortalError(error) && error.code === "not_found") {

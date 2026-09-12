@@ -55,6 +55,28 @@ export function applyThemePreference(preference: ThemePreference): void {
   document.documentElement.setAttribute("data-theme-mode", preference);
 }
 
+export function readPortalThemePreference(): ThemePreference {
+  if (typeof document === "undefined") {
+    return "system";
+  }
+
+  const fromDom = parseThemePreference(
+    document.documentElement.getAttribute("data-theme-mode")
+  );
+  if (fromDom) {
+    return fromDom;
+  }
+
+  try {
+    return (
+      parseThemePreference(localStorage.getItem(PORTAL_THEME_STORAGE_KEY)) ??
+      "system"
+    );
+  } catch {
+    return "system";
+  }
+}
+
 export function themePreferenceBootstrapScript(storageKey: string): string {
   const key = JSON.stringify(storageKey);
   return `(function(){try{var v=localStorage.getItem(${key});if(v==="light"||v==="dark"||v==="system"){document.documentElement.setAttribute("data-theme-mode",v);}}catch(e){}})();`;

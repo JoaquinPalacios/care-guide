@@ -245,6 +245,7 @@ export function serializeAftercareThemeCss(
           `${scope}[data-patient-theme="light"]{${boundaryDeclarations(light, "light")}}`,
           `${scope}[data-patient-theme="dark"]{${boundaryDeclarations(dark, "dark")}}`,
           `${scope}[data-patient-theme="system"]{${boundaryDeclarations(mixed, "light dark")}}`,
+          `${scope}[data-patient-theme="portal"]{${boundaryDeclarations(mixed, "inherit")}}`,
           `@media (prefers-color-scheme:light){${scope}[data-patient-theme="system"]{${boundaryDeclarations(light, "light")}}}`,
           `@media (prefers-color-scheme:dark){${scope}[data-patient-theme="system"]{${boundaryDeclarations(dark, "dark")}}}`,
         ].join("")

@@ -667,10 +667,10 @@ test.describe("clinic portal UX polish", () => {
     await expect(page).toHaveURL(staffUrl("/guides"));
     const row = page.locator("li").filter({ hasText: "Empty preview draft" });
     await row.getByRole("button", { name: "More actions" }).click();
-    await row.getByRole("menuitem", { name: "Delete draft" }).click();
+    await row.getByRole("menuitem", { name: "Delete guide" }).click();
     await page
-      .getByRole("dialog", { name: "Delete this draft guide?" })
-      .getByRole("button", { name: "Delete draft" })
+      .getByRole("dialog", { name: "Delete this guide?" })
+      .getByRole("button", { name: "Delete guide" })
       .click();
     await expect(page.getByText("Empty preview draft")).toHaveCount(0);
   });
@@ -687,8 +687,14 @@ test.describe("clinic portal UX polish", () => {
       node.scrollTop = 800;
     });
     const after = await sidebar.boundingBox();
+    const windowScrollY = await page.evaluate(() => window.scrollY);
+    const scrollerTop = await page
+      .locator(".staffAppScroller")
+      .evaluate((node) => node.scrollTop);
     expect(before?.y).toBeCloseTo(after?.y ?? -1, 0);
     expect(before?.height).toBeGreaterThan(700);
+    expect(windowScrollY).toBe(0);
+    expect(scrollerTop).toBeGreaterThan(0);
     await page.screenshot({
       path: "test-results/artifacts/staff-practice-fixed-sidebar-1440.png",
       fullPage: true,
@@ -863,20 +869,20 @@ test.describe("clinic portal UX polish", () => {
     await expect(row).toBeVisible();
     await row.getByRole("button", { name: "More actions" }).click();
     await expect(
-      page.getByRole("menuitem", { name: "Delete draft" })
+      page.getByRole("menuitem", { name: "Delete guide" })
     ).toBeVisible();
     await page.screenshot({
       path: "docs/product/artifacts/phase-2a.2/guides-overflow-menu-1440.png",
     });
-    await page.getByRole("menuitem", { name: "Delete draft" }).click();
+    await page.getByRole("menuitem", { name: "Delete guide" }).click();
     const dialog = page.getByRole("dialog", {
-      name: "Delete this draft guide?",
+      name: "Delete this guide?",
     });
     await expect(dialog).toBeVisible();
     await page.screenshot({
       path: "docs/product/artifacts/phase-2a.2/delete-draft-dialog-1440.png",
     });
-    await dialog.getByRole("button", { name: "Delete draft" }).click();
+    await dialog.getByRole("button", { name: "Delete guide" }).click();
     await expect(page.getByText("Delete me draft")).toHaveCount(0);
   });
 
@@ -895,20 +901,20 @@ test.describe("clinic portal UX polish", () => {
       .getByRole("button", { name: "More actions" })
       .click();
     await expect(
-      page.getByRole("menuitem", { name: "Delete draft" })
+      page.getByRole("menuitem", { name: "Delete guide" })
     ).toBeVisible();
     await page.screenshot({
       path: "test-results/artifacts/staff-editor-more-actions-delete.png",
     });
-    await page.getByRole("menuitem", { name: "Delete draft" }).click();
+    await page.getByRole("menuitem", { name: "Delete guide" }).click();
     const dialog = page.getByRole("dialog", {
-      name: "Delete this draft guide?",
+      name: "Delete this guide?",
     });
     await expect(dialog).toBeVisible();
     await page.screenshot({
       path: "test-results/artifacts/staff-editor-delete-draft-dialog.png",
     });
-    await dialog.getByRole("button", { name: "Delete draft" }).click();
+    await dialog.getByRole("button", { name: "Delete guide" }).click();
     await expect(page).toHaveURL(staffUrl("/guides"));
     await expect(page.getByText("Editor delete draft")).toHaveCount(0);
   });
@@ -1025,7 +1031,7 @@ test.describe("clinic portal UX polish", () => {
 
     await page
       .getByRole("combobox", { name: "Patient preview appearance" })
-      .selectOption("default");
+      .selectOption("clinic");
     await expect(surface).toHaveAttribute("data-patient-theme", "system");
     for (const [portal, os] of [
       ["dark", "light"],

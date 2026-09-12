@@ -81,10 +81,12 @@ export function GuideEditor({
   guide,
   patientUrlExample,
   canEdit,
+  clinicThemeMode,
 }: {
   guide: PracticeGuideEditorRecord;
   patientUrlExample: string;
   canEdit: boolean;
+  clinicThemeMode?: string | null;
 }) {
   const router = useRouter();
   const errorSummaryRef = useRef<HTMLParagraphElement>(null);
@@ -268,6 +270,7 @@ export function GuideEditor({
           </button>
           <GuideLifecycleActions
             guideId={guide.id}
+            lifecycle={guide.lifecycle}
             destructiveAction={clinicGuideDestructiveAction(guide.lifecycle)}
             canUnpublish={clinicGuideCanUnpublish(guide.lifecycle)}
             onDiscarded={(restored) => {
@@ -292,7 +295,9 @@ export function GuideEditor({
     </div>
   );
 
-  const preview = <EditorLivePreview stages={timeline} />;
+  const preview = (
+    <EditorLivePreview stages={timeline} clinicThemeMode={clinicThemeMode} />
+  );
 
   const saveFeedback = (
     <SaveStatus

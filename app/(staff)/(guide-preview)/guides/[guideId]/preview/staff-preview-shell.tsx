@@ -3,14 +3,13 @@
 import { useState, type ReactNode } from "react";
 
 import { PatientThemeBoundary } from "@/app/(aftercare)/components/patient-theme-boundary";
+import { PatientPreviewAppearanceSelect } from "@/app/(staff)/components/patient-preview-appearance-select";
+import { usePortalThemePreference } from "@/app/(staff)/components/use-portal-theme-preference";
+import { StaffPreviewToolbar } from "@/app/(staff)/(guide-preview)/guides/[guideId]/preview/staff-preview-toolbar";
 import {
-  StaffPreviewToolbar,
+  resolvePreviewPatientTheme,
   type PreviewAppearanceChoice,
-} from "@/app/(staff)/(guide-preview)/guides/[guideId]/preview/staff-preview-toolbar";
-import {
-  clinicThemeModeToAppearance,
-  type AftercareThemeAppearance,
-} from "@/lib/branding/aftercare-theme";
+} from "@/lib/branding/preview-appearance";
 import type { ClinicGuideLifecycleStatus } from "@/lib/clinic-portal/guide-status";
 
 export function StaffPreviewShell({
@@ -29,10 +28,12 @@ export function StaffPreviewShell({
   children: ReactNode;
 }) {
   const [appearance, setAppearance] =
-    useState<PreviewAppearanceChoice>("default");
-  const clinicAppearance = clinicThemeModeToAppearance(clinicThemeMode);
-  const patientTheme: AftercareThemeAppearance =
-    appearance === "default" ? clinicAppearance : appearance;
+    useState<PreviewAppearanceChoice>("portal");
+  const portalPreference = usePortalThemePreference();
+  const patientTheme = resolvePreviewPatientTheme({
+    choice: appearance,
+    clinicThemeMode,
+  });
 
   return (
     <div className="staffPreviewShell">
@@ -41,9 +42,14 @@ export function StaffPreviewShell({
         backLabel={backLabel}
         editHref={editHref}
         lifecycle={lifecycle}
-        appearance={appearance}
-        clinicThemeMode={clinicThemeMode}
-        onAppearanceChange={setAppearance}
+        appearanceControl={
+          <PatientPreviewAppearanceSelect
+            value={appearance}
+            clinicThemeMode={clinicThemeMode}
+            portalPreference={portalPreference}
+            onChange={setAppearance}
+          />
+        }
       />
       <PatientThemeBoundary appearance={patientTheme}>
         {children}

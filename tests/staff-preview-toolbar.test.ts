@@ -16,6 +16,10 @@ describe("authenticated guide preview toolbar", () => {
       "app/(staff)/(guide-preview)/guides/[guideId]/preview/staff-preview-toolbar.tsx",
       "utf8"
     );
+    const editorPreview = readFileSync(
+      "app/(staff)/(clinic-portal)/guides/editor-live-preview.tsx",
+      "utf8"
+    );
     const publicGuide = readFileSync(
       "app/(aftercare)/%5Fsites/[tenant]/[guideSlug]/page.tsx",
       "utf8"
@@ -23,10 +27,12 @@ describe("authenticated guide preview toolbar", () => {
 
     expect(toolbar).toContain("backLabel");
     expect(toolbar).toContain("Draft preview");
-    expect(toolbar).toContain("Patient preview");
-    expect(toolbar).toContain("Patient preview appearance");
-    expect(toolbar).toContain("clinicDefaultPreviewLabel");
-    expect(toolbar).not.toContain('label: "Default"');
+    expect(toolbar).toContain("appearanceControl");
+    expect(shell).toContain("PatientPreviewAppearanceSelect");
+    expect(shell).toContain('useState<PreviewAppearanceChoice>("portal")');
+    expect(editorPreview).toContain(
+      'useState<PreviewAppearanceChoice>("portal")'
+    );
     expect(preview).toContain(
       'backLabel={canEdit ? "Back to guide" : "Back to guides"}'
     );

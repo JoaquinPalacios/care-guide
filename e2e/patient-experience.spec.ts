@@ -265,6 +265,21 @@ test.describe("tenant light and dark screenshots", () => {
       fullPage: true,
     });
 
+    await page.evaluate(() => {
+      try {
+        window.localStorage.setItem("aftercare-guide-portal-theme", "light");
+      } catch {
+        // Tenant origin must not read portal storage.
+      }
+    });
+    await page.reload({ waitUntil: "load" });
+    const darkAfterPortalKey = await page.evaluate(() => {
+      const pageSurface = document.querySelector("body");
+      return pageSurface ? getComputedStyle(pageSurface).backgroundColor : "";
+    });
+    const darkRgb = darkAfterPortalKey.match(/\d+/g)?.map(Number) ?? [];
+    expect(darkRgb[0] ?? 255).toBeLessThan(40);
+
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ colorScheme: "light" });
     await page.goto(HOME, { waitUntil: "load" });
