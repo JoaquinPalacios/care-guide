@@ -20,12 +20,29 @@
   --staff-nav-row-h: 2.75rem;
   --staff-nav-group-gap: 0.75rem;
   --staff-nav-row-gap: 0.125rem;
+  --staff-status-success-surface: light-dark(#eef6f0, #15241c);
+  --staff-status-success-text: light-dark(#0c3220, #c5e6d2);
+  --staff-status-success-line: light-dark(#c5ddd0, #2a4a38);
+  --staff-status-warning-surface: light-dark(#f8f1e7, #241c12);
+  --staff-status-warning-text: light-dark(#3f280a, #ecd9b8);
+  --staff-status-warning-line: light-dark(#e6d3b8, #3d3224);
 }
 
 html[data-theme-mode="light"] {
   color-scheme: light;
+  --staff-canvas: #f4f5f8;
+  --staff-panel: #ffffff;
+  --staff-ink: #0a0d14;
+  --staff-muted: #5c6573;
+  --staff-line: #e2e5ee;
   --staff-on-brand: #ffffff;
   --staff-on-danger: #ffffff;
+  --staff-status-success-surface: #eef6f0;
+  --staff-status-success-text: #0c3220;
+  --staff-status-success-line: #c5ddd0;
+  --staff-status-warning-surface: #f8f1e7;
+  --staff-status-warning-text: #3f280a;
+  --staff-status-warning-line: #e6d3b8;
 }
 
 html[data-theme-mode="dark"] {
@@ -37,6 +54,12 @@ html[data-theme-mode="dark"] {
   --staff-line: #2a3140;
   --staff-on-brand: #0a0d14;
   --staff-on-danger: #1a0b0a;
+  --staff-status-success-surface: #15241c;
+  --staff-status-success-text: #c5e6d2;
+  --staff-status-success-line: #2a4a38;
+  --staff-status-warning-surface: #241c12;
+  --staff-status-warning-text: #ecd9b8;
+  --staff-status-warning-line: #3d3224;
 }
 
 html[data-theme-mode="system"] {
@@ -52,6 +75,12 @@ html[data-theme-mode="system"] {
     --staff-line: #2a3140;
     --staff-on-brand: #0a0d14;
     --staff-on-danger: #1a0b0a;
+    --staff-status-success-surface: #15241c;
+    --staff-status-success-text: #c5e6d2;
+    --staff-status-success-line: #2a4a38;
+    --staff-status-warning-surface: #241c12;
+    --staff-status-warning-text: #ecd9b8;
+    --staff-status-warning-line: #3d3224;
   }
 }
 
@@ -82,6 +111,7 @@ body {
 body {
   background: var(--staff-canvas);
   color: var(--staff-ink);
+  font-family: var(--font-geist-sans), sans-serif;
 }
 
 /* Desktop clinic/operator shell: contain scrolling to the app column.
@@ -398,20 +428,34 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
   color: var(--staff-ink);
 }
 
+html[data-theme-mode="light"] .staffPreviewShell,
+html[data-theme-mode="light"] .staffPreviewToolbar {
+  color-scheme: light;
+}
+
+html[data-theme-mode="dark"] .staffPreviewShell,
+html[data-theme-mode="dark"] .staffPreviewToolbar {
+  color-scheme: dark;
+}
+
+html[data-theme-mode="system"] .staffPreviewShell,
+html[data-theme-mode="system"] .staffPreviewToolbar {
+  color-scheme: light dark;
+}
+
 .staffPreviewToolbar {
   position: sticky;
   top: 0;
   z-index: 30;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 0.75rem;
   min-height: 3.15rem;
   padding: 0.55rem 1rem;
   border-bottom: 1px solid var(--staff-line);
-  background: color-mix(in srgb, var(--staff-panel) 94%, transparent);
+  background: var(--staff-panel);
   color: var(--staff-ink);
-  backdrop-filter: blur(10px);
 }
 
 .staffPreviewBack,
@@ -428,7 +472,15 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
 
 .staffPreviewBack {
   justify-self: start;
+  min-width: 0;
+  max-width: 100%;
   color: var(--staff-muted);
+}
+
+.staffPreviewBackLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .staffPreviewBack:hover,
@@ -498,6 +550,16 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
 .staffPreviewAppearance select:focus-visible {
   outline: 2px solid var(--staff-brand);
   outline-offset: 2px;
+}
+
+html[data-theme-mode="dark"] .staffPreviewAppearance select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'><path stroke='%23a8b2c2' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.4' d='m1 1.5 5 5 5-5'/></svg>");
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme-mode="system"] .staffPreviewAppearance select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'><path stroke='%23a8b2c2' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.4' d='m1 1.5 5 5 5-5'/></svg>");
+  }
 }
 
 @media (max-width: 639px) {
@@ -694,14 +756,21 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
   line-height: 1;
 }
 
-.staffStatusPill[data-tone="published"] {
-  border-color: color-mix(in srgb, var(--staff-brand) 35%, var(--staff-line));
+.staffStatusPill[data-tone="published"],
+.staffStatusPill[data-tone="success"] {
+  background: var(--staff-status-success-surface);
+  color: var(--staff-status-success-text);
+  border-color: var(--staff-status-success-line);
 }
 
 .staffStatusPill[data-tone="changes"],
 .staffStatusPill[data-tone="draft"],
-.staffStatusPill[data-tone="unpublished"] {
-  background: var(--staff-panel);
+.staffStatusPill[data-tone="unpublished"],
+.staffStatusPill[data-tone="disabled"],
+.staffStatusPill[data-tone="warning"] {
+  background: var(--staff-status-warning-surface);
+  color: var(--staff-status-warning-text);
+  border-color: var(--staff-status-warning-line);
 }
 
 .staffField {

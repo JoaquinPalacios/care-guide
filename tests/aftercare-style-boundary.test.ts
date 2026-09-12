@@ -94,6 +94,9 @@ describe("aftercare style boundary", () => {
     expect(styles).toContain("var(--cg-emergency)");
     expect(styles).toContain("var(--cg-radius)");
     expect(styles).toContain("var(--cg-recovery-surface)");
+    expect(styles).toContain("var(--cg-notice-surface)");
+    expect(styles).toContain("var(--cg-notice-border)");
+    expect(styles).toContain("var(--cg-notice-muted)");
     expect(styles).not.toContain("tailwind");
     expect(styles).not.toContain("--tw-");
     expect(styles).toMatch(/\.guideLink\s*\{[^}]*box-shadow/);

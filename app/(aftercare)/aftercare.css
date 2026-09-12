@@ -21,8 +21,13 @@
   --cg-emergency-surface: light-dark(#fdf6f6, #1c1416);
   --cg-focus: #1e293b;
   --cg-radius: 0.75rem;
+  --cg-notice-surface: light-dark(#eef3f4, #1a222c);
+  --cg-notice-border: light-dark(#d7e0e2, #2e3844);
+  --cg-notice-text: light-dark(#1c2430, #e8ebe6);
+  --cg-notice-muted: light-dark(#1f2933, #c5cbd3);
   background: var(--cg-surface);
   color: var(--cg-text);
+  font-family: var(--font-geist-sans), sans-serif;
 }
 
 html.aftercareDocument[data-theme-mode="light"] {
@@ -65,7 +70,7 @@ html.aftercareDocument body {
   min-height: 100%;
   background: var(--cg-surface, Canvas);
   color: var(--cg-text, CanvasText);
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-geist-sans), sans-serif;
   line-height: 1.55;
   overflow-wrap: break-word;
 }
@@ -185,5 +190,6 @@ html.aftercareDocument body {
   .aftercareTheme {
     background: #ffffff;
     color: #111318;
+    font-family: var(--font-geist-sans), sans-serif;
   }
 }

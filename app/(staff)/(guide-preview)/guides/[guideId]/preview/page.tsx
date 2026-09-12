@@ -5,16 +5,17 @@ import { notFound } from "next/navigation";
 import { GuideDocument } from "@/app/(aftercare)/components/guide-document";
 import { PatientPage } from "@/app/(aftercare)/components/patient-page";
 import { StaffPreviewShell } from "@/app/(staff)/(guide-preview)/guides/[guideId]/preview/staff-preview-shell";
-import { requireStaffSession } from "@/lib/auth/require-staff-session";
-import { isClinicPortalError } from "@/lib/clinic-portal/errors";
-import { loadPracticeGuideEditor } from "@/lib/clinic-portal/load-practice-guide-editor";
 import { resolvePracticeChrome } from "@/lib/aftercare/practice-chrome";
+import { requireStaffSession } from "@/lib/auth/require-staff-session";
 import {
   resolveAftercareTheme,
   serializeAftercareThemeCss,
 } from "@/lib/branding/aftercare-theme";
-import { prisma } from "@/lib/prisma";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
+import { isClinicPortalError } from "@/lib/clinic-portal/errors";
+import { loadPracticeGuideEditor } from "@/lib/clinic-portal/load-practice-guide-editor";
+import { staffPreviewBackLabel } from "@/lib/clinic-portal/preview-back-label";
+import { prisma } from "@/lib/prisma";
 import { PRIVATE_ROBOTS } from "@/lib/seo/robots-policy";
 
 import styles from "@/app/(aftercare)/patient.module.css";
@@ -74,7 +75,10 @@ export default async function GuidePreviewPage({
         />
         <StaffPreviewShell
           backHref={canEdit ? `/guides/${guide.id}/edit` : "/guides"}
-          backLabel={canEdit ? "Back to guide" : "Back to guides"}
+          backLabel={staffPreviewBackLabel({
+            canEdit,
+            guideTitle: guide.title,
+          })}
           editHref={canEdit ? `/guides/${guide.id}/edit` : undefined}
           lifecycle={guide.lifecycle}
           clinicThemeMode={clinic.profile?.themeMode}

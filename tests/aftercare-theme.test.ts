@@ -85,6 +85,24 @@ describe("resolveAftercareTheme", () => {
     expect(theme.dark["--cg-text"]).toBe("#f4f1ea");
     expect(theme.light["--cg-recovery-surface"]).not.toBe("#ffffff");
     expect(theme.dark["--cg-recovery-surface"]).not.toBe("#111318");
+    expect(theme.light["--cg-notice-surface"]).toBe("#eef3f4");
+    expect(theme.light["--cg-notice-text"]).toBe("#1c2430");
+    expect(theme.light["--cg-notice-muted"]).toBe("#1f2933");
+    expect(theme.dark["--cg-notice-muted"]).toBe("#c5cbd3");
+    expect(theme.dark["--cg-notice-surface"]).toBe("#1a222c");
+    expect(theme.dark["--cg-notice-text"]).toBe("#e8ebe6");
+    expect(theme.light["--cg-notice-surface"]).not.toBe(
+      theme.light["--cg-warning-surface"]
+    );
+    expect(theme.light["--cg-notice-surface"]).not.toBe(
+      theme.light["--cg-emergency-surface"]
+    );
+    expect(theme.dark["--cg-notice-surface"]).not.toBe(
+      theme.dark["--cg-warning-surface"]
+    );
+    expect(theme.dark["--cg-notice-surface"]).not.toBe(
+      theme.dark["--cg-emergency-surface"]
+    );
   });
 
   it("maps radius presets onto a single semantic radius token", () => {
@@ -294,9 +312,17 @@ describe("serializeAftercareThemeCss", () => {
     expect(css).toContain(
       `.${AFTERCARE_THEME_SCOPE}[data-patient-theme="portal"]{color-scheme:inherit;`
     );
+    expect(css).toContain(
+      `html[data-theme-mode="light"] .${AFTERCARE_THEME_SCOPE}[data-patient-theme="portal"]{color-scheme:light;`
+    );
+    expect(css).toContain(
+      `html[data-theme-mode="dark"] .${AFTERCARE_THEME_SCOPE}[data-patient-theme="portal"]{color-scheme:dark;`
+    );
     expect(css).not.toContain("html{color-scheme");
-    expect(css).not.toContain("html[data-theme-mode");
     expect(css).not.toContain("html.aftercareDocument");
+    expect(css).toContain("--cg-notice-surface:");
+    expect(css).toContain("--cg-notice-text:");
+    expect(css).toContain("--cg-notice-muted:");
   });
 });
 

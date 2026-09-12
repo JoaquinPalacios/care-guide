@@ -22,9 +22,14 @@ export function StaffPreviewToolbar({
 }) {
   return (
     <header className="staffPreviewToolbar">
-      <Link href={backHref} className="staffPreviewBack">
+      <Link
+        href={backHref}
+        className="staffPreviewBack"
+        aria-label={backLabel}
+        title={backLabel}
+      >
         <BackArrowIcon />
-        {backLabel}
+        <span className="staffPreviewBackLabel">{backLabel}</span>
       </Link>
       <div className="staffPreviewStatus flex flex-col items-center gap-1">
         <p className="m-0">Draft preview</p>

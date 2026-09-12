@@ -1,8 +1,61 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 
-import { setPortalColorScheme } from "./helpers/axe";
+import {
+  expectNoSeriousAxeViolations,
+  setPortalColorScheme,
+} from "./helpers/axe";
+import { contrastRatio, relativeLuminance } from "./helpers/layout";
 import { staffUrl } from "./helpers/origins";
 import { signInAsLocalAdmin } from "./helpers/staff-auth";
+
+async function surfaceMetrics(locator: Locator) {
+  return locator.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      colorScheme: style.colorScheme,
+      background: style.backgroundColor,
+      color: style.color,
+      noticeSurface: style.getPropertyValue("--cg-notice-surface").trim(),
+      noticeText: style.getPropertyValue("--cg-notice-text").trim(),
+      noticeBorder: style.getPropertyValue("--cg-notice-border").trim(),
+    };
+  });
+}
+
+async function expectSurfaceTone(
+  locator: Locator,
+  tone: "light" | "dark",
+  label: string
+) {
+  await expect
+    .poll(
+      async () => {
+        const metrics = await surfaceMetrics(locator);
+        const luminance = relativeLuminance(metrics.background);
+        if (luminance < 0) {
+          return false;
+        }
+        return tone === "dark" ? luminance < 0.35 : luminance > 0.7;
+      },
+      { timeout: 10_000 }
+    )
+    .toBe(true);
+
+  const metrics = await surfaceMetrics(locator);
+  const luminance = relativeLuminance(metrics.background);
+  if (tone === "dark") {
+    expect(luminance, `${label} luminance ${metrics.background}`).toBeLessThan(
+      0.35
+    );
+    expect(metrics.colorScheme, label).toMatch(/dark/i);
+  } else {
+    expect(
+      luminance,
+      `${label} luminance ${metrics.background}`
+    ).toBeGreaterThan(0.7);
+    expect(metrics.colorScheme, label).not.toBe("dark");
+  }
+}
 
 test.describe("authenticated patient preview theme", () => {
   test("defaults to Follow portal and keeps Clinic default as an explicit choice", async ({
@@ -16,6 +69,15 @@ test.describe("authenticated patient preview theme", () => {
     const appearance = page.getByLabel("Patient preview appearance");
     const patient = page.locator(".aftercareTheme");
     const toolbar = page.locator(".staffPreviewToolbar");
+    const demoNotice = page.getByRole("status");
+    const demoTitle = demoNotice.getByText("Interactive demo");
+    const demoCopy = demoNotice.getByText(
+      "Sample content only · Not clinical advice · Changes aren't saved"
+    );
+
+    await expect(
+      page.getByRole("link", { name: "Back to Tooth Extraction" })
+    ).toBeVisible();
 
     await setPortalColorScheme(page, "light");
     await page.emulateMedia({ colorScheme: "dark" });
@@ -27,11 +89,29 @@ test.describe("authenticated patient preview theme", () => {
       "Clinic default (System)"
     );
     await expect(patient).toHaveAttribute("data-patient-theme", "portal");
-    await expect
-      .poll(async () =>
-        patient.evaluate((element) => getComputedStyle(element).colorScheme)
-      )
-      .toBe("light");
+    await expectSurfaceTone(patient, "light", "follow portal light patient");
+    await expectSurfaceTone(toolbar, "light", "follow portal light toolbar");
+    await expectSurfaceTone(
+      demoNotice,
+      "light",
+      "follow portal light demo notice"
+    );
+    const lightNotice = await surfaceMetrics(demoNotice);
+    const lightTitle = await demoTitle.evaluate(
+      (element) => getComputedStyle(element).color
+    );
+    const lightCopy = await demoCopy.evaluate(
+      (element) => getComputedStyle(element).color
+    );
+    expect(lightNotice.noticeSurface).toBe("#eef3f4");
+    expect(lightNotice.noticeText).toBe("#1c2430");
+    expect(
+      contrastRatio(lightNotice.background, lightTitle)
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(
+      contrastRatio(lightNotice.background, lightCopy)
+    ).toBeGreaterThanOrEqual(4.5);
+    await expectNoSeriousAxeViolations(page);
     await page.screenshot({
       path: "test-results/artifacts/phase-2a.5-preview-follow-portal-light.png",
     });
@@ -41,16 +121,39 @@ test.describe("authenticated patient preview theme", () => {
       "Follow portal (Dark)"
     );
     await expect(patient).toHaveAttribute("data-patient-theme", "portal");
-    await expect
-      .poll(async () =>
-        patient.evaluate((element) => getComputedStyle(element).colorScheme)
-      )
-      .toBe("dark");
-    await expect
-      .poll(async () =>
-        toolbar.evaluate((element) => getComputedStyle(element).colorScheme)
-      )
-      .toBe("dark");
+    await expectSurfaceTone(patient, "dark", "follow portal dark patient");
+    await expectSurfaceTone(toolbar, "dark", "follow portal dark toolbar");
+    await expectSurfaceTone(
+      demoNotice,
+      "dark",
+      "follow portal dark demo notice"
+    );
+    const darkNotice = await surfaceMetrics(demoNotice);
+    const darkTitle = await demoTitle.evaluate(
+      (element) => getComputedStyle(element).color
+    );
+    const darkCopy = await demoCopy.evaluate(
+      (element) => getComputedStyle(element).color
+    );
+    expect(darkNotice.noticeSurface).toBe("#1a222c");
+    expect(darkNotice.noticeText).toBe("#e8ebe6");
+    expect(
+      contrastRatio(darkNotice.background, darkTitle)
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(
+      contrastRatio(darkNotice.background, darkCopy)
+    ).toBeGreaterThanOrEqual(4.5);
+    const darkToolbarNav = await toolbar
+      .getByRole("link", { name: "Back to Tooth Extraction" })
+      .evaluate((element) => {
+        const style = getComputedStyle(element);
+        return { color: style.color, background: style.backgroundColor };
+      });
+    const darkToolbar = await surfaceMetrics(toolbar);
+    expect(
+      contrastRatio(darkToolbar.background, darkToolbarNav.color)
+    ).toBeGreaterThanOrEqual(4.5);
+    await expectNoSeriousAxeViolations(page);
     await page.screenshot({
       path: "test-results/artifacts/phase-2a.5-preview-follow-portal-dark.png",
     });
@@ -59,41 +162,69 @@ test.describe("authenticated patient preview theme", () => {
     await appearance.selectOption("clinic");
     await page.emulateMedia({ colorScheme: "dark" });
     await expect(patient).toHaveAttribute("data-patient-theme", "system");
-    await expect
-      .poll(async () =>
-        patient.evaluate((element) => {
-          const bg = getComputedStyle(element).backgroundColor;
-          const match = bg.match(
-            /rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/
-          );
-          if (!match) {
-            return -1;
-          }
-          const [r, g, b] = match.slice(1).map((value) => Number(value) / 255);
-          return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-        })
-      )
-      .toBeLessThan(0.4);
+    await expectSurfaceTone(
+      patient,
+      "dark",
+      "clinic default system OS dark patient"
+    );
+    await expectSurfaceTone(
+      toolbar,
+      "light",
+      "clinic default keeps light toolbar"
+    );
+    await expectSurfaceTone(
+      demoNotice,
+      "dark",
+      "clinic default system OS dark demo notice"
+    );
     await page.screenshot({
       path: "test-results/artifacts/phase-2a.5-preview-clinic-default-system-os-dark.png",
     });
 
     await appearance.selectOption("light");
     await expect(patient).toHaveAttribute("data-patient-theme", "light");
-    await expect
-      .poll(async () =>
-        patient.evaluate((element) => getComputedStyle(element).colorScheme)
-      )
-      .toBe("light");
+    await expectSurfaceTone(patient, "light", "explicit light patient");
+    await expectSurfaceTone(
+      toolbar,
+      "light",
+      "explicit light keeps light toolbar"
+    );
 
     await setPortalColorScheme(page, "dark");
+    await appearance.selectOption("light");
+    await expect(patient).toHaveAttribute("data-patient-theme", "light");
+    await expectSurfaceTone(
+      patient,
+      "light",
+      "mixed portal dark / patient light"
+    );
+    await expectSurfaceTone(toolbar, "dark", "mixed portal dark toolbar");
+    await expectSurfaceTone(
+      demoNotice,
+      "light",
+      "mixed portal dark / patient light demo notice"
+    );
+    await page.screenshot({
+      path: "test-results/artifacts/phase-2a.5-preview-portal-dark-patient-light.png",
+    });
+
+    await setPortalColorScheme(page, "light");
     await appearance.selectOption("dark");
     await expect(patient).toHaveAttribute("data-patient-theme", "dark");
-    await expect
-      .poll(async () =>
-        toolbar.evaluate((element) => getComputedStyle(element).colorScheme)
-      )
-      .toBe("dark");
+    await expectSurfaceTone(
+      patient,
+      "dark",
+      "mixed portal light / patient dark"
+    );
+    await expectSurfaceTone(toolbar, "light", "mixed portal light toolbar");
+    await expectSurfaceTone(
+      demoNotice,
+      "dark",
+      "mixed portal light / patient dark demo notice"
+    );
+    await page.screenshot({
+      path: "test-results/artifacts/phase-2a.5-preview-portal-light-patient-dark.png",
+    });
   });
 
   test("editor live preview defaults to Follow portal", async ({ page }) => {

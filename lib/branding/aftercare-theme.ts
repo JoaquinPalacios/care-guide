@@ -29,6 +29,10 @@ export const AFTERCARE_THEME_TOKEN_KEYS = [
   "--cg-focus",
   "--cg-radius",
   "--cg-recovery-surface",
+  "--cg-notice-surface",
+  "--cg-notice-border",
+  "--cg-notice-text",
+  "--cg-notice-muted",
 ] as const;
 
 export type AftercareThemeTokenName =
@@ -102,6 +106,10 @@ const DEFAULT_LIGHT: AftercareThemeTokens = {
   "--cg-focus": "#155e75",
   "--cg-radius": RADIUS_PRESET_VALUES.MEDIUM,
   "--cg-recovery-surface": mixHex(CLINICAL_MIST, "#155e75", 0.035),
+  "--cg-notice-surface": "#eef3f4",
+  "--cg-notice-border": "#d7e0e2",
+  "--cg-notice-text": "#1c2430",
+  "--cg-notice-muted": "#1f2933",
 };
 
 const DEFAULT_DARK: AftercareThemeTokens = {
@@ -120,6 +128,10 @@ const DEFAULT_DARK: AftercareThemeTokens = {
   "--cg-focus": "#155e75",
   "--cg-radius": RADIUS_PRESET_VALUES.MEDIUM,
   "--cg-recovery-surface": mixHex(DARK_RECOVERY, "#155e75", 0.07),
+  "--cg-notice-surface": "#1a222c",
+  "--cg-notice-border": "#2e3844",
+  "--cg-notice-text": "#e8ebe6",
+  "--cg-notice-muted": "#c5cbd3",
 };
 
 export const DEFAULT_AFTERCARE_THEME: AftercareTheme = {
@@ -246,8 +258,11 @@ export function serializeAftercareThemeCss(
           `${scope}[data-patient-theme="dark"]{${boundaryDeclarations(dark, "dark")}}`,
           `${scope}[data-patient-theme="system"]{${boundaryDeclarations(mixed, "light dark")}}`,
           `${scope}[data-patient-theme="portal"]{${boundaryDeclarations(mixed, "inherit")}}`,
-          `@media (prefers-color-scheme:light){${scope}[data-patient-theme="system"]{${boundaryDeclarations(light, "light")}}}`,
-          `@media (prefers-color-scheme:dark){${scope}[data-patient-theme="system"]{${boundaryDeclarations(dark, "dark")}}}`,
+          `html[data-theme-mode="light"] ${scope}[data-patient-theme="portal"]{${boundaryDeclarations(light, "light")}}`,
+          `html[data-theme-mode="dark"] ${scope}[data-patient-theme="portal"]{${boundaryDeclarations(dark, "dark")}}`,
+          `html[data-theme-mode="system"] ${scope}[data-patient-theme="portal"]{${boundaryDeclarations(mixed, "light dark")}}`,
+          `@media (prefers-color-scheme:light){${scope}[data-patient-theme="system"],html[data-theme-mode="system"] ${scope}[data-patient-theme="portal"]{${boundaryDeclarations(light, "light")}}}`,
+          `@media (prefers-color-scheme:dark){${scope}[data-patient-theme="system"],html[data-theme-mode="system"] ${scope}[data-patient-theme="portal"]{${boundaryDeclarations(dark, "dark")}}}`,
         ].join("")
       : mode === "LIGHT"
         ? `${scope}{${boundaryDeclarations(light, "light")}}`

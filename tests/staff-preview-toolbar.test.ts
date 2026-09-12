@@ -25,7 +25,8 @@ describe("authenticated guide preview toolbar", () => {
       "utf8"
     );
 
-    expect(toolbar).toContain("backLabel");
+    expect(toolbar).toContain("aria-label={backLabel}");
+    expect(toolbar).toContain("staffPreviewBackLabel");
     expect(toolbar).toContain("Draft preview");
     expect(toolbar).toContain("appearanceControl");
     expect(shell).toContain("PatientPreviewAppearanceSelect");
@@ -33,9 +34,7 @@ describe("authenticated guide preview toolbar", () => {
     expect(editorPreview).toContain(
       'useState<PreviewAppearanceChoice>("portal")'
     );
-    expect(preview).toContain(
-      'backLabel={canEdit ? "Back to guide" : "Back to guides"}'
-    );
+    expect(preview).toContain("staffPreviewBackLabel");
     expect(preview).toContain("StaffPreviewShell");
     expect(preview).toContain("<PatientPage");
     expect(preview).toContain("GuideDocument");

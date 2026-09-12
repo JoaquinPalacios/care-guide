@@ -122,20 +122,22 @@
 .demoBanner {
   margin: 0 0 1.4rem;
   padding: 0.9rem 1.05rem;
-  border: 1px solid color-mix(in srgb, var(--cg-brand) 22%, var(--cg-border));
+  border: 1px solid var(--cg-notice-border);
   border-radius: var(--cg-radius);
-  background: light-dark(#f4faf8, #171a1f);
+  background: var(--cg-notice-surface);
+  color: var(--cg-notice-text);
 }
 
 .demoBannerTitle {
   margin: 0 0 0.2rem;
+  color: var(--cg-notice-text);
   font-size: 0.95rem;
   font-weight: 650;
 }
 
 .demoBannerCopy {
   margin: 0;
-  color: var(--cg-text-muted);
+  color: var(--cg-notice-muted);
   font-size: 0.875rem;
 }
 
@@ -677,6 +679,7 @@
   .printPage {
     background: #ffffff;
     color: #111318;
+    font-family: var(--font-geist-sans), sans-serif;
     font-size: 11pt;
     line-height: 1.4;
   }
