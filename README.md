@@ -1,10 +1,10 @@
 # Care Guide
 
-The repository is still called **care-guide**. The current provisional commercial/product name is **Aftercare Guide**. That name is not a legal brand lock.
+The repository is still called **care-guide**. The current commercial/product name is **River Aftercare**. Repository, package, and `CARE_GUIDE_*` identifiers remain technical.
 
 ## Product direction
 
-**Aftercare Guide** is a **B2B SaaS platform** that lets healthcare practices give patients **clear, branded, mobile-first post-treatment aftercare guides** through **permanent web URLs and QR codes**.
+**River Aftercare** is a **B2B SaaS platform** that lets healthcare practices give patients **clear, branded, mobile-first post-treatment aftercare guides** through **permanent web URLs and QR codes**.
 
 - The **practice** is the customer.
 - The **patient** is the end user of the aftercare experience.
@@ -29,7 +29,7 @@ Authoritative product contract:
 
 **The aftercare SaaS described above is not a complete commercial product yet.**
 
-Phase 1A added the **data/domain foundation**. Phase 1B added **tenant hostname routing** (`proxy.ts` rewrite to `/_sites/<slug>/…`). Phase 1B.5 added the **patient styling/performance foundation** (CSS Modules, server CSS variables, Tailwind isolated to staff). **Phase 1C** added the first public patient aftercare homepage and guide UI. **Phase 1D was absorbed into 1C** (composition, overrides, additions, and semantic guide rendering already shipped there). **Phase 1E** added Playwright browser acceptance, axe checks, and performance gates. **Phase 1F** added the public marketing homepage, patient UX/UI uplift, and a controlled branding-token foundation (including light/dark and radius presets). **Phase 1F.1** refined the Aftercare Guide marketing identity, tenant presentation settings (terminology, theme policy, optional patient theme toggle), and premium visual language. **Phase 1F.2** added marketing section surfaces and footer, a compact theme popover, a data-driven recovery timeline, and explicit local login env accounts. **Phase 1G** added a day-aware patient demo on `demodental` (Today / Timeline / printable recovery guide). **Phase 1G.1** removed Check-in from launch UI, slowed marketing reveal slightly, and made Print / Save PDF a dedicated resolved-guide document. Check-in is post-launch premium/add-on work. **Marketing completion** added platform `/pricing` and `/contact` on the root host only. Future RecoveryPlan is not `ProcedureSession` ([ADR 0015](docs/adr/0015-recovery-plan-is-not-procedure-session.md)).
+Phase 1A added the **data/domain foundation**. Phase 1B added **tenant hostname routing** (`proxy.ts` rewrite to `/_sites/<slug>/…`). Phase 1B.5 added the **patient styling/performance foundation** (CSS Modules, server CSS variables, Tailwind isolated to staff). **Phase 1C** added the first public patient aftercare homepage and guide UI. **Phase 1D was absorbed into 1C** (composition, overrides, additions, and semantic guide rendering already shipped there). **Phase 1E** added Playwright browser acceptance, axe checks, and performance gates. **Phase 1F** added the public marketing homepage, patient UX/UI uplift, and a controlled branding-token foundation (including light/dark and radius presets). **Phase 1F.1** refined the River Aftercare marketing identity, tenant presentation settings (terminology, theme policy, optional patient theme toggle), and premium visual language. **Phase 1F.2** added marketing section surfaces and footer, a compact theme popover, a data-driven recovery timeline, and explicit local login env accounts. **Phase 1G** added a day-aware patient demo on `demodental` (Today / Timeline / printable recovery guide). **Phase 1G.1** removed Check-in from launch UI, slowed marketing reveal slightly, and made Print / Save PDF a dedicated resolved-guide document. Check-in is post-launch premium/add-on work. **Marketing completion** added platform `/pricing` and `/contact` on the root host only. Future RecoveryPlan is not `ProcedureSession` ([ADR 0015](docs/adr/0015-recovery-plan-is-not-procedure-session.md)).
 
 This repository also contains a **parked product capability**: clinic-staff authentication plus an in-chair procedure-session workflow (rooms, doctors, live stages, `/display/[token]`, Supabase Realtime, and a completed-session link to an external `aftercareUrl`).
 
@@ -210,7 +210,7 @@ Related routes:
 - `GET /api/auth/me` or `/api/auth/session`
 - `POST /api/auth/logout`
 - `/login` — email/password form; successful sign-in redirects to `/dashboard`
-- `app/(staff)/(clinic-portal)/layout.tsx` — Aftercare Guide clinic portal shell via `lib/auth/require-staff-session.ts`
+- `app/(staff)/(clinic-portal)/layout.tsx` — River Aftercare clinic portal shell via `lib/auth/require-staff-session.ts`
 - `/dashboard` — clinic Overview
 - `/guides` — clinic Guides
 

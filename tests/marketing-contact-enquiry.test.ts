@@ -95,7 +95,7 @@ describe("contact enquiry schema", () => {
   it("sanitises mail headers and builds a clinic subject", () => {
     expect(sanitizeHeaderValue("Harbour\r\nDental")).toBe("Harbour Dental");
     expect(enquirySubject("Harbour\nDental")).toBe(
-      "Aftercare Guide — clinic enquiry — Harbour Dental"
+      "River Aftercare — clinic enquiry — Harbour Dental"
     );
   });
 });

@@ -10,7 +10,7 @@ import { resolveLocalLoginSeed } from "@/lib/dev/local-login-accounts";
 
 export const metadata: Metadata = {
   title: `Staff sign in · ${PRODUCT_NAME}`,
-  description: "Sign in to the Aftercare Guide clinic portal.",
+  description: `Sign in to the ${PRODUCT_NAME} clinic portal.`,
 };
 
 export default async function LoginPage() {

@@ -14,14 +14,12 @@ export const HOME_METADATA = {
 
 export const PRICING_METADATA = {
   title: "Pricing",
-  description:
-    "Provisional Aftercare Guide plans for dental practices: Essential at A$79 a month, Practice at A$149 a month, and custom Group pricing.",
+  description: `Provisional ${PRODUCT_NAME} plans for dental practices: Essential at A$79 a month, Practice at A$149 a month, and custom Group pricing.`,
 } as const;
 
 export const CONTACT_METADATA = {
   title: "Contact",
-  description:
-    "Request an Aftercare Guide demo. Tell us about your practice and we will set up branded aftercare pages with you.",
+  description: `Request a ${PRODUCT_NAME} demo. Tell us about your practice and we will set up branded aftercare pages with you.`,
 } as const;
 
 export function marketingMetadataBase(

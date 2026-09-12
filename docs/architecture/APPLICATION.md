@@ -1,4 +1,4 @@
-# Application architecture — Aftercare Guide MVP
+# Application architecture — River Aftercare MVP
 
 The launch backend and application remain a **Next.js App Router monolith**.
 

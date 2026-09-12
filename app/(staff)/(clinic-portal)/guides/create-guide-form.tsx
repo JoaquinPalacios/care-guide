@@ -7,6 +7,7 @@ import {
   createGuideFromTemplateAction,
   type GuideActionState,
 } from "@/app/(staff)/(clinic-portal)/guides/actions";
+import { PRODUCT_NAME } from "@/lib/branding/product-name";
 import type { CanonicalGuideTemplateOption } from "@/lib/clinic-portal/list-canonical-templates";
 
 const initialState: GuideActionState = {};
@@ -32,7 +33,7 @@ export function CreateGuideForm({
           Start from a template
         </h2>
         <p className="mt-2 text-sm leading-6 text-staff-muted">
-          Enable a canonical Aftercare Guide template, then adapt it for this
+          Enable a canonical {PRODUCT_NAME} template, then adapt it for this
           practice.
         </p>
         {templates.length === 0 ? (

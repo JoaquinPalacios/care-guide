@@ -1,8 +1,8 @@
 /**
- * Provisional commercial/product name for user-facing copy.
- * The repository, package, and environment prefixes remain `care-guide`.
- * This is not a permanent/legal brand lock.
+ * Current commercial/product name for user-facing copy.
+ * The repository, package, and `CARE_GUIDE_*` environment prefixes remain
+ * `care-guide`. Those are technical identifiers, not the public brand.
  */
-export const PRODUCT_NAME = "Aftercare Guide";
+export const PRODUCT_NAME = "River Aftercare";
 
 export const PRODUCT_ATTRIBUTION = `Powered by ${PRODUCT_NAME}`;

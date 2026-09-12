@@ -59,7 +59,7 @@ test.describe("tenant isolation and unpublished content", () => {
     await expect(
       page.getByRole("link", { name: /Call Riverside Dental Demo/ })
     ).toHaveCount(0);
-    await expect(page.getByText("Powered by Aftercare Guide")).toHaveCount(0);
+    await expect(page.getByText("Powered by River Aftercare")).toHaveCount(0);
     await expect(
       page.locator('img[src="/demo/riverside-mark.svg"]')
     ).toHaveCount(0);
@@ -96,7 +96,7 @@ test.describe("tenant isolation and unpublished content", () => {
     await expect(
       page.getByRole("link", { name: /Call Riverside Dental Demo/ })
     ).toHaveCount(0);
-    await expect(page.getByText("Powered by Aftercare Guide")).toHaveCount(0);
+    await expect(page.getByText("Powered by River Aftercare")).toHaveCount(0);
     await expect(
       page.locator('img[src="/demo/riverside-mark.svg"]')
     ).toHaveCount(0);

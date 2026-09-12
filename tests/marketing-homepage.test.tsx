@@ -29,7 +29,7 @@ describe("marketing homepage", () => {
   it("explains the product and links to the demo tenant, not the staff console", async () => {
     const html = renderToStaticMarkup(await MarketingHomePage());
 
-    expect(html).toContain("Aftercare Guide");
+    expect(html).toContain("River Aftercare");
     expect(html).toContain("Aftercare platform");
     expect(html).not.toContain("THE AFTERCARE PLATFORM");
     expect(html).toContain("Aftercare that still feels like your clinic.");

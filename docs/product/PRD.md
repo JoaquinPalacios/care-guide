@@ -11,6 +11,7 @@
 | Field                                          | Value                                                                                                                          |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | Product                                        | Care Guide                                                                                                                     |
+| Commercial / product name                      | **River Aftercare**                                                                                                            |
 | Document                                       | Product Requirements Document                                                                                                  |
 | Version                                        | 1.0                                                                                                                            |
 | Codename / subtitle                            | Aftercare SaaS                                                                                                                 |
@@ -72,7 +73,7 @@ A patient who scans a card, opens an SMS link, or revisits a bookmark hours or d
 - clear warning and emergency guidance;
 - an obvious way to call, contact, or book the same practice.
 
-Care Guide remains in the background as the operating platform. A small “Powered by Care Guide” attribution may appear. The practice remains the primary brand.
+Care Guide remains in the background as the operating platform. A small “Powered by River Aftercare” attribution may appear. The practice remains the primary brand.
 
 ---
 
@@ -351,7 +352,7 @@ Patient-facing pages must support practice-specific:
 
 The experience must primarily communicate the **practice** brand.
 
-Aftercare Guide **sales** Contact and Pricing belong only on the root marketing domain. Tenant hosts must not present platform sales contact or pricing. Tenant pages expose clinic contact, clinic phone, and clinic urgent / emergency instructions.
+River Aftercare **sales** Contact and Pricing belong only on the root marketing domain. Tenant hosts must not present platform sales contact or pricing. Tenant pages expose clinic contact, clinic phone, and clinic urgent / emergency instructions.
 
 ### 10.3 Curated aftercare-guide library
 
@@ -360,7 +361,7 @@ Care Guide maintains canonical aftercare templates.
 Conceptual pipeline:
 
 ```text
-canonical Aftercare Guide templates
+canonical River Aftercare templates
         ↓
 clinic enables a template
         ↓
@@ -379,7 +380,7 @@ public branded guide
 
 Canonical Care Guide content and practice-specific customisations must remain conceptually distinguishable.
 
-An update to an Aftercare Guide canonical template must **never** silently mutate a clinic's already-approved / published patient guide. Practices pin a revision; adopting a newer canonical revision is an explicit operator action. See ADR 0010. Open decision OD-4 is about later rollout _UX_, not the pin invariant.
+An update to a River Aftercare canonical template must **never** silently mutate a clinic's already-approved / published patient guide. Practices pin a revision; adopting a newer canonical revision is an explicit operator action. See ADR 0010. Open decision OD-4 is about later rollout _UX_, not the pin invariant.
 
 Do **not** design aftercare content as procedure-session stages.
 
@@ -570,7 +571,7 @@ Only enabled **and** published guides are visible. Unpublished or disabled guide
 
 1. Practice name, logo, colour / theme, and contact pathways.
 2. Guide content.
-3. Optional small Care Guide attribution (“Powered by Care Guide” by default).
+3. Optional small River Aftercare attribution (“Powered by River Aftercare” by default).
 4. Future pricing tiers may allow attribution to be removed. Attribution must not become a major visual brand element.
 
 ### 11.5 Demo tenant vs conceptual examples

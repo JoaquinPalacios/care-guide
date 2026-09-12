@@ -1,4 +1,4 @@
-# Post-launch roadmap — Aftercare Guide
+# Post-launch roadmap — River Aftercare
 
 This document records **post-launch** product work. It is not a licence to start that work from a cleanup or marketing task.
 
@@ -152,7 +152,7 @@ optional future Check-ins
 Launch business model:
 
 ```text
-canonical Aftercare Guide templates
+canonical River Aftercare templates
         ↓
 clinic enables a template
         ↓
@@ -167,7 +167,7 @@ preview
 publish a pinned revision
 ```
 
-An update to an Aftercare Guide canonical template must **never** silently mutate a clinic's already-approved / published patient guide. Practices pin a revision (ADR 0010). Adopting a newer canonical revision is an explicit later operator action.
+An update to a River Aftercare canonical template must **never** silently mutate a clinic's already-approved / published patient guide. Practices pin a revision (ADR 0010). Adopting a newer canonical revision is an explicit later operator action.
 
 Clinical content must be reviewed / approved separately. Do not seed clinically authoritative versions from this roadmap.
 
@@ -220,7 +220,7 @@ Not in launch. Dental first.
 
 ## Platform Contact / Pricing
 
-Aftercare Guide **sales** Contact and Pricing belong only on the **root marketing domain**.
+River Aftercare **sales** Contact and Pricing belong only on the **root marketing domain**.
 
 They must not appear on tenant hosts such as `demodental`. Tenant pages expose only:
 

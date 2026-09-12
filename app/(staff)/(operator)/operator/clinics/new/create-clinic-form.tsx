@@ -51,7 +51,7 @@ export function CreateClinicForm() {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex h-10 w-fit items-center justify-center rounded-md bg-staff-brand px-4 text-sm font-medium text-staff-on-brand hover:bg-staff-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand disabled:opacity-60"
+        className="staffBtn staffBtnPrimary w-fit"
       >
         {pending ? "Creating…" : "Create clinic"}
       </button>

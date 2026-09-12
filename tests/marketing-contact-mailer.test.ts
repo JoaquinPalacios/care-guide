@@ -68,7 +68,7 @@ describe("marketing contact mailer", () => {
     expect(getMarketingContactMemoryInbox()).toHaveLength(1);
     const message = getMarketingContactMemoryInbox()[0];
     expect(message.subject).toBe(
-      "Aftercare Guide — clinic enquiry — Harbour Dental"
+      "River Aftercare — clinic enquiry — Harbour Dental"
     );
     expect(message.replyTo).toBe("alex@clinic.example.test");
     expect(message.text).toContain("Name: Alex Rivera");

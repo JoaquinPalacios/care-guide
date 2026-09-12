@@ -181,11 +181,7 @@ function PortalNav({
               href={item.href}
               aria-current={current ? "page" : undefined}
               onClick={onNavigate}
-              className={`staffNavRow ${
-                current
-                  ? "bg-staff-brand/10 text-staff-brand"
-                  : "text-staff-ink hover:bg-staff-canvas"
-              }`}
+              className="staffNavRow"
             >
               {item.label}
             </Link>
@@ -200,7 +196,7 @@ function PortalNav({
               href={patientSiteHref}
               target="_blank"
               rel="noreferrer"
-              className="staffNavRow text-staff-muted hover:bg-staff-canvas hover:text-staff-ink"
+              className="staffNavRow staffNavRowMuted"
             >
               View patient site
               <span className="sr-only"> (opens in a new tab)</span>

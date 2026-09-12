@@ -1,4 +1,4 @@
-# Launch SEO and indexing — Aftercare Guide
+# Launch SEO and indexing — River Aftercare
 
 Pre-launch search policy for Phase 2A.5. This is not a content-acquisition programme.
 

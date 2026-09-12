@@ -13,7 +13,7 @@ import "./staff.css";
 
 export const metadata: Metadata = {
   title: PRODUCT_NAME,
-  description: "Clinic aftercare portal for Aftercare Guide.",
+  description: `Clinic aftercare portal for ${PRODUCT_NAME}.`,
   robots: PRIVATE_ROBOTS,
   icons: PRODUCT_ICONS,
 };

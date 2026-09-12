@@ -66,9 +66,16 @@ describe("clinic portal pages", () => {
     expect(procedures).toContain("Procedure templates");
   });
 
-  it("refreshes staff login copy to Aftercare Guide", () => {
+  it("refreshes staff login copy to River Aftercare", () => {
     const login = readFileSync("app/(staff)/login/page.tsx", "utf8");
+    const chrome = readFileSync(
+      "app/(staff)/components/portal-chrome.tsx",
+      "utf8"
+    );
+    const operator = readFileSync("app/(staff)/(operator)/layout.tsx", "utf8");
     expect(login).toContain("PRODUCT_NAME");
+    expect(chrome).toContain("PRODUCT_NAME");
+    expect(operator).toContain("PRODUCT_NAME");
     expect(login).toContain("Staff sign in");
     expect(login).not.toContain("Care Guide");
   });

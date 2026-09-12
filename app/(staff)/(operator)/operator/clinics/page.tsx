@@ -26,7 +26,7 @@ export default async function OperatorClinicsPage() {
             All Clinics
           </h1>
           <p className="mt-2 text-sm text-staff-muted">
-            Operational control plane for Aftercare Guide clinics.
+            Operational control plane for {PRODUCT_NAME} clinics.
           </p>
         </div>
         <Link href="/operator/clinics/new" className="staffBtn staffBtnPrimary">

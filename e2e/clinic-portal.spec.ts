@@ -30,7 +30,7 @@ test.describe("clinic portal", () => {
       await expect(
         page.getByRole("heading", { name: "Staff sign in" })
       ).toBeVisible();
-      await expect(page.getByText("Aftercare Guide").first()).toBeVisible();
+      await expect(page.getByText("River Aftercare").first()).toBeVisible();
       await expect(page.getByText("Care Guide", { exact: true })).toHaveCount(
         0
       );

@@ -31,7 +31,7 @@ test.describe("launch SEO surfaces", () => {
     );
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
       "content",
-      /Aftercare Guide/
+      /River Aftercare/
     );
     await expect(
       page.locator('link[rel="icon"][type="image/svg+xml"]')

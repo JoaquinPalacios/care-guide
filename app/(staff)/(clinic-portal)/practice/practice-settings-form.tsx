@@ -139,11 +139,7 @@ export function PracticeSettingsForm({
                 <a
                   href={`#${section.id}`}
                   aria-current={current ? "true" : undefined}
-                  className={`staffNavRow staffSectionNavRow ${
-                    current
-                      ? "text-staff-brand"
-                      : "text-staff-muted hover:bg-staff-panel hover:text-staff-ink"
-                  }`}
+                  className="staffNavRow staffSectionNavRow"
                   onClick={(event) => {
                     event.preventDefault();
                     scrollToSection(section.id);

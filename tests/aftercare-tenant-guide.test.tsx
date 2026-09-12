@@ -208,7 +208,7 @@ describe("tenant guide page", () => {
     expect(html).toContain("Print / Save PDF");
     expect(html).not.toContain("Check-in");
     expect(html).not.toContain("How are you feeling today?");
-    expect(html).toContain("Powered by Aftercare Guide");
+    expect(html).toContain("Powered by River Aftercare");
     expect(html).not.toContain("practice_override");
     expect(html).not.toContain("practice_addition");
     expect(html).not.toContain("login");
@@ -246,7 +246,7 @@ describe("tenant guide page", () => {
       "Practice override: use the demo after-hours number."
     );
     expect(html).not.toContain("Weekend contact (Riverside demo)");
-    expect(html).not.toContain("Powered by Aftercare Guide");
+    expect(html).not.toContain("Powered by River Aftercare");
     expect(html).not.toContain('role="tablist"');
     expect(html).not.toContain("Check-in");
   });

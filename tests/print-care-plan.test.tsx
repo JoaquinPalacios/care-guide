@@ -175,7 +175,7 @@ describe("printable recovery guide", () => {
     expect(print).toContain("12 Riverside Demo Street");
     expect(print).toContain("Phone 02 5550 0100");
     expect(print).toContain("SAMPLE / NOT CLINICAL ADVICE");
-    expect(print).toContain("Powered by Aftercare Guide");
+    expect(print).toContain("Powered by River Aftercare");
     expect(print).toContain("Print / Save PDF");
     expect(print).not.toContain("Care Plan");
     expect(print).not.toContain('role="tablist"');
@@ -211,7 +211,7 @@ describe("printable recovery guide", () => {
       })
     );
 
-    expect(print).not.toContain("Powered by Aftercare Guide");
+    expect(print).not.toContain("Powered by River Aftercare");
     expect(print).not.toContain("<footer");
   });
 });

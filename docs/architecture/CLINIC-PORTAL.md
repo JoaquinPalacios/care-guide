@@ -1,6 +1,6 @@
 # Clinic portal and platform operator — Phase 2A
 
-Staff/admin UI for Aftercare Guide. Patient tenant rendering remains the source of truth for branding and guide documents.
+Staff/admin UI for River Aftercare. Patient tenant rendering remains the source of truth for branding and guide documents.
 
 ## Hosts
 
@@ -86,7 +86,7 @@ Lifecycle destructive actions reuse the Guides-list domain actions from a compac
 
 Unpublish is not delete. It clears the public pin (`PracticeGuide.status = UNPUBLISHED`, `isEnabled = false`) and keeps the guide record, working draft, and published revision history until the clinic deletes it. Patients hitting the former public URL receive the tenant 404. Republish is a new snapshot. Deleting a practice guide never deletes canonical `GuideTemplate` / `GuideTemplateRevision` rows.
 
-Destructive confirmations use the native `<dialog>` element with Aftercare Guide application chrome (not a browser/native alert look). One `ConfirmDialog` covers dirty cancel, publish, delete draft, discard draft changes, and unpublish.
+Destructive confirmations use the native `<dialog>` element with River Aftercare application chrome (not a browser/native alert look). One `ConfirmDialog` covers dirty cancel, publish, delete draft, discard draft changes, and unpublish.
 
 ### Practice
 
@@ -135,7 +135,7 @@ Upload is **blocked** until production object storage is provisioned. Practice s
 
 ## Operator console
 
-The operator console is the Aftercare Guide operational control plane. Page identity is **PLATFORM / All Clinics**. Local seed identity may show **Demo Operator** as the account name; that is not a demo product.
+The operator console is the River Aftercare operational control plane. Page identity is **PLATFORM / All Clinics**. Local seed identity may show **Demo Operator** as the account name; that is not a demo product.
 
 Current primary destination: **Clinics**. Do not add dead navigation. Canonical **Templates** management is the next operator-console capability and is not implemented here.
 

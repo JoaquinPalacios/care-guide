@@ -1,3 +1,5 @@
+import { PRODUCT_NAME } from "@/lib/branding/product-name";
+
 export const PRICING_DISCLAIMER =
   "Working Australian pricing. Provisional, and not a final commercial contract.";
 
@@ -40,7 +42,7 @@ export const LAUNCH_PLANS = [
       "Custom clinic guides, prepared during onboarding",
       "Richer branding controls",
       "Operator-led clinic setup for launch",
-      "Option to hide Aftercare Guide attribution",
+      `Option to hide ${PRODUCT_NAME} attribution`,
     ],
   },
   {

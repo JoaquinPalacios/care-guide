@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-12 (Phase 2A.5 QA: unified preview appearance, editor textarea rows)
+Last updated: 2026-09-12 (Phase 2A.5: River Aftercare brand + interaction system)
 
 ---
 
@@ -197,7 +197,7 @@ Local URLs:
 
 Premium Aftercare Guide marketing identity, tenant presentation settings, and optional patient theme control. No Phase 2 operator admin.
 
-**Aftercare Guide** is the current provisional commercial/product name. The repository, npm package, and `CARE_GUIDE_*` environment prefixes remain `care-guide`.
+**River Aftercare** is the current commercial/product name. The repository, npm package, and `CARE_GUIDE_*` environment prefixes remain `care-guide`.
 
 | Area                 | Location                                                                                                        |
 | -------------------- | --------------------------------------------------------------------------------------------------------------- |
@@ -207,7 +207,7 @@ Premium Aftercare Guide marketing identity, tenant presentation settings, and op
 | Terminology          | `ClinicProfile.instructionTerminology` → `lib/aftercare/instruction-terminology.ts`                             |
 | Clinic theme policy  | `ClinicProfile.themeMode` (`LIGHT` / `DARK` / `SYSTEM`) serialized as `html { color-scheme }`                   |
 | Patient theme toggle | `ClinicProfile.allowPatientThemeToggle`; isolated `PatientThemeControl` only when true                          |
-| Attribution          | “Powered by Aftercare Guide”                                                                                    |
+| Attribution          | “Powered by River Aftercare”                                                                                    |
 | Presentation ADR     | [ADR 0013](../adr/0013-provisional-aftercare-guide-presentation-controls.md)                                    |
 
 Riverside Dental Demo seed: `POST_TREATMENT`, `SYSTEM`, `allowPatientThemeToggle = true`.
@@ -349,8 +349,8 @@ Mobile marketing navigation, section spacing tokens, and a richer static phone-s
 
 | Area           | Behaviour                                                                                                                                                                                                                                                                                      |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Mobile nav     | Below `47.99rem`, same-page anchors (`How it works`, `Clinic preview`) are `display: none`. Header keeps Aftercare Guide, Staff sign in, and the compact theme control. Tablet/desktop keep those two anchors plus Staff sign in. Footer anchors remain. There is no public Early Access link. |
-| Wordmark       | `white-space: nowrap` plus a slightly smaller mobile mark/type so “Aftercare Guide” stays one line at 360/390                                                                                                                                                                                  |
+| Mobile nav     | Below `47.99rem`, same-page anchors (`How it works`, `Clinic preview`) are `display: none`. Header keeps River Aftercare, Staff sign in, and the compact theme control. Tablet/desktop keep those two anchors plus Staff sign in. Footer anchors remain. There is no public Early Access link. |
+| Wordmark       | `white-space: nowrap` plus a slightly smaller mobile mark/type so “River Aftercare” stays one line at 360/390                                                                                                                                                                                  |
 | Section rhythm | `--mk-section-pad-y: clamp(4rem, 6vw, 6rem)` on inner `.band`s; `--mk-chapter-pad-y: clamp(6rem, 8vw, 8rem)` on chapter starts and the closing CTA. Blends are `4rem`. Hero keeps custom spacing.                                                                                              |
 | Phone screen   | Still `PhoneShell` → `PhoneScreen` → `ProductPreviewScreen`. Hardware frame unchanged. Screen stays light (`color-scheme: light`, `#ffffff`) even when marketing chrome is dark.                                                                                                               |
 | Preview copy   | Clinic → terminology → Tooth Extraction → Your recovery → current Immediate care stage with a short demo line → quieter Days 2–3 / Days 4–7 → “Need help? Call Riverside Dental →” (not a real link)                                                                                           |
@@ -549,7 +549,7 @@ Phase 1G.1 removed Check-in from the launch product. Check-ins remain documented
 | Print            | `/extraction/print` plus `@media print`. Same `GuideDocument` / composed sections as the web guide. Browser Print / Save as PDF. No PDF library. Not a patient-specific Care Plan.              |
 | Client island    | `PatientDemoExperience` (Today / Timeline) + existing `PatientThemeControl` + tiny `PrintTrigger`. Guide body stays Server Components.                                                          |
 | Marketing reveal | Responsive IO margin: mobile ~**-80px**, desktop/large ~**-200px**, tablet interpolated. Editorial ~720ms / 110ms stagger; cards ~650ms / 95ms (cap 320ms). cubic-bezier(.22, 1, .36, 1).       |
-| Attribution      | “Powered by Aftercare Guide” in a centred document-flow footer when `showCareGuideAttribution` is true.                                                                                         |
+| Attribution      | “Powered by River Aftercare” in a centred document-flow footer when `showCareGuideAttribution` is true.                                                                                         |
 | Performance      | Tenant CSS **16,204** raw (budget 16,384). Demo island **4,818** raw (−1,950 vs 1G). Theme control unchanged. No Motion on tenant. See [PERFORMANCE.md](../architecture/PERFORMANCE.md).        |
 
 Local URLs unchanged, plus:
@@ -583,7 +583,7 @@ Root-platform commercial pages. No billing integration. No lead database. No ten
 | Tenant / staff  | `demodental` `/pricing` and `/contact` 404. `app.` host is unchanged. Platform Pricing/Contact never render inside tenant chrome.                                                                                                                                                                              |
 | Working prices  | Essential **A$79 / month**, Practice **A$149 / month** (Recommended), Group **Custom pricing**. Provisional AUD. No annual toggle. No published setup fee.                                                                                                                                                     |
 | Launch vs later | Active plan lists are launchable aftercare capabilities. Check-ins, connected recovery plans, messaging, and integrations sit in **Coming after launch** only. No Check-in price.                                                                                                                              |
-| Contact         | Platform conversion page: concise hero + clinic enquiry form. Server action → validated `ContactEnquiry` → `MarketingContactMailer` (SMTP or local `memory`). No fake success. Subject: `Aftercare Guide — clinic enquiry — <clinic>`. See [MARKETING-CONTACT.md](../architecture/MARKETING-CONTACT.md).       |
+| Contact         | Platform conversion page: concise hero + clinic enquiry form. Server action → validated `ContactEnquiry` → `MarketingContactMailer` (SMTP or local `memory`). No fake success. Subject: `River Aftercare — clinic enquiry — <clinic>`. See [MARKETING-CONTACT.md](../architecture/MARKETING-CONTACT.md).       |
 | Navigation      | Desktop: Pricing, Contact, Staff sign in, theme. Mobile: brand, Staff sign in, compact site menu (Pricing + Contact only), theme. Homepage How it works / Clinic preview stay on `/` and in the footer.                                                                                                        |
 | Spacing         | `--mk-eyebrow-heading-gap`, `--mk-heading-intro-gap`, `--mk-heading-content-gap`, `--mk-card-grid-gap`. Heading groups use `headingBlock` / `headingFollow`.                                                                                                                                                   |
 | Heroes          | Homepage remains the largest product hero. Pricing/Contact use `MarketingPageHero` with related but distinct atmosphere and a **shared** inner-page SVG edge.                                                                                                                                                  |
@@ -656,7 +656,7 @@ Marketing motion/navigation polish, calmer patient interactions, and the first A
 | Area               | Behaviour                                                                                                                                                                                 |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Motion             | Viewport thresholds unchanged. Tune `MARKETING_MOTION_TIMING` in `lib/marketing/reveal-timing.ts`.                                                                                        |
-| Mobile nav         | Closed: Aftercare Guide + burger. Open: Pricing, Contact, Staff sign in, Theme as full-width rows. Theme expands inline (System / Light / Dark). Desktop compact theme trigger unchanged. |
+| Mobile nav         | Closed: River Aftercare + burger. Open: Pricing, Contact, Staff sign in, Theme as full-width rows. Theme expands inline (System / Light / Dark). Desktop compact theme trigger unchanged. |
 | Onboarding numbers | Fixed number column + content column, `align-items: start`, first-line optical alignment.                                                                                                 |
 
 ### Patient
@@ -668,7 +668,7 @@ Marketing motion/navigation polish, calmer patient interactions, and the first A
 
 ### Clinic portal
 
-Staff `/dashboard` is the Aftercare Guide clinic portal, not the parked chairside dashboard.
+Staff `/dashboard` is the River Aftercare clinic portal, not the parked chairside dashboard.
 
 | Area      | Behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -727,7 +727,7 @@ Archive of **published** guides (delete after history exists), QR, invitations/t
 | Control         | `app/session/[id]/control/*`, `lib/sessions/move-procedure-session-stage.ts`, `complete-procedure-session.ts`                                   |
 | Patient display | `app/display/[token]/*`, `lib/sessions/load-patient-display.ts`                                                                                 |
 | Realtime        | `lib/realtime/*` (Supabase; optional in local `.env.example`)                                                                                   |
-| Staff dashboard | Parked chairside inspection only: `app/(staff)/dashboard/procedures/page.tsx`. Default `/dashboard` is the Aftercare Guide clinic portal.       |
+| Staff dashboard | Parked chairside inspection only: `app/(staff)/dashboard/procedures/page.tsx`. Default `/dashboard` is the River Aftercare clinic portal.       |
 
 Completed sessions may show an external `ProcedureTemplate.aftercareUrl`. That is **not** the aftercare product.
 
@@ -952,5 +952,19 @@ Manual QA follow-up on `feature/phase-2a5-shell-seo-polish`. Unified preview app
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Preview theme   | `resolveEffectivePreviewAppearance` returns `light` / `dark` / `system` once. `.staffPreviewShell[data-preview-theme]` and `PatientThemeBoundary` both receive that value. Explicit Light cannot leave a dark toolbar. |
 | Editor textarea | Shared `textarea.staffField`: `rows={4}`, `height: auto`, `min-height: calc(1.5em * 4 + 1rem)`, vertical resize. `.staffField { height: 2.75rem }` no longer clips multiline guide fields.                             |
+
+---
+
+## Phase 2A.5 brand + interaction system (implemented)
+
+Date: 2026-09-12
+
+Corrective pass on `feature/phase-2a5-shell-seo-polish`. Commercial/product name is **River Aftercare**. Phase 2A.5 SEO, shell scroll, unpublish/delete, Follow portal, Geist, and E2E DB isolation are preserved. No R2/Cloudflare change. No new UI library. Patient does not import Tailwind.
+
+| Area          | Behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Product name  | `PRODUCT_NAME` / `PRODUCT_ATTRIBUTION` in `lib/branding/product-name.ts`. Visible marketing, auth, staff, operator, preview, print, email subject, and patient attribution use River Aftercare. Riverside Dental Demo remains the clinic. Repository / `CARE_GUIDE_*` identifiers unchanged. Final Current isologo is **not** in the repo; temporary stacked-card mark remains.                                                                                                                                                                                         |
+| Interactions  | Shared `app/interaction.css` (`--interaction-duration: 150ms`). Primary / secondary / quiet / nav / inline / patient-brand controls: tonal hover, no translate/scale on routine buttons, `:focus-visible` remains a ring, hover gated with `@media (hover: hover) and (pointer: fine)`, `prefers-reduced-motion` zeroes duration. Patient colours stay `--cg-*`. Staff semantic colours are explicit light/dark hex (not `light-dark()`), so theme switches do not interpolate through unreadable mid-states. Patient CSS raw budget is 26,000 (gzip/brotli unchanged). |
+| `[VAULT]` log | Not application code and not a bundled dependency. Classified as a browser extension / injected script. River Aftercare was not changed for it.                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 ---

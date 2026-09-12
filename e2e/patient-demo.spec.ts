@@ -140,10 +140,10 @@ test.describe("interactive recovery demo", () => {
     page,
   }) => {
     await page.goto(EXTRACTION, { waitUntil: "load" });
-    const attribution = page.getByText("Powered by Aftercare Guide");
+    const attribution = page.getByText("Powered by River Aftercare");
     await expect(attribution).toBeVisible();
     const footer = page.locator("footer").filter({
-      hasText: "Powered by Aftercare Guide",
+      hasText: "Powered by River Aftercare",
     });
     await expect(footer).toBeVisible();
     const alignment = await footer.evaluate((node) => {

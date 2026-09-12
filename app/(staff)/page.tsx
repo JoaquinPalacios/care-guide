@@ -9,7 +9,7 @@ import { PRODUCT_NAME } from "@/lib/branding/product-name";
 
 export const metadata: Metadata = {
   title: PRODUCT_NAME,
-  description: "Staff workspace for Aftercare Guide.",
+  description: `Staff workspace for ${PRODUCT_NAME}.`,
 };
 
 export default async function Home() {
@@ -37,10 +37,7 @@ export default async function Home() {
         </p>
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Link
-            href="/login"
-            className="inline-flex h-10 items-center justify-center rounded-md bg-staff-brand px-4 text-sm font-medium text-staff-on-brand shadow-sm transition hover:bg-staff-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-staff-brand"
-          >
+          <Link href="/login" className="staffBtn staffBtnPrimary">
             Staff sign in
           </Link>
         </div>
