@@ -91,7 +91,18 @@ export default async function OperatorClinicsPage() {
                   <td className="px-4 py-3 text-staff-muted">{clinic.slug}</td>
                   <td className="px-4 py-3">{clinic.guideCount}</td>
                   <td className="px-4 py-3">{clinic.publishedGuideCount}</td>
-                  <td className="px-4 py-3">{clinic.setupLabel}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className="staffStatusPill"
+                      data-tone={
+                        clinic.setupLabel === "Configured"
+                          ? "success"
+                          : "warning"
+                      }
+                    >
+                      {clinic.setupLabel}
+                    </span>
+                  </td>
                   <td className="px-4 py-3 text-staff-muted">
                     {new Intl.DateTimeFormat("en-GB", {
                       dateStyle: "medium",

@@ -19,6 +19,15 @@ describe("clinic portal pages", () => {
 
     expect(overview).toContain("requireStaffSession");
     expect(overview).toContain("clinicMembership.clinic.id");
+    expect(overview).toContain("staffStatusPill");
+    expect(overview).not.toContain("bg-emerald-50");
+    expect(overview).not.toContain("dark:text-emerald-200");
+    expect(readFileSync("app/(staff)/staff.css", "utf8")).toContain(
+      "--staff-status-success-surface"
+    );
+    expect(readFileSync("app/(staff)/staff.css", "utf8")).toContain(
+      "--staff-status-warning-text"
+    );
     expect(overview).not.toContain("searchParams");
     expect(overview).not.toContain("listInProgressSessions");
     expect(overview).not.toContain("ProcedureSession");

@@ -56,6 +56,37 @@ test.describe("clinic portal", () => {
     await expect(page.getByText("Published guides")).toBeVisible();
     await expect(page.getByText("Draft guides")).toBeVisible();
     await expect(page.getByText("Clinic setup")).toBeVisible();
+    const configured = page
+      .locator(".staffStatusPill", { hasText: "Configured" })
+      .first();
+    await expect(configured).toBeVisible();
+    await setPortalColorScheme(page, "light");
+    const lightBadge = await configured.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { background: style.backgroundColor, color: style.color };
+    });
+    expect(relativeLuminance(lightBadge.background)).toBeGreaterThan(0.72);
+    expect(relativeLuminance(lightBadge.color)).toBeLessThan(0.35);
+    expect(
+      contrastRatio(lightBadge.background, lightBadge.color)
+    ).toBeGreaterThanOrEqual(4.5);
+    await page.screenshot({
+      path: "test-results/artifacts/phase-2a.5-overview-configured-light.png",
+    });
+    await setPortalColorScheme(page, "dark");
+    const darkBadge = await configured.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { background: style.backgroundColor, color: style.color };
+    });
+    expect(relativeLuminance(darkBadge.background)).toBeLessThan(0.25);
+    expect(relativeLuminance(darkBadge.color)).toBeGreaterThan(0.55);
+    expect(
+      contrastRatio(darkBadge.background, darkBadge.color)
+    ).toBeGreaterThanOrEqual(4.5);
+    await page.screenshot({
+      path: "test-results/artifacts/phase-2a.5-overview-configured-dark.png",
+    });
+    await setPortalColorScheme(page, "light");
     await expect(
       page.getByRole("link", { name: /View patient site/ }).first()
     ).toHaveAttribute("href", tenantUrl(DEMO_TENANT_SLUG, "/"));
@@ -307,13 +338,13 @@ test.describe("clinic portal", () => {
       page.getByRole("heading", { name: "Tooth Extraction" })
     ).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Back to guide" })
+      page.getByRole("link", { name: "Back to Tooth Extraction" })
     ).toBeVisible();
     await expect(page.getByRole("link", { name: "Edit guide" })).toBeVisible();
     await page.screenshot({
       path: "test-results/artifacts/staff-guide-preview-toolbar-1440.png",
     });
-    await page.getByRole("link", { name: "Back to guide" }).click();
+    await page.getByRole("link", { name: "Back to Tooth Extraction" }).click();
     await expect(page).toHaveURL(/\/guides\/.+\/edit/);
   });
 
