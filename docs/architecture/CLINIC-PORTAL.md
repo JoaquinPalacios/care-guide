@@ -67,7 +67,9 @@ Timeline stages are an exclusive accordion (one open at a time). Add stage creat
 
 The live preview reuses the presentational recovery timeline list used by the public patient renderer. It reflects the current unsaved editor state. Empty preview copy is quiet on the patient-preview surface. Public patient routes stay server-first.
 
-Authenticated draft preview uses a staff toolbar outside `PatientPage`, including the same status pills and a preview-only patient appearance selector (Default / Light / Dark). That selector does not persist `ClinicProfile.themeMode`. Public tenant URLs never render that toolbar.
+The editor two-column grid is a **container query** on `.staffEditorPage` (`staff-editor`, `min-width: 56rem`). It must not use the viewport `lg` / `1024px` breakpoint, because the 16rem sidebar consumes width and would force a preview rail into an already-narrow main column. Below that content width the editor is one column with a collapsible patient-timeline preview.
+
+Authenticated draft preview uses a staff toolbar outside `PatientPage`, including the same status pills and a preview-only patient appearance selector (Clinic default (System/Light/Dark) / Light / Dark). That selector does not persist `ClinicProfile.themeMode`. Public tenant URLs never render that toolbar.
 
 The patient renderer is wrapped in `PatientThemeBoundary` so clinic tokens and `color-scheme` can live on a scoped surface. Portal Light/Dark must not force the embedded patient document.
 
@@ -79,11 +81,12 @@ Lifecycle destructive actions reuse the Guides-list domain actions from a compac
 | ------------------------- | ----------------------------------------------------------------------- |
 | Never published           | Delete draft → `/guides`                                                |
 | Published + draft changes | Discard draft changes → stay in editor, restore published working state |
-| Published, no draft       | no destructive action                                                   |
+| Published, no draft       | Unpublish guide → stay in editor, public URL 404s                       |
+| Unpublished               | no destructive action; explicit Publish restores a public pin           |
 
-There is no public-guide delete or unpublish.
+Unpublish is not delete. It clears the public pin (`PracticeGuide.status = UNPUBLISHED`, `isEnabled = false`) and keeps the guide record, working draft, and published revision history. Patients hitting the former public URL receive the tenant 404. Republish is a new snapshot.
 
-Destructive confirmations use the native `<dialog>` element with Aftercare Guide application chrome (not a browser/native alert look). One `ConfirmDialog` covers dirty cancel, publish, delete draft, and discard draft changes.
+Destructive confirmations use the native `<dialog>` element with Aftercare Guide application chrome (not a browser/native alert look). One `ConfirmDialog` covers dirty cancel, publish, delete draft, discard draft changes, and unpublish.
 
 ### Practice
 
@@ -95,11 +98,11 @@ Colour fields are one native colour control plus a hex input. Portal selects use
 
 ### Permissions
 
-| Actor               | Portal                    | Guides                                      | Practice                       | Operator      |
-| ------------------- | ------------------------- | ------------------------------------------- | ------------------------------ | ------------- |
-| Clinic `ADMIN`      | Yes                       | Create, edit, save, publish, delete/discard | Edit identity/branding/contact | Not found     |
-| Clinic `STAFF`      | Overview + Guides         | View + draft/public preview                 | Not found                      | Not found     |
-| Platform `OPERATOR` | Redirected to All Clinics | No clinic membership locally                | No                             | `/operator/*` |
+| Actor               | Portal                    | Guides                                                 | Practice                       | Operator      |
+| ------------------- | ------------------------- | ------------------------------------------------------ | ------------------------------ | ------------- |
+| Clinic `ADMIN`      | Yes                       | Create, edit, save, publish, unpublish, delete/discard | Edit identity/branding/contact | Not found     |
+| Clinic `STAFF`      | Overview + Guides         | View + draft/public preview                            | Not found                      | Not found     |
+| Platform `OPERATOR` | Redirected to All Clinics | No clinic membership locally                           | No                             | `/operator/*` |
 
 Mutations authorize on the server: authenticated user → clinic membership → `ADMIN` → resource `clinicId` from membership, never from the form.
 
@@ -115,9 +118,10 @@ See [ADR 0017](../adr/0017-clinic-owned-practice-revisions-pin-public-documents.
 | ------------------------------- | -------------------------------------------------------------------------------------------------- |
 | Never published                 | **Delete draft** — removes the clinic guide after confirmation                                     |
 | Published + newer draft changes | **Discard draft changes** — working draft restored to the published snapshot; public pin unchanged |
-| Published with no draft changes | None this phase. Unpublish/archive is deferred because durable URLs may exist                      |
+| Currently published             | **Unpublish guide** — public pin cleared; guide, draft, and revision history remain                |
+| Unpublished                     | None. Explicit Publish creates a new public snapshot                                               |
 
-STAFF never sees these actions. Server functions scope by session membership `clinicId`; cross-clinic delete is impossible.
+STAFF never sees these actions. Server functions scope by session membership `clinicId`; cross-clinic delete/unpublish is impossible.
 
 Templates already enabled show **Already in your guides** and cannot be duplicated.
 

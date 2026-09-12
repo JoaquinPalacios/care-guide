@@ -44,6 +44,7 @@ enum GuideRevisionStatus {
 enum PracticeGuideStatus {
   DRAFT
   PUBLISHED
+  UNPUBLISHED
 }
 
 enum GuideSectionKind {

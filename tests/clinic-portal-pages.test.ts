@@ -96,6 +96,7 @@ describe("clinic portal pages", () => {
     expect(practiceActions).toContain("clinicMembership.clinic.id");
     expect(practiceActions).not.toContain('formData.get("clinicId")');
     expect(guideActions).toContain("requireClinicAdmin");
+    expect(guideActions).toContain("unpublishGuideAction");
     expect(guideActions).not.toContain('formData.get("clinicId")');
     expect(operatorPage).toContain("requirePlatformOperator");
     expect(operatorActions).toContain("requirePlatformOperator");

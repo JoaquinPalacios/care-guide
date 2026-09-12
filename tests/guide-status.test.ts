@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 
+import { GuideRevisionStatus, PracticeGuideStatus } from "@prisma/client";
+
 import {
+  clinicGuideCanUnpublish,
   clinicGuideDestructiveAction,
+  clinicGuideLifecycleStatus,
   clinicGuideStatusLabel,
   clinicGuideStatusPills,
 } from "@/lib/clinic-portal/guide-status";
@@ -18,6 +22,9 @@ describe("guide status pills", () => {
     expect(clinicGuideStatusPills("draft")).toEqual([
       { label: "Draft", tone: "draft" },
     ]);
+    expect(clinicGuideStatusPills("unpublished")).toEqual([
+      { label: "Unpublished", tone: "unpublished" },
+    ]);
     expect(clinicGuideStatusPills("published")).toEqual([
       { label: "Published", tone: "published" },
     ]);
@@ -30,5 +37,26 @@ describe("guide status pills", () => {
     );
     expect(clinicGuideDestructiveAction("published")).toBeNull();
     expect(clinicGuideDestructiveAction("published_disabled")).toBeNull();
+    expect(clinicGuideDestructiveAction("unpublished")).toBeNull();
+  });
+
+  it("offers unpublish for currently public pins only", () => {
+    expect(clinicGuideCanUnpublish("published")).toBe(true);
+    expect(clinicGuideCanUnpublish("published_draft_changes")).toBe(true);
+    expect(clinicGuideCanUnpublish("published_disabled")).toBe(true);
+    expect(clinicGuideCanUnpublish("draft")).toBe(false);
+    expect(clinicGuideCanUnpublish("unpublished")).toBe(false);
+  });
+
+  it("maps UNPUBLISHED status to the unpublished lifecycle", () => {
+    expect(
+      clinicGuideLifecycleStatus({
+        status: PracticeGuideStatus.UNPUBLISHED,
+        isEnabled: false,
+        publishedRevisionStatus: GuideRevisionStatus.PUBLISHED,
+        draftUpdatedAt: new Date("2026-09-12"),
+        publishedAt: new Date("2026-09-11"),
+      })
+    ).toBe("unpublished");
   });
 });

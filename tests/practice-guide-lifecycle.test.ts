@@ -12,6 +12,7 @@ import { deletePracticeGuideDraft } from "@/lib/clinic-portal/delete-practice-gu
 import { discardPracticeGuideDraftChanges } from "@/lib/clinic-portal/discard-practice-guide-draft-changes";
 import { publishPracticeGuide } from "@/lib/clinic-portal/publish-practice-guide";
 import { savePracticeGuideDraft } from "@/lib/clinic-portal/save-practice-guide-draft";
+import { unpublishPracticeGuide } from "@/lib/clinic-portal/unpublish-practice-guide";
 import { updatePracticeSettings } from "@/lib/clinic-portal/update-practice-settings";
 import { ClinicPortalError } from "@/lib/clinic-portal/errors";
 import { prisma } from "@/lib/prisma";
@@ -654,5 +655,114 @@ describe("draft delete and discard", () => {
     });
     expect(draft?.title).toBe("Public pin");
     expect(draft?.sections[0]?.body).toBe("Published body.");
+  });
+
+  it("unpublishes the public pin, keeps history, and allows republish", async () => {
+    await seedClinics();
+    const guide = await createCustomPracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      values: { title: "Public pin", publicSlug: "public-unpublish" },
+    });
+    await savePracticeGuideDraft({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      values: {
+        guideId: guide.id,
+        title: "Public pin",
+        publicSlug: "public-unpublish",
+        introduction: "Published intro.",
+        sections: [
+          {
+            key: "introduction",
+            kind: "INTRODUCTION",
+            title: "After treatment",
+            body: "Published body.",
+            periodLabel: null,
+            startDay: null,
+            endDay: null,
+          },
+        ],
+      },
+    });
+    const published = await publishPracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      guideId: guide.id,
+    });
+    expect(published.version).toBe(1);
+
+    const live = await getPublishedPracticeGuide({
+      clinicSlug: "testp2a2-clinic-a",
+      publicSlug: "public-unpublish",
+    });
+    expect(live?.title).toBe("Public pin");
+
+    await expect(
+      unpublishPracticeGuide({
+        clinicId: CLINIC_B_ID,
+        actorUserId: USER_ID,
+        guideId: guide.id,
+      })
+    ).rejects.toSatisfy(
+      (error: unknown) =>
+        error instanceof ClinicPortalError && error.code === "not_found"
+    );
+
+    await unpublishPracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      guideId: guide.id,
+    });
+
+    expect(
+      await getPublishedPracticeGuide({
+        clinicSlug: "testp2a2-clinic-a",
+        publicSlug: "public-unpublish",
+      })
+    ).toBeNull();
+
+    const unpublished = await prisma.practiceGuide.findUnique({
+      where: { id: guide.id },
+      include: { contentRevisions: true },
+    });
+    expect(unpublished?.status).toBe(PracticeGuideStatus.UNPUBLISHED);
+    expect(unpublished?.isEnabled).toBe(false);
+    expect(unpublished?.contentRevisions).toHaveLength(2);
+    expect(
+      unpublished?.contentRevisions.some(
+        (revision) =>
+          revision.status === GuideRevisionStatus.PUBLISHED &&
+          revision.version === 1
+      )
+    ).toBe(true);
+    expect(
+      unpublished?.contentRevisions.some((revision) => revision.version === 0)
+    ).toBe(true);
+
+    await expect(
+      deletePracticeGuideDraft({
+        clinicId: CLINIC_A_ID,
+        actorUserId: USER_ID,
+        guideId: guide.id,
+      })
+    ).rejects.toSatisfy(
+      (error: unknown) =>
+        error instanceof ClinicPortalError && error.code === "conflict"
+    );
+
+    const republished = await publishPracticeGuide({
+      clinicId: CLINIC_A_ID,
+      actorUserId: USER_ID,
+      guideId: guide.id,
+    });
+    expect(republished.version).toBe(2);
+
+    const restored = await getPublishedPracticeGuide({
+      clinicSlug: "testp2a2-clinic-a",
+      publicSlug: "public-unpublish",
+    });
+    expect(restored?.title).toBe("Public pin");
+    expect(restored?.revision.version).toBe(2);
   });
 });

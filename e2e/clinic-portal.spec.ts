@@ -339,6 +339,9 @@ test.describe("clinic portal", () => {
     await expect(
       page.getByRole("button", { name: "More actions" })
     ).toHaveCount(0);
+    await expect(
+      page.getByRole("menuitem", { name: "Unpublish guide" })
+    ).toHaveCount(0);
     await page.getByRole("link", { name: "Preview" }).first().click();
     await expect(page).toHaveURL(/\/guides\/.+\/preview/);
     await expect(
@@ -945,12 +948,24 @@ test.describe("clinic portal UX polish", () => {
     });
     await dialog.getByRole("button", { name: "Discard changes" }).click();
     await expect(title).toHaveValue(publishedTitle);
-    await expect(page.getByText("Draft changes")).toHaveCount(0);
+    await expect(page.getByText("Draft changes", { exact: true })).toHaveCount(
+      0
+    );
     await expect(
       page.locator(".staffEditorToolbarActions").getByRole("button", {
         name: "More actions",
       })
+    ).toBeVisible();
+    await page
+      .locator(".staffEditorToolbarActions")
+      .getByRole("button", { name: "More actions" })
+      .click();
+    await expect(
+      page.getByRole("menuitem", { name: "Discard draft changes" })
     ).toHaveCount(0);
+    await expect(
+      page.getByRole("menuitem", { name: "Unpublish guide" })
+    ).toBeVisible();
   });
 
   test("authenticated preview isolates patient appearance from the portal", async ({

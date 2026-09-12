@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { WORKING_DRAFT_VERSION } from "@/lib/aftercare/practice-revision-document";
 import { clinicPatientSiteUrl } from "@/lib/clinic-portal/patient-site-url";
 import {
+  clinicGuideCanUnpublish,
   clinicGuideDestructiveAction,
   clinicGuideLifecycleStatus,
   clinicGuideStatusLabel,
@@ -28,6 +29,7 @@ export interface ClinicPortalGuide {
   updatedAt: Date;
   previewHref: string | null;
   destructiveAction: GuideDestructiveAction | null;
+  canUnpublish: boolean;
 }
 
 export async function listClinicPortalGuides(
@@ -144,6 +146,7 @@ export async function listClinicPortalGuides(
       updatedAt: draft?.updatedAt ?? guide.updatedAt,
       previewHref,
       destructiveAction: clinicGuideDestructiveAction(lifecycle),
+      canUnpublish: clinicGuideCanUnpublish(lifecycle),
     };
   });
 }

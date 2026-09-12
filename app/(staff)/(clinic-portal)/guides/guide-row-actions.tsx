@@ -12,12 +12,14 @@ export function GuideRowActions({
   isPublishedPublic,
   previewHref,
   destructiveAction,
+  canUnpublish,
 }: {
   guideId: string;
   canManage: boolean;
   isPublishedPublic: boolean;
   previewHref: string | null;
   destructiveAction: GuideDestructiveAction | null;
+  canUnpublish: boolean;
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -51,6 +53,7 @@ export function GuideRowActions({
         <GuideLifecycleActions
           guideId={guideId}
           destructiveAction={destructiveAction}
+          canUnpublish={canUnpublish}
         />
       ) : null}
     </div>

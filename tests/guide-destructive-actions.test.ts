@@ -30,8 +30,7 @@ describe("guide destructive actions authorization", () => {
       "utf8"
     );
 
-    expect(actions).toContain("deleteGuideDraftAction");
-    expect(actions).toContain("discardGuideDraftChangesAction");
+    expect(actions).toContain("unpublishGuideAction");
     expect(actions).toContain("requireClinicAdmin");
     expect(actions).not.toContain('formData.get("clinicId")');
     expect(menu).toContain("aria-label");
@@ -41,6 +40,10 @@ describe("guide destructive actions authorization", () => {
     expect(lifecycle).toContain("More actions");
     expect(lifecycle).toContain("Delete this draft guide?");
     expect(lifecycle).toContain("Discard draft changes?");
+    expect(lifecycle).toContain("Unpublish this guide?");
+    expect(lifecycle).toContain(
+      "Patients using the current public link will no longer be able to open this guide until it is published again."
+    );
     expect(lifecycle).toContain(
       "Patients will continue seeing the currently published version."
     );

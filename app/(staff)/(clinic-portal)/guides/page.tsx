@@ -73,6 +73,7 @@ export default async function ClinicGuidesPage() {
                   isPublishedPublic={Boolean(guide.previewHref)}
                   previewHref={guide.previewHref}
                   destructiveAction={guide.destructiveAction}
+                  canUnpublish={guide.canUnpublish}
                 />
               </div>
             </li>

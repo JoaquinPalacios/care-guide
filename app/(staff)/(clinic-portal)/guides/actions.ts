@@ -19,6 +19,7 @@ import {
 } from "@/lib/clinic-portal/guide-schemas";
 import { publishPracticeGuide } from "@/lib/clinic-portal/publish-practice-guide";
 import { savePracticeGuideDraft } from "@/lib/clinic-portal/save-practice-guide-draft";
+import { unpublishPracticeGuide } from "@/lib/clinic-portal/unpublish-practice-guide";
 import { revalidatePath } from "next/cache";
 
 import type { ComposedGuideSection } from "@/lib/aftercare/types";
@@ -231,6 +232,30 @@ export async function discardGuideDraftChangesAction(
         sections: editor.sections,
       },
     };
+  } catch (error) {
+    return errorState(error);
+  }
+}
+
+export async function unpublishGuideAction(
+  _previous: GuideActionState,
+  formData: FormData
+): Promise<GuideActionState> {
+  const { user, clinicMembership } = await requireClinicAdmin();
+  const guideId = String(formData.get("guideId") ?? "");
+  if (!guideId) {
+    return { error: "Missing guide." };
+  }
+
+  try {
+    await unpublishPracticeGuide({
+      clinicId: clinicMembership.clinic.id,
+      actorUserId: user.id,
+      guideId,
+    });
+    revalidatePath("/guides");
+    revalidatePath(`/guides/${guideId}/edit`);
+    return { ok: true };
   } catch (error) {
     return errorState(error);
   }
