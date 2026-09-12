@@ -27,8 +27,10 @@ import { GuideStatusPills } from "@/app/(staff)/components/guide-status-pills";
 import { PortalBreadcrumb } from "@/app/(staff)/components/portal-breadcrumb";
 import { SaveStatus } from "@/app/(staff)/components/save-status";
 import { useUnsavedChangesGuard } from "@/app/(staff)/components/use-unsaved-changes-guard";
+import { ExternalLinkIcon } from "@/app/(staff)/components/icons";
 import { formSaveStatus } from "@/lib/clinic-portal/form-save-status";
 import {
+  clinicGuideCanUnpublish,
   clinicGuideDestructiveAction,
   clinicGuideStatusPills,
 } from "@/lib/clinic-portal/guide-status";
@@ -232,6 +234,7 @@ export function GuideEditor({
     : "Custom guide";
   const statusPills = clinicGuideStatusPills(guide.lifecycle);
   const slugLocked = !canEdit || guide.isPublished;
+  const showPublicLink = guide.isPublished && guide.isEnabled;
 
   const actions = (
     <div className="staffEditorActions">
@@ -266,6 +269,7 @@ export function GuideEditor({
           <GuideLifecycleActions
             guideId={guide.id}
             destructiveAction={clinicGuideDestructiveAction(guide.lifecycle)}
+            canUnpublish={clinicGuideCanUnpublish(guide.lifecycle)}
             onDiscarded={(restored) => {
               const restoredSections = toEditorSections(restored.sections);
               setTitle(restored.title);
@@ -305,7 +309,7 @@ export function GuideEditor({
   );
 
   return (
-    <div className="staffEditorPage mx-auto flex w-full min-w-0 max-w-6xl flex-col">
+    <div className="staffEditorPage staffGuideEditor">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <PortalBreadcrumb
           items={[
@@ -314,12 +318,26 @@ export function GuideEditor({
             { label: "Edit" },
           ]}
         />
-        <Link
-          href={`/guides/${guide.id}/preview`}
-          className="staffBtn staffBtnQuiet"
-        >
-          Preview
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          {showPublicLink ? (
+            <a
+              href={patientUrlExample}
+              target="_blank"
+              rel="noreferrer"
+              className="staffBtn staffBtnQuiet"
+            >
+              View patient guide
+              <span className="sr-only"> (opens in a new tab)</span>
+              <ExternalLinkIcon className="ml-1" />
+            </a>
+          ) : null}
+          <Link
+            href={`/guides/${guide.id}/preview`}
+            className="staffBtn staffBtnQuiet"
+          >
+            Preview
+          </Link>
+        </div>
       </header>
 
       <div className="staffEditorToolbar">
@@ -382,7 +400,7 @@ export function GuideEditor({
                 }
                 className="staffField staffFieldNarrow"
               />
-              <p className="text-sm text-staff-muted">
+              <p className="staffEditorUrl text-sm text-staff-muted">
                 Patient URL:{" "}
                 {patientUrlExample.replace(/\/[^/]*$/, `/${publicSlug || "…"}`)}
               </p>
@@ -488,25 +506,23 @@ export function GuideEditor({
           className="staffEditorRail"
           aria-label="Patient timeline preview"
         >
-          <div className="hidden min-h-0 flex-1 overflow-auto lg:block">
-            {preview}
-          </div>
-          <div className="staffEditorPreviewToggle lg:hidden">
-            <button
-              type="button"
-              className="staffBtn staffBtnSecondary w-full"
-              aria-expanded={previewOpen}
-              aria-controls={`mobile-preview-${previewId}`}
-              onClick={() => setPreviewOpen((open) => !open)}
-            >
-              Preview patient timeline
-            </button>
-          </div>
-          {previewOpen ? (
-            <div id={`mobile-preview-${previewId}`} className="lg:hidden">
-              {preview}
+          <div className="staffEditorRailDesktop">{preview}</div>
+          <div className="staffEditorRailMobile">
+            <div className="staffEditorPreviewToggle">
+              <button
+                type="button"
+                className="staffBtn staffBtnSecondary w-full"
+                aria-expanded={previewOpen}
+                aria-controls={`mobile-preview-${previewId}`}
+                onClick={() => setPreviewOpen((open) => !open)}
+              >
+                Preview patient timeline
+              </button>
             </div>
-          ) : null}
+            {previewOpen ? (
+              <div id={`mobile-preview-${previewId}`}>{preview}</div>
+            ) : null}
+          </div>
         </aside>
       </div>
 

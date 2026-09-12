@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import { setPortalColorScheme } from "./helpers/axe";
 import {
+  EDITOR_BREAKPOINT_RESIZE_STEPS,
   PORTAL_OVERFLOW_VIEWPORTS,
   expectNoPortalShellOverflow,
 } from "./helpers/portal-shell";
@@ -62,6 +63,44 @@ test.describe("portal shell overflow contract", () => {
         });
       }
       if (route.name === "Guide editor") {
+        await page.setViewportSize({ width: 1728, height: 877 });
+        await page.screenshot({
+          path: "test-results/artifacts/phase-2a.5-guide-editor-1728.png",
+        });
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.screenshot({
+          path: "test-results/artifacts/phase-2a.5-guide-editor-1280.png",
+        });
+        await page.setViewportSize({ width: 1100, height: 800 });
+        const collapsed = await expectNoPortalShellOverflow(
+          page,
+          "light 1100x800 collapse",
+          route.path
+        );
+        expect(
+          collapsed.editorColumns === "none" ||
+            !collapsed.editorColumns.includes(" ")
+        ).toBe(true);
+        await page.screenshot({
+          path: "test-results/artifacts/phase-2a.5-guide-editor-1100.png",
+        });
+        await page.setViewportSize({ width: 1024, height: 768 });
+        await page.screenshot({
+          path: "test-results/artifacts/phase-2a.5-guide-editor-1024.png",
+        });
+        await page.setViewportSize({ width: 900, height: 800 });
+        await expectNoPortalShellOverflow(
+          page,
+          "light 900x800 collapse",
+          route.path
+        );
+        await page.screenshot({
+          path: "test-results/artifacts/phase-2a.5-guide-editor-900.png",
+        });
+        await page.setViewportSize({ width: 768, height: 1024 });
+        await page.screenshot({
+          path: "test-results/artifacts/phase-2a.5-guide-editor-768.png",
+        });
         await page.setViewportSize({ width: 1440, height: 900 });
         await page.screenshot({
           path: "test-results/artifacts/phase-2a.5-guide-editor-1440.png",
@@ -120,6 +159,39 @@ test.describe("portal shell overflow contract", () => {
         await page.screenshot({
           path: "test-results/artifacts/phase-2a.5-operator-clinics-1440.png",
         });
+      }
+    }
+  });
+
+  test("guide editor collapses columns while resizing through the content breakpoint", async ({
+    page,
+  }) => {
+    await signInAsLocalAdmin(page);
+    await page.goto(staffUrl("/guides"), { waitUntil: "load" });
+    const editorHref = await page
+      .getByRole("link", { name: "Edit" })
+      .first()
+      .getAttribute("href");
+    expect(editorHref).toBeTruthy();
+    await page.goto(staffUrl(editorHref!), { waitUntil: "load" });
+    await setPortalColorScheme(page, "light");
+
+    for (const viewport of EDITOR_BREAKPOINT_RESIZE_STEPS) {
+      await page.setViewportSize({
+        width: viewport.width,
+        height: viewport.height,
+      });
+      const report = await expectNoPortalShellOverflow(
+        page,
+        `resize ${viewport.label}`,
+        editorHref!
+      );
+      if (viewport.width <= 1100) {
+        expect(
+          report.editorColumns === "none" ||
+            !report.editorColumns.includes(" "),
+          `${viewport.label} should be one column: ${report.editorColumns}`
+        ).toBe(true);
       }
     }
   });

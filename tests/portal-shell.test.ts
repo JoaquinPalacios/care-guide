@@ -31,6 +31,8 @@ describe("clinic portal layout roles and shell", () => {
     expect(css).toContain("flex: 1 1 0");
     expect(css).toContain("overflow-x: clip");
     expect(css).toContain("scrollbar-gutter: stable");
+    expect(css).toContain("container: staff-editor / inline-size");
+    expect(css).toContain("@container staff-editor (min-width: 56rem)");
     expect(css).not.toContain("overflow-x: auto;\n    overflow-y: auto");
   });
 });

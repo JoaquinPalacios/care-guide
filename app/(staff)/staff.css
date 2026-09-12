@@ -339,9 +339,22 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
 }
 
 .staffEditorPage {
+  container: staff-editor / inline-size;
+  box-sizing: border-box;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
+  overflow-wrap: anywhere;
   padding-bottom: 5.5rem;
+}
+
+.staffGuideEditor {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  max-width: 72rem;
+  margin-inline: auto;
+  flex-direction: column;
 }
 
 @media (min-width: 1024px) {
@@ -447,7 +460,7 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
   appearance: none;
   -webkit-appearance: none;
   min-width: 0;
-  max-width: 8.5rem;
+  max-width: min(16rem, 100%);
   height: 2rem;
   padding: 0 1.7rem 0 0.55rem;
   border: 1px solid var(--staff-line);
@@ -660,7 +673,8 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
 }
 
 .staffStatusPill[data-tone="changes"],
-.staffStatusPill[data-tone="draft"] {
+.staffStatusPill[data-tone="draft"],
+.staffStatusPill[data-tone="unpublished"] {
   background: var(--staff-panel);
 }
 
@@ -970,8 +984,32 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
 .staffEditorRail {
   display: flex;
   min-width: 0;
+  max-width: 100%;
   flex-direction: column;
   gap: 1rem;
+}
+
+.staffEditorLayout > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.staffEditorRailDesktop {
+  display: none;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
+.staffEditorRailMobile {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.staffEditorUrl {
+  overflow-wrap: anywhere;
 }
 
 .staffEditorActions {
@@ -1019,7 +1057,9 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
   .staffEditorToolbarActions {
     display: flex;
   }
+}
 
+@container staff-editor (min-width: 56rem) {
   .staffEditorLayout {
     display: grid;
     grid-template-columns: minmax(0, 1.55fr) minmax(0, 1.05fr);
@@ -1033,6 +1073,11 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
     max-height: calc(100dvh - 5.25rem);
   }
 
+  .staffEditorRailDesktop {
+    display: block;
+  }
+
+  .staffEditorRailMobile,
   .staffEditorPreviewToggle {
     display: none;
   }

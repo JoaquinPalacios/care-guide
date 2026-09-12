@@ -4,11 +4,21 @@ export const PORTAL_OVERFLOW_VIEWPORTS = [
   { label: "1728x877", width: 1728, height: 877 },
   { label: "1440x900", width: 1440, height: 900 },
   { label: "1280x800", width: 1280, height: 800 },
+  { label: "1100x800", width: 1100, height: 800 },
   { label: "1024x768", width: 1024, height: 768 },
+  { label: "900x800", width: 900, height: 800 },
   { label: "devtools-docked-1328x877", width: 1328, height: 877 },
   { label: "768x1024", width: 768, height: 1024 },
   { label: "390x844", width: 390, height: 844 },
   { label: "360x800", width: 360, height: 800 },
+] as const;
+
+export const EDITOR_BREAKPOINT_RESIZE_STEPS = [
+  { label: "wide-1280", width: 1280, height: 800 },
+  { label: "narrow-desktop-1100", width: 1100, height: 800 },
+  { label: "tablet-900", width: 900, height: 800 },
+  { label: "tablet-768", width: 768, height: 1024 },
+  { label: "restore-1280", width: 1280, height: 800 },
 ] as const;
 
 export interface ShellBoxMetrics {
@@ -34,8 +44,11 @@ export interface PortalShellReport {
   html: ShellBoxMetrics;
   staffMain: ShellBoxMetrics;
   scroller: ShellBoxMetrics;
+  content: ShellBoxMetrics;
+  editorPage: ShellBoxMetrics;
   ancestors: ShellBoxMetrics[];
   landmarkMains: number;
+  editorColumns: string;
 }
 
 const ANCESTOR_SELECTORS = [
@@ -45,6 +58,7 @@ const ANCESTOR_SELECTORS = [
   ".staffAppMain",
   ".staffAppScroller",
   ".staffAppContent",
+  ".staffEditorPage",
 ] as const;
 
 export async function measurePortalShell(
@@ -108,13 +122,21 @@ export async function measurePortalShell(
     const bySelector = Object.fromEntries(
       ancestors.map((box) => [box.selector, box])
     );
+    const editorLayout = document.querySelector(".staffEditorLayout");
+    const editorColumns =
+      editorLayout instanceof HTMLElement
+        ? getComputedStyle(editorLayout).gridTemplateColumns
+        : "";
 
     return {
       html: bySelector.html,
       staffMain: bySelector[".staffAppMain"],
       scroller: bySelector[".staffAppScroller"],
+      content: bySelector[".staffAppContent"],
+      editorPage: bySelector[".staffEditorPage"],
       ancestors,
       landmarkMains: document.querySelectorAll("main").length,
+      editorColumns,
     };
   }, ANCESTOR_SELECTORS);
 }
@@ -131,7 +153,7 @@ export function formatPortalShellReport(
     return `${box.selector} overflow=${box.overflowPx} client=${box.clientWidth} scroll=${box.scrollWidth} rect=${box.rectLeft}/${box.rectRight}/${box.rectWidth} width=${box.width} min=${box.minWidth} max=${box.maxWidth} flex=${box.flexGrow}/${box.flexShrink}/${box.flexBasis} overflow-x=${box.overflowX} box=${box.boxSizing}`;
   });
   return [
-    `${viewportLabel} ${route} mains=${report.landmarkMains}`,
+    `${viewportLabel} ${route} mains=${report.landmarkMains} editorColumns=${report.editorColumns || "n/a"}`,
     ...ancestorLines,
   ].join("\n");
 }
@@ -160,6 +182,17 @@ export async function expectNoPortalShellOverflow(
     report.scroller.scrollWidth,
     `staff scroller overflow ${detail}`
   ).toBeLessThanOrEqual(report.scroller.clientWidth + 1);
+  expect(report.content.found, `staff content missing ${detail}`).toBe(true);
+  expect(
+    report.content.scrollWidth,
+    `staff content overflow ${detail}`
+  ).toBeLessThanOrEqual(report.content.clientWidth + 1);
+  if (report.editorPage.found) {
+    expect(
+      report.editorPage.scrollWidth,
+      `staff editor overflow ${detail}`
+    ).toBeLessThanOrEqual(report.editorPage.clientWidth + 1);
+  }
 
   return report;
 }

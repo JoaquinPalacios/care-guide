@@ -18,8 +18,14 @@ describe("guide editor UX", () => {
     expect(editor).toContain("Publish this guide?");
     expect(editor).toContain("staffEditorToolbar");
     expect(editor).toContain("staffEditorRail");
+    expect(editor).toContain("staffGuideEditor");
+    expect(editor).toContain("staffEditorRailDesktop");
+    expect(editor).toContain("staffEditorRailMobile");
     expect(editor).not.toContain("staffEditorChrome");
     expect(editor).not.toContain("staffEditorRailCard");
+    expect(editor).not.toContain("lg:grid-cols");
+    expect(editor).not.toContain("lg:block");
+    expect(editor).not.toContain("max-w-6xl");
     expect(editor).toContain("useUnsavedChangesGuard");
     expect(editor).toContain("formSaveStatus");
     expect(editor).toContain("EditorLivePreview");

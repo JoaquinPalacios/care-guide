@@ -324,6 +324,8 @@ describe("aftercare style boundary", () => {
       expect(source, file).not.toContain("@emotion");
       expect(source, file).not.toMatch(/from ["']motion(\/|$)/);
       expect(source, file).not.toContain("framer-motion");
+      expect(source, file).not.toContain('from "@/app/(staff)');
+      expect(source, file).not.toContain("./staff.css");
     }
 
     const marketingFiles = walk("app/(marketing)").filter((path) =>
