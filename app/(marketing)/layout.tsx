@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { geistSans } from "@/lib/branding/fonts";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 import {
   HOME_METADATA,
@@ -51,7 +52,7 @@ export default function MarketingRootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={geistSans.variable} suppressHydrationWarning>
       <body>
         <script
           dangerouslySetInnerHTML={{

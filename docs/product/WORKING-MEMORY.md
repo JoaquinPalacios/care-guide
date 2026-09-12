@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-12 (Phase 2A.5 QA: viewport shell scroll, e2e isolation, unpublished delete, Follow portal preview)
+Last updated: 2026-09-12 (Phase 2A.5 visual system: preview theme boundaries, status tokens, Geist everywhere)
 
 ---
 
@@ -60,7 +60,7 @@ Do not claim QR codes, operator aftercare admin, or analytics exist until they a
 | 2A.2                      | LOCAL — PORTAL WORKFLOW POLISH READY FOR JOAQUÍN REVIEW        |
 | 2A.3                      | LOCAL — EDITOR / PRACTICE / OPERATOR POLISH                    |
 | 2A.4                      | LOCAL — OVERFLOW / PREVIEW / GUIDE ACTIONS / LOGO READINESS    |
-| 2A.5                      | LOCAL — SHELL + SEO POLISH READY FOR JOAQUÍN REVIEW            |
+| 2A.5                      | LOCAL — VISUAL SYSTEM CORRECTIONS READY FOR JOAQUÍN REVIEW     |
 | 2+ remainder              | Not started                                                    |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
@@ -462,9 +462,9 @@ Do **not** add an arbitrary Google Fonts picker. Do **not** load `fonts.googleap
 
 Current stacks:
 
-- Patient: system/native `ui-sans-serif, system-ui, sans-serif` in `aftercare.css`. No `next/font`.
-- Marketing: the same system stack in `marketing.css`. No `next/font`.
-- Staff: Geist + Geist Mono via `next/font/google` (parked staff surface only).
+- Product-wide primary UI/content face: **Geist Sans** via one `next/font` source (`lib/branding/fonts.ts`, `--font-geist-sans`). Marketing, staff/operator/login, patient, authenticated preview, and print consume that variable. Staff also loads Geist Mono for `font-mono`.
+- Do not load Geist independently in each route group. Do not request `fonts.googleapis.com` at runtime. Patient still does **not** import Tailwind.
+- Clinic typography presets remain future work (`ClinicProfile.typographyPreset`). This pass is product-family consistency only, not per-clinic presets.
 
 A future `ClinicProfile.typographyPreset` should apply on the tenant `aftercareTheme` wrapper as `--cg-font-heading` / `--cg-font-body`, selected by the server when composing theme CSS. No client FontProvider. Headings and body should not vary independently for CLINICAL/MODERN; EDITORIAL may use a display face for headings only, with body remaining a highly readable sans. Prioritise long-form patient readability over marketing display.
 
@@ -927,3 +927,19 @@ Manual QA follow-up on `feature/phase-2a5-shell-seo-polish`. Phase 2A.4 (`3ae8cd
 | Delete           | Draft and Unpublished: ADMIN may delete the PracticeGuide instance (list + editor More actions). Published: Unpublish first; no direct Delete. Template-backed deletion does not touch canonical `GuideTemplate` / revisions; the template becomes available to enable again. Confirmation for unpublished makes permanent removal explicit. STAFF and cross-clinic cannot.                                                                  |
 | Preview theme    | Authenticated preview **defaults to Follow portal** (`aftercare-guide-portal-theme`). Portal Light → Light preview; Portal Dark → Dark preview. Explicit Clinic default still uses `ClinicProfile.themeMode` + OS. Explicit Light/Dark are preview-only and do not write Practice. Public tenant SYSTEM still follows the patient device `prefers-color-scheme`; portal preference has no effect. Editor live preview uses the same default. |
 | E2E isolation    | Playwright uses dedicated `care_guide_e2e` (`E2E_DATABASE_URL` or derived from `DATABASE_URL`). `reuseExistingServer` is false. Global teardown fails if the development database guide IDs change. Optional `scripts/list-e2e-guide-artifacts.mjs` / `scripts/cleanup-e2e-guide-artifacts.mjs --yes` — do not run cleanup unless Joaquín approves.                                                                                          |
+
+## Phase 2A.5 visual system corrections (implemented)
+
+Date: 2026-09-12
+
+Focused theme/typography pass on `feature/phase-2a5-shell-seo-polish`. Phase 2A.4 (`3ae8cdd`) remains an ancestor. SEO, shell scroll, unpublish/delete, Follow portal, and E2E DB isolation are preserved. No R2/Cloudflare change.
+
+| Area            | Behaviour                                                                                                                                                                                                                                                                                                                          |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Preview toolbar | Authenticated preview chrome (`.staffPreviewShell` / `.staffPreviewToolbar`) follows **portal** `html[data-theme-mode]`. Opaque `--staff-panel`. Patient document stays in `PatientThemeBoundary`. Follow portal now locks scoped patient tokens to `html[data-theme-mode=light/dark/system]`, so toolbar and document can differ. |
+| Demo notice     | `--cg-notice-surface`, `--cg-notice-border`, `--cg-notice-text`, `--cg-notice-muted`. Calm informational Light/Dark. Does not use warning/emergency tokens or hardcoded white/black.                                                                                                                                               |
+| Back link       | Editors: `Back to {guide title}` from the loaded guide (e.g. `Back to Tooth Extraction`). STAFF without edit: still `Back to guides`. Truncates visually; `aria-label` / `title` keep the full name.                                                                                                                               |
+| Status pills    | Shared `--staff-status-success-*` / `--staff-status-warning-*` with explicit Light/Dark. Overview **Configured** / **Needs attention**, guide Published/Draft/Unpublished/Draft changes, operator setup labels. Not neon.                                                                                                          |
+| Geist           | One `next/font` module. `--font-geist-sans` on marketing, staff, and aftercare html. Patient CSS Modules consume the variable without Tailwind. Print uses Geist with `sans-serif` fallback. Same two preloaded WOFF2 hashes across route groups; no duplicate family load.                                                        |
+
+---

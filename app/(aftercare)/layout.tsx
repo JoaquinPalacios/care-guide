@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { geistSans } from "@/lib/branding/fonts";
 import { PRODUCT_ICONS } from "@/lib/seo/icons";
 import { TENANT_LAUNCH_ROBOTS } from "@/lib/seo/robots-policy";
 
@@ -19,7 +20,11 @@ export default function AftercareRootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en" className="aftercareDocument" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`aftercareDocument ${geistSans.variable}`}
+      suppressHydrationWarning
+    >
       <body>{children}</body>
     </html>
   );

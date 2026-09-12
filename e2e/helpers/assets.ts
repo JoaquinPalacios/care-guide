@@ -174,11 +174,11 @@ export function expectCssWithinPhase1Budget(css: AssetMeasurement[]): void {
   const gzip = sumMetric(css, "gzip");
   const brotli = sumMetric(css, "brotli");
 
-  // UX polish: restrained guide-card and inactive-tab hover. No Tailwind.
+  // Geist @font-face is now part of the patient document (shared next/font).
   // Review if tenant CSS grows well beyond the last measured payload.
-  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(17_664);
-  expect(gzip, `CSS gzip ${gzip}`).toBeLessThanOrEqual(4_500);
-  expect(brotli, `CSS brotli ${brotli}`).toBeLessThanOrEqual(4_000);
+  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(22_500);
+  expect(gzip, `CSS gzip ${gzip}`).toBeLessThanOrEqual(6_500);
+  expect(brotli, `CSS brotli ${brotli}`).toBeLessThanOrEqual(6_000);
 }
 
 export function expectNoTailwind(css: AssetMeasurement[]): void {
