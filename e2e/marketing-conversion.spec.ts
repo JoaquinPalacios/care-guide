@@ -165,10 +165,10 @@ test.describe("marketing conversion routes", () => {
     const headerNav = page.getByRole("navigation", { name: "Marketing" });
 
     await expect(
-      headerNav.getByRole("link", { name: "Aftercare Guide" })
+      headerNav.getByRole("link", { name: "River Aftercare" })
     ).toHaveCount(0);
     await expect(
-      page.getByRole("banner").getByRole("link", { name: "Aftercare Guide" })
+      page.getByRole("banner").getByRole("link", { name: "River Aftercare" })
     ).toBeVisible();
     await expect(
       headerNav.getByRole("link", { name: "Staff sign in" })
@@ -323,13 +323,13 @@ test.describe("marketing conversion routes", () => {
   test("metadata titles match the public routes", async ({ page }) => {
     await page.goto(marketingUrl("/"), { waitUntil: "domcontentloaded" });
     await expect(page).toHaveTitle(
-      /Aftercare Guide — Branded patient aftercare/
+      /River Aftercare — Branded patient aftercare/
     );
 
     await page.goto(marketingUrl("/pricing"), {
       waitUntil: "domcontentloaded",
     });
-    await expect(page).toHaveTitle(/Pricing — Aftercare Guide/);
+    await expect(page).toHaveTitle(/Pricing — River Aftercare/);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute(
       "content",
       /A\$79/
@@ -338,7 +338,7 @@ test.describe("marketing conversion routes", () => {
     await page.goto(marketingUrl("/contact"), {
       waitUntil: "domcontentloaded",
     });
-    await expect(page).toHaveTitle(/Contact — Aftercare Guide/);
+    await expect(page).toHaveTitle(/Contact — River Aftercare/);
   });
 
   for (const colorScheme of ["light", "dark"] as const) {

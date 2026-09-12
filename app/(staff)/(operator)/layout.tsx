@@ -31,7 +31,8 @@ export default async function OperatorLayout({
           <nav className="staffNavGroup" aria-label="Platform">
             <Link
               href="/operator/clinics"
-              className="staffNavRow bg-staff-brand/10 text-staff-brand"
+              aria-current="page"
+              className="staffNavRow"
             >
               Clinics
             </Link>

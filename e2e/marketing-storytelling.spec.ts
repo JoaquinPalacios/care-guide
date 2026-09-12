@@ -1189,7 +1189,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     });
   });
 
-  test("nav links use a centre-out underline and primary buttons lift", async ({
+  test("nav links use a centre-out underline and primary buttons stay still", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -1258,30 +1258,36 @@ test.describe("Phase 1F.11 story clarity", () => {
     const primary = page
       .getByRole("link", { name: "View the clinic demo" })
       .first();
+    const restPrimary = await primary.evaluate((element) => {
+      const styles = getComputedStyle(element);
+      return {
+        transform: styles.transform,
+        background: styles.backgroundColor,
+      };
+    });
     await primary.hover();
     await expect
       .poll(async () =>
-        primary.evaluate((element) => getComputedStyle(element).transform)
+        primary.evaluate((element) => getComputedStyle(element).backgroundColor)
       )
-      .toMatch(/matrix\(1,\s*0,\s*0,\s*1,\s*0,\s*-1/);
-    const secondary = page.getByRole("link", { name: "See how it works" });
-    const restFill = await secondary.evaluate((element) => {
-      const fill = getComputedStyle(element, "::before");
+      .not.toBe(restPrimary.background);
+    const hoverPrimary = await primary.evaluate((element) => {
+      const styles = getComputedStyle(element);
       return {
-        transform: fill.transform,
-        originCentered:
-          fill.transformOrigin.includes("center") ||
-          Math.abs(
-            Number.parseFloat(fill.transformOrigin) -
-              element.getBoundingClientRect().width / 2
-          ) <= 2,
-        zIndex: fill.zIndex,
+        transform: styles.transform,
+        background: styles.backgroundColor,
       };
     });
-    expect(restFill.originCentered).toBe(true);
-    expect(restFill.transform).toMatch(/matrix\(0,\s*0,\s*0,\s*1|scaleX\(0\)/);
-    expect(Number.parseInt(restFill.zIndex, 10)).toBeLessThan(0);
+    expect(
+      hoverPrimary.transform === "none" ||
+        hoverPrimary.transform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
+    expect(hoverPrimary.background).not.toBe(restPrimary.background);
 
+    const secondary = page.getByRole("link", { name: "See how it works" });
+    const restSecondary = await secondary.evaluate(
+      (element) => getComputedStyle(element).backgroundColor
+    );
     await secondary.screenshot({
       path: "test-results/artifacts/phase-1f13-secondary-default.png",
     });
@@ -1289,15 +1295,20 @@ test.describe("Phase 1F.11 story clarity", () => {
     await expect
       .poll(async () =>
         secondary.evaluate(
-          (element) => getComputedStyle(element, "::before").transform
+          (element) => getComputedStyle(element).backgroundColor
         )
       )
-      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
-    const hoverFill = await secondary.evaluate(
-      (element) => getComputedStyle(element).transform
-    );
+      .not.toBe(restSecondary);
+    const hoverSecondary = await secondary.evaluate((element) => {
+      const styles = getComputedStyle(element);
+      return {
+        transform: styles.transform,
+        background: styles.backgroundColor,
+      };
+    });
     expect(
-      hoverFill === "none" || hoverFill === "matrix(1, 0, 0, 1, 0, 0)"
+      hoverSecondary.transform === "none" ||
+        hoverSecondary.transform === "matrix(1, 0, 0, 1, 0, 0)"
     ).toBe(true);
     await secondary.screenshot({
       path: "test-results/artifacts/phase-1f13-secondary-hover.png",
@@ -1307,32 +1318,22 @@ test.describe("Phase 1F.11 story clarity", () => {
     await expect
       .poll(async () =>
         secondary.evaluate(
-          (element) => getComputedStyle(element, "::before").transform
+          (element) => getComputedStyle(element).backgroundColor
         )
       )
-      .toMatch(/matrix\(0,\s*0,\s*0,\s*1|scaleX\(0\)/);
+      .toBe(restSecondary);
 
     await secondary.focus();
-    await expect
-      .poll(async () =>
-        secondary.evaluate(
-          (element) => getComputedStyle(element, "::before").transform
-        )
-      )
-      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
+    const secondaryFocus = await secondary.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).outlineWidth)
+    );
+    expect(secondaryFocus).toBeGreaterThanOrEqual(2);
     await secondary.screenshot({
       path: "test-results/artifacts/phase-1f13-secondary-focus.png",
     });
 
     await secondary.hover();
     await page.mouse.down();
-    await expect
-      .poll(async () =>
-        secondary.evaluate(
-          (element) => getComputedStyle(element, "::before").transform
-        )
-      )
-      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
     const activeTransform = await secondary.evaluate(
       (element) => getComputedStyle(element).transform
     );
@@ -1357,32 +1358,38 @@ test.describe("Phase 1F.11 story clarity", () => {
 
     const secondary = page.getByRole("link", { name: "See how it works" });
     const reduced = await secondary.evaluate((element) => {
-      const fill = getComputedStyle(element, "::before");
+      const styles = getComputedStyle(element);
       return {
-        duration: fill.transitionDuration,
-        transform: getComputedStyle(element).transform,
+        duration: styles.transitionDuration,
+        transform: styles.transform,
       };
     });
-    expect(reduced.duration === "0s" || reduced.duration === "0ms").toBe(true);
+    expect(
+      reduced.duration
+        .split(",")
+        .every((part) => part.trim() === "0s" || part.trim() === "0ms")
+    ).toBe(true);
     expect(
       reduced.transform === "none" ||
         reduced.transform === "matrix(1, 0, 0, 1, 0, 0)"
     ).toBe(true);
 
+    const restBackground = await secondary.evaluate(
+      (element) => getComputedStyle(element).backgroundColor
+    );
     await secondary.hover();
     const hoverReduced = await secondary.evaluate((element) => {
       const styles = getComputedStyle(element);
-      const fill = getComputedStyle(element, "::before");
       return {
         transform: styles.transform,
-        fillTransform: fill.transform,
+        background: styles.backgroundColor,
       };
     });
     expect(
       hoverReduced.transform === "none" ||
         hoverReduced.transform === "matrix(1, 0, 0, 1, 0, 0)"
     ).toBe(true);
-    expect(hoverReduced.fillTransform).toMatch(/matrix\(1,\s*0,\s*0,\s*1|none/);
+    expect(hoverReduced.background).not.toBe(restBackground);
   });
 
   test("clinic preview uses a patient-home panel instead of loose copy", async ({
@@ -1732,7 +1739,7 @@ test.describe("Phase 1F.11 story clarity", () => {
     });
   });
 
-  test("theme trigger fills radially from the centre without moving the icon", async ({
+  test("theme trigger tints on hover without moving the icon", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -1742,14 +1749,11 @@ test.describe("Phase 1F.11 story clarity", () => {
 
     const trigger = page.getByRole("button", { name: /Change colour theme/ });
     const rest = await trigger.evaluate((element) => {
-      const fill = getComputedStyle(element, "::before");
       const icon = element.querySelector("svg");
       return {
         transform: getComputedStyle(element).transform,
         iconTransform: icon ? getComputedStyle(icon).transform : "missing",
-        fillTransform: fill.transform,
-        origin: fill.transformOrigin,
-        duration: fill.transitionDuration,
+        background: getComputedStyle(element).backgroundColor,
         radius: getComputedStyle(element).borderRadius,
       };
     });
@@ -1760,9 +1764,6 @@ test.describe("Phase 1F.11 story clarity", () => {
       rest.iconTransform === "none" ||
         rest.iconTransform === "matrix(1, 0, 0, 1, 0, 0)"
     ).toBe(true);
-    expect(rest.fillTransform).toMatch(/matrix\(0,\s*0,\s*0,\s*0/);
-    expect(rest.origin).toMatch(/center|21|22/);
-    expect(rest.duration).not.toBe("0s");
     await trigger.screenshot({
       path: "test-results/artifacts/phase-1f14-theme-default-light.png",
     });
@@ -1770,11 +1771,9 @@ test.describe("Phase 1F.11 story clarity", () => {
     await trigger.hover();
     await expect
       .poll(async () =>
-        trigger.evaluate(
-          (element) => getComputedStyle(element, "::before").transform
-        )
+        trigger.evaluate((element) => getComputedStyle(element).backgroundColor)
       )
-      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
+      .not.toBe(rest.background);
     const hover = await trigger.evaluate((element) => {
       const icon = element.querySelector("svg");
       return {
@@ -1797,20 +1796,11 @@ test.describe("Phase 1F.11 story clarity", () => {
     await page.mouse.move(0, 0);
     await expect
       .poll(async () =>
-        trigger.evaluate(
-          (element) => getComputedStyle(element, "::before").transform
-        )
+        trigger.evaluate((element) => getComputedStyle(element).backgroundColor)
       )
-      .toMatch(/matrix\(0,\s*0,\s*0,\s*0/);
+      .toBe(rest.background);
 
     await trigger.focus();
-    await expect
-      .poll(async () =>
-        trigger.evaluate(
-          (element) => getComputedStyle(element, "::before").transform
-        )
-      )
-      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
     const focusOutline = await trigger.evaluate((element) =>
       Number.parseFloat(getComputedStyle(element).outlineWidth)
     );
@@ -1825,25 +1815,24 @@ test.describe("Phase 1F.11 story clarity", () => {
     ).toBeVisible();
     await expect
       .poll(async () =>
-        trigger.evaluate(
-          (element) => getComputedStyle(element, "::before").transform
-        )
+        trigger.evaluate((element) => getComputedStyle(element).backgroundColor)
       )
-      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
+      .not.toBe(rest.background);
     await page.screenshot({
       path: "test-results/artifacts/phase-1f14-theme-open-light.png",
     });
     await page.keyboard.press("Escape");
 
     await showMarketingScheme(page, "dark");
+    const darkRest = await trigger.evaluate(
+      (element) => getComputedStyle(element).backgroundColor
+    );
     await trigger.hover();
     await expect
       .poll(async () =>
-        trigger.evaluate(
-          (element) => getComputedStyle(element, "::before").transform
-        )
+        trigger.evaluate((element) => getComputedStyle(element).backgroundColor)
       )
-      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
+      .not.toBe(darkRest);
     await trigger.screenshot({
       path: "test-results/artifacts/phase-1f14-theme-hover-dark.png",
     });
@@ -1865,30 +1854,36 @@ test.describe("Phase 1F.11 story clarity", () => {
 
     const trigger = page.getByRole("button", { name: /Change colour theme/ });
     const reduced = await trigger.evaluate((element) => {
-      const fill = getComputedStyle(element, "::before");
+      const styles = getComputedStyle(element);
       return {
-        duration: fill.transitionDuration,
-        transform: getComputedStyle(element).transform,
+        duration: styles.transitionDuration,
+        transform: styles.transform,
       };
     });
-    expect(reduced.duration === "0s" || reduced.duration === "0ms").toBe(true);
+    expect(
+      reduced.duration
+        .split(",")
+        .every((part) => part.trim() === "0s" || part.trim() === "0ms")
+    ).toBe(true);
     expect(
       reduced.transform === "none" ||
         reduced.transform === "matrix(1, 0, 0, 1, 0, 0)"
     ).toBe(true);
 
+    const restBackground = await trigger.evaluate(
+      (element) => getComputedStyle(element).backgroundColor
+    );
     await trigger.hover();
     const hoverReduced = await trigger.evaluate((element) => {
-      const fill = getComputedStyle(element, "::before");
       const icon = element.querySelector("svg");
       return {
-        fillTransform: fill.transform,
+        background: getComputedStyle(element).backgroundColor,
         transform: getComputedStyle(element).transform,
         iconTransform: icon ? getComputedStyle(icon).transform : "missing",
         outline: Number.parseFloat(getComputedStyle(element).outlineWidth),
       };
     });
-    expect(hoverReduced.fillTransform).toMatch(/matrix\(1,\s*0,\s*0,\s*1|none/);
+    expect(hoverReduced.background).not.toBe(restBackground);
     expect(
       hoverReduced.transform === "none" ||
         hoverReduced.transform === "matrix(1, 0, 0, 1, 0, 0)"

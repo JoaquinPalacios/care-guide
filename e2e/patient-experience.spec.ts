@@ -44,7 +44,7 @@ test.describe("tenant homepage and guide", () => {
     await expect(
       page.getByRole("link", { name: "Book an appointment" })
     ).toHaveCount(0);
-    await expect(page.getByText("Powered by Aftercare Guide")).toBeVisible();
+    await expect(page.getByText("Powered by River Aftercare")).toBeVisible();
     await expect(
       page.getByRole("button", { name: /Change colour theme/ })
     ).toBeVisible();
@@ -334,14 +334,10 @@ test.describe("tenant light and dark screenshots", () => {
         after.transform === "matrix(1, 0, 0, 1, 0, 0)"
     ).toBe(true);
     expect(before.transform).toBe(after.transform);
-    await expect
-      .poll(async () => {
-        const afterTransform = await card.evaluate(
-          (element) => getComputedStyle(element, "::after").transform
-        );
-        return afterTransform;
-      })
-      .toMatch(/matrix\(1, 0, 0, 1, 2, 0\)/);
+    expect(
+      after.afterTransform === "none" ||
+        after.afterTransform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
     await card.focus();
     await expect(card).toBeFocused();
 

@@ -1,5 +1,7 @@
 /* Public marketing surface. Do not import Tailwind here. */
 
+@import "../interaction.css";
+
 :root {
   color-scheme: light dark;
   --mk-hero: light-dark(#fffcf8, #07090e);
@@ -54,8 +56,8 @@
   --mk-wave-periwinkle: light-dark(#7c8cff, #a6b8ff);
   --mk-wave-cyan: light-dark(#67c5d6, #7ec8e6);
   --mk-wave-glow-opacity: light-dark(0.3, 0.52);
-  --mk-interact-duration: 180ms;
-  --mk-interact-ease: ease-out;
+  --mk-interact-duration: var(--interaction-duration);
+  --mk-interact-ease: var(--interaction-easing);
   --mk-section-pad-y: clamp(4rem, 6vw, 6rem);
   --mk-chapter-pad-y: clamp(6rem, 8vw, 8rem);
   --mk-eyebrow-heading-gap: 0.85rem;
@@ -126,7 +128,6 @@ body {
 
 .mtcBtn {
   position: relative;
-  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -143,21 +144,9 @@ body {
   touch-action: manipulation;
   anchor-name: --mk-theme-trigger;
   transition:
-    color var(--mk-interact-duration) var(--mk-interact-ease),
-    border-color var(--mk-interact-duration) var(--mk-interact-ease);
-}
-
-.mtcBtn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  border-radius: inherit;
-  background: var(--mk-theme-fill);
-  transform: scale(0);
-  transform-origin: center;
-  transition: transform var(--mk-interact-duration) var(--mk-interact-ease);
+    color var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing);
 }
 
 .mtcBtn svg {
@@ -165,31 +154,31 @@ body {
   z-index: 1;
   width: 1rem;
   height: 1rem;
-  transform: none;
 }
 
-.mtcBtn:hover,
-.mtcBtn:focus-visible,
-.mtcBtn:active {
-  color: var(--mk-ink);
-  border-color: color-mix(in srgb, var(--mk-ink) 42%, var(--mk-line));
-}
-
-.mtcBtn:hover::before,
-.mtcBtn:focus-visible::before,
-.mtcBtn:active::before,
-.mtcBtn[aria-expanded="true"]::before {
-  transform: scale(1);
+@media (hover: hover) and (pointer: fine) {
+  .mtcBtn:hover {
+    color: var(--mk-ink);
+    border-color: color-mix(in srgb, var(--mk-ink) 42%, var(--mk-line));
+    background: var(--mk-theme-fill);
+  }
 }
 
 .mtcBtn:focus-visible {
+  color: var(--mk-ink);
   outline: 2.5px solid var(--mk-focus);
   outline-offset: 3px;
+}
+
+.mtcBtn:active {
+  color: var(--mk-ink);
+  background: var(--mk-theme-fill);
 }
 
 .mtcBtn[aria-expanded="true"] {
   color: var(--mk-ink);
   border-color: color-mix(in srgb, var(--mk-brand) 55%, var(--mk-line));
+  background: var(--mk-theme-fill);
 }
 
 .mtcMenu {
@@ -270,12 +259,14 @@ body {
   color: var(--mk-brand);
 }
 
-.mtcOption:hover {
-  background: light-dark(
-    color-mix(in srgb, var(--mk-ink) 4%, transparent),
-    color-mix(in srgb, #ffffff 6%, transparent)
-  );
-  color: var(--mk-ink);
+@media (hover: hover) and (pointer: fine) {
+  .mtcOption:hover {
+    background: light-dark(
+      color-mix(in srgb, var(--mk-ink) 4%, transparent),
+      color-mix(in srgb, #ffffff 6%, transparent)
+    );
+    color: var(--mk-ink);
+  }
 }
 
 .mtcOption[aria-checked="true"] {
@@ -308,7 +299,6 @@ body {
   }
 
   .mtcBtn,
-  .mtcBtn::before,
   .mtcOption {
     transition: none;
   }

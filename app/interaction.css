@@ -1,0 +1,14 @@
+/* Shared interaction contract. Surface palettes stay local. */
+
+:root {
+  --interaction-duration: 150ms;
+  --interaction-easing: ease;
+  --interaction-focus-width: 2px;
+  --interaction-focus-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --interaction-duration: 0ms;
+  }
+}

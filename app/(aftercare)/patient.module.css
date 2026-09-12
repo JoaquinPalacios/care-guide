@@ -162,16 +162,15 @@
   color: var(--cg-text);
   text-decoration: none;
   transition:
-    box-shadow 180ms ease,
-    border-color 180ms ease,
-    background-color 180ms ease;
+    box-shadow var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing);
 }
 
 .guideLink::after {
   content: "→";
   color: var(--cg-brand);
   font-weight: 650;
-  transition: transform 180ms ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -182,10 +181,6 @@
       color-mix(in srgb, var(--cg-brand) 8%, var(--cg-surface-subtle))
     );
     box-shadow: 0 2px 8px color-mix(in srgb, var(--cg-text) 8%, transparent);
-  }
-
-  .guideLink:hover::after {
-    transform: translateX(2px);
   }
 }
 
@@ -357,9 +352,14 @@
   justify-content: center;
   min-height: 44px;
   padding: 0.5rem 1.1rem;
+  border: 1px solid transparent;
   border-radius: calc(var(--cg-radius) * 0.85);
   font-weight: 650;
   text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing);
 }
 
 .action:disabled {
@@ -372,14 +372,31 @@
   color: var(--cg-on-brand);
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .primary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--cg-brand) 86%, #000);
+  }
+}
+
+.primary:active:not(:disabled) {
+  background: color-mix(in srgb, var(--cg-brand) 78%, #000);
+}
+
 .secondary {
   color: var(--cg-text);
   background: transparent;
+  border-color: var(--cg-border);
 }
 
-.secondary:hover,
-.secondary:focus-visible {
-  color: var(--cg-brand);
+@media (hover: hover) and (pointer: fine) {
+  .secondary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--cg-brand) 8%, transparent);
+    border-color: color-mix(in srgb, var(--cg-brand) 42%, var(--cg-border));
+  }
+}
+
+.secondary:active:not(:disabled) {
+  background: color-mix(in srgb, var(--cg-brand) 12%, transparent);
 }
 
 .urgent {
@@ -438,6 +455,10 @@
   font: inherit;
   font-weight: 650;
   cursor: pointer;
+  transition:
+    color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing);
 }
 
 .demoTab[aria-selected="true"] {
@@ -469,12 +490,18 @@
   font-weight: 650;
   text-decoration: none;
   white-space: nowrap;
+  transition:
+    color var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing);
 }
 
-.demoPrint:hover,
-.demoPrint:focus-visible {
-  color: var(--cg-brand);
-  border-color: var(--cg-brand);
+@media (hover: hover) and (pointer: fine) {
+  .demoPrint:hover {
+    color: var(--cg-text);
+    border-color: color-mix(in srgb, var(--cg-brand) 42%, var(--cg-border));
+    background: color-mix(in srgb, var(--cg-brand) 8%, transparent);
+  }
 }
 
 .todayFocus {
@@ -524,7 +551,12 @@
   text-decoration: none;
 }
 
-.inlineLink:hover,
+@media (hover: hover) and (pointer: fine) {
+  .inlineLink:hover {
+    text-decoration: underline;
+  }
+}
+
 .inlineLink:focus-visible {
   text-decoration: underline;
 }
@@ -610,12 +642,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .guideLink,
-  .guideLink::after {
+  .action,
+  .demoTab,
+  .demoPrint {
     transition: none;
-  }
-
-  .guideLink:hover::after {
-    transform: none;
   }
 }
 
@@ -703,10 +733,8 @@
     height: 1.75rem;
   }
 
-  .guideLink,
-  .guideLink:hover {
+  .guideLink {
     box-shadow: none;
-    transform: none;
   }
 
   .section,

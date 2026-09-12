@@ -1153,3 +1153,9 @@ Measured 2026-09-11 against `cursor/phase-2a4-preview-storage-overflow-6c4f` pro
 | Patient demo island            | `03-mjwqxpmrhc.js` | 4,818  | 1,350  | 1,187     |
 
 Practice/editor grew from logo-upload UI and editor More actions. Patient demo island is **unchanged** at 4,818 raw. SVG sanitizer remains `serverExternalPackages` only.
+
+## Phase 2A.5 brand + interaction system — 2026-09-12
+
+No new UI library. Patient still does not import Tailwind. Shared `app/interaction.css` is a small duration/easing/focus token sheet imported by marketing, staff, and aftercare.
+
+Patient CSS grew for hover/focus/active rules that match the staff/marketing interaction contract while keeping clinic `--cg-*` colours. Playwright tenant CSS budget is now **26,000** raw (was 22,500). Gzip ≤ 6,500 and Brotli ≤ 6,000 are unchanged.

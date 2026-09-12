@@ -193,17 +193,32 @@
   anchor-name: --mk-nav-trigger;
 }
 
-.navMenuTrigger:hover,
-.navMenuTrigger:focus-visible,
+.navMenuTrigger {
+  transition:
+    color var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .navMenuTrigger:hover {
+    color: var(--mk-ink);
+    border-color: color-mix(in srgb, var(--mk-ink) 42%, var(--mk-line));
+    background: var(--mk-theme-fill);
+  }
+}
+
+.navMenuTrigger:focus-visible {
+  color: var(--mk-ink);
+  outline: 2.5px solid var(--mk-focus);
+  outline-offset: 3px;
+}
+
 .navMenuTrigger:active,
 .navMenuTrigger[aria-expanded="true"] {
   color: var(--mk-ink);
   border-color: color-mix(in srgb, var(--mk-ink) 42%, var(--mk-line));
-}
-
-.navMenuTrigger:focus-visible {
-  outline: 2.5px solid var(--mk-focus);
-  outline-offset: 3px;
+  background: var(--mk-theme-fill);
 }
 
 .navMenuGlyph {
@@ -282,6 +297,9 @@
   text-align: left;
   text-decoration: none;
   cursor: pointer;
+  transition:
+    background-color var(--interaction-duration) var(--interaction-easing),
+    color var(--interaction-duration) var(--interaction-easing);
 }
 
 .navMenuRowMeta {
@@ -300,7 +318,6 @@
   padding: 0 0 0.15rem;
 }
 
-.navMenuRow:hover,
 .navMenuRow:focus-visible,
 .navMenuRow:active,
 .navMenuRow[aria-current="page"],
@@ -315,23 +332,6 @@
   outline-offset: -2px;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .navMenuRow:hover {
-    background: light-dark(
-      color-mix(in srgb, var(--mk-ink) 5%, transparent),
-      color-mix(in srgb, #ffffff 7%, transparent)
-    );
-  }
-
-  .navMenuRow[aria-current="page"]:hover,
-  .navMenuRow[aria-checked="true"]:hover {
-    background: light-dark(
-      color-mix(in srgb, var(--mk-ink) 7%, transparent),
-      color-mix(in srgb, #ffffff 9%, transparent)
-    );
-  }
-}
-
 .navMenuRow:active {
   background: light-dark(
     color-mix(in srgb, var(--mk-ink) 8%, transparent),
@@ -342,12 +342,35 @@
 .navMenuRow[aria-current="page"],
 .navMenuRow[aria-checked="true"] {
   background: light-dark(
-    color-mix(in srgb, var(--mk-ink) 5%, transparent),
-    color-mix(in srgb, #ffffff 7%, transparent)
+    color-mix(in srgb, var(--mk-ink) 9%, transparent),
+    color-mix(in srgb, #ffffff 12%, transparent)
   );
 }
 
-.nav > a:hover,
+@media (hover: hover) and (pointer: fine) {
+  .navMenuRow:hover {
+    color: var(--mk-ink);
+    background: light-dark(
+      color-mix(in srgb, var(--mk-ink) 5%, transparent),
+      color-mix(in srgb, #ffffff 7%, transparent)
+    );
+  }
+
+  .navMenuRow[aria-current="page"]:hover,
+  .navMenuRow[aria-checked="true"]:hover {
+    background: light-dark(
+      color-mix(in srgb, var(--mk-ink) 11%, transparent),
+      color-mix(in srgb, #ffffff 14%, transparent)
+    );
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav > a:hover {
+    color: var(--mk-ink);
+  }
+}
+
 .nav > a:focus-visible,
 .nav > a:active {
   color: var(--mk-ink);
@@ -356,10 +379,15 @@
 .textLink {
   position: relative;
   text-decoration: none;
-  transition: color var(--mk-interact-duration) var(--mk-interact-ease);
+  transition: color var(--interaction-duration) var(--interaction-easing);
 }
 
-.textLink:hover,
+@media (hover: hover) and (pointer: fine) {
+  .textLink:hover {
+    color: var(--mk-ink);
+  }
+}
+
 .textLink:focus-visible {
   color: var(--mk-ink);
 }
@@ -375,14 +403,19 @@
   background: currentColor;
   transform: scaleX(0);
   transform-origin: center;
-  transition: transform var(--mk-interact-duration) var(--mk-interact-ease);
+  transition: transform var(--interaction-duration) var(--interaction-easing);
 }
 
 .nav a.textLink::after {
   bottom: 0.72rem;
 }
 
-.textLink:hover::after,
+@media (hover: hover) and (pointer: fine) {
+  .textLink:hover::after {
+    transform: scaleX(1);
+  }
+}
+
 .textLink:focus-visible::after {
   transform: scaleX(1);
 }
@@ -532,11 +565,10 @@
   text-decoration: none;
   touch-action: manipulation;
   transition:
-    background-color var(--mk-interact-duration) var(--mk-interact-ease),
-    color var(--mk-interact-duration) var(--mk-interact-ease),
-    border-color var(--mk-interact-duration) var(--mk-interact-ease),
-    box-shadow var(--mk-interact-duration) var(--mk-interact-ease),
-    transform var(--mk-interact-duration) var(--mk-interact-ease);
+    background-color var(--interaction-duration) var(--interaction-easing),
+    color var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing),
+    box-shadow var(--interaction-duration) var(--interaction-easing);
 }
 
 .primary {
@@ -547,12 +579,13 @@
     0 8px 18px color-mix(in srgb, var(--mk-brand-strong) 18%, transparent);
 }
 
-.primary:hover {
-  background: var(--mk-brand-hover);
-  transform: translateY(-1px);
-  box-shadow:
-    0 1px 0 color-mix(in srgb, #0a0d14 6%, transparent),
-    0 10px 22px color-mix(in srgb, var(--mk-brand-strong) 24%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  .primary:hover:not(:disabled) {
+    background: var(--mk-brand-hover);
+    box-shadow:
+      0 1px 0 color-mix(in srgb, #0a0d14 6%, transparent),
+      0 8px 18px color-mix(in srgb, var(--mk-brand-strong) 22%, transparent);
+  }
 }
 
 .primary:focus-visible {
@@ -560,9 +593,8 @@
   outline-offset: 3px;
 }
 
-.primary:active {
+.primary:active:not(:disabled) {
   background: var(--mk-brand-active);
-  transform: translateY(0);
   box-shadow: 0 1px 0 color-mix(in srgb, #0a0d14 10%, transparent);
 }
 
@@ -572,7 +604,6 @@
 .primary[aria-busy="true"]:hover {
   opacity: 0.72;
   cursor: wait;
-  transform: none;
 }
 
 .primaryButtonSwap {
@@ -591,34 +622,16 @@
 }
 
 .secondary {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
   border: 1px solid var(--mk-line);
   color: var(--mk-ink);
   background: transparent;
 }
 
-.secondary::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: var(--mk-secondary-fill);
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform var(--mk-interact-duration) var(--mk-interact-ease);
-}
-
-.secondary:hover {
-  border-color: color-mix(in srgb, var(--mk-ink) 42%, var(--mk-line));
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--mk-ink) 7%, transparent);
-}
-
-.secondary:hover::before,
-.secondary:focus-visible::before {
-  transform: scaleX(1);
+@media (hover: hover) and (pointer: fine) {
+  .secondary:hover {
+    background: var(--mk-secondary-fill);
+    border-color: color-mix(in srgb, var(--mk-ink) 42%, var(--mk-line));
+  }
 }
 
 .secondary:focus-visible {
@@ -627,13 +640,8 @@
 }
 
 .secondary:active {
-  border-color: color-mix(in srgb, var(--mk-ink) 48%, var(--mk-line));
-  box-shadow: none;
-}
-
-.secondary:active::before {
-  transform: scaleX(1);
   background: var(--mk-secondary-fill-active);
+  border-color: color-mix(in srgb, var(--mk-ink) 48%, var(--mk-line));
 }
 
 .deviceStage {
@@ -1833,7 +1841,12 @@
   font-weight: 600;
 }
 
-.footerNav a:hover,
+@media (hover: hover) and (pointer: fine) {
+  .footerNav a:hover {
+    color: var(--mk-ink);
+  }
+}
+
 .footerNav a:focus-visible {
   color: var(--mk-ink);
 }
@@ -2549,16 +2562,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .button,
-  .secondary::before,
   .textLink,
-  .textLink::after {
+  .textLink::after,
+  .navMenuRow,
+  .navMenuTrigger {
     transition: none;
-  }
-
-  .primary:hover,
-  .primary:active,
-  .primary:disabled,
-  .primary[aria-busy="true"] {
-    transform: none;
   }
 }

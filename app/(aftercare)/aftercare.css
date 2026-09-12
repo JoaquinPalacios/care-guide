@@ -2,6 +2,8 @@
    Document chrome is scoped to html.aftercareDocument so authenticated
    preview can embed the patient renderer without mutating portal html/body. */
 
+@import "../interaction.css";
+
 .aftercareTheme {
   position: relative;
   min-height: 100%;
@@ -99,6 +101,10 @@ html.aftercareDocument body {
   background: var(--cg-surface);
   color: var(--cg-text-muted);
   cursor: pointer;
+  transition:
+    color var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing);
 }
 
 .ptcBtn svg {
@@ -106,10 +112,25 @@ html.aftercareDocument body {
   height: 1rem;
 }
 
-.ptcBtn:hover,
+@media (hover: hover) and (pointer: fine) {
+  .ptcBtn:hover {
+    color: var(--cg-text);
+    border-color: color-mix(in srgb, var(--cg-brand) 42%, var(--cg-border));
+    background: color-mix(in srgb, var(--cg-brand) 8%, var(--cg-surface));
+  }
+}
+
 .ptcBtn:focus-visible {
   color: var(--cg-text);
-  border-color: var(--cg-brand);
+  outline: var(--interaction-focus-width) solid var(--cg-focus);
+  outline-offset: 3px;
+}
+
+.ptcBtn:active,
+.ptcBtn[aria-expanded="true"] {
+  color: var(--cg-text);
+  border-color: color-mix(in srgb, var(--cg-brand) 42%, var(--cg-border));
+  background: color-mix(in srgb, var(--cg-brand) 8%, var(--cg-surface));
 }
 
 .ptcMenu {
@@ -140,13 +161,27 @@ html.aftercareDocument body {
   font-weight: 650;
   text-align: left;
   cursor: pointer;
+  transition:
+    background-color var(--interaction-duration) var(--interaction-easing),
+    color var(--interaction-duration) var(--interaction-easing);
 }
 
-.ptcOption:hover,
-.ptcOption:focus-visible,
+@media (hover: hover) and (pointer: fine) {
+  .ptcOption:hover {
+    background: var(--cg-surface-subtle);
+    color: var(--cg-text);
+  }
+}
+
 .ptcOption[aria-checked="true"] {
-  background: var(--cg-surface-subtle);
+  background: color-mix(in srgb, var(--cg-brand) 12%, var(--cg-surface-subtle));
   color: var(--cg-text);
+}
+
+.ptcOption:focus-visible {
+  color: var(--cg-text);
+  outline: var(--interaction-focus-width) solid var(--cg-focus);
+  outline-offset: 1px;
 }
 
 @media (max-width: 47.99rem) {
@@ -168,8 +203,15 @@ html.aftercareDocument body {
 }
 
 .aftercareTheme :focus-visible {
-  outline: 2px solid var(--cg-focus);
+  outline: var(--interaction-focus-width) solid var(--cg-focus);
   outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ptcBtn,
+  .ptcOption {
+    transition: none;
+  }
 }
 
 .aftercareTheme:has([data-print-guide]) .patientThemeSlot {

@@ -76,7 +76,7 @@ test.describe("marketing homepage", () => {
     await expect(
       page
         .getByRole("contentinfo")
-        .getByText("Aftercare Guide", { exact: true })
+        .getByText("River Aftercare", { exact: true })
     ).toBeVisible();
     await page
       .getByRole("heading", {
@@ -532,9 +532,9 @@ test.describe("marketing homepage", () => {
     await primary.hover();
     await expect
       .poll(async () =>
-        primary.evaluate((element) => getComputedStyle(element).transform)
+        primary.evaluate((element) => getComputedStyle(element).backgroundColor)
       )
-      .toMatch(/matrix\(1,\s*0,\s*0,\s*1,\s*0,\s*-1/);
+      .not.toBe(restPrimary.background);
     const hoverPrimary = await primary.evaluate((element) => {
       const styles = getComputedStyle(element);
       return {
@@ -543,7 +543,10 @@ test.describe("marketing homepage", () => {
         background: styles.backgroundColor,
       };
     });
-    expect(hoverPrimary.boxShadow).not.toBe(restPrimary.boxShadow);
+    expect(
+      hoverPrimary.transform === "none" ||
+        hoverPrimary.transform === "matrix(1, 0, 0, 1, 0, 0)"
+    ).toBe(true);
     expect(hoverPrimary.background).not.toBe(restPrimary.background);
     await page.screenshot({
       path: "test-results/artifacts/phase-1f7-primary-hover.png",
@@ -553,10 +556,10 @@ test.describe("marketing homepage", () => {
     await expect
       .poll(async () =>
         secondary.evaluate(
-          (element) => getComputedStyle(element, "::before").transform
+          (element) => getComputedStyle(element).backgroundColor
         )
       )
-      .toMatch(/matrix\(1,\s*0,\s*0,\s*1/);
+      .not.toBe("rgba(0, 0, 0, 0)");
     const hoverSecondary = await secondary.evaluate(
       (element) => getComputedStyle(element).transform
     );
@@ -728,7 +731,7 @@ test.describe("marketing homepage", () => {
       ).toBeVisible();
 
       const wordmark = page.getByRole("banner").getByRole("link", {
-        name: "Aftercare Guide",
+        name: "River Aftercare",
       });
       await expect(wordmark).toBeVisible();
       const wordmarkBox = await wordmark.evaluate((element) => {

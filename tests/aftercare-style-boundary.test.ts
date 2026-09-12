@@ -102,7 +102,7 @@ describe("aftercare style boundary", () => {
     expect(styles).toMatch(/\.guideLink\s*\{[^}]*box-shadow/);
     expect(styles).not.toContain("translateY(-2px)");
     expect(styles).not.toContain("translateX(4px)");
-    expect(styles).toContain("translateX(2px)");
+    expect(styles).not.toContain("translateX(2px)");
     expect(styles).toContain("@media (hover: hover) and (pointer: fine)");
     expect(styles).toContain('.demoTab:not([aria-selected="true"]):hover');
     expect(styles).toContain(".demoTab:focus-visible");
@@ -195,7 +195,7 @@ describe("aftercare style boundary", () => {
     expect(tokens).toContain("--mk-secondary-fill");
     expect(tokens).toContain("--mk-secondary-fill-active");
     expect(styles).toContain("phoneFrame");
-    expect(styles).toContain(".secondary::before");
+    expect(styles).toContain(".secondary:hover");
     expect(styles).toContain("closingCta");
     expect(styles).toContain("footerSeparator");
     expect(styles).toContain("at 82% 100%");
@@ -213,19 +213,12 @@ describe("aftercare style boundary", () => {
     expect(tokens).toContain("--mk-footer-pad-bottom");
     expect(styles).toContain("var(--mk-hero-bottom-gap)");
     expect(styles).toContain("var(--mk-footer-pad-top)");
-    expect(tokens).toContain("ease-out");
+    expect(tokens).toContain("--interaction-duration");
     expect(styles).not.toContain("translateY(-1.5px)");
-    expect(styles).toMatch(
-      /\.primary:hover\s*\{[^}]*transform:\s*translateY\(-1px\)/
-    );
-    expect(styles).toMatch(
-      /\.primary:active\s*\{[^}]*transform:\s*translateY\(0\)/
-    );
-    expect(styles).toMatch(
-      /prefers-reduced-motion:\s*reduce[\s\S]*\.primary:hover[\s\S]*transform:\s*none/
-    );
+    expect(styles).not.toMatch(/\.primary:hover[^{]*\{[^}]*transform/);
+    expect(styles).not.toMatch(/\.primary:active[^{]*\{[^}]*transform/);
+    expect(styles).not.toContain(".secondary::before");
     expect(styles).not.toMatch(/\.secondary:hover\s*\{[^}]*transform/);
-    expect(styles).not.toMatch(/\.secondary::before\s*\{[^}]*scaleX\(1\)/);
     expect(styles).not.toMatch(/\.secondary:active\s*\{[^}]*transform/);
     expect(styles).not.toMatch(/\.secondary:hover\s*\{[^}]*translate/);
     expect(styles).not.toMatch(/\.secondary:active\s*\{[^}]*translate/);

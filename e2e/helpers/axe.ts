@@ -43,6 +43,38 @@ export async function setPortalColorScheme(
     .toBe(scheme);
   await expect
     .poll(async () =>
+      page.evaluate(() =>
+        getComputedStyle(document.documentElement)
+          .getPropertyValue("--staff-ink")
+          .trim()
+      )
+    )
+    .toBe(scheme === "dark" ? "#f3f4f8" : "#0a0d14");
+  await expect
+    .poll(async () =>
+      page.evaluate((mode) => {
+        const current = document.querySelector(
+          "aside .staffNavRow[aria-current]"
+        );
+        if (!(current instanceof HTMLElement)) {
+          return true;
+        }
+        const style = getComputedStyle(current);
+        if (mode === "dark") {
+          return (
+            style.color === "rgb(196, 206, 255)" &&
+            style.backgroundColor === "rgb(37, 42, 72)"
+          );
+        }
+        return (
+          style.color === "rgb(59, 75, 209)" &&
+          style.backgroundColor === "rgb(238, 240, 251)"
+        );
+      }, scheme)
+    )
+    .toBe(true);
+  await expect
+    .poll(async () =>
       page.evaluate((mode) => {
         const parseRgb = (value: string) => {
           const match = value.match(

@@ -174,9 +174,9 @@ export function expectCssWithinPhase1Budget(css: AssetMeasurement[]): void {
   const gzip = sumMetric(css, "gzip");
   const brotli = sumMetric(css, "brotli");
 
-  // Geist @font-face is now part of the patient document (shared next/font).
-  // Review if tenant CSS grows well beyond the last measured payload.
-  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(22_500);
+  // Geist @font-face plus the shared interaction contract live in the patient
+  // document. Gzip/brotli remain the tighter ceilings.
+  expect(raw, `CSS raw ${raw}`).toBeLessThanOrEqual(26_000);
   expect(gzip, `CSS gzip ${gzip}`).toBeLessThanOrEqual(6_500);
   expect(brotli, `CSS brotli ${brotli}`).toBeLessThanOrEqual(6_000);
 }
