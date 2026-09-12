@@ -194,7 +194,7 @@ export function TimelineAccordion({
                       }
                       disabled={disabled}
                       rows={4}
-                      className="staffField h-auto py-2"
+                      className="staffField"
                     />
                   </Field>
                   {disabled ? null : (

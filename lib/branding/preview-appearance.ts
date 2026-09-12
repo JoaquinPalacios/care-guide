@@ -12,7 +12,7 @@ export const PREVIEW_APPEARANCE_CHOICES = [
 export type PreviewAppearanceChoice =
   (typeof PREVIEW_APPEARANCE_CHOICES)[number];
 
-export type PreviewPatientTheme = AftercareThemeAppearance | "portal";
+export type EffectivePreviewAppearance = AftercareThemeAppearance;
 
 export function followPortalPreviewLabel(
   preference: ThemePreference | null | undefined
@@ -26,15 +26,26 @@ export function followPortalPreviewLabel(
   return "Follow portal (System)";
 }
 
-export function resolvePreviewPatientTheme(input: {
+/**
+ * One appearance for authenticated preview chrome and the patient surface.
+ * Public tenant pages do not use this helper.
+ */
+export function resolveEffectivePreviewAppearance(input: {
   choice: PreviewAppearanceChoice;
   clinicThemeMode?: string | null;
-}): PreviewPatientTheme {
-  if (input.choice === "portal") {
-    return "portal";
+  portalPreference?: ThemePreference | null;
+}): EffectivePreviewAppearance {
+  if (input.choice === "light" || input.choice === "dark") {
+    return input.choice;
   }
+
   if (input.choice === "clinic") {
     return clinicThemeModeToAppearance(input.clinicThemeMode);
   }
-  return input.choice;
+
+  if (input.portalPreference === "light" || input.portalPreference === "dark") {
+    return input.portalPreference;
+  }
+
+  return "system";
 }

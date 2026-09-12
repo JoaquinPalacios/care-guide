@@ -407,7 +407,7 @@ export function PracticeSettingsForm({
               aria-invalid={
                 state.fieldErrors?.emergencyInstructions ? "true" : "false"
               }
-              className="staffField h-auto py-2"
+              className="staffField"
             />
             <FieldError message={state.fieldErrors?.emergencyInstructions} />
           </Field>

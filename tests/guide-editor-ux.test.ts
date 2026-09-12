@@ -35,4 +35,28 @@ describe("guide editor UX", () => {
     expect(editor).toContain('<input type="hidden" name="publicSlug"');
     expect(editor).toContain("ignoreNextServerSnapshot");
   });
+
+  it("gives guide-content textareas at least four rows", () => {
+    const editor = readFileSync(
+      "app/(staff)/(clinic-portal)/guides/guide-editor.tsx",
+      "utf8"
+    );
+    const accordion = readFileSync(
+      "app/(staff)/(clinic-portal)/guides/timeline-accordion.tsx",
+      "utf8"
+    );
+    const staffCss = readFileSync("app/(staff)/staff.css", "utf8");
+    const chunks = `${editor}\n${accordion}`.split("<textarea").slice(1);
+
+    expect(chunks.length).toBeGreaterThanOrEqual(3);
+    for (const chunk of chunks) {
+      const rows = chunk.match(/rows=\{(\d+)\}/);
+      expect(Number(rows?.[1] ?? 0)).toBeGreaterThanOrEqual(4);
+      expect(chunk).toContain('className="staffField"');
+    }
+
+    expect(staffCss).toContain("textarea.staffField");
+    expect(staffCss).toContain("min-height: calc(1.5em * 4 + 1rem)");
+    expect(staffCss).toContain("resize: vertical");
+  });
 });

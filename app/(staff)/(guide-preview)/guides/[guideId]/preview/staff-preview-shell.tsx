@@ -7,7 +7,7 @@ import { PatientPreviewAppearanceSelect } from "@/app/(staff)/components/patient
 import { usePortalThemePreference } from "@/app/(staff)/components/use-portal-theme-preference";
 import { StaffPreviewToolbar } from "@/app/(staff)/(guide-preview)/guides/[guideId]/preview/staff-preview-toolbar";
 import {
-  resolvePreviewPatientTheme,
+  resolveEffectivePreviewAppearance,
   type PreviewAppearanceChoice,
 } from "@/lib/branding/preview-appearance";
 import type { ClinicGuideLifecycleStatus } from "@/lib/clinic-portal/guide-status";
@@ -30,13 +30,14 @@ export function StaffPreviewShell({
   const [appearance, setAppearance] =
     useState<PreviewAppearanceChoice>("portal");
   const portalPreference = usePortalThemePreference();
-  const patientTheme = resolvePreviewPatientTheme({
+  const previewTheme = resolveEffectivePreviewAppearance({
     choice: appearance,
     clinicThemeMode,
+    portalPreference,
   });
 
   return (
-    <div className="staffPreviewShell">
+    <div className="staffPreviewShell" data-preview-theme={previewTheme}>
       <StaffPreviewToolbar
         backHref={backHref}
         backLabel={backLabel}
@@ -51,7 +52,7 @@ export function StaffPreviewShell({
           />
         }
       />
-      <PatientThemeBoundary appearance={patientTheme}>
+      <PatientThemeBoundary appearance={previewTheme}>
         {children}
       </PatientThemeBoundary>
     </div>

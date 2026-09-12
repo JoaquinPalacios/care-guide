@@ -429,7 +429,7 @@ export function GuideEditor({
                 aria-invalid={
                   saveState.fieldErrors?.introduction ? "true" : "false"
                 }
-                className="staffField h-auto py-2"
+                className="staffField"
               />
               <FieldError message={saveState.fieldErrors?.introduction} />
             </Field>
@@ -688,7 +688,7 @@ function GenericSectionEditor({
               onChange={(event) => update(index, { body: event.target.value })}
               disabled={disabled}
               rows={4}
-              className="staffField h-auto py-2"
+              className="staffField"
             />
           </Field>
           {disabled ? null : (

@@ -304,6 +304,53 @@ test.describe("clinic portal", () => {
     await expect(page.getByText("Live patient timeline").first()).toBeVisible();
     await expect(page.locator(".staffEditorToolbar")).toBeVisible();
     await expect(page.locator(".staffEditorRailCard")).toHaveCount(0);
+
+    async function expectFourRowTextarea(
+      locator: ReturnType<typeof page.getByLabel>,
+      label: string
+    ) {
+      const metrics = await locator.evaluate((element) => {
+        const textarea = element as HTMLTextAreaElement;
+        const style = getComputedStyle(textarea);
+        return {
+          rows: textarea.rows,
+          height: textarea.clientHeight,
+          lineHeight: Number.parseFloat(style.lineHeight),
+        };
+      });
+      expect(metrics.rows, `${label} rows`).toBeGreaterThanOrEqual(4);
+      expect(metrics.height, `${label} height`).toBeGreaterThanOrEqual(
+        metrics.lineHeight * 4 - 1
+      );
+    }
+
+    const instructions = page.getByLabel("Instructions").first();
+    await expect(instructions).toBeVisible();
+    await expectFourRowTextarea(instructions, "timeline instructions");
+    await instructions.scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: "test-results/artifacts/phase-2a.5-editor-timeline-instructions.png",
+    });
+
+    const warningGuidance = page
+      .locator("section")
+      .filter({
+        has: page.getByRole("heading", { name: "Warnings / contact" }),
+      })
+      .getByLabel("Guidance")
+      .first();
+    await expect(warningGuidance).toBeVisible();
+    await expectFourRowTextarea(warningGuidance, "warning/contact guidance");
+    await warningGuidance.scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: "test-results/artifacts/phase-2a.5-editor-warning-guidance.png",
+    });
+
+    await expectFourRowTextarea(
+      page.getByLabel("Short introduction"),
+      "short introduction"
+    );
+
     await page.screenshot({
       path: "test-results/artifacts/staff-guide-editor-1440.png",
       fullPage: true,
@@ -1025,6 +1072,26 @@ test.describe("clinic portal UX polish", () => {
           .getByRole("combobox", { name: "Patient preview appearance" })
           .selectOption(patient);
         await expect(surface).toHaveAttribute("data-patient-theme", patient);
+        await expect(page.locator(".staffPreviewShell")).toHaveAttribute(
+          "data-preview-theme",
+          patient
+        );
+        const toolbar = page.locator(".staffPreviewToolbar");
+        const toolbarTone = await toolbar.evaluate((element) => {
+          const style = getComputedStyle(element);
+          return {
+            colorScheme: style.colorScheme,
+            background: style.backgroundColor,
+          };
+        });
+        expect(
+          toolbarTone.colorScheme,
+          `${portal}/${patient} toolbar`
+        ).toContain(patient);
+        const toolbarIsDark = relativeLuminance(toolbarTone.background) < 0.4;
+        expect(toolbarIsDark, `${portal}/${patient} toolbar tone`).toBe(
+          patient === "dark"
+        );
         const tokens = await surface.evaluate((element) => {
           const style = getComputedStyle(element);
           return {
@@ -1064,6 +1131,10 @@ test.describe("clinic portal UX polish", () => {
       .getByRole("combobox", { name: "Patient preview appearance" })
       .selectOption("clinic");
     await expect(surface).toHaveAttribute("data-patient-theme", "system");
+    await expect(page.locator(".staffPreviewShell")).toHaveAttribute(
+      "data-preview-theme",
+      "system"
+    );
     for (const [portal, os] of [
       ["dark", "light"],
       ["light", "dark"],
@@ -1090,6 +1161,17 @@ test.describe("clinic portal UX polish", () => {
       expect(backgroundIsDark, `portal ${portal} / OS ${os} follows OS`).toBe(
         os === "dark"
       );
+      const toolbarTone = await page
+        .locator(".staffPreviewToolbar")
+        .evaluate((element) => {
+          const style = getComputedStyle(element);
+          return { background: style.backgroundColor };
+        });
+      const toolbarIsDark = relativeLuminance(toolbarTone.background) < 0.4;
+      expect(
+        toolbarIsDark,
+        `portal ${portal} / OS ${os} toolbar follows OS`
+      ).toBe(os === "dark");
       expect(
         contrastRatio(tokens.background, tokens.color),
         `portal ${portal} / OS ${os} text`

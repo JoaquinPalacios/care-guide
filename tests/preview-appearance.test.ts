@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   followPortalPreviewLabel,
-  resolvePreviewPatientTheme,
+  resolveEffectivePreviewAppearance,
 } from "@/lib/branding/preview-appearance";
 
 describe("authenticated preview appearance", () => {
@@ -13,30 +13,62 @@ describe("authenticated preview appearance", () => {
     expect(followPortalPreviewLabel(null)).toBe("Follow portal (System)");
   });
 
-  it("resolves Follow portal independently from clinic SYSTEM", () => {
+  it("resolves one effective appearance for chrome and the patient surface", () => {
     expect(
-      resolvePreviewPatientTheme({
-        choice: "portal",
-        clinicThemeMode: "SYSTEM",
-      })
-    ).toBe("portal");
-    expect(
-      resolvePreviewPatientTheme({
-        choice: "clinic",
-        clinicThemeMode: "SYSTEM",
-      })
-    ).toBe("system");
-    expect(
-      resolvePreviewPatientTheme({
+      resolveEffectivePreviewAppearance({
         choice: "light",
         clinicThemeMode: "DARK",
+        portalPreference: "dark",
       })
     ).toBe("light");
     expect(
-      resolvePreviewPatientTheme({
+      resolveEffectivePreviewAppearance({
         choice: "dark",
         clinicThemeMode: "LIGHT",
+        portalPreference: "light",
       })
     ).toBe("dark");
+    expect(
+      resolveEffectivePreviewAppearance({
+        choice: "portal",
+        clinicThemeMode: "DARK",
+        portalPreference: "light",
+      })
+    ).toBe("light");
+    expect(
+      resolveEffectivePreviewAppearance({
+        choice: "portal",
+        clinicThemeMode: "LIGHT",
+        portalPreference: "dark",
+      })
+    ).toBe("dark");
+    expect(
+      resolveEffectivePreviewAppearance({
+        choice: "portal",
+        clinicThemeMode: "DARK",
+        portalPreference: "system",
+      })
+    ).toBe("system");
+    expect(
+      resolveEffectivePreviewAppearance({
+        choice: "clinic",
+        clinicThemeMode: "SYSTEM",
+        portalPreference: "dark",
+      })
+    ).toBe("system");
+    expect(
+      resolveEffectivePreviewAppearance({
+        choice: "clinic",
+        clinicThemeMode: "DARK",
+        portalPreference: "light",
+      })
+    ).toBe("dark");
+    expect(
+      resolveEffectivePreviewAppearance({
+        choice: "clinic",
+        clinicThemeMode: "LIGHT",
+        portalPreference: "dark",
+      })
+    ).toBe("light");
   });
 });

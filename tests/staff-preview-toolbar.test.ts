@@ -41,6 +41,26 @@ describe("authenticated guide preview toolbar", () => {
     expect(preview).toContain('colorSchemeSelector: "scope"');
     expect(shell).toContain("PatientThemeBoundary");
     expect(shell).toContain("StaffPreviewToolbar");
+    expect(shell).toContain("resolveEffectivePreviewAppearance");
+    expect(shell).toContain("data-preview-theme={previewTheme}");
+    expect(shell).toContain("appearance={previewTheme}");
+    expect(shell.indexOf("data-preview-theme={previewTheme}")).toBeLessThan(
+      shell.indexOf("<StaffPreviewToolbar")
+    );
+    expect(shell.indexOf("<StaffPreviewToolbar")).toBeLessThan(
+      shell.indexOf("<PatientThemeBoundary")
+    );
+    const staffCss = readFileSync("app/(staff)/staff.css", "utf8");
+    expect(staffCss).toContain(
+      '.staffPreviewShell[data-preview-theme="light"]'
+    );
+    expect(staffCss).toContain('.staffPreviewShell[data-preview-theme="dark"]');
+    expect(staffCss).not.toContain(
+      'html[data-theme-mode="light"] .staffPreviewToolbar'
+    );
+    expect(staffCss).not.toContain(
+      'html[data-theme-mode="dark"] .staffPreviewToolbar'
+    );
     expect(preview.lastIndexOf("<StaffPreviewShell")).toBeLessThan(
       preview.lastIndexOf("<PatientPage")
     );

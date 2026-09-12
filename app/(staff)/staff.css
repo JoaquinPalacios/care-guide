@@ -424,22 +424,32 @@ html[data-theme-mode="dark"] .staffBtnQuiet:hover:not(:disabled) {
 
 .staffPreviewShell {
   min-height: 100%;
+  --staff-canvas: light-dark(#f4f5f8, #0c0e14);
+  --staff-panel: light-dark(#ffffff, #151822);
+  --staff-ink: light-dark(#0a0d14, #f3f4f8);
+  --staff-muted: light-dark(#5c6573, #a8b2c2);
+  --staff-line: light-dark(#e2e5ee, #2a3140);
+  --staff-on-brand: light-dark(#ffffff, #0a0d14);
+  --staff-on-danger: light-dark(#ffffff, #1a0b0a);
+  --staff-status-success-surface: light-dark(#eef6f0, #15241c);
+  --staff-status-success-text: light-dark(#0c3220, #c5e6d2);
+  --staff-status-success-line: light-dark(#c5ddd0, #2a4a38);
+  --staff-status-warning-surface: light-dark(#f8f1e7, #241c12);
+  --staff-status-warning-text: light-dark(#3f280a, #ecd9b8);
+  --staff-status-warning-line: light-dark(#e6d3b8, #3d3224);
   background: var(--staff-canvas);
   color: var(--staff-ink);
 }
 
-html[data-theme-mode="light"] .staffPreviewShell,
-html[data-theme-mode="light"] .staffPreviewToolbar {
+.staffPreviewShell[data-preview-theme="light"] {
   color-scheme: light;
 }
 
-html[data-theme-mode="dark"] .staffPreviewShell,
-html[data-theme-mode="dark"] .staffPreviewToolbar {
+.staffPreviewShell[data-preview-theme="dark"] {
   color-scheme: dark;
 }
 
-html[data-theme-mode="system"] .staffPreviewShell,
-html[data-theme-mode="system"] .staffPreviewToolbar {
+.staffPreviewShell[data-preview-theme="system"] {
   color-scheme: light dark;
 }
 
@@ -552,12 +562,14 @@ html[data-theme-mode="system"] .staffPreviewToolbar {
   outline-offset: 2px;
 }
 
-html[data-theme-mode="dark"] .staffPreviewAppearance select {
+.staffPreviewShell[data-preview-theme="dark"] .staffPreviewAppearance select {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'><path stroke='%23a8b2c2' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.4' d='m1 1.5 5 5 5-5'/></svg>");
 }
 
 @media (prefers-color-scheme: dark) {
-  html[data-theme-mode="system"] .staffPreviewAppearance select {
+  .staffPreviewShell[data-preview-theme="system"]
+    .staffPreviewAppearance
+    select {
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'><path stroke='%23a8b2c2' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.4' d='m1 1.5 5 5 5-5'/></svg>");
   }
 }
@@ -800,6 +812,14 @@ html[data-theme-mode="dark"] .staffPreviewAppearance select {
 
 .staffFieldNarrow {
   max-width: 16rem;
+}
+
+textarea.staffField {
+  height: auto;
+  min-height: calc(1.5em * 4 + 1rem);
+  padding-block: 0.5rem;
+  line-height: 1.5;
+  resize: vertical;
 }
 
 .staffSelect {

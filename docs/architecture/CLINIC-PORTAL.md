@@ -69,9 +69,9 @@ The live preview reuses the presentational recovery timeline list used by the pu
 
 The editor two-column grid is a **container query** on `.staffEditorPage` (`staff-editor`, `min-width: 56rem`). It must not use the viewport `lg` / `1024px` breakpoint, because the 16rem sidebar consumes width and would force a preview rail into an already-narrow main column. Below that content width the editor is one column with a collapsible patient-timeline preview.
 
-Authenticated draft preview uses a staff toolbar outside `PatientPage`, including the same status pills and a preview-only patient appearance selector (Follow portal (Light/Dark/System) / Clinic default (System/Light/Dark) / Light / Dark). The default is Follow portal. That selector does not persist `ClinicProfile.themeMode`. Public tenant URLs never render that toolbar and still follow `ClinicProfile.themeMode` plus the patient device.
+Authenticated draft preview uses a staff toolbar outside `PatientPage`, including the same status pills and a preview-only appearance selector (Follow portal (Light/Dark/System) / Clinic default (System/Light/Dark) / Light / Dark). The default is Follow portal. That selector does not persist `ClinicProfile.themeMode`. The selected value resolves to one effective appearance for the **whole** preview: toolbar and patient document stay Light together or Dark together. Public tenant URLs never render that toolbar and still follow `ClinicProfile.themeMode` plus the patient device.
 
-The patient renderer is wrapped in `PatientThemeBoundary` so clinic tokens and `color-scheme` can live on a scoped surface. Portal Light/Dark must not force the embedded patient document.
+The patient renderer is wrapped in `PatientThemeBoundary` so clinic tokens and `color-scheme` can live on a scoped surface. Authenticated preview chrome uses the same resolved appearance; it does not stay on the portal theme while the document follows the selector. Portal appearance has no influence on a real public tenant page.
 
 Cancel returns to `/guides`. Unsaved edits open a discard confirmation (Keep editing / Discard changes). Save draft does not change the public pinned revision. Publish asks for confirmation, then pins an immutable snapshot.
 

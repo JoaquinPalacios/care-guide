@@ -88,7 +88,11 @@ test.describe("authenticated patient preview theme", () => {
     await expect(appearance.locator("option[value='clinic']")).toHaveText(
       "Clinic default (System)"
     );
-    await expect(patient).toHaveAttribute("data-patient-theme", "portal");
+    await expect(page.locator(".staffPreviewShell")).toHaveAttribute(
+      "data-preview-theme",
+      "light"
+    );
+    await expect(patient).toHaveAttribute("data-patient-theme", "light");
     await expectSurfaceTone(patient, "light", "follow portal light patient");
     await expectSurfaceTone(toolbar, "light", "follow portal light toolbar");
     await expectSurfaceTone(
@@ -120,7 +124,11 @@ test.describe("authenticated patient preview theme", () => {
     await expect(appearance.locator("option[value='portal']")).toHaveText(
       "Follow portal (Dark)"
     );
-    await expect(patient).toHaveAttribute("data-patient-theme", "portal");
+    await expect(page.locator(".staffPreviewShell")).toHaveAttribute(
+      "data-preview-theme",
+      "dark"
+    );
+    await expect(patient).toHaveAttribute("data-patient-theme", "dark");
     await expectSurfaceTone(patient, "dark", "follow portal dark patient");
     await expectSurfaceTone(toolbar, "dark", "follow portal dark toolbar");
     await expectSurfaceTone(
@@ -161,6 +169,10 @@ test.describe("authenticated patient preview theme", () => {
     await setPortalColorScheme(page, "light");
     await appearance.selectOption("clinic");
     await page.emulateMedia({ colorScheme: "dark" });
+    await expect(page.locator(".staffPreviewShell")).toHaveAttribute(
+      "data-preview-theme",
+      "system"
+    );
     await expect(patient).toHaveAttribute("data-patient-theme", "system");
     await expectSurfaceTone(
       patient,
@@ -169,8 +181,8 @@ test.describe("authenticated patient preview theme", () => {
     );
     await expectSurfaceTone(
       toolbar,
-      "light",
-      "clinic default keeps light toolbar"
+      "dark",
+      "clinic default system OS dark toolbar"
     );
     await expectSurfaceTone(
       demoNotice,
@@ -181,49 +193,83 @@ test.describe("authenticated patient preview theme", () => {
       path: "test-results/artifacts/phase-2a.5-preview-clinic-default-system-os-dark.png",
     });
 
-    await appearance.selectOption("light");
-    await expect(patient).toHaveAttribute("data-patient-theme", "light");
-    await expectSurfaceTone(patient, "light", "explicit light patient");
+    await page.emulateMedia({ colorScheme: "light" });
+    await expectSurfaceTone(
+      patient,
+      "light",
+      "clinic default system OS light patient"
+    );
     await expectSurfaceTone(
       toolbar,
       "light",
-      "explicit light keeps light toolbar"
+      "clinic default system OS light toolbar"
     );
+    await page.screenshot({
+      path: "test-results/artifacts/phase-2a.5-preview-clinic-default-system-os-light.png",
+    });
+
+    await appearance.selectOption("light");
+    await expect(page.locator(".staffPreviewShell")).toHaveAttribute(
+      "data-preview-theme",
+      "light"
+    );
+    await expect(patient).toHaveAttribute("data-patient-theme", "light");
+    await expectSurfaceTone(patient, "light", "explicit light patient");
+    await expectSurfaceTone(toolbar, "light", "explicit light toolbar");
+    await page.screenshot({
+      path: "test-results/artifacts/phase-2a.5-preview-explicit-light.png",
+    });
 
     await setPortalColorScheme(page, "dark");
     await appearance.selectOption("light");
+    await expect(page.locator(".staffPreviewShell")).toHaveAttribute(
+      "data-preview-theme",
+      "light"
+    );
     await expect(patient).toHaveAttribute("data-patient-theme", "light");
     await expectSurfaceTone(
       patient,
       "light",
-      "mixed portal dark / patient light"
+      "portal dark / explicit light patient"
     );
-    await expectSurfaceTone(toolbar, "dark", "mixed portal dark toolbar");
+    await expectSurfaceTone(
+      toolbar,
+      "light",
+      "portal dark / explicit light toolbar"
+    );
     await expectSurfaceTone(
       demoNotice,
       "light",
-      "mixed portal dark / patient light demo notice"
+      "portal dark / explicit light demo notice"
     );
     await page.screenshot({
-      path: "test-results/artifacts/phase-2a.5-preview-portal-dark-patient-light.png",
+      path: "test-results/artifacts/phase-2a.5-preview-portal-dark-explicit-light.png",
     });
 
     await setPortalColorScheme(page, "light");
     await appearance.selectOption("dark");
+    await expect(page.locator(".staffPreviewShell")).toHaveAttribute(
+      "data-preview-theme",
+      "dark"
+    );
     await expect(patient).toHaveAttribute("data-patient-theme", "dark");
     await expectSurfaceTone(
       patient,
       "dark",
-      "mixed portal light / patient dark"
+      "portal light / explicit dark patient"
     );
-    await expectSurfaceTone(toolbar, "light", "mixed portal light toolbar");
+    await expectSurfaceTone(
+      toolbar,
+      "dark",
+      "portal light / explicit dark toolbar"
+    );
     await expectSurfaceTone(
       demoNotice,
       "dark",
-      "mixed portal light / patient dark demo notice"
+      "portal light / explicit dark demo notice"
     );
     await page.screenshot({
-      path: "test-results/artifacts/phase-2a.5-preview-portal-light-patient-dark.png",
+      path: "test-results/artifacts/phase-2a.5-preview-explicit-dark.png",
     });
   });
 

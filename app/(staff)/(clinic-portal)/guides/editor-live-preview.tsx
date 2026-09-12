@@ -8,7 +8,7 @@ import { PatientPreviewAppearanceSelect } from "@/app/(staff)/components/patient
 import { usePortalThemePreference } from "@/app/(staff)/components/use-portal-theme-preference";
 import { editorStagesToPreviewSections } from "@/lib/clinic-portal/editor-preview-sections";
 import {
-  resolvePreviewPatientTheme,
+  resolveEffectivePreviewAppearance,
   type PreviewAppearanceChoice,
 } from "@/lib/branding/preview-appearance";
 
@@ -31,9 +31,10 @@ export function EditorLivePreview({
   const [appearance, setAppearance] =
     useState<PreviewAppearanceChoice>("portal");
   const portalPreference = usePortalThemePreference();
-  const patientTheme = resolvePreviewPatientTheme({
+  const patientTheme = resolveEffectivePreviewAppearance({
     choice: appearance,
     clinicThemeMode,
+    portalPreference,
   });
   const sections = editorStagesToPreviewSections(stages);
   const appearanceControl = (
