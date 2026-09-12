@@ -28,6 +28,8 @@ describe("clinic portal layout roles and shell", () => {
     expect(operator).toContain('<main className="staffAppScroller">');
     expect(operator).toContain('<div className="staffAppContent">');
     expect(css).toContain("height: 100dvh");
+    expect(css).toContain("html:has(.staffAppShell)");
+    expect(css).toContain("min-height: 0");
     expect(css).toContain("flex: 1 1 0");
     expect(css).toContain("overflow-x: clip");
     expect(css).toContain("scrollbar-gutter: stable");

@@ -13,6 +13,14 @@ export const PORTAL_OVERFLOW_VIEWPORTS = [
   { label: "360x800", width: 360, height: 800 },
 ] as const;
 
+export const DESKTOP_SHELL_VIEWPORTS = [
+  { label: "1728x877", width: 1728, height: 877 },
+  { label: "1440x900", width: 1440, height: 900 },
+  { label: "1280x800", width: 1280, height: 800 },
+  { label: "1100x800", width: 1100, height: 800 },
+  { label: "1024x768", width: 1024, height: 768 },
+] as const;
+
 export const EDITOR_BREAKPOINT_RESIZE_STEPS = [
   { label: "wide-1280", width: 1280, height: 800 },
   { label: "narrow-desktop-1100", width: 1100, height: 800 },
@@ -49,6 +57,14 @@ export interface PortalShellReport {
   ancestors: ShellBoxMetrics[];
   landmarkMains: number;
   editorColumns: string;
+  windowScrollY: number;
+  innerHeight: number;
+  sidebarTop: number;
+  sidebarBottom: number;
+  sidebarFound: boolean;
+  scrollerScrollTop: number;
+  scrollerClientHeight: number;
+  scrollerScrollHeight: number;
 }
 
 const ANCESTOR_SELECTORS = [
@@ -128,6 +144,11 @@ export async function measurePortalShell(
         ? getComputedStyle(editorLayout).gridTemplateColumns
         : "";
 
+    const sidebar = document.querySelector(".staffAppSidebar");
+    const sidebarRect =
+      sidebar instanceof HTMLElement ? sidebar.getBoundingClientRect() : null;
+    const scrollerEl = document.querySelector(".staffAppScroller");
+
     return {
       html: bySelector.html,
       staffMain: bySelector[".staffAppMain"],
@@ -137,6 +158,17 @@ export async function measurePortalShell(
       ancestors,
       landmarkMains: document.querySelectorAll("main").length,
       editorColumns,
+      windowScrollY: window.scrollY,
+      innerHeight: window.innerHeight,
+      sidebarFound: Boolean(sidebarRect),
+      sidebarTop: sidebarRect ? round(sidebarRect.top) : 0,
+      sidebarBottom: sidebarRect ? round(sidebarRect.bottom) : 0,
+      scrollerScrollTop:
+        scrollerEl instanceof HTMLElement ? scrollerEl.scrollTop : 0,
+      scrollerClientHeight:
+        scrollerEl instanceof HTMLElement ? scrollerEl.clientHeight : 0,
+      scrollerScrollHeight:
+        scrollerEl instanceof HTMLElement ? scrollerEl.scrollHeight : 0,
     };
   }, ANCESTOR_SELECTORS);
 }
@@ -153,7 +185,7 @@ export function formatPortalShellReport(
     return `${box.selector} overflow=${box.overflowPx} client=${box.clientWidth} scroll=${box.scrollWidth} rect=${box.rectLeft}/${box.rectRight}/${box.rectWidth} width=${box.width} min=${box.minWidth} max=${box.maxWidth} flex=${box.flexGrow}/${box.flexShrink}/${box.flexBasis} overflow-x=${box.overflowX} box=${box.boxSizing}`;
   });
   return [
-    `${viewportLabel} ${route} mains=${report.landmarkMains} editorColumns=${report.editorColumns || "n/a"}`,
+    `${viewportLabel} ${route} mains=${report.landmarkMains} editorColumns=${report.editorColumns || "n/a"} windowScrollY=${report.windowScrollY} sidebar=${report.sidebarTop}/${report.sidebarBottom} inner=${report.innerHeight} scrollerTop=${report.scrollerScrollTop} scroller=${report.scrollerClientHeight}/${report.scrollerScrollHeight}`,
     ...ancestorLines,
   ].join("\n");
 }
@@ -195,4 +227,74 @@ export async function expectNoPortalShellOverflow(
   }
 
   return report;
+}
+
+export async function expectDesktopStaffScrollContainment(
+  page: Page,
+  viewportLabel: string,
+  route: string,
+  options: { requireOverflow?: boolean } = {}
+): Promise<PortalShellReport> {
+  const requireOverflow = options.requireOverflow ?? true;
+  await page.locator(".staffAppScroller").evaluate((node) => {
+    node.scrollTop = 0;
+  });
+  const before = await expectNoPortalShellOverflow(
+    page,
+    `${viewportLabel} before`,
+    route
+  );
+  const detail = formatPortalShellReport(viewportLabel, route, before);
+
+  expect(before.windowScrollY, `document already scrolled ${detail}`).toBe(0);
+  expect(before.sidebarFound, `sidebar missing ${detail}`).toBe(true);
+  expect(before.sidebarTop, `sidebar top ${detail}`).toBe(0);
+  expect(
+    Math.abs(before.sidebarBottom - before.innerHeight),
+    `sidebar bottom ${detail}`
+  ).toBeLessThanOrEqual(2);
+
+  const canScroll =
+    before.scrollerScrollHeight > before.scrollerClientHeight + 40;
+  if (requireOverflow) {
+    expect(
+      before.scrollerScrollHeight,
+      `content is not taller than the scroller ${detail}`
+    ).toBeGreaterThan(before.scrollerClientHeight + 40);
+  }
+  if (!canScroll) {
+    return before;
+  }
+
+  await page.locator(".staffAppScroller").evaluate((node) => {
+    node.scrollTop = Math.min(900, Math.max(node.scrollHeight / 2, 400));
+  });
+
+  const after = await expectNoPortalShellOverflow(
+    page,
+    `${viewportLabel} after`,
+    route
+  );
+  const afterDetail = formatPortalShellReport(
+    `${viewportLabel} after-scroll`,
+    route,
+    after
+  );
+
+  expect(
+    after.scrollerScrollTop,
+    `scroller did not move ${afterDetail}`
+  ).toBeGreaterThan(0);
+  expect(after.windowScrollY, `document scrolled ${afterDetail}`).toBe(0);
+  expect(
+    after.sidebarFound,
+    `sidebar missing after scroll ${afterDetail}`
+  ).toBe(true);
+  expect(after.sidebarTop, `sidebar top after scroll ${afterDetail}`).toBe(0);
+  expect(
+    Math.abs(after.sidebarBottom - after.innerHeight),
+    `sidebar bottom after scroll ${afterDetail}`
+  ).toBeLessThanOrEqual(2);
+
+  return after;
 }

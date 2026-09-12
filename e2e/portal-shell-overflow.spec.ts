@@ -2,8 +2,10 @@ import { expect, test } from "@playwright/test";
 
 import { setPortalColorScheme } from "./helpers/axe";
 import {
+  DESKTOP_SHELL_VIEWPORTS,
   EDITOR_BREAKPOINT_RESIZE_STEPS,
   PORTAL_OVERFLOW_VIEWPORTS,
+  expectDesktopStaffScrollContainment,
   expectNoPortalShellOverflow,
 } from "./helpers/portal-shell";
 import { staffUrl } from "./helpers/origins";
@@ -194,5 +196,61 @@ test.describe("portal shell overflow contract", () => {
         ).toBe(true);
       }
     }
+  });
+
+  test("desktop Practice, Guides, and editor scroll inside staffAppScroller", async ({
+    page,
+  }) => {
+    await signInAsLocalAdmin(page);
+    await page.goto(staffUrl("/guides"), { waitUntil: "load" });
+    const editorHref = await page
+      .getByRole("link", { name: "Edit" })
+      .first()
+      .getAttribute("href");
+    expect(editorHref).toBeTruthy();
+
+    const routes = [
+      { name: "Practice", path: "/practice", requireOverflow: true },
+      { name: "Guides", path: "/guides", requireOverflow: false },
+      { name: "Guide editor", path: editorHref!, requireOverflow: true },
+    ] as const;
+
+    for (const route of routes) {
+      await page.goto(staffUrl(route.path), { waitUntil: "load" });
+      await setPortalColorScheme(page, "light");
+      for (const viewport of DESKTOP_SHELL_VIEWPORTS) {
+        await page.setViewportSize({
+          width: viewport.width,
+          height: viewport.height,
+        });
+        await expectDesktopStaffScrollContainment(
+          page,
+          `light ${viewport.label}`,
+          route.path,
+          { requireOverflow: route.requireOverflow }
+        );
+      }
+    }
+
+    await page.goto(staffUrl("/practice"), { waitUntil: "load" });
+    await page.setViewportSize({ width: 1728, height: 877 });
+    await page.locator(".staffAppScroller").evaluate((node) => {
+      node.scrollTop = 0;
+    });
+    await page.screenshot({
+      path: "test-results/artifacts/phase-2a.5-practice-shell-top-1728.png",
+    });
+    await page.locator(".staffAppScroller").evaluate((node) => {
+      node.scrollTop = node.scrollHeight / 2;
+    });
+    await page.screenshot({
+      path: "test-results/artifacts/phase-2a.5-practice-shell-mid-1728.png",
+    });
+    await page.locator(".staffAppScroller").evaluate((node) => {
+      node.scrollTop = node.scrollHeight;
+    });
+    await page.screenshot({
+      path: "test-results/artifacts/phase-2a.5-practice-shell-bottom-1728.png",
+    });
   });
 });
