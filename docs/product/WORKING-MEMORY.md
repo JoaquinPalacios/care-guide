@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-13 (River Aftercare logo, isologo, and favicon pack wired)
+Last updated: 2026-09-13 (fix Next.js 16 typed-route clash on encoded `/_sites`)
 
 ---
 
@@ -104,6 +104,8 @@ Hostname tenant resolution. No branded patient UI.
 Local URLs: `localhost:3000` is the public marketing homepage. `app.localhost:3000` stays staff/parked. `demodental.localhost:3000` rewrites internally. `unknown.localhost:3000` is a generic 404. Tenant hosts block `/login`, `/dashboard`, `/sessions`, `/session`, `/display`, `/api/auth`. Direct `/_sites` and `/_marketing` are 404.
 
 Internal aftercare files now live at `app/(aftercare)/%5Fsites/[tenant]`. Public rewrite target remains `/_sites/<slug>/…`. The marketing homepage rewrites to `/_marketing`.
+
+Next.js 16 writes both `.next/types` (decoded `/_sites`) and `.next/dev/types` (encoded `/%5Fsites`) during `next build`. `tsconfig.json` excludes `.next/dev` so production typecheck does not merge those conflicting `LayoutRoutes`. Do not type the tenant layout as `LayoutProps<"/_sites/[tenant]">` — `tsc -b` runs before `next build` generates that helper.
 
 ---
 
