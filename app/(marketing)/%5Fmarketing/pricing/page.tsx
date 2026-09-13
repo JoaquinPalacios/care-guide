@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { JsonLd } from "@/app/(marketing)/components/json-ld";
 import {
   MarketingRevealCard,
   MarketingRevealGroup,
@@ -9,11 +10,7 @@ import { MarketingPageHero } from "@/app/(marketing)/components/marketing-page-h
 import { MarketingPrimaryLink } from "@/app/(marketing)/components/marketing-primary-link";
 import { MarketingShell } from "@/app/(marketing)/components/marketing-shell";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
-import {
-  CONTACT_METADATA,
-  marketingPageMetadata,
-  PRICING_METADATA,
-} from "@/lib/marketing/metadata";
+import { CONTACT_METADATA } from "@/lib/marketing/metadata";
 import {
   COMING_AFTER_LAUNCH,
   LAUNCH_PLANS,
@@ -22,18 +19,24 @@ import {
 } from "@/lib/marketing/plans";
 import { marketingPublicLinks } from "@/lib/marketing/public-links";
 import { editorialRevealDelay } from "@/lib/marketing/reveal-timing";
+import {
+  generateMarketingMetadata,
+  loadMarketingJsonLd,
+} from "@/lib/seo/marketing-page";
 
 import styles from "../../marketing.module.css";
 
-export const metadata = marketingPageMetadata(PRICING_METADATA, {
-  pathname: "/pricing",
-});
+export const generateMetadata = () => generateMarketingMetadata("/pricing");
 
 export default async function MarketingPricingPage() {
-  const { staffHref } = await marketingPublicLinks();
+  const [{ staffHref }, jsonLd] = await Promise.all([
+    marketingPublicLinks(),
+    loadMarketingJsonLd("/pricing"),
+  ]);
 
   return (
     <MarketingShell currentPath="/pricing" staffHref={staffHref}>
+      <JsonLd data={jsonLd} />
       <main>
         <MarketingPageHero
           variant="pricing"

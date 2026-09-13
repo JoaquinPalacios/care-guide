@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { geistSans } from "@/lib/branding/fonts";
-import { PRODUCT_NAME } from "@/lib/branding/product-name";
 import {
   HOME_METADATA,
   MARKETING_TITLE_TEMPLATE,
   marketingMetadataBase,
-  marketingPageMetadata,
 } from "@/lib/marketing/metadata";
+import { generateMarketingMetadata } from "@/lib/seo/marketing-page";
 import { PRODUCT_HEAD_METADATA } from "@/lib/seo/icons";
 import { marketingMotionBootstrapScript } from "@/lib/marketing/motion-bootstrap";
 import {
@@ -18,33 +17,22 @@ import {
 
 import "./marketing.css";
 
-const homeMetadata = marketingPageMetadata(HOME_METADATA, {
-  pathname: "/",
-  absoluteTitle: true,
-});
-
-export const metadata: Metadata = {
-  metadataBase: marketingMetadataBase(),
-  title: {
-    default: HOME_METADATA.title,
-    template: MARKETING_TITLE_TEMPLATE,
-  },
-  description: HOME_METADATA.description,
-  robots: homeMetadata.robots,
-  ...PRODUCT_HEAD_METADATA,
-  alternates: homeMetadata.alternates,
-  openGraph: homeMetadata.openGraph,
-  twitter: homeMetadata.twitter,
-};
-
-const softwareJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: PRODUCT_NAME,
-  applicationCategory: "BusinessApplication",
-  operatingSystem: "Web",
-  description: HOME_METADATA.description,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await generateMarketingMetadata("/");
+  return {
+    metadataBase: marketingMetadataBase(),
+    title: {
+      default: HOME_METADATA.title,
+      template: MARKETING_TITLE_TEMPLATE,
+    },
+    description: page.description,
+    robots: page.robots,
+    ...PRODUCT_HEAD_METADATA,
+    alternates: page.alternates,
+    openGraph: page.openGraph,
+    twitter: page.twitter,
+  };
+}
 
 export default function MarketingRootLayout({
   children,
@@ -72,12 +60,6 @@ export default function MarketingRootLayout({
           </style>
         </noscript>
         {children}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(softwareJsonLd),
-          }}
-        />
       </body>
     </html>
   );

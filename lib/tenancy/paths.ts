@@ -8,9 +8,18 @@ export const STAFF_PATH_PREFIXES = [
   "/api/auth",
 ] as const;
 
-export const MARKETING_PAGE_PATHS = ["/", "/pricing", "/contact"] as const;
+export const MARKETING_PAGE_PATHS = [
+  "/",
+  "/pricing",
+  "/contact",
+  "/about",
+] as const;
 
-export const MARKETING_CRAWL_PATHS = ["/sitemap.xml", "/robots.txt"] as const;
+export const MARKETING_CRAWL_PATHS = [
+  "/sitemap.xml",
+  "/robots.txt",
+  "/llms.txt",
+] as const;
 
 export function isStaffPath(pathname: string): boolean {
   return STAFF_PATH_PREFIXES.some(

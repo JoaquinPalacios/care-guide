@@ -33,6 +33,13 @@ test.describe("launch SEO surfaces", () => {
       "content",
       /River Aftercare/
     );
+    const jsonLd = await page
+      .locator('script[type="application/ld+json"]')
+      .first()
+      .textContent();
+    expect(jsonLd).toContain("WebSite");
+    expect(jsonLd).toContain("Organization");
+    expect(jsonLd).not.toContain('"Offer"');
     await expect(
       page.locator('link[rel="icon"][sizes="32x32"]')
     ).toHaveAttribute("href", /favicon-32x32\.png/);
@@ -59,6 +66,8 @@ test.describe("launch SEO surfaces", () => {
     });
     const sitemapBody = (await sitemap?.text()) ?? "";
     expect(sitemapBody).toContain("/pricing");
+    expect(sitemapBody).toContain("/contact");
+    expect(sitemapBody).toContain("/about");
     expect(sitemapBody).not.toContain("/dashboard");
     expect(sitemapBody).not.toContain("/operator");
     expect(sitemapBody).not.toContain("/_sites");

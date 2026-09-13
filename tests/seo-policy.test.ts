@@ -18,6 +18,7 @@ import { sanitizeMetadataText } from "@/lib/seo/metadata-text";
 import {
   INDEXABLE_ROBOTS,
   PRIVATE_ROBOTS,
+  ROBOTS_ALLOW_PUBLIC,
   ROBOTS_DISALLOW_INTERNAL,
   TENANT_LAUNCH_ROBOTS,
 } from "@/lib/seo/robots-policy";
@@ -103,17 +104,18 @@ describe("launch SEO policy", () => {
     ).toBe("Tooth Extraction Aftercare | Riverside Dental");
   });
 
-  it("lists only public marketing URLs in the launch sitemap", () => {
+  it("lists only public marketing URLs in the launch sitemap", async () => {
     const previousRoot = process.env.CARE_GUIDE_ROOT_DOMAIN;
     const previousBase = process.env.CARE_GUIDE_METADATA_BASE;
     process.env.CARE_GUIDE_ROOT_DOMAIN = "localhost";
     delete process.env.CARE_GUIDE_METADATA_BASE;
     try {
-      const urls = sitemap().map((entry) => entry.url);
+      const urls = (await sitemap()).map((entry) => entry.url);
       expect(urls).toEqual([
         "http://localhost/",
         "http://localhost/pricing",
         "http://localhost/contact",
+        "http://localhost/about",
       ]);
       expect(urls.join(" ")).not.toContain("/dashboard");
       expect(urls.join(" ")).not.toContain("/guides");
@@ -129,7 +131,7 @@ describe("launch SEO policy", () => {
   it("allows marketing and disallows authenticated internal surfaces in robots.txt", () => {
     const document = robots();
     expect(document.rules).toMatchObject({
-      allow: ["/", "/pricing", "/contact"],
+      allow: [...ROBOTS_ALLOW_PUBLIC],
       disallow: expect.arrayContaining([
         ...ROBOTS_DISALLOW_INTERNAL,
         "/operator",
@@ -142,12 +144,17 @@ describe("launch SEO policy", () => {
   it("keeps staff, operator, and draft preview metadata private in source", () => {
     const staff = readFileSync("app/(staff)/layout.tsx", "utf8");
     const operator = readFileSync("app/(staff)/(operator)/layout.tsx", "utf8");
+    const operatorSeo = readFileSync(
+      "app/(staff)/(operator)/operator/seo/actions.ts",
+      "utf8"
+    );
     const preview = readFileSync(
       "app/(staff)/(guide-preview)/guides/[guideId]/preview/page.tsx",
       "utf8"
     );
     expect(staff).toContain("PRIVATE_ROBOTS");
     expect(operator).toContain("staffAppScroller");
+    expect(operatorSeo).toContain("requirePlatformOperator");
     expect(preview).toContain("PRIVATE_ROBOTS");
     expect(preview).not.toContain("canonical");
   });

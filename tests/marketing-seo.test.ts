@@ -50,16 +50,17 @@ describe("marketing crawl files", () => {
     restore("CARE_GUIDE_METADATA_BASE", previousBase);
   });
 
-  it("lists only public platform routes", () => {
+  it("lists only public platform routes", async () => {
     process.env.CARE_GUIDE_ROOT_DOMAIN = "localhost";
     delete process.env.CARE_GUIDE_METADATA_BASE;
-    const entries = sitemap();
+    const entries = await sitemap();
     const urls = entries.map((entry) => entry.url);
 
     expect(urls).toEqual([
       "http://localhost/",
       "http://localhost/pricing",
       "http://localhost/contact",
+      "http://localhost/about",
     ]);
     expect(urls.join(" ")).not.toContain("/_marketing");
     expect(urls.join(" ")).not.toContain("/_sites");
@@ -70,7 +71,7 @@ describe("marketing crawl files", () => {
     delete process.env.CARE_GUIDE_METADATA_BASE;
     const document = robots();
     expect(document.rules).toMatchObject({
-      allow: ["/", "/pricing", "/contact"],
+      allow: ["/", "/pricing", "/contact", "/about", "/llms.txt"],
       disallow: expect.arrayContaining([
         "/_marketing",
         "/_sites",

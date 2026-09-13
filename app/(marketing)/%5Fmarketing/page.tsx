@@ -14,11 +14,16 @@ import { MarketingProductAssembly } from "@/app/(marketing)/components/marketing
 import { MarketingPrimaryAnchor } from "@/app/(marketing)/components/marketing-primary-anchor";
 import { MarketingPrimaryLink } from "@/app/(marketing)/components/marketing-primary-link";
 import { MarketingProductPreview } from "@/app/(marketing)/components/marketing-product-preview";
+import { JsonLd } from "@/app/(marketing)/components/json-ld";
 import { MarketingShell } from "@/app/(marketing)/components/marketing-shell";
 import { MarketingWave } from "@/app/(marketing)/components/marketing-wave";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 import { marketingPublicLinks } from "@/lib/marketing/public-links";
 import { editorialRevealDelay } from "@/lib/marketing/reveal-timing";
+import {
+  generateMarketingMetadata,
+  loadMarketingJsonLd,
+} from "@/lib/seo/marketing-page";
 
 import styles from "../marketing.module.css";
 
@@ -66,11 +71,17 @@ const BRAND_CARDS = [
   },
 ] as const;
 
+export const generateMetadata = () => generateMarketingMetadata("/");
+
 export default async function MarketingHomePage() {
-  const { demoHref, staffHref } = await marketingPublicLinks();
+  const [{ demoHref, staffHref }, jsonLd] = await Promise.all([
+    marketingPublicLinks(),
+    loadMarketingJsonLd("/"),
+  ]);
 
   return (
     <MarketingShell currentPath="/" staffHref={staffHref}>
+      <JsonLd data={jsonLd} />
       <main>
         <section
           className={`${styles.hero} ${styles.marketingBase}`}

@@ -1,3 +1,4 @@
+import { JsonLd } from "@/app/(marketing)/components/json-ld";
 import {
   MarketingRevealGroup,
   MarketingRevealItem,
@@ -6,23 +7,25 @@ import { ContactForm } from "@/app/(marketing)/components/contact-form";
 import { MarketingPageHero } from "@/app/(marketing)/components/marketing-page-hero";
 import { MarketingShell } from "@/app/(marketing)/components/marketing-shell";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
-import {
-  CONTACT_METADATA,
-  marketingPageMetadata,
-} from "@/lib/marketing/metadata";
 import { marketingPublicLinks } from "@/lib/marketing/public-links";
+import {
+  generateMarketingMetadata,
+  loadMarketingJsonLd,
+} from "@/lib/seo/marketing-page";
 
 import styles from "../../marketing.module.css";
 
-export const metadata = marketingPageMetadata(CONTACT_METADATA, {
-  pathname: "/contact",
-});
+export const generateMetadata = () => generateMarketingMetadata("/contact");
 
 export default async function MarketingContactPage() {
-  const { demoHref, staffHref } = await marketingPublicLinks();
+  const [{ demoHref, staffHref }, jsonLd] = await Promise.all([
+    marketingPublicLinks(),
+    loadMarketingJsonLd("/contact"),
+  ]);
 
   return (
     <MarketingShell currentPath="/contact" staffHref={staffHref}>
+      <JsonLd data={jsonLd} />
       <main>
         <MarketingPageHero
           variant="contact"

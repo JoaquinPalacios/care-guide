@@ -14,6 +14,14 @@ export const TENANT_LAUNCH_ROBOTS = {
   follow: true,
 } as const;
 
+export const ROBOTS_ALLOW_PUBLIC = [
+  "/",
+  "/pricing",
+  "/contact",
+  "/about",
+  "/llms.txt",
+] as const;
+
 export const ROBOTS_DISALLOW_INTERNAL = [
   "/_marketing",
   "/_sites",

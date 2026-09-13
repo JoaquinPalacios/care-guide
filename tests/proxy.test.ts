@@ -72,7 +72,7 @@ describe("proxy", () => {
     );
   });
 
-  it("rewrites marketing pricing and contact to /_marketing/...", () => {
+  it("rewrites marketing pricing, contact, and about to /_marketing/...", () => {
     const pricing = proxy(requestFor("http://localhost:3000/pricing"));
     expect(pricing.status).toBe(200);
     expect(rewrittenUrl(pricing)?.pathname).toBe("/_marketing/pricing");
@@ -80,9 +80,13 @@ describe("proxy", () => {
     const contact = proxy(requestFor("http://localhost:3000/contact"));
     expect(contact.status).toBe(200);
     expect(rewrittenUrl(contact)?.pathname).toBe("/_marketing/contact");
+
+    const about = proxy(requestFor("http://localhost:3000/about"));
+    expect(about.status).toBe(200);
+    expect(rewrittenUrl(about)?.pathname).toBe("/_marketing/about");
   });
 
-  it("lets sitemap and robots pass through on the marketing host", () => {
+  it("lets sitemap, robots, and llms.txt pass through on the marketing host", () => {
     const sitemap = proxy(requestFor("http://localhost:3000/sitemap.xml"));
     expect(sitemap.status).toBe(200);
     expect(rewrittenUrl(sitemap)).toBeNull();
@@ -90,6 +94,10 @@ describe("proxy", () => {
     const robots = proxy(requestFor("http://localhost:3000/robots.txt"));
     expect(robots.status).toBe(200);
     expect(rewrittenUrl(robots)).toBeNull();
+
+    const llms = proxy(requestFor("http://localhost:3000/llms.txt"));
+    expect(llms.status).toBe(200);
+    expect(rewrittenUrl(llms)).toBeNull();
   });
 
   it("does not rewrite tenant /pricing or /contact to marketing", () => {
