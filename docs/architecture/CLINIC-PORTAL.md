@@ -131,7 +131,7 @@ Public generic guides have no patient-specific treatment date. Timeline copy sta
 
 ## Logo
 
-Upload is **blocked** until production object storage is provisioned. Practice shows the current mark and an explicit unavailable state. There is no file input. See [ADR 0019](../adr/0019-clinic-logo-upload-requires-object-storage.md) and [CLINIC-ASSETS.md](CLINIC-ASSETS.md).
+ADMIN can upload, replace, or remove a clinic logo when `CLINIC_ASSET_STORAGE_DRIVER=r2` (or the test `memory` driver) is configured. STAFF cannot open Practice (404) and cannot call logo mutations. Production still needs Joaquín to provision Cloudflare R2 — see [ADR 0022](../adr/0022-cloudflare-r2-is-clinic-asset-provider.md), [CLINIC-ASSETS.md](CLINIC-ASSETS.md), and [../launch/R2-PROVISIONING.md](../launch/R2-PROVISIONING.md). When storage is unconfigured, Practice shows the current mark and an explicit unavailable state.
 
 ## Operator console
 

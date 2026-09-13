@@ -11,42 +11,42 @@ Do not provision Vercel, Neon, Cloudflare, R2, domains, or email from this docum
 
 ## Product
 
-| Item                                   | Status                                 | Notes                                                                                              |
-| -------------------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Brand assets (logo, isologo, favicon)  | READY                                  | Final approved pack on main. Dedicated 1200×630 OG image still required.                           |
-| Patient UX                             | READY                                  | Tenant home + published guides, CSS Modules, no patient Tailwind.                                  |
-| Clinic portal                          | READY                                  | Overview / Guides / Practice, draft-preview-publish-unpublish-delete.                              |
-| Operator                               | READY                                  | All Clinics + SEO & Discovery. No Templates library UI.                                            |
-| Guide lifecycle                        | READY                                  | Draft / published / unpublished; public pin protected.                                             |
+| Item                                   | Status                                 | Notes                                                                                                       |
+| -------------------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Brand assets (logo, isologo, favicon)  | READY                                  | Final approved pack on main. Dedicated 1200×630 OG image still required.                                    |
+| Patient UX                             | READY                                  | Tenant home + published guides, CSS Modules, no patient Tailwind.                                           |
+| Clinic portal                          | READY                                  | Overview / Guides / Practice, draft-preview-publish-unpublish-delete.                                       |
+| Operator                               | READY                                  | All Clinics + SEO & Discovery. No Templates library UI.                                                     |
+| Guide lifecycle                        | READY                                  | Draft / published / unpublished; public pin protected.                                                      |
 | Canonical dental templates             | REQUIRED BEFORE PRODUCTION             | Seeded library is **Tooth Extraction** only. Marketing no longer advertises unbuilt templates as available. |
-| Clinical governance / review ownership | REQUIRED BEFORE PRODUCTION             | Policy exists; no signed clinical review of production copy.                                       |
-| QR / share                             | RECOMMENDED BEFORE FIRST PAYING CLINIC | Durable URLs exist. Copy-URL UI, QR generation, and QR download/print are **not** implemented.     |
-| Check-ins / RecoveryPlan               | POST-LAUNCH                            | Explicitly out of this phase.                                                                      |
+| Clinical governance / review ownership | REQUIRED BEFORE PRODUCTION             | Policy exists; no signed clinical review of production copy.                                                |
+| QR / share                             | RECOMMENDED BEFORE FIRST PAYING CLINIC | Durable URLs exist. Copy-URL UI, QR generation, and QR download/print are **not** implemented.              |
+| Check-ins / RecoveryPlan               | POST-LAUNCH                            | Explicitly out of this phase.                                                                               |
 
 ## Discovery
 
-| Item               | Status                                 | Notes                                                                                            |
-| ------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Marketing SEO      | READY                                  | DB-backed settings with code fallbacks.                                                          |
-| JSON-LD            | READY                                  | Organization / WebSite / SoftwareApplication without Offer; ContactPage; AboutPage.              |
-| Sitemap / robots   | READY                                  | Marketing only; staff/operator/tenant noindex preserved.                                         |
-| llms.txt           | READY                                  | `/llms.txt`. `llms-full.txt` skipped (corpus too small).                                         |
-| Agentic readiness  | READY                                  | Architecture audit in [AGENTIC-READINESS.md](AGENTIC-READINESS.md). No numeric Is Agentic score. |
+| Item               | Status                                 | Notes                                                                                                   |
+| ------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Marketing SEO      | READY                                  | DB-backed settings with code fallbacks.                                                                 |
+| JSON-LD            | READY                                  | Organization / WebSite / SoftwareApplication without Offer; ContactPage; AboutPage.                     |
+| Sitemap / robots   | READY                                  | Marketing only; staff/operator/tenant noindex preserved.                                                |
+| llms.txt           | READY                                  | `/llms.txt`. `llms-full.txt` skipped (corpus too small).                                                |
+| Agentic readiness  | READY                                  | Architecture audit in [AGENTIC-READINESS.md](AGENTIC-READINESS.md). No numeric Is Agentic score.        |
 | Privacy / Terms    | REQUIRED BEFORE PRODUCTION             | Substantial drafts published at `/privacy` and `/terms`. **Legal review still required.** Not approved. |
-| About              | READY                                  | Factual public page.                                                                             |
-| Dedicated OG image | RECOMMENDED BEFORE FIRST PAYING CLINIC | Missing 1200×630 asset.                                                                          |
+| About              | READY                                  | Factual public page.                                                                                    |
+| Dedicated OG image | RECOMMENDED BEFORE FIRST PAYING CLINIC | Missing 1200×630 asset.                                                                                 |
 
 ## Infra
 
-| Item                         | Status                     | Notes                                                                                                                                                                                  |
-| ---------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Final domain                 | REQUIRED BEFORE PRODUCTION | Not selected.                                                                                                                                                                          |
-| Vercel (Next.js)             | REQUIRED BEFORE PRODUCTION | Desired host. Not provisioned in this phase.                                                                                                                                           |
-| Neon Sydney PostgreSQL       | REQUIRED BEFORE PRODUCTION | Desired region. Not provisioned.                                                                                                                                                       |
-| Cloudflare authoritative DNS | REQUIRED BEFORE PRODUCTION | Candidate. Not provisioned.                                                                                                                                                            |
-| R2 object storage            | REQUIRED BEFORE PRODUCTION | Clinic logo upload waits on a bucket ([ADR 0019](../adr/0019-clinic-logo-upload-requires-object-storage.md)).                                                                          |
-| Wildcard TLS staging proof   | REQUIRED BEFORE PRODUCTION | **Launch gate.** Cloudflare authoritative DNS + `_acme-challenge` delegation to Vercel must be proven on a **staging/test domain** before production domain cutover. This is not done. |
-| Production migrations        | REQUIRED BEFORE PRODUCTION | Additive `PlatformSeoSettings` / `MarketingPageSeo` migration exists locally.                                                                                                          |
+| Item                         | Status                     | Notes                                                                                                                                                                                                                                                                   |
+| ---------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Final domain                 | REQUIRED BEFORE PRODUCTION | Not selected.                                                                                                                                                                                                                                                           |
+| Vercel (Next.js)             | REQUIRED BEFORE PRODUCTION | Desired host. Not provisioned in this phase.                                                                                                                                                                                                                            |
+| Neon Sydney PostgreSQL       | REQUIRED BEFORE PRODUCTION | Desired region. Not provisioned.                                                                                                                                                                                                                                        |
+| Cloudflare authoritative DNS | REQUIRED BEFORE PRODUCTION | Candidate. Not provisioned.                                                                                                                                                                                                                                             |
+| R2 object storage            | REQUIRED BEFORE PRODUCTION | Application adapter is implemented (`CLINIC_ASSET_STORAGE_DRIVER=r2`). Joaquín still must provision the bucket, scoped token, `assets.<domain>`, and env ([ADR 0022](../adr/0022-cloudflare-r2-is-clinic-asset-provider.md), [R2-PROVISIONING.md](R2-PROVISIONING.md)). |
+| Wildcard TLS staging proof   | REQUIRED BEFORE PRODUCTION | **Launch gate.** Cloudflare authoritative DNS + `_acme-challenge` delegation to Vercel must be proven on a **staging/test domain** before production domain cutover. This is not done.                                                                                  |
+| Production migrations        | REQUIRED BEFORE PRODUCTION | Additive `PlatformSeoSettings` / `MarketingPageSeo` migration exists locally.                                                                                                                                                                                           |
 
 ## Email
 
@@ -86,11 +86,11 @@ Do not provision Vercel, Neon, Cloudflare, R2, domains, or email from this docum
 
 ## Legal
 
-| Item                       | Status                     | Notes               |
-| -------------------------- | -------------------------- | ------------------- |
+| Item                       | Status                     | Notes                                                                          |
+| -------------------------- | -------------------------- | ------------------------------------------------------------------------------ |
 | Privacy                    | REQUIRED BEFORE PRODUCTION | Substantial draft implemented — LEGAL REVIEW STILL REQUIRED. **Not approved.** |
 | Terms                      | REQUIRED BEFORE PRODUCTION | Substantial draft implemented — LEGAL REVIEW STILL REQUIRED. **Not approved.** |
-| Medical/content disclaimer | REQUIRED BEFORE PRODUCTION | Part of legal pack. |
+| Medical/content disclaimer | REQUIRED BEFORE PRODUCTION | Part of legal pack.                                                            |
 
 ## Operations
 
@@ -150,20 +150,20 @@ Cloudflare as authoritative DNS plus `_acme-challenge` delegation to Vercel must
 
 ## Concise remaining gate
 
-| Priority                   | Remaining item                                                   | Blocker?              | Next action                                           |
-| -------------------------- | ---------------------------------------------------------------- | --------------------- | ----------------------------------------------------- |
-| MUST BEFORE PRODUCTION     | Final domain + Cloudflare DNS + Vercel project                   | Yes                   | Choose domain; configure staging first                |
-| MUST BEFORE PRODUCTION     | Wildcard TLS staging proof (`_acme-challenge` → Vercel)          | Yes                   | Prove on a test domain                                |
-| MUST BEFORE PRODUCTION     | Neon Sydney + backups + migrate deploy                           | Yes                   | Provision; never from this branch automatically       |
-| MUST BEFORE PRODUCTION     | R2 (or equivalent) clinic-logo bucket                            | Yes                   | Follow ADR 0019                                       |
+| Priority                   | Remaining item                                                   | Blocker?              | Next action                                            |
+| -------------------------- | ---------------------------------------------------------------- | --------------------- | ------------------------------------------------------ |
+| MUST BEFORE PRODUCTION     | Final domain + Cloudflare DNS + Vercel project                   | Yes                   | Choose domain; configure staging first                 |
+| MUST BEFORE PRODUCTION     | Wildcard TLS staging proof (`_acme-challenge` → Vercel)          | Yes                   | Prove on a test domain                                 |
+| MUST BEFORE PRODUCTION     | Neon Sydney + backups + migrate deploy                           | Yes                   | Provision; never from this branch automatically        |
+| MUST BEFORE PRODUCTION     | R2 (or equivalent) clinic-logo bucket                            | Yes                   | Follow ADR 0019                                        |
 | MUST BEFORE PRODUCTION     | Privacy + Terms counsel approval of published drafts             | Yes                   | Legal review; do not mark approved until counsel signs |
-| MUST BEFORE PRODUCTION     | Public mailbox + SPF/DKIM/DMARC + delivery                       | Yes                   | Brand-domain inbox; Resend or SMTP                    |
-| MUST BEFORE PRODUCTION     | Turnstile on login/contact                                       | Yes                   | Cloudflare widget                                     |
-| MUST BEFORE PRODUCTION     | Error monitoring + secrets review                                | Yes                   | Sentry or equivalent                                  |
-| MUST BEFORE PRODUCTION     | Auth.js v5 beta accepted in writing                              | Yes                   | Keep exception or separate auth project               |
-| MUST BEFORE PRODUCTION     | Dedicated OG image optional for go-live                          | No                    | 1200×630 asset                                        |
-| BEFORE FIRST PAYING CLINIC | Reviewed multi-template dental library                           | Yes for paid          | Clinical review of Extraction + additional procedures |
-| BEFORE FIRST PAYING CLINIC | QR + copy URL                                                    | No for design partner | Implement share kit                                   |
-| BEFORE FIRST PAYING CLINIC | Final commercial pricing / Stripe                                | Yes for paid          | Replace provisional A$79 / A$149                      |
-| BEFORE FIRST PAYING CLINIC | Device QA (iPhone/Android/Safari)                                | Recommended           | Real devices                                          |
-| POST-LAUNCH                | Analytics, Check-ins, RecoveryPlan, editorial `/guides`, MCP/API | No                    | Roadmap                                               |
+| MUST BEFORE PRODUCTION     | Public mailbox + SPF/DKIM/DMARC + delivery                       | Yes                   | Brand-domain inbox; Resend or SMTP                     |
+| MUST BEFORE PRODUCTION     | Turnstile on login/contact                                       | Yes                   | Cloudflare widget                                      |
+| MUST BEFORE PRODUCTION     | Error monitoring + secrets review                                | Yes                   | Sentry or equivalent                                   |
+| MUST BEFORE PRODUCTION     | Auth.js v5 beta accepted in writing                              | Yes                   | Keep exception or separate auth project                |
+| MUST BEFORE PRODUCTION     | Dedicated OG image optional for go-live                          | No                    | 1200×630 asset                                         |
+| BEFORE FIRST PAYING CLINIC | Reviewed multi-template dental library                           | Yes for paid          | Clinical review of Extraction + additional procedures  |
+| BEFORE FIRST PAYING CLINIC | QR + copy URL                                                    | No for design partner | Implement share kit                                    |
+| BEFORE FIRST PAYING CLINIC | Final commercial pricing / Stripe                                | Yes for paid          | Replace provisional A$79 / A$149                       |
+| BEFORE FIRST PAYING CLINIC | Device QA (iPhone/Android/Safari)                                | Recommended           | Real devices                                           |
+| POST-LAUNCH                | Analytics, Check-ins, RecoveryPlan, editorial `/guides`, MCP/API | No                    | Roadmap                                                |

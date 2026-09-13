@@ -32,7 +32,7 @@ Until then, keep the current baseline: server Zod validation, honeypot (`website
 
 ### Object storage for clinic logos
 
-**Status: blocked on external provisioning.** See [CLINIC-ASSETS.md](../architecture/CLINIC-ASSETS.md) and [ADR 0019](../adr/0019-clinic-logo-upload-requires-object-storage.md).
+**Status: application ready; blocked on external R2 provisioning.** Cloudflare R2 is the production provider. See [CLINIC-ASSETS.md](../architecture/CLINIC-ASSETS.md), [ADR 0022](../adr/0022-cloudflare-r2-is-clinic-asset-provider.md), and [R2-PROVISIONING.md](../launch/R2-PROVISIONING.md).
 
 ### Team / Users
 

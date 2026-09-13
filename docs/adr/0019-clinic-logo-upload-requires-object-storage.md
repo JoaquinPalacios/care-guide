@@ -1,35 +1,28 @@
 # ADR 0019 — Clinic logo upload waits for production object storage
 
-- **Status:** Accepted
+- **Status:** Accepted (provider choice superseded by [0022](0022-cloudflare-r2-is-clinic-asset-provider.md))
 - **Date:** 2026-09-11
-- **Updated:** 2026-09-12 (Phase 2A.4 — application upload complete; bucket still external)
+- **Updated:** 2026-09-13 (production provider is Cloudflare R2; application adapter shipped)
 - **PRD:** [../product/PRD.md](../product/PRD.md) §10.2
 
 ## Context
 
-`ClinicProfile.logoUrl` already stores a same-origin image path. The patient renderer sanitizes it with `toSafeLogoSrc` (PNG, JPEG, WebP, SVG paths; no remote URLs, `data:`, or traversal) and renders `<img src>`.
-
-Clinics should upload a logo themselves before launch. The repository’s Supabase client is used for **Realtime** (parked chairside) unless a Storage bucket is provisioned. There is no Vercel Blob, S3 adapter, or local `public/uploads` writer in the deployed environment.
-
-Local filesystem, database bytea/base64 blobs, and unauthenticated public writes are not production-safe for this product.
+Clinics should upload a logo themselves before launch. Local filesystem, database bytea/base64 blobs, and unauthenticated public writes are not production-safe.
 
 SVG clinic marks are professionally common. A blanket “SVG not accepted” rule is too strict, but uploaded SVG markup must never be trusted or inlined.
 
+Phase 2A.4 completed the application boundary. The provisional adapter was Supabase Storage. That provider choice is replaced by [ADR 0022](0022-cloudflare-r2-is-clinic-asset-provider.md). Parked chairside **Supabase Realtime** is unrelated and remains.
+
 ## Decision
 
-Phase 2A.4 **completes the application boundary** and still **does not provision** production storage.
-
-- Keep `ClinicProfile.logoUrl` and `toSafeLogoSrc`.
-- Keep `ClinicAssetStorage` with a Supabase adapter. Add `readLogo` so the app can stream private objects on a same-origin route.
-- Accept PNG, JPEG, WebP (2 MB) and SVG (1 MB). Sanitize SVG on the server with JSDOM + DOMPurify before storage. Render only as `<img>`.
-- Practice settings show the current mark plus Upload / Replace / Remove when the driver is configured. When it is not, show an infrastructure-unavailable state derived from configuration — not “coming before launch”.
-- Production still depends on a private `clinic-branding` bucket, service-role credentials, and `CLINIC_ASSET_STORAGE_DRIVER=supabase`. See [../architecture/CLINIC-ASSETS.md](../architecture/CLINIC-ASSETS.md).
-
-Do not ship a fake filesystem upload. Do not execute the provisioning script against production from Cursor.
+- Keep ADMIN-only mutation, PNG/JPEG/WebP + sanitized SVG, `<img>` rendering, and `ClinicAssetStorage`.
+- Store a provider-independent reference in `ClinicProfile.logoUrl` (demo path or object key). Resolve URLs at read time.
+- Production depends on a provisioned Cloudflare R2 bucket and `CLINIC_ASSET_STORAGE_DRIVER=r2`. See [../architecture/CLINIC-ASSETS.md](../architecture/CLINIC-ASSETS.md) and [../launch/R2-PROVISIONING.md](../launch/R2-PROVISIONING.md).
+- Do not ship a fake filesystem upload. Do not provision Cloudflare from Cursor.
 
 ## Consequences
 
 - Demo logo `/demo/riverside-mark.svg` continues to work.
-- Launch checklist must include object storage before clinic-uploaded logos work in production.
+- Launch checklist must include R2 + `assets.<domain>` before clinic-uploaded logos work in production.
 - Arbitrary CSS, HTML, remote stylesheet URLs, and inline SVG injection remain forbidden.
 - A `memory` driver exists for tests only.
