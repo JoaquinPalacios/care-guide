@@ -134,6 +134,7 @@ test.describe("portal shell overflow contract", () => {
 
     const routes = [
       { name: "Operator All Clinics", path: "/operator/clinics" },
+      { name: "Operator SEO & Discovery", path: "/operator/seo" },
       { name: "Operator clinic detail", path: clinicHref! },
     ];
 

@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 
 import { LogoutButton } from "@/app/(staff)/components/logout-button";
 import { PortalAppearanceControl } from "@/app/(staff)/components/portal-appearance-control";
+import { OperatorPlatformNav } from "@/app/(staff)/(operator)/components/operator-platform-nav";
 import { ProductMark } from "@/lib/branding/product-mark";
 import { requirePlatformOperator } from "@/lib/auth/require-platform-operator";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
@@ -28,15 +28,7 @@ export default async function OperatorLayout({
           </p>
         </div>
         <div className="flex min-h-0 flex-1 flex-col p-3">
-          <nav className="staffNavGroup" aria-label="Platform">
-            <Link
-              href="/operator/clinics"
-              aria-current="page"
-              className="staffNavRow"
-            >
-              Clinics
-            </Link>
-          </nav>
+          <OperatorPlatformNav />
           <div className="mt-auto">
             <div className="staffNavRule" role="presentation" />
             <div className="staffNavGroup" aria-label="Preferences">

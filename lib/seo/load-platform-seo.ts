@@ -1,0 +1,147 @@
+import { cache } from "react";
+
+import { prisma } from "@/lib/prisma";
+import {
+  DEFAULT_MARKETING_PAGE_SEO,
+  DEFAULT_PLATFORM_SEO,
+} from "@/lib/seo/defaults";
+import { MARKETING_SEO_PATHS, PLATFORM_SEO_ID } from "@/lib/seo/types";
+import type {
+  MarketingPageSeoInput,
+  MarketingSeoPath,
+  PlatformSeoIdentity,
+} from "@/lib/seo/types";
+import { mergePlatformIdentity } from "@/lib/seo/resolve-marketing-seo";
+
+function toIdentity(
+  row: {
+    siteName: string;
+    defaultDescription: string;
+    organizationName: string;
+    organizationDescription: string;
+    publicContactEmail: string | null;
+    defaultOgImagePath: string | null;
+    sameAsUrls: string[];
+    updatedAt: Date;
+  } | null
+): PlatformSeoIdentity {
+  if (!row) {
+    return DEFAULT_PLATFORM_SEO;
+  }
+  return mergePlatformIdentity({
+    siteName: row.siteName,
+    defaultDescription: row.defaultDescription,
+    organizationName: row.organizationName,
+    organizationDescription: row.organizationDescription,
+    publicContactEmail: row.publicContactEmail,
+    defaultOgImagePath: row.defaultOgImagePath,
+    sameAsUrls: row.sameAsUrls,
+    updatedAt: row.updatedAt,
+  });
+}
+
+function toPage(row: {
+  path: string;
+  seoTitle: string;
+  metaDescription: string;
+  ogTitle: string | null;
+  ogDescription: string | null;
+  ogImagePath: string | null;
+  index: boolean;
+  follow: boolean;
+  updatedAt: Date;
+}): MarketingPageSeoInput | null {
+  if (!MARKETING_SEO_PATHS.includes(row.path as MarketingSeoPath)) {
+    return null;
+  }
+  return {
+    path: row.path as MarketingSeoPath,
+    seoTitle: row.seoTitle,
+    metaDescription: row.metaDescription,
+    ogTitle: row.ogTitle,
+    ogDescription: row.ogDescription,
+    ogImagePath: row.ogImagePath,
+    index: row.index,
+    follow: row.follow,
+    updatedAt: row.updatedAt,
+  };
+}
+
+export const loadPlatformSeoIdentity = cache(
+  async (): Promise<PlatformSeoIdentity> => {
+    try {
+      const row = await prisma.platformSeoSettings.findUnique({
+        where: { id: PLATFORM_SEO_ID },
+      });
+      return toIdentity(row);
+    } catch {
+      return DEFAULT_PLATFORM_SEO;
+    }
+  }
+);
+
+export const loadMarketingPageSeo = cache(
+  async (path: MarketingSeoPath): Promise<MarketingPageSeoInput> => {
+    const fallback = {
+      path,
+      ...DEFAULT_MARKETING_PAGE_SEO[path],
+      updatedAt: null,
+    };
+    try {
+      const row = await prisma.marketingPageSeo.findUnique({
+        where: { path },
+      });
+      return row ? (toPage(row) ?? fallback) : fallback;
+    } catch {
+      return fallback;
+    }
+  }
+);
+
+export const loadAllMarketingPageSeo = cache(
+  async (): Promise<MarketingPageSeoInput[]> => {
+    try {
+      const rows = await prisma.marketingPageSeo.findMany();
+      const byPath = new Map(
+        rows
+          .map(toPage)
+          .filter((page): page is MarketingPageSeoInput => page !== null)
+          .map((page) => [page.path, page])
+      );
+      return MARKETING_SEO_PATHS.map(
+        (path) =>
+          byPath.get(path) ?? {
+            path,
+            ...DEFAULT_MARKETING_PAGE_SEO[path],
+            updatedAt: null,
+          }
+      );
+    } catch {
+      return MARKETING_SEO_PATHS.map((path) => ({
+        path,
+        ...DEFAULT_MARKETING_PAGE_SEO[path],
+        updatedAt: null,
+      }));
+    }
+  }
+);
+
+export async function getSitemapLastModifiedByPath(): Promise<
+  Partial<Record<MarketingSeoPath, Date>>
+> {
+  const identity = await loadPlatformSeoIdentity();
+  const pages = await loadAllMarketingPageSeo();
+  const dates: Partial<Record<MarketingSeoPath, Date>> = {};
+  for (const page of pages) {
+    const candidates = [page.updatedAt, identity.updatedAt].filter(
+      (value): value is Date => value instanceof Date
+    );
+    if (candidates.length === 0) {
+      continue;
+    }
+    dates[page.path] = new Date(
+      Math.max(...candidates.map((value) => value.getTime()))
+    );
+  }
+  return dates;
+}

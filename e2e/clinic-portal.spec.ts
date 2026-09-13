@@ -478,6 +478,11 @@ test.describe("platform operator", () => {
         .getByRole("navigation", { name: "Platform" })
         .getByRole("link", { name: "Clinics" })
     ).toBeVisible();
+    await expect(
+      page
+        .getByRole("navigation", { name: "Platform" })
+        .getByRole("link", { name: "SEO & Discovery" })
+    ).toBeVisible();
     await expect(page.getByText("Riverside Dental Demo")).toBeVisible();
     await expect(page.getByText("demodental")).toBeVisible();
     await page.screenshot({

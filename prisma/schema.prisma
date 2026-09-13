@@ -545,3 +545,34 @@ model PracticeGuideAddition {
   @@unique([practiceGuideId, key])
   @@index([practiceGuideId])
 }
+
+/// Singleton platform identity for public marketing metadata and generated JSON-LD.
+/// Canonical URLs are derived from the production origin + route, never stored here.
+/// Future clinic-guide searchVisibility stays off this model (see docs/architecture/SEO.md).
+model PlatformSeoSettings {
+  id                      String   @id @default("platform")
+  siteName                String
+  defaultDescription      String
+  organizationName        String
+  organizationDescription String
+  publicContactEmail      String?
+  defaultOgImagePath      String?
+  sameAsUrls              String[] @default([])
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+/// Per-route marketing metadata. Operators edit content fields, not routing truth.
+model MarketingPageSeo {
+  id              String   @id @default(cuid())
+  path            String   @unique
+  seoTitle        String
+  metaDescription String
+  ogTitle         String?
+  ogDescription   String?
+  ogImagePath     String?
+  index           Boolean  @default(true)
+  follow          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
