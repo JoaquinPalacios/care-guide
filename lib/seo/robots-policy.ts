@@ -19,6 +19,8 @@ export const ROBOTS_ALLOW_PUBLIC = [
   "/pricing",
   "/contact",
   "/about",
+  "/privacy",
+  "/terms",
   "/llms.txt",
 ] as const;
 

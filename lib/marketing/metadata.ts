@@ -32,6 +32,16 @@ export const ABOUT_METADATA = {
   description: DEFAULT_MARKETING_PAGE_SEO["/about"].metaDescription,
 } as const;
 
+export const PRIVACY_METADATA = {
+  title: DEFAULT_MARKETING_PAGE_SEO["/privacy"].seoTitle,
+  description: DEFAULT_MARKETING_PAGE_SEO["/privacy"].metaDescription,
+} as const;
+
+export const TERMS_METADATA = {
+  title: DEFAULT_MARKETING_PAGE_SEO["/terms"].seoTitle,
+  description: DEFAULT_MARKETING_PAGE_SEO["/terms"].metaDescription,
+} as const;
+
 export function marketingMetadataBase(
   env: NodeJS.ProcessEnv = process.env
 ): URL {
@@ -44,7 +54,7 @@ export function marketingPageMetadata(
     description: string;
   },
   options: {
-    pathname: "/" | "/pricing" | "/contact" | "/about";
+    pathname: "/" | "/pricing" | "/contact" | "/about" | "/privacy" | "/terms";
     absoluteTitle?: boolean;
   }
 ): Metadata {

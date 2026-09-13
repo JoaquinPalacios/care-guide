@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requirePlatformOperator } from "@/lib/auth/require-platform-operator";
+import { MARKETING_SEO_PAGE_KEYS } from "@/lib/seo/page-keys";
 import { MARKETING_SEO_PATHS, type MarketingSeoPath } from "@/lib/seo/types";
 import { savePlatformSeoSettings } from "@/lib/seo/save-platform-seo";
 import {
@@ -16,12 +17,7 @@ export interface SeoActionState {
   fieldErrors?: Record<string, string>;
 }
 
-const PAGE_KEYS: Record<MarketingSeoPath, string> = {
-  "/": "home",
-  "/pricing": "pricing",
-  "/contact": "contact",
-  "/about": "about",
-};
+const PAGE_KEYS = MARKETING_SEO_PAGE_KEYS;
 
 function readString(formData: FormData, name: string): string {
   const value = formData.get(name);
@@ -81,6 +77,8 @@ export async function savePlatformSeoAction(
     revalidatePath("/pricing");
     revalidatePath("/contact");
     revalidatePath("/about");
+    revalidatePath("/privacy");
+    revalidatePath("/terms");
     revalidatePath("/sitemap.xml");
     revalidatePath("/llms.txt");
     revalidatePath("/operator/seo");

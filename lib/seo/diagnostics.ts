@@ -7,8 +7,10 @@ import type {
   SeoDiagnostic,
 } from "@/lib/seo/types";
 
-export const PRIVACY_PAGE_PUBLISHED = false;
-export const TERMS_PAGE_PUBLISHED = false;
+export const PRIVACY_PAGE_PUBLISHED = true;
+export const TERMS_PAGE_PUBLISHED = true;
+export const PRIVACY_PAGE_LEGALLY_APPROVED = false;
+export const TERMS_PAGE_LEGALLY_APPROVED = false;
 
 export function buildSeoDiagnostics(input: {
   identity: PlatformSeoIdentity;
@@ -76,18 +78,18 @@ export function buildSeoDiagnostics(input: {
     {
       id: "privacy",
       label: "Privacy page",
-      status: PRIVACY_PAGE_PUBLISHED ? "complete" : "attention",
-      detail: PRIVACY_PAGE_PUBLISHED
-        ? "Privacy page is published."
-        : "Approved legal copy is absent. Do not publish placeholder Privacy text.",
+      status: PRIVACY_PAGE_LEGALLY_APPROVED ? "complete" : "attention",
+      detail: PRIVACY_PAGE_LEGALLY_APPROVED
+        ? "Privacy page is published and legally approved."
+        : "Substantial draft is published at /privacy. Legal review is still required.",
     },
     {
       id: "terms",
       label: "Terms page",
-      status: TERMS_PAGE_PUBLISHED ? "complete" : "attention",
-      detail: TERMS_PAGE_PUBLISHED
-        ? "Terms page is published."
-        : "Approved legal copy is absent. Do not publish placeholder Terms text.",
+      status: TERMS_PAGE_LEGALLY_APPROVED ? "complete" : "attention",
+      detail: TERMS_PAGE_LEGALLY_APPROVED
+        ? "Terms page is published and legally approved."
+        : "Substantial draft is published at /terms. Legal review is still required.",
     },
     ...MARKETING_SEO_PATHS.map((path) => {
       const page = pagesByPath.get(path);

@@ -13,6 +13,7 @@ import {
   TITLE_GUIDE_LENGTH,
   TITLE_MAX_LENGTH,
 } from "@/lib/seo/defaults";
+import { MARKETING_SEO_PAGE_KEYS } from "@/lib/seo/page-keys";
 import {
   MARKETING_SEO_PATHS,
   type MarketingPageSeoInput,
@@ -22,12 +23,7 @@ import {
 
 const initial: SeoActionState = {};
 
-const PAGE_KEYS: Record<MarketingSeoPath, string> = {
-  "/": "home",
-  "/pricing": "pricing",
-  "/contact": "contact",
-  "/about": "about",
-};
+const PAGE_KEYS = MARKETING_SEO_PAGE_KEYS;
 
 function fieldError(errors: Record<string, string> | undefined, field: string) {
   return errors?.[field] ? (

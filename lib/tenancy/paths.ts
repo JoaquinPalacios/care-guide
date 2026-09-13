@@ -13,6 +13,8 @@ export const MARKETING_PAGE_PATHS = [
   "/pricing",
   "/contact",
   "/about",
+  "/privacy",
+  "/terms",
 ] as const;
 
 export const MARKETING_CRAWL_PATHS = [

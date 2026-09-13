@@ -171,6 +171,14 @@ export function buildMarketingJsonLdGraph(
         origin,
       })
     );
+  } else if (resolved.path === "/privacy" || resolved.path === "/terms") {
+    graph.push(
+      webPageNode({
+        type: "WebPage",
+        resolved,
+        origin,
+      })
+    );
   }
 
   return {

@@ -88,8 +88,9 @@ export default async function MarketingAboutPage() {
                 </MarketingRevealItem>
                 <MarketingRevealItem delay={editorialRevealDelay(3)}>
                   <p className={styles.copy}>
-                    Privacy and Terms will be published when approved legal copy
-                    is ready. Until then, use Contact for clinic enquiries.
+                    Privacy and Terms drafts are published for legal review.
+                    They are not approved. Until then, use Contact for clinic
+                    enquiries.
                   </p>
                 </MarketingRevealItem>
                 <MarketingRevealItem delay={editorialRevealDelay(4)}>

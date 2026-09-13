@@ -5,6 +5,8 @@ export const MARKETING_SEO_PATHS = [
   "/pricing",
   "/contact",
   "/about",
+  "/privacy",
+  "/terms",
 ] as const;
 
 export type MarketingSeoPath = (typeof MARKETING_SEO_PATHS)[number];

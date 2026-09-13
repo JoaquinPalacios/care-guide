@@ -57,6 +57,24 @@ export const DEFAULT_MARKETING_PAGE_SEO: Record<
     index: true,
     follow: true,
   },
+  "/privacy": {
+    seoTitle: "Privacy Policy",
+    metaDescription: `How ${PRODUCT_NAME} handles information on the public website, clinic accounts, and patient aftercare pages. Draft for legal review.`,
+    ogTitle: null,
+    ogDescription: null,
+    ogImagePath: null,
+    index: true,
+    follow: true,
+  },
+  "/terms": {
+    seoTitle: "Terms & Conditions",
+    metaDescription: `Draft terms for using ${PRODUCT_NAME}, a B2B aftercare publishing platform for healthcare practices. Not a substitute for legal advice.`,
+    ogTitle: null,
+    ogDescription: null,
+    ogImagePath: null,
+    index: true,
+    follow: true,
+  },
 };
 
 export const MARKETING_PAGE_LABELS: Record<MarketingSeoPath, string> = {
@@ -64,6 +82,8 @@ export const MARKETING_PAGE_LABELS: Record<MarketingSeoPath, string> = {
   "/pricing": "Pricing",
   "/contact": "Contact",
   "/about": "About",
+  "/privacy": "Privacy Policy",
+  "/terms": "Terms & Conditions",
 };
 
 export const TITLE_GUIDE_LENGTH = 60;
