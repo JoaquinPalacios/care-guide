@@ -14,18 +14,24 @@ const empty: ClinicLogoActionState = {};
 export function PracticeLogoField({
   displayName,
   logoUrl,
+  logoSrc: initialLogoSrc,
   canEdit,
   storageAvailable,
-  onLogoUrlChange,
+  onLogoChange,
 }: {
   displayName: string;
   logoUrl: string | null;
+  logoSrc: string | null;
   canEdit: boolean;
   storageAvailable: boolean;
-  onLogoUrlChange: (logoUrl: string | null) => void;
+  onLogoChange: (next: {
+    logoUrl: string | null;
+    logoSrc: string | null;
+  }) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [mounted, setMounted] = useState(false);
+  const [logoSrc, setLogoSrc] = useState(initialLogoSrc);
   const [uploadState, uploadAction, uploading] = useActionState(
     uploadClinicLogoAction,
     empty
@@ -40,32 +46,42 @@ export function PracticeLogoField({
   }, []);
 
   useEffect(() => {
+    setLogoSrc(initialLogoSrc);
+  }, [initialLogoSrc]);
+
+  useEffect(() => {
     if (uploadState.ok && uploadState.logoUrl) {
-      onLogoUrlChange(uploadState.logoUrl);
+      setLogoSrc(uploadState.logoSrc ?? null);
+      onLogoChange({
+        logoUrl: uploadState.logoUrl,
+        logoSrc: uploadState.logoSrc ?? null,
+      });
       if (fileRef.current) {
         fileRef.current.value = "";
       }
     }
-  }, [uploadState, onLogoUrlChange]);
+  }, [uploadState, onLogoChange]);
 
   useEffect(() => {
     if (removeState.ok) {
-      onLogoUrlChange(null);
+      setLogoSrc(null);
+      onLogoChange({ logoUrl: null, logoSrc: null });
     }
-  }, [removeState, onLogoUrlChange]);
+  }, [removeState, onLogoChange]);
 
   const error = uploadState.error ?? removeState.error;
+  const previewSrc = logoSrc;
 
   return (
     <div className="flex min-w-0 flex-col gap-2">
       <p className="text-sm font-medium" id="logo-label">
         Logo
       </p>
-      {logoUrl ? (
-        // Same-origin clinic mark; next/image is unnecessary for this path preview.
+      {previewSrc ? (
+        // Clinic mark is a same-origin path or the configured assets origin.
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={logoUrl}
+          src={previewSrc}
           alt={`${displayName || "Practice"} logo`}
           width={48}
           height={48}
@@ -116,7 +132,7 @@ export function PracticeLogoField({
 
       {storageAvailable && canEdit ? (
         <p className="text-sm text-staff-muted">
-          PNG, JPEG, WebP, or SVG. Raster files up to 2 MB; SVG up to 1 MB.
+          SVG, PNG, JPEG or WebP. Raster files up to 2 MB; SVG up to 1 MB.
           Uploaded SVG is sanitized and rendered as an image.
         </p>
       ) : null}
@@ -124,6 +140,12 @@ export function PracticeLogoField({
         <p className="staffLogoUnavailable">
           Logo upload is unavailable because clinic object storage is not
           configured in this environment.
+        </p>
+      ) : null}
+
+      {uploadState.ok && !error ? (
+        <p className="text-sm text-staff-muted" role="status">
+          Uploaded
         </p>
       ) : null}
 

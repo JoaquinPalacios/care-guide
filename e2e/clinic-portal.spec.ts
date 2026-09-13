@@ -720,12 +720,11 @@ test.describe("clinic portal UX polish", () => {
     ).toBeVisible();
     await expect(page.locator("[data-save-state=saved]")).toBeVisible();
     await expect(page.getByText("Current logo preview")).toBeVisible();
+    await expect(page.locator("#clinic-logo-file")).toBeVisible();
     await expect(
-      page.getByText(
-        "Logo upload is unavailable because clinic object storage is not configured"
-      )
+      page.getByText("SVG, PNG, JPEG or WebP", { exact: false })
     ).toBeVisible();
-    await expect(page.locator('input[type="file"]')).toHaveCount(0);
+    await expect(page.locator('input[type="file"]')).toHaveCount(1);
     await expect(page.locator('input[type="color"]')).toHaveCount(3);
     await page.getByLabel("Display name").fill("Riverside Dental Demo ");
     await expect(page.locator("[data-save-state=unsaved]")).toBeVisible();
