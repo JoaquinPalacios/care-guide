@@ -57,6 +57,7 @@ export function PracticeSettingsForm({
     initial
   );
   const [form, setForm] = useState(values);
+  const [currentLogoSrc, setCurrentLogoSrc] = useState(logoSrc);
   const [confirmed, setConfirmed] = useState(() => snapshot(values));
   const [activeSection, setActiveSection] = useState<
     (typeof SECTIONS)[number]["id"]
@@ -206,10 +207,11 @@ export function PracticeSettingsForm({
           <PracticeLogoField
             displayName={form.displayName}
             logoUrl={form.logoUrl}
-            logoSrc={logoSrc}
+            logoSrc={currentLogoSrc}
             canEdit={canEdit}
             storageAvailable={storageAvailable}
             onLogoChange={(nextLogo) => {
+              setCurrentLogoSrc(nextLogo.logoSrc);
               setForm((current) => {
                 const next = { ...current, logoUrl: nextLogo.logoUrl };
                 setConfirmed(snapshot(next));
