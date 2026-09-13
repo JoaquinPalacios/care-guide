@@ -2,11 +2,8 @@ import { z } from "zod";
 
 import { parseCssHexColor } from "@/lib/branding/aftercare-theme";
 import { INSTRUCTION_TERMINOLOGY } from "@/lib/aftercare/instruction-terminology";
-import {
-  toSafeHttpHref,
-  toSafeLogoSrc,
-  toTelHref,
-} from "@/lib/aftercare/safe-href";
+import { toSafeHttpHref, toTelHref } from "@/lib/aftercare/safe-href";
+import { isClinicLogoStoredReference } from "@/lib/clinic-assets/public-url";
 
 function optionalText(max: number) {
   return z
@@ -34,9 +31,10 @@ export const practiceSettingsSchema = z.object({
     .min(1, "Enter a patient-facing practice name.")
     .max(80),
   logoUrl: optionalText(240).refine(
-    (value) => value === null || Boolean(toSafeLogoSrc(value)),
+    (value) => value === null || isClinicLogoStoredReference(value),
     {
-      message: "Logo must be a same-origin PNG, JPEG, WebP, or SVG path.",
+      message:
+        "Logo must be a clinic asset key or a same-origin PNG, JPEG, WebP, or SVG path.",
     }
   ),
   primaryColor: hexColor("Enter a valid hex colour such as #155e75."),
