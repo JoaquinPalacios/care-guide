@@ -1,12 +1,13 @@
 import { headers } from "next/headers";
 
 import { DEMO_AFTERCARE_TENANT_SLUG } from "@/lib/aftercare/demo-tenant";
-import { labeledPublicUrl } from "@/lib/tenancy/public-url";
+import { apexPublicUrl, labeledPublicUrl } from "@/lib/tenancy/public-url";
 import { getRootDomain } from "@/lib/tenancy/root-domain";
 
 export type MarketingPublicLinks = {
   demoHref: string;
   staffHref: string;
+  homeHref: string;
 };
 
 export async function marketingPublicLinks(): Promise<MarketingPublicLinks> {
@@ -19,6 +20,11 @@ export async function marketingPublicLinks(): Promise<MarketingPublicLinks> {
     requestHeaders.get("x-forwarded-proto") ??
     (host.includes("localhost") ? "http" : "https");
   const rootDomain = getRootDomain();
+  const localPort = host.includes(":")
+    ? host.slice(host.lastIndexOf(":"))
+    : host.includes("localhost")
+      ? ":3000"
+      : "";
 
   return {
     demoHref:
@@ -36,11 +42,17 @@ export async function marketingPublicLinks(): Promise<MarketingPublicLinks> {
         protocol,
         pathname: "/login",
       }) ?? "http://app.localhost:3000/login",
+    homeHref:
+      apexPublicUrl({
+        requestHost: host,
+        rootDomain,
+        protocol,
+      }) ?? `${protocol}://${rootDomain}${localPort}/`,
   };
 }
 
 export function homepageAnchor(
-  path: "/" | "/pricing" | "/contact" | "/about",
+  path: "/" | "/pricing" | "/contact" | "/about" | "/privacy" | "/terms",
   hash: string
 ): string {
   return path === "/" ? `#${hash}` : `/#${hash}`;

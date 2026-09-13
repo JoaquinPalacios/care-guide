@@ -276,6 +276,32 @@ html[data-theme-mode="dark"] .staffNavRowMuted {
   }
 }
 
+.staffBackLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--staff-muted);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--interaction-duration) var(--interaction-easing);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .staffBackLink:hover {
+    color: var(--staff-ink);
+  }
+}
+
+.staffBackLink:focus-visible {
+  color: var(--staff-ink);
+  outline: var(--interaction-focus-width) solid var(--staff-brand);
+  outline-offset: var(--interaction-focus-offset);
+}
+
+.staffBackLink:active {
+  color: var(--staff-ink);
+}
+
 .staffBtn {
   display: inline-flex;
   align-items: center;

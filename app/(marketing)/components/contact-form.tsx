@@ -282,13 +282,11 @@ export function ContactForm({ demoHref }: { demoHref: string }) {
         Please don&apos;t include patient or clinical information.
       </p>
 
-      <MarketingPrimaryButton
-        className={styles.contactSubmit}
-        type="submit"
-        busy={pending}
-      >
-        Send enquiry
-      </MarketingPrimaryButton>
+      <div className={styles.contactActions}>
+        <MarketingPrimaryButton type="submit" busy={pending}>
+          Send enquiry
+        </MarketingPrimaryButton>
+      </div>
     </form>
   );
 }
