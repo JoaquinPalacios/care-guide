@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { LogoutButton } from "@/app/(staff)/components/logout-button";
 import { PortalAppearanceControl } from "@/app/(staff)/components/portal-appearance-control";
-import { ProductMark } from "@/app/(staff)/components/product-mark";
+import { ProductMark } from "@/lib/branding/product-mark";
 import { requirePlatformOperator } from "@/lib/auth/require-platform-operator";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 import { PLATFORM_OPERATOR_ROLE_LABEL } from "@/lib/clinic-portal/role-labels";

@@ -25,7 +25,12 @@ describe("product brand", () => {
   });
 
   it("does not hardcode Aftercare Guide in current runtime surfaces", () => {
-    const files = [...walk("app"), ...walk("lib"), "public/icon.svg"];
+    const files = [
+      ...walk("app"),
+      ...walk("lib"),
+      ...walk("public/brand"),
+      ...walk("public/favicons"),
+    ];
     const hits = files.filter((file) =>
       readFileSync(file, "utf8").includes("Aftercare Guide")
     );

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { ProductMark } from "@/app/(staff)/components/product-mark";
+import { ProductMark } from "@/lib/branding/product-mark";
 import { LoginForm } from "@/app/(staff)/login/login-form";
 import { getAuthContext } from "@/lib/auth/session";
 import { signedInHomePath } from "@/lib/auth/signed-in-home";

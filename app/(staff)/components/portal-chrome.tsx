@@ -6,7 +6,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 
 import { LogoutButton } from "@/app/(staff)/components/logout-button";
 import { PortalAppearanceControl } from "@/app/(staff)/components/portal-appearance-control";
-import { ProductMark } from "@/app/(staff)/components/product-mark";
+import { ProductMark } from "@/lib/branding/product-mark";
 import { ExternalLinkIcon } from "@/app/(staff)/components/icons";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 

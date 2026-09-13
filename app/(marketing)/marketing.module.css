@@ -129,10 +129,44 @@
   white-space: nowrap;
 }
 
-.mark {
+.wordmarkName {
+  display: inline-flex;
+  align-items: center;
+  gap: inherit;
+}
+
+.logo {
+  display: none;
+  flex-shrink: 0;
+  height: 1.55rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.mark,
+.footerMark {
+  flex-shrink: 0;
   width: 1.55rem;
   height: 1.55rem;
-  color: var(--mk-brand);
+  object-fit: contain;
+}
+
+html[data-theme-mode="dark"] .logo {
+  display: block;
+}
+
+html[data-theme-mode="dark"] .wordmarkName {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme-mode="light"]) .logo {
+    display: block;
+  }
+
+  html:not([data-theme-mode="light"]) .wordmarkName {
+    display: none;
+  }
 }
 
 .nav {
@@ -1820,10 +1854,18 @@
 }
 
 .footerName {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin: 0 0 0.3rem;
   color: var(--mk-ink);
   font-weight: 700;
   letter-spacing: -0.03em;
+}
+
+.footerMark {
+  width: 1.35rem;
+  height: 1.35rem;
 }
 
 .footerTag {
@@ -2262,7 +2304,12 @@
     font-size: 0.95rem;
   }
 
-  .mark {
+  .logo {
+    height: 1.35rem;
+  }
+
+  .mark,
+  .footerMark {
     width: 1.35rem;
     height: 1.35rem;
   }

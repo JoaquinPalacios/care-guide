@@ -74,11 +74,11 @@ Do **not** add `MedicalWebPage`, `MedicalProcedure`, doctor identity, clinical r
 
 ## Implementation map
 
-| Concern                | Location                                                  |
-| ---------------------- | --------------------------------------------------------- |
-| Marketing metadata     | `lib/marketing/metadata.ts`, `app/(marketing)/layout.tsx` |
-| Tenant metadata        | `lib/aftercare/tenant-metadata.ts`                        |
-| Robots constants       | `lib/seo/robots-policy.ts`                                |
-| HTML stripping         | `lib/seo/metadata-text.ts`                                |
-| `robots.txt` / sitemap | `app/robots.ts`, `app/sitemap.ts`                         |
-| Icon                   | `public/icon.svg`                                         |
+| Concern                | Location                                                                                 |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| Marketing metadata     | `lib/marketing/metadata.ts`, `app/(marketing)/layout.tsx`                                |
+| Tenant metadata        | `lib/aftercare/tenant-metadata.ts`                                                       |
+| Robots constants       | `lib/seo/robots-policy.ts`                                                               |
+| HTML stripping         | `lib/seo/metadata-text.ts`                                                               |
+| `robots.txt` / sitemap | `app/robots.ts`, `app/sitemap.ts`                                                        |
+| Icon                   | `public/favicons/*` plus Next.js `app/favicon.ico`, `app/icon.png`, `app/apple-icon.png` |

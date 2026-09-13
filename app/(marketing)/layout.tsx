@@ -9,7 +9,7 @@ import {
   marketingMetadataBase,
   marketingPageMetadata,
 } from "@/lib/marketing/metadata";
-import { PRODUCT_ICONS } from "@/lib/seo/icons";
+import { PRODUCT_HEAD_METADATA } from "@/lib/seo/icons";
 import { marketingMotionBootstrapScript } from "@/lib/marketing/motion-bootstrap";
 import {
   MARKETING_THEME_STORAGE_KEY,
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   description: HOME_METADATA.description,
   robots: homeMetadata.robots,
-  icons: PRODUCT_ICONS,
+  ...PRODUCT_HEAD_METADATA,
   alternates: homeMetadata.alternates,
   openGraph: homeMetadata.openGraph,
   twitter: homeMetadata.twitter,

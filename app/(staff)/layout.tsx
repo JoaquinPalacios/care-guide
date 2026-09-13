@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { geistMono, geistSans } from "@/lib/branding/fonts";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
-import { PRODUCT_ICONS } from "@/lib/seo/icons";
+import { PRODUCT_HEAD_METADATA } from "@/lib/seo/icons";
 import { PRIVATE_ROBOTS } from "@/lib/seo/robots-policy";
 import {
   PORTAL_THEME_STORAGE_KEY,
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: PRODUCT_NAME,
   description: `Clinic aftercare portal for ${PRODUCT_NAME}.`,
   robots: PRIVATE_ROBOTS,
-  icons: PRODUCT_ICONS,
+  ...PRODUCT_HEAD_METADATA,
 };
 
 export default function RootLayout({

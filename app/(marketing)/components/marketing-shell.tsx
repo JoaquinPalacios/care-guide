@@ -2,9 +2,10 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { MarketingExperience } from "@/app/(marketing)/components/marketing-experience";
-import { MarketingMark } from "@/app/(marketing)/components/marketing-mark";
 import { MarketingNavMenu } from "@/app/(marketing)/components/marketing-nav-menu";
 import { MarketingThemeControl } from "@/app/(marketing)/components/marketing-theme-control";
+import { ProductLogo } from "@/lib/branding/product-logo";
+import { ProductMark } from "@/lib/branding/product-mark";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 import { homepageAnchor } from "@/lib/marketing/public-links";
 
@@ -40,9 +41,12 @@ export function MarketingShell({
     <MarketingExperience className={styles.page}>
       <header className={`${styles.top} ${styles.marketingBase}`}>
         <div className={styles.topInner}>
-          <Link className={styles.wordmark} href="/">
-            <MarketingMark className={styles.mark} />
-            {PRODUCT_NAME}
+          <Link className={styles.wordmark} href="/" aria-label={PRODUCT_NAME}>
+            <ProductLogo className={styles.logo} />
+            <span className={styles.wordmarkName}>
+              <ProductMark className={styles.mark} />
+              {PRODUCT_NAME}
+            </span>
           </Link>
           <nav className={styles.nav} aria-label="Marketing">
             <Link
@@ -78,7 +82,10 @@ export function MarketingShell({
           <div className={styles.footerSeparator} aria-hidden="true" />
           <div className={styles.footerInner}>
             <div className={styles.footerBrand}>
-              <p className={styles.footerName}>{PRODUCT_NAME}</p>
+              <p className={styles.footerName}>
+                <ProductMark className={styles.footerMark} />
+                {PRODUCT_NAME}
+              </p>
               <p className={styles.footerTag}>
                 Clinic-branded aftercare patients can revisit.
               </p>

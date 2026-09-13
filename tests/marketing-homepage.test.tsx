@@ -172,9 +172,11 @@ describe("marketing homepage", () => {
     expect(html).toContain('focusable="false"');
     expect(html).toContain("linearGradient");
     expect(html).toContain("feGaussianBlur");
+    expect(html).toContain('src="/brand/river-aftercare-logo.svg"');
+    expect(html).toContain('src="/brand/river-aftercare-isologo.svg"');
     expect(html).toContain('src="/marketing/iphone-frame.webp"');
     expect(html).toMatch(/fetch[Pp]riority="low"/);
-    expect(html.match(/<img\b/g)).toHaveLength(1);
+    expect(html.match(/<img\b/g)).toHaveLength(4);
     expect(html).not.toContain("patient PIN");
     expect(html).not.toContain("treatment ID");
     expect(html).not.toContain("date of birth");

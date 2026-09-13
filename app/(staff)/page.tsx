@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { ProductMark } from "@/app/(staff)/components/product-mark";
+import { ProductMark } from "@/lib/branding/product-mark";
 import { getAuthContext } from "@/lib/auth/session";
 import { signedInHomePath } from "@/lib/auth/signed-in-home";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";

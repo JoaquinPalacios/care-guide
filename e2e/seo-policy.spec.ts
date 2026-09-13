@@ -34,8 +34,16 @@ test.describe("launch SEO surfaces", () => {
       /River Aftercare/
     );
     await expect(
-      page.locator('link[rel="icon"][type="image/svg+xml"]')
-    ).toHaveAttribute("href", /icon\.svg/);
+      page.locator('link[rel="icon"][sizes="32x32"]')
+    ).toHaveAttribute("href", /favicon-32x32\.png/);
+    await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute(
+      "href",
+      /apple/
+    );
+    await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
+      "href",
+      /site\.webmanifest/
+    );
 
     await page.goto(marketingUrl("/pricing"), {
       waitUntil: "domcontentloaded",
