@@ -7,11 +7,31 @@ import { MarketingThemeControl } from "@/app/(marketing)/components/marketing-th
 import { ProductLogo } from "@/lib/branding/product-logo";
 import { ProductMark } from "@/lib/branding/product-mark";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
-import { homepageAnchor } from "@/lib/marketing/public-links";
+import type { MarketingSeoPath } from "@/lib/seo/types";
 
 import styles from "../marketing.module.css";
 
-export type MarketingPath = "/" | "/pricing" | "/contact" | "/about";
+export type MarketingPath = MarketingSeoPath;
+
+const FOOTER_GROUPS = [
+  {
+    id: "product",
+    label: "Product",
+    links: [
+      { href: "/about", label: "About" },
+      { href: "/pricing", label: "Pricing" },
+      { href: "/contact", label: "Contact" },
+    ],
+  },
+  {
+    id: "legal",
+    label: "Legal",
+    links: [
+      { href: "/privacy", label: "Privacy" },
+      { href: "/terms", label: "Terms" },
+    ],
+  },
+] as const;
 
 export function MarketingShell({
   currentPath,
@@ -22,8 +42,6 @@ export function MarketingShell({
   staffHref: string;
   children: ReactNode;
 }) {
-  const howItWorksHref = homepageAnchor(currentPath, "how-it-works");
-  const previewHref = homepageAnchor(currentPath, "preview");
   const menuItems = [
     {
       href: "/pricing",
@@ -91,24 +109,46 @@ export function MarketingShell({
               </p>
             </div>
             <nav className={styles.footerNav} aria-label="Footer">
-              <Link className={styles.textLink} href={howItWorksHref}>
-                How it works
-              </Link>
-              <Link className={styles.textLink} href={previewHref}>
-                Clinic preview
-              </Link>
-              <Link className={styles.textLink} href="/about">
-                About
-              </Link>
-              <Link className={styles.textLink} href="/pricing">
-                Pricing
-              </Link>
-              <Link className={styles.textLink} href="/contact">
-                Contact
-              </Link>
-              <a className={styles.textLink} href={staffHref}>
-                Staff sign in
-              </a>
+              {FOOTER_GROUPS.map((group) => (
+                <div key={group.id} className={styles.footerNavGroup}>
+                  <p className={styles.footerNavLabel} id={`footer-${group.id}`}>
+                    {group.label}
+                  </p>
+                  <ul
+                    className={styles.footerNavList}
+                    aria-labelledby={`footer-${group.id}`}
+                  >
+                    {group.links.map((link) => (
+                      <li key={link.href}>
+                        <Link
+                          className={styles.textLink}
+                          href={link.href}
+                          aria-current={
+                            currentPath === link.href ? "page" : undefined
+                          }
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+              <div className={styles.footerNavGroup}>
+                <p className={styles.footerNavLabel} id="footer-account">
+                  Account
+                </p>
+                <ul
+                  className={styles.footerNavList}
+                  aria-labelledby="footer-account"
+                >
+                  <li>
+                    <a className={styles.textLink} href={staffHref}>
+                      Staff sign in
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </nav>
           </div>
           <p className={styles.footerCopy}>
