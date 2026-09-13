@@ -7,6 +7,7 @@ import {
 
 export const MARKETING_DEMO_CLINIC_NAME = "Riverside Dental Demo";
 export const MARKETING_DEMO_PRIMARY_COLOR = "#0f766e";
+export const MARKETING_DEMO_ACCENT_COLOR = "#f59e0b";
 export const MARKETING_DEMO_TERMINOLOGY = "POST_TREATMENT";
 export const MARKETING_DEMO_GUIDE_TITLE = "Tooth Extraction";
 export const MARKETING_DEMO_RECOVERY_HEADING = "Recovery overview";
@@ -44,6 +45,7 @@ export const MARKETING_DEMO_TIMELINE = [
 export const MARKETING_DEMO_PATIENT_THEME_CSS = serializeAftercareThemeCss(
   resolveAftercareTheme({
     primaryColor: MARKETING_DEMO_PRIMARY_COLOR,
+    accentColor: MARKETING_DEMO_ACCENT_COLOR,
   }),
   { colorSchemeSelector: "scope" }
 );
