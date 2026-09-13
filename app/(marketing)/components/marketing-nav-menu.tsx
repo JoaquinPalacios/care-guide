@@ -102,7 +102,7 @@ export function MarketingNavMenu({
           ))}
           <li>
             <a className={styles.navMenuRow} href={staffHref}>
-              Staff sign in
+              Sign in
             </a>
           </li>
           <li>

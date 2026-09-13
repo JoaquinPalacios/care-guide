@@ -679,6 +679,7 @@ test.describe("marketing homepage", () => {
     await showMarketingScheme(page, "light");
     await waitForHeroReveal(page);
 
+    await expect(headerNav.getByRole("link", { name: "About" })).toBeVisible();
     await expect(
       headerNav.getByRole("link", { name: "Pricing" })
     ).toBeVisible();
@@ -695,7 +696,7 @@ test.describe("marketing homepage", () => {
       headerNav.getByRole("link", { name: "Early access" })
     ).toHaveCount(0);
     await expect(
-      headerNav.getByRole("link", { name: "Staff sign in" })
+      headerNav.getByRole("link", { name: "Sign in", exact: true })
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /Change colour theme/ })
@@ -740,7 +741,7 @@ test.describe("marketing homepage", () => {
       ).toHaveCount(0);
       await expect(headerNav.locator('[class*="navAnchor"]')).toHaveCount(0);
       await expect(
-        headerNav.getByRole("link", { name: "Staff sign in" })
+        headerNav.getByRole("link", { name: "Sign in", exact: true })
       ).toHaveCount(0);
       await expect(
         page.getByRole("button", { name: /Change colour theme/ })
@@ -771,7 +772,8 @@ test.describe("marketing homepage", () => {
       expect(wordmarkBox.height).toBeLessThanOrEqual(36);
 
       const staffInHeader = headerNav.getByRole("link", {
-        name: "Staff sign in",
+        name: "Sign in",
+        exact: true,
       });
       await expect(staffInHeader).toHaveCount(0);
       const themeInHeader = page.getByRole("button", {

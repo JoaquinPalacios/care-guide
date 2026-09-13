@@ -37,72 +37,74 @@ export default async function MarketingAboutPage() {
         />
 
         <div className={styles.marketingSoft} data-mk-chapter="soft">
-          <section className={styles.band} aria-labelledby="about-what">
+          <div className={styles.band}>
             <div className={styles.inner}>
-              <MarketingRevealGroup>
-                <MarketingRevealItem delay={0}>
-                  <p className={styles.eyebrow}>What it is</p>
-                </MarketingRevealItem>
-                <MarketingRevealItem delay={editorialRevealDelay(1)}>
-                  <h2 id="about-what" className={styles.sectionTitle}>
-                    Clinic-branded instructions, on the web
-                  </h2>
-                </MarketingRevealItem>
-                <MarketingRevealItem delay={editorialRevealDelay(2)}>
-                  <p className={styles.copy}>
-                    {PRODUCT_NAME} helps healthcare practices publish
-                    mobile-first aftercare pages that still feel like the
-                    clinic. Patients reopen procedure-specific guidance without
-                    an app, an account, or a downloaded PDF.
-                  </p>
-                </MarketingRevealItem>
-                <MarketingRevealItem delay={editorialRevealDelay(3)}>
-                  <p className={styles.copy}>
-                    The first vertical is dental. The public pages are web-first
-                    documents, not live clinical monitoring, a patient CRM, or a
-                    messaging platform.
-                  </p>
-                </MarketingRevealItem>
-              </MarketingRevealGroup>
-            </div>
-          </section>
+              <section
+                className={styles.headingBlock}
+                aria-labelledby="about-what"
+              >
+                <MarketingRevealGroup>
+                  <MarketingRevealItem delay={0}>
+                    <p className={styles.eyebrow}>What it is</p>
+                  </MarketingRevealItem>
+                  <MarketingRevealItem delay={editorialRevealDelay(1)}>
+                    <h2 id="about-what" className={styles.sectionTitle}>
+                      Clinic-branded instructions, on the web
+                    </h2>
+                  </MarketingRevealItem>
+                  <MarketingRevealItem delay={editorialRevealDelay(2)}>
+                    <p className={styles.copy}>
+                      {PRODUCT_NAME} helps healthcare practices publish
+                      mobile-first aftercare pages that still feel like the
+                      clinic. Patients reopen procedure-specific guidance
+                      without an app, an account, or a downloaded PDF.
+                    </p>
+                    <p className={styles.copy}>
+                      The first vertical is dental. The public pages are
+                      web-first documents, not live clinical monitoring, a
+                      patient CRM, or a messaging platform.
+                    </p>
+                  </MarketingRevealItem>
+                </MarketingRevealGroup>
+              </section>
 
-          <section className={styles.band} aria-labelledby="about-not">
-            <div className={styles.inner}>
-              <MarketingRevealGroup>
-                <MarketingRevealItem delay={0}>
-                  <p className={styles.eyebrow}>What it is not</p>
-                </MarketingRevealItem>
-                <MarketingRevealItem delay={editorialRevealDelay(1)}>
-                  <h2 id="about-not" className={styles.sectionTitle}>
-                    No invented clinical authority
-                  </h2>
-                </MarketingRevealItem>
-                <MarketingRevealItem delay={editorialRevealDelay(2)}>
-                  <p className={styles.copy}>
-                    {PRODUCT_NAME} does not replace the treating clinician.
-                    Clinic-owned aftercare copy remains the practice&apos;s
-                    responsibility. This page does not claim certification,
-                    regulatory approval, customer counts, or health outcomes.
-                  </p>
-                </MarketingRevealItem>
-                <MarketingRevealItem delay={editorialRevealDelay(3)}>
-                  <p className={styles.copy}>
-                    Privacy and Terms drafts are published for legal review.
-                    They are not approved. Until then, use Contact for clinic
-                    enquiries.
-                  </p>
-                </MarketingRevealItem>
-                <MarketingRevealItem delay={editorialRevealDelay(4)}>
-                  <p className={styles.copy}>
-                    <MarketingPrimaryLink href="/contact">
-                      Talk to us about a demo
-                    </MarketingPrimaryLink>
-                  </p>
-                </MarketingRevealItem>
-              </MarketingRevealGroup>
+              <section
+                className={`${styles.headingBlock} ${styles.headingFollow}`}
+                aria-labelledby="about-not"
+              >
+                <MarketingRevealGroup>
+                  <MarketingRevealItem delay={0}>
+                    <p className={styles.eyebrow}>What it is not</p>
+                  </MarketingRevealItem>
+                  <MarketingRevealItem delay={editorialRevealDelay(1)}>
+                    <h2 id="about-not" className={styles.sectionTitle}>
+                      No invented clinical authority
+                    </h2>
+                  </MarketingRevealItem>
+                  <MarketingRevealItem delay={editorialRevealDelay(2)}>
+                    <p className={styles.copy}>
+                      {PRODUCT_NAME} does not replace the treating clinician.
+                      Clinic-owned aftercare copy remains the practice&apos;s
+                      responsibility. This page does not claim certification,
+                      regulatory approval, customer counts, or health outcomes.
+                    </p>
+                    <p className={styles.copy}>
+                      Privacy and Terms drafts are published for legal review.
+                      They are not approved. Until then, use Contact for clinic
+                      enquiries.
+                    </p>
+                  </MarketingRevealItem>
+                  <MarketingRevealItem delay={editorialRevealDelay(3)}>
+                    <p className={styles.copy}>
+                      <MarketingPrimaryLink href="/contact">
+                        Talk to us about a demo
+                      </MarketingPrimaryLink>
+                    </p>
+                  </MarketingRevealItem>
+                </MarketingRevealGroup>
+              </section>
             </div>
-          </section>
+          </div>
         </div>
       </main>
     </MarketingShell>

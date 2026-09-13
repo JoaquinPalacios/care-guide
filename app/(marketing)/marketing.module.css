@@ -817,7 +817,8 @@ html[data-theme-mode="dark"] .wordmarkName {
 .phoneRecovery {
   margin: 0.7rem 0 0;
   padding: 0.55rem 0.5rem 0.6rem;
-  border: 1px solid color-mix(in srgb, var(--cg-border, #ecece8) 75%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--cg-border, #ecece8) 75%, transparent);
   border-radius: var(--cg-radius, 0.75rem);
   background: var(--cg-recovery-surface, #f6faf9);
 }
@@ -1188,7 +1189,12 @@ html[data-theme-mode="dark"] .wordmarkName {
   gap: 0.7rem;
   margin: 0;
   padding: 0.7rem 0.8rem;
-  border: 1px solid color-mix(in srgb, var(--cg-brand, #0f766e) 18%, var(--cg-border, var(--mk-card-line)));
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--cg-brand, #0f766e) 18%,
+      var(--cg-border, var(--mk-card-line))
+    );
   border-radius: calc(var(--cg-radius, 0.75rem) * 0.85);
   background: var(--cg-surface-subtle, #f7f7f5);
   color: var(--cg-text, #0a0d14);
@@ -1247,10 +1253,11 @@ html[data-theme-mode="dark"] .wordmarkName {
 .sectionTitle + .copy,
 .headingBlock .copy {
   margin-top: var(--mk-heading-intro-gap);
+  margin-bottom: 0;
 }
 
-.headingBlock .copy {
-  margin-bottom: 0;
+.headingBlock .copy + .copy {
+  margin-top: 1.3rem;
 }
 
 .headingFollow {
@@ -2039,7 +2046,7 @@ html[data-theme-mode="dark"] .wordmarkName {
 }
 
 .legalArticle {
-  padding-bottom: var(--mk-section-pad-y);
+  min-width: 0;
 }
 
 .legalBanner,

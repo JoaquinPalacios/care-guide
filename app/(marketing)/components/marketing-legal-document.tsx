@@ -18,7 +18,10 @@ export function MarketingLegalDocument({
         intro={document.intro}
       />
       <div className={styles.marketingSoft} data-mk-chapter="soft">
-        <article className={styles.legalArticle} aria-labelledby={`${document.slug.slice(1)}-hero`}>
+        <article
+          className={`${styles.band} ${styles.legalArticle}`}
+          aria-labelledby={`${document.slug.slice(1)}-hero`}
+        >
           <div className={styles.inner}>
             <p className={styles.legalBanner} role="note">
               {LEGAL_DRAFT_BANNER}
@@ -65,7 +68,10 @@ export function MarketingLegalDocument({
                   }
 
                   return (
-                    <p key={`${section.id}-p-${index}`} className={styles.legalCopy}>
+                    <p
+                      key={`${section.id}-p-${index}`}
+                      className={styles.legalCopy}
+                    >
                       {block.text}
                     </p>
                   );

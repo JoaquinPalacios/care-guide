@@ -33,6 +33,14 @@ const FOOTER_GROUPS = [
   },
 ] as const;
 
+const PRIMARY_NAV = [
+  { href: "/about", label: "About" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/contact", label: "Contact" },
+] as const;
+
+const SIGN_IN_LABEL = "Sign in";
+
 export function MarketingShell({
   currentPath,
   staffHref,
@@ -42,18 +50,10 @@ export function MarketingShell({
   staffHref: string;
   children: ReactNode;
 }) {
-  const menuItems = [
-    {
-      href: "/pricing",
-      label: "Pricing",
-      current: currentPath === "/pricing",
-    },
-    {
-      href: "/contact",
-      label: "Contact",
-      current: currentPath === "/contact",
-    },
-  ];
+  const menuItems = PRIMARY_NAV.map((item) => ({
+    ...item,
+    current: currentPath === item.href,
+  }));
 
   return (
     <MarketingExperience className={styles.page}>
@@ -67,25 +67,21 @@ export function MarketingShell({
             </span>
           </Link>
           <nav className={styles.nav} aria-label="Marketing">
-            <Link
-              className={`${styles.navRoute} ${styles.textLink}`}
-              href="/pricing"
-              aria-current={currentPath === "/pricing" ? "page" : undefined}
-            >
-              Pricing
-            </Link>
-            <Link
-              className={`${styles.navRoute} ${styles.textLink}`}
-              href="/contact"
-              aria-current={currentPath === "/contact" ? "page" : undefined}
-            >
-              Contact
-            </Link>
+            {PRIMARY_NAV.map((item) => (
+              <Link
+                key={item.href}
+                className={`${styles.navRoute} ${styles.textLink}`}
+                href={item.href}
+                aria-current={currentPath === item.href ? "page" : undefined}
+              >
+                {item.label}
+              </Link>
+            ))}
             <a
               className={`${styles.navStaff} ${styles.textLink}`}
               href={staffHref}
             >
-              Staff sign in
+              {SIGN_IN_LABEL}
             </a>
             <span className={styles.navTheme}>
               <MarketingThemeControl />
@@ -111,7 +107,10 @@ export function MarketingShell({
             <nav className={styles.footerNav} aria-label="Footer">
               {FOOTER_GROUPS.map((group) => (
                 <div key={group.id} className={styles.footerNavGroup}>
-                  <p className={styles.footerNavLabel} id={`footer-${group.id}`}>
+                  <p
+                    className={styles.footerNavLabel}
+                    id={`footer-${group.id}`}
+                  >
                     {group.label}
                   </p>
                   <ul
@@ -144,7 +143,7 @@ export function MarketingShell({
                 >
                   <li>
                     <a className={styles.textLink} href={staffHref}>
-                      Staff sign in
+                      {SIGN_IN_LABEL}
                     </a>
                   </li>
                 </ul>

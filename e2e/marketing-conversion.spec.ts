@@ -123,6 +123,7 @@ test.describe("marketing conversion routes", () => {
     const headerNav = page.getByRole("navigation", { name: "Marketing" });
     const footerNav = page.getByRole("navigation", { name: "Footer" });
 
+    await expect(headerNav.getByRole("link", { name: "About" })).toBeVisible();
     await expect(
       headerNav.getByRole("link", { name: "Pricing" })
     ).toBeVisible();
@@ -136,7 +137,7 @@ test.describe("marketing conversion routes", () => {
       headerNav.getByRole("link", { name: "Clinic preview" })
     ).toHaveCount(0);
     await expect(
-      headerNav.getByRole("link", { name: "Staff sign in" })
+      headerNav.getByRole("link", { name: "Sign in", exact: true })
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /Change colour theme/ })
@@ -155,7 +156,7 @@ test.describe("marketing conversion routes", () => {
     ).toBeVisible();
     await expect(footerNav.getByRole("link", { name: "Terms" })).toBeVisible();
     await expect(
-      footerNav.getByRole("link", { name: "Staff sign in" })
+      footerNav.getByRole("link", { name: "Sign in", exact: true })
     ).toBeVisible();
     await expect(
       footerNav.getByRole("link", { name: "How it works" })
@@ -182,7 +183,7 @@ test.describe("marketing conversion routes", () => {
       page.getByRole("banner").getByRole("link", { name: "River Aftercare" })
     ).toBeVisible();
     await expect(
-      headerNav.getByRole("link", { name: "Staff sign in" })
+      headerNav.getByRole("link", { name: "Sign in", exact: true })
     ).toHaveCount(0);
     await expect(
       page.getByRole("button", { name: /Change colour theme/ })
@@ -195,6 +196,7 @@ test.describe("marketing conversion routes", () => {
     await expect(menu).toBeVisible();
     await menu.click();
     await expect(menu).toHaveAttribute("aria-expanded", "true");
+    await expect(headerNav.getByRole("link", { name: "About" })).toBeVisible();
     await expect(
       headerNav.getByRole("link", { name: "Pricing" })
     ).toBeVisible();
@@ -202,7 +204,7 @@ test.describe("marketing conversion routes", () => {
       headerNav.getByRole("link", { name: "Contact" })
     ).toBeVisible();
     await expect(
-      headerNav.getByRole("link", { name: "Staff sign in" })
+      headerNav.getByRole("link", { name: "Sign in", exact: true })
     ).toBeVisible();
     await expect(
       headerNav.getByRole("button", { name: "Theme" })

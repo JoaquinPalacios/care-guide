@@ -5,11 +5,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { MarketingNavMenu } from "@/app/(marketing)/components/marketing-nav-menu";
 
 describe("marketing mobile navigation", () => {
-  it("puts Pricing, Contact, Staff sign in, and Theme inside the site menu", () => {
+  it("puts About, Pricing, Contact, Sign in, and Theme inside the site menu", () => {
     const html = renderToStaticMarkup(
       <MarketingNavMenu
         staffHref="http://app.localhost:3000/login"
         items={[
+          { href: "/about", label: "About" },
           { href: "/pricing", label: "Pricing" },
           { href: "/contact", label: "Contact", current: true },
         ]}
@@ -17,9 +18,11 @@ describe("marketing mobile navigation", () => {
     );
 
     expect(html).toContain("Site menu");
+    expect(html).toContain("About");
     expect(html).toContain("Pricing");
     expect(html).toContain("Contact");
-    expect(html).toContain("Staff sign in");
+    expect(html).toContain(">Sign in<");
+    expect(html).not.toContain("Staff sign in");
     expect(html).toContain("http://app.localhost:3000/login");
     expect(html).toContain("Theme");
     expect(html).toContain("System");

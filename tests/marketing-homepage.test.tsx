@@ -127,8 +127,9 @@ describe("marketing homepage", () => {
     expect(html).toContain("Family dental");
     expect(html).not.toContain("Family practice");
     expect(html).toContain("Choose a visual tone that feels at home");
-    expect(html).toContain("Staff sign in");
-    expect(html.match(/Staff sign in/g)).toHaveLength(3);
+    expect(html).not.toContain("Staff sign in");
+    expect((html.match(/>Sign in</g) ?? []).length).toBe(3);
+    expect((html.match(/>About</g) ?? []).length).toBeGreaterThanOrEqual(3);
     const footerHtml = html.slice(html.indexOf("<footer"));
     expect(footerHtml).toContain("About");
     expect(footerHtml).toContain("Pricing");

@@ -624,7 +624,9 @@ test.describe("Phase 1F.11 story clarity", () => {
       section.getByText("riverside.[your-domain]/extraction")
     ).toBeVisible();
     await expect(section.getByText("Call the practice →")).toBeVisible();
-    await expect(section.getByText("More templates at onboarding")).toBeVisible();
+    await expect(
+      section.getByText("More templates at onboarding")
+    ).toBeVisible();
     await expect(section.getByText("Custom clinic guides")).toBeVisible();
     await expect(section.getByText("Dental Implant")).toHaveCount(0);
     await expect(section.getByText("Root Canal")).toHaveCount(0);
@@ -963,10 +965,10 @@ test.describe("Phase 1F.11 story clarity", () => {
 
     const headerStaff = page
       .getByRole("navigation", { name: "Marketing" })
-      .getByRole("link", { name: "Staff sign in" });
+      .getByRole("link", { name: "Sign in", exact: true });
     const footerStaff = page
       .getByRole("navigation", { name: "Footer" })
-      .getByRole("link", { name: "Staff sign in" });
+      .getByRole("link", { name: "Sign in", exact: true });
     await expect(headerStaff).toBeVisible();
     await expect(footerStaff).toBeVisible();
     await expect(
@@ -2080,7 +2082,7 @@ test.describe("Phase 1F.11 story clarity", () => {
         headerNav.getByRole("link", { name: "Early access" })
       ).toHaveCount(0);
       await expect(
-        headerNav.getByRole("link", { name: "Staff sign in" })
+        headerNav.getByRole("link", { name: "Sign in", exact: true })
       ).toHaveCount(0);
 
       await scrollSectionIntoView(page, '[aria-labelledby="product-heading"]');

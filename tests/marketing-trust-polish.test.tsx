@@ -126,6 +126,9 @@ describe("marketing + trust polish", () => {
     expect(contactForm).not.toContain("contactSubmit");
     expect(contactForm).toContain("contactActions");
     expect(marketingCss).not.toContain(".contactSubmit");
+    expect(marketingCss).toContain("appearance: none");
+    expect(marketingCss).toContain("border: 0 solid transparent");
+    expect(marketingCss).toContain("font: inherit");
   });
 
   it("adds a root-domain back link on staff login", () => {
@@ -160,6 +163,14 @@ describe("marketing + trust polish", () => {
       "This draft does not claim clinical accreditation, guaranteed uptime"
     );
     expect(termsHtml).toContain('data-mk-page-hero="legal"');
+    expect(privacyHtml).toContain("legalArticle");
+    expect(privacyHtml).toContain("band");
+    expect(termsHtml).toContain("legalArticle");
+    expect(termsHtml).toContain("band");
+    expect(marketingCss).toContain(".marketingSoft > .band:first-child");
+    expect(marketingCss).not.toMatch(/\.legalArticle\s*\{[^}]*padding-top:/);
+    expect(marketingCss).not.toMatch(/\.legalArticle\s*\{[^}]*padding-bottom:/);
+    expect(marketingCss).toContain("max-width: 42rem");
 
     const privacyMeta = marketingPageMetadata(PRIVACY_METADATA, {
       pathname: "/privacy",
@@ -186,5 +197,7 @@ describe("marketing + trust polish", () => {
     expect(shell).not.toContain("How it works");
     expect(shell).not.toContain("Clinic preview");
     expect(shell).not.toContain("homepageAnchor");
+    expect(shell).toContain('SIGN_IN_LABEL = "Sign in"');
+    expect(shell).not.toContain("Staff sign in");
   });
 });
