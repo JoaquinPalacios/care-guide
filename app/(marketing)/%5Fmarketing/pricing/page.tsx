@@ -6,6 +6,7 @@ import {
   MarketingRevealGroup,
   MarketingRevealItem,
 } from "@/app/(marketing)/components/marketing-experience";
+import { MarketingNumberedSteps } from "@/app/(marketing)/components/marketing-numbered-steps";
 import { MarketingPageHero } from "@/app/(marketing)/components/marketing-page-hero";
 import { MarketingPrimaryLink } from "@/app/(marketing)/components/marketing-primary-link";
 import { MarketingShell } from "@/app/(marketing)/components/marketing-shell";
@@ -147,25 +148,14 @@ export default async function MarketingPricingPage() {
                   </MarketingRevealItem>
                 </MarketingRevealGroup>
               </div>
-              <ol className={`${styles.storyList} ${styles.headingFollow}`}>
-                {[
-                  "Start with a reviewed template such as Tooth Extraction, Wisdom Teeth Removal, Dental Implant, Periodontal Deep Cleaning, or Root Canal.",
+              <MarketingNumberedSteps
+                className={styles.headingFollow}
+                items={[
+                  "Start with a reviewed template for the procedure you provide. The current canonical library includes Tooth Extraction. Additional dental templates are planned and enabled with you at onboarding — they are not all available yet.",
                   "Adapt the guide to your practice with section overrides and local instructions.",
                   "Publish a durable, branded patient page patients can reopen on a phone.",
-                ].map((step, index) => (
-                  <MarketingRevealCard
-                    key={step}
-                    as="li"
-                    index={index}
-                    className={styles.storyItem}
-                  >
-                    <span className={styles.storyIndex}>
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <p>{step}</p>
-                  </MarketingRevealCard>
-                ))}
-              </ol>
+                ]}
+              />
             </div>
           </section>
         </div>

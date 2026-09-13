@@ -764,10 +764,9 @@ html[data-theme-mode="dark"] .wordmarkName {
   overflow: hidden;
   border-radius: 1.25rem;
   border-radius: 8.15cqi;
-  background: #ffffff;
-  color: #111318;
+  background: var(--cg-surface, #ffffff);
+  color: var(--cg-text, #111318);
   padding: 1.55rem 0.72rem 0.8rem;
-  color-scheme: light;
 }
 
 .phoneFrame {
@@ -785,7 +784,7 @@ html[data-theme-mode="dark"] .wordmarkName {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  color: #4b5563;
+  color: var(--cg-text-muted, #4b5563);
   font-size: 0.62rem;
   font-weight: 650;
 }
@@ -794,12 +793,12 @@ html[data-theme-mode="dark"] .wordmarkName {
   width: 0.72rem;
   height: 0.72rem;
   border-radius: 0.14rem;
-  background: #0f766e;
+  background: var(--cg-brand, #0f766e);
 }
 
 .phoneKicker {
   margin: 0.45rem 0 0;
-  color: #0f766e;
+  color: var(--cg-brand, #0f766e);
   font-size: 0.48rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -812,132 +811,150 @@ html[data-theme-mode="dark"] .wordmarkName {
   font-weight: 700;
   letter-spacing: -0.045em;
   line-height: 1.15;
+  color: var(--cg-text, #111318);
 }
 
 .phoneRecovery {
   margin: 0.7rem 0 0;
+  padding: 0.55rem 0.5rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--cg-border, #ecece8) 75%, transparent);
+  border-radius: var(--cg-radius, 0.75rem);
+  background: var(--cg-recovery-surface, #f6faf9);
 }
 
 .phoneRecoveryTitle {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   font-weight: 650;
   letter-spacing: -0.03em;
+  color: var(--cg-text, #111318);
 }
 
 .phoneRecoveryLede {
   margin: 0.12rem 0 0;
-  color: #6b7280;
-  font-size: 0.58rem;
+  color: var(--cg-text-muted, #6b7280);
+  font-size: 0.52rem;
   line-height: 1.35;
 }
 
 .phoneTimeline {
   display: grid;
-  gap: 0.35rem;
-  margin: 0.7rem 0 0;
+  gap: 0.45rem;
+  margin: 0.55rem 0 0;
 }
 
 .phoneStage {
-  position: relative;
-  padding: 0.12rem 0 0.28rem 0.82rem;
-  border-left: 1.5px solid color-mix(in srgb, #0f766e 34%, #ecece8);
+  display: grid;
+  grid-template-columns: 2px minmax(0, 1fr);
+  column-gap: 0.55rem;
+  align-items: stretch;
+  padding: 0;
+  border: 0;
 }
 
-.phoneStage::before {
+.phoneStageRail {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  position: relative;
+  justify-self: center;
+  width: 2px;
+  background: var(--cg-brand, #0f766e);
+}
+
+.phoneStageRail::before {
   content: "";
   position: absolute;
-  left: -0.22rem;
-  top: 0.32rem;
-  width: 0.28rem;
-  height: 0.28rem;
+  left: 50%;
+  top: 0.18rem;
+  width: 0.32rem;
+  height: 0.32rem;
+  transform: translateX(-50%);
   border-radius: 999px;
-  background: color-mix(in srgb, #0f766e 48%, #ffffff);
+  background: var(--cg-brand, #0f766e);
 }
 
-.phoneStageCurrent {
-  padding-top: 0.28rem;
-  padding-bottom: 0.4rem;
-  padding-right: 0.35rem;
-  border-left-color: #0f766e;
-  background: linear-gradient(
-    to right,
-    color-mix(in srgb, #0f766e 8%, #ffffff),
-    transparent 86%
-  );
+.phoneStageCurrent .phoneStageRail::before {
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--cg-brand, #0f766e) 22%, transparent);
 }
 
-.phoneStageCurrent::before {
-  top: 0.42rem;
-  left: -0.26rem;
-  width: 0.38rem;
-  height: 0.38rem;
-  background: #0f766e;
-  box-shadow: 0 0 0 2px color-mix(in srgb, #0f766e 18%, #ffffff);
+.phoneStageUpcoming .phoneStageRail,
+.phoneStageUpcoming .phoneStageRail::before {
+  background: var(--cg-text-muted, #9aa3ad);
 }
 
-.phoneStageUpcoming {
-  color: #4b5563;
-}
-
-.phoneStageUpcoming .phonePeriod {
-  color: color-mix(in srgb, #0f766e 62%, #9ca3af);
-}
-
-.phoneStageUpcoming .phoneStageTitle {
-  font-weight: 600;
-  color: #374151;
+.phoneStageBody {
+  grid-column: 2;
+  min-width: 0;
+  padding: 0 0 0.12rem;
 }
 
 .phonePeriod {
   margin: 0;
-  color: #0f766e;
+  color: var(--cg-brand, #0f766e);
   font-size: 0.46rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
-.phoneStageCurrent .phonePeriod {
-  font-size: 0.5rem;
+.phoneStageUpcoming .phonePeriod {
+  color: var(--cg-text-muted, #9aa3ad);
 }
 
 .phoneStageTitle {
   margin: 0.08rem 0 0;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 650;
   letter-spacing: -0.02em;
+  color: var(--cg-text, #111318);
 }
 
 .phoneStageCurrent .phoneStageTitle {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
+}
+
+.phoneStageStatus {
+  margin: 0.08rem 0 0;
+  color: var(--cg-text-muted, #6b7280);
+  font-size: 0.46rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .phoneStageSummary {
   margin: 0.12rem 0 0;
-  color: #6b7280;
-  font-size: 0.54rem;
+  color: var(--cg-text-muted, #6b7280);
+  font-size: 0.5rem;
   line-height: 1.35;
 }
 
 .phoneHelp {
   margin-top: auto;
   padding-top: 0.65rem;
-  border-top: 1px solid color-mix(in srgb, #0f766e 22%, #ecece8);
+  border-top: 1px solid var(--cg-border, #ecece8);
 }
 
 .phoneHelpLabel {
   margin: 0;
-  color: #6b7280;
+  color: var(--cg-text-muted, #6b7280);
   font-size: 0.52rem;
 }
 
 .phoneHelpAction {
-  margin: 0.08rem 0 0;
-  color: #0f766e;
-  font-size: 0.62rem;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.35rem 0 0;
+  min-height: 1.35rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: calc(var(--cg-radius, 0.75rem) * 0.85);
+  background: var(--cg-brand, #0f766e);
+  color: var(--cg-on-brand, #ffffff);
+  font-size: 0.58rem;
+  font-weight: 650;
   letter-spacing: -0.01em;
 }
 
@@ -958,7 +975,9 @@ html[data-theme-mode="dark"] .wordmarkName {
   max-width: 16ch;
 }
 
-.frictionList {
+/* Canonical numbered row: [01] [vertical rule] [copy]
+   Fixed index column, optical first-line align, shared x-start for copy. */
+.numberedSteps {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -966,28 +985,37 @@ html[data-theme-mode="dark"] .wordmarkName {
   gap: 1.45rem;
 }
 
-.frictionItem {
+.numberedStep {
   display: grid;
-  grid-template-columns: 1.6rem minmax(0, 1fr);
+  grid-template-columns: 2.25rem 1px minmax(0, 1fr);
   column-gap: 0.85rem;
   align-items: start;
 }
 
-.frictionIndex {
+.numberedStepIndex {
   color: var(--mk-brand);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   font-variant-numeric: tabular-nums;
   line-height: 1.55;
+  padding-top: calc((1.08rem * 1.55 - 0.8rem * 1.55) / 2);
 }
 
-.frictionItem p {
+.numberedStepRule {
+  display: block;
+  width: 1px;
+  align-self: stretch;
+  min-height: 1.55em;
+  background: var(--mk-brand);
+}
+
+.numberedStepCopy {
   margin: 0;
-  padding-left: 0.85rem;
-  border-left: 1.5px solid var(--mk-brand);
   color: var(--mk-muted);
   max-width: 32rem;
+  font-size: 1.08rem;
+  line-height: 1.55;
 }
 
 .productCanvas {
@@ -1080,7 +1108,7 @@ html[data-theme-mode="dark"] .wordmarkName {
 .productClinicName,
 .productResultClinic {
   margin: 0;
-  color: #0f766e;
+  color: var(--cg-brand, #0f766e);
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -1135,15 +1163,17 @@ html[data-theme-mode="dark"] .wordmarkName {
 .productResult {
   width: 100%;
   max-width: 22.5rem;
-  background: #ffffff;
-  color: #0a0d14;
-  color-scheme: light;
+  padding: 1rem 1.05rem 1.05rem;
+  border: 1px solid var(--cg-border, var(--mk-card-line));
+  border-radius: var(--cg-radius, 0.75rem);
+  background: var(--cg-surface, #ffffff);
+  color: var(--cg-text, #0a0d14);
 }
 
 .productResultTerm,
 .patientHomeTerm {
   margin: 0.15rem 0 0.7rem;
-  color: light-dark(#0f766e, #14b8a6);
+  color: var(--cg-brand, #0f766e);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1158,18 +1188,32 @@ html[data-theme-mode="dark"] .wordmarkName {
   gap: 0.7rem;
   margin: 0;
   padding: 0.7rem 0.8rem;
-  border: 1px solid color-mix(in srgb, #0f766e 18%, var(--mk-card-line));
-  border-radius: 0.55rem;
-  background: light-dark(#ffffff, #f7faf9);
-  color: #0a0d14;
+  border: 1px solid color-mix(in srgb, var(--cg-brand, #0f766e) 18%, var(--cg-border, var(--mk-card-line)));
+  border-radius: calc(var(--cg-radius, 0.75rem) * 0.85);
+  background: var(--cg-surface-subtle, #f7f7f5);
+  color: var(--cg-text, #0a0d14);
   font-size: 0.78rem;
   font-weight: 650;
   letter-spacing: -0.02em;
 }
 
+.patientHomeGuideBody {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.patientHomeHint {
+  color: var(--cg-text-muted, #4b5563);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 .productResultArrow,
 .patientHomeArrow {
-  color: #0f766e;
+  color: var(--cg-brand, #0f766e);
   font-weight: 700;
 }
 
@@ -1714,29 +1758,33 @@ html[data-theme-mode="dark"] .wordmarkName {
 
 .patientHomeCard {
   padding: 1.15rem 1.15rem 1.05rem;
-  border: 1px solid color-mix(in srgb, #0f766e 16%, var(--mk-card-line));
-  border-radius: 0.9rem;
-  background: #ffffff;
-  color: #0a0d14;
+  border: 1px solid var(--cg-border, var(--mk-card-line));
+  border-radius: var(--cg-radius, 0.9rem);
+  background: var(--cg-surface, #ffffff);
+  color: var(--cg-text, #0a0d14);
   box-shadow: var(--mk-card-shadow);
-  color-scheme: light;
 }
 
 .patientHomeClinic {
   margin: 0;
-  color: #0a0d14;
+  color: var(--cg-text, #0a0d14);
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: -0.035em;
 }
 
 .patientHomeContact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin: 0.85rem 0 0;
-  padding-top: 0.75rem;
-  border-top: 1px solid color-mix(in srgb, #0f766e 18%, #ecece8);
-  color: #0f766e;
+  min-height: 2.2rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: calc(var(--cg-radius, 0.75rem) * 0.85);
+  background: var(--cg-brand, #0f766e);
+  color: var(--cg-on-brand, #ffffff);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 650;
   letter-spacing: -0.02em;
 }
 
@@ -1880,7 +1928,30 @@ html[data-theme-mode="dark"] .wordmarkName {
 .footerNav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem 1.1rem;
+  gap: 1.15rem 1.75rem;
+}
+
+.footerNavGroup {
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+}
+
+.footerNavLabel {
+  margin: 0;
+  color: var(--mk-ink);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.footerNavList {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .footerNav a {
@@ -1965,6 +2036,80 @@ html[data-theme-mode="dark"] .wordmarkName {
   max-width: 42rem;
   margin-top: var(--mk-heading-intro-gap);
   margin-bottom: 0;
+}
+
+.legalArticle {
+  padding-bottom: var(--mk-section-pad-y);
+}
+
+.legalBanner,
+.legalUpdated,
+.legalCopy,
+.legalPlaceholder {
+  margin: 0 0 1.15rem;
+  max-width: 42rem;
+  color: var(--mk-muted);
+  font-size: 1.08rem;
+}
+
+.legalBanner {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--mk-card-line);
+  border-radius: var(--mk-card-radius);
+  background: var(--mk-card);
+  color: var(--mk-ink);
+}
+
+.legalUpdated {
+  font-size: 0.95rem;
+}
+
+.legalSection {
+  margin: 0 0 var(--mk-heading-content-gap);
+  max-width: 42rem;
+}
+
+.legalHeading {
+  margin: 0 0 var(--mk-heading-intro-gap);
+  font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  color: var(--mk-ink);
+}
+
+.legalList {
+  margin: 0 0 1.15rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+  max-width: 42rem;
+}
+
+.legalList li {
+  position: relative;
+  padding-left: 1rem;
+  color: var(--mk-muted);
+  line-height: 1.45;
+}
+
+.legalList li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-top: calc((1.45em - 0.4rem) / 2);
+  border-radius: 999px;
+  background: var(--mk-brand);
+}
+
+.legalPlaceholder {
+  padding: 0.75rem 0.9rem;
+  border-left: 2px solid var(--mk-brand);
+  background: var(--mk-card);
+  color: var(--mk-ink);
 }
 
 .planGrid,
@@ -2058,7 +2203,6 @@ html[data-theme-mode="dark"] .wordmarkName {
 }
 
 .planFeatures li,
-.laterItem,
 .contactPanel li,
 .contactPoint {
   position: relative;
@@ -2068,7 +2212,6 @@ html[data-theme-mode="dark"] .wordmarkName {
 }
 
 .planFeatures li::before,
-.laterItem::before,
 .contactPanel li::before,
 .contactPoint::before {
   content: "";
@@ -2086,40 +2229,8 @@ html[data-theme-mode="dark"] .wordmarkName {
   width: 100%;
 }
 
-.storyList {
-  display: grid;
-  gap: 0.9rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.storyItem {
-  display: grid;
-  grid-template-columns: 2.25rem minmax(0, 1fr);
-  column-gap: 0.9rem;
-  align-items: start;
-}
-
-.storyIndex {
-  color: var(--mk-brand);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.55;
-  padding-top: calc((1.02rem * 1.55 - 0.8rem * 1.55) / 2);
-}
-
-.storyItem p,
 .contactPoint {
   margin: 0;
-}
-
-.storyItem p {
-  font-size: 1.02rem;
-  line-height: 1.55;
-  color: var(--mk-muted);
 }
 
 .noteCard,
@@ -2145,20 +2256,30 @@ html[data-theme-mode="dark"] .wordmarkName {
 
 .laterList {
   display: grid;
-  gap: 0.7rem;
+  gap: var(--mk-card-grid-gap);
   margin: 0;
 }
 
 .laterItem {
-  padding: 0.85rem 1rem 0.85rem 1.9rem;
+  display: grid;
+  grid-template-columns: 0.4rem minmax(0, 1fr);
+  column-gap: 0.75rem;
+  align-items: start;
+  padding: 1.25rem 1.2rem;
   border: 1px solid var(--mk-card-line);
-  border-radius: 0.9rem;
+  border-radius: var(--mk-card-radius);
   background: var(--mk-card);
+  color: var(--mk-ink);
+  line-height: 1.45;
 }
 
 .laterItem::before {
-  left: 0.85rem;
-  top: 1.15rem;
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-top: calc((1.45em - 0.4rem) / 2);
+  border-radius: 999px;
+  background: var(--mk-brand);
 }
 
 .contactSplit,
@@ -2257,7 +2378,7 @@ html[data-theme-mode="dark"] .wordmarkName {
   font-size: 0.9rem;
 }
 
-.contactSubmit {
+.contactActions {
   justify-self: start;
 }
 
@@ -2379,6 +2500,11 @@ html[data-theme-mode="dark"] .wordmarkName {
 
   .phoneScreen {
     padding: 1.35rem 0.64rem 0.7rem;
+  }
+
+  .numberedStep {
+    grid-template-columns: 1.85rem 1px minmax(0, 1fr);
+    column-gap: 0.65rem;
   }
 }
 

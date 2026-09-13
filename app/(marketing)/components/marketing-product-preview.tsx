@@ -1,16 +1,17 @@
 import type { ReactNode } from "react";
 
-import styles from "../marketing.module.css";
+import {
+  MARKETING_DEMO_CALL_LABEL,
+  MARKETING_DEMO_CLINIC_NAME,
+  MARKETING_DEMO_GUIDE_TITLE,
+  MARKETING_DEMO_INSTRUCTIONS_LABEL,
+  MARKETING_DEMO_RECOVERY_HEADING,
+  MARKETING_DEMO_THEME_APPEARANCE,
+  MARKETING_DEMO_THEME_SCOPE,
+  MARKETING_DEMO_TIMELINE,
+} from "@/lib/marketing/demo-patient-preview";
 
-const PHONE_STAGES = [
-  {
-    period: "First few hours",
-    title: "Immediate care",
-    summary: "Follow the clinic's immediate care notes and take it easy.",
-  },
-  { period: "Days 2–3", title: "Early recovery" },
-  { period: "Days 4–7", title: "Healing check" },
-] as const;
+import styles from "../marketing.module.css";
 
 const IPHONE_FRAME = {
   src: "/marketing/iphone-frame.webp",
@@ -27,6 +28,10 @@ const IPHONE_FRAME = {
  * Device frame: Rivers Digital Catión case-study iPhone mockup
  * (Sanity `cationBlue.png`, 1450×2936 PNG with alpha). The screen
  * opening is transparent so this preview stays live HTML/CSS.
+ *
+ * Patient light/dark follows the active marketing appearance via
+ * shared aftercare tokens (`data-patient-theme="portal"`). This does
+ * not change ClinicProfile.themeMode.
  *
  * Later, compose a short WebM + MP4 loop inside PhoneScreen
  * (autoplay, muted, loop, playsInline, poster). Do not use GIF.
@@ -64,7 +69,15 @@ function PhoneShell({ children }: { children: ReactNode }) {
 }
 
 function PhoneScreen({ children }: { children: ReactNode }) {
-  return <div className={styles.phoneScreen}>{children}</div>;
+  return (
+    <div
+      className={`${styles.phoneScreen} ${MARKETING_DEMO_THEME_SCOPE}`}
+      data-patient-theme={MARKETING_DEMO_THEME_APPEARANCE}
+      data-mk-patient-surface="phone"
+    >
+      {children}
+    </div>
+  );
 }
 
 function ProductPreviewScreen() {
@@ -72,40 +85,46 @@ function ProductPreviewScreen() {
     <>
       <div className={styles.phoneBrand}>
         <span className={styles.phoneMark} />
-        Riverside Dental Demo
+        {MARKETING_DEMO_CLINIC_NAME}
       </div>
-      <p className={styles.phoneKicker}>Post-treatment instructions</p>
-      <p className={styles.phoneTitle}>Tooth Extraction</p>
+      <p className={styles.phoneKicker}>{MARKETING_DEMO_INSTRUCTIONS_LABEL}</p>
+      <p className={styles.phoneTitle}>{MARKETING_DEMO_GUIDE_TITLE}</p>
       <div className={styles.phoneRecovery}>
-        <p className={styles.phoneRecoveryTitle}>Your recovery</p>
-        <p className={styles.phoneRecoveryLede}>
-          Step-by-step guidance after treatment.
+        <p className={styles.phoneRecoveryTitle}>
+          {MARKETING_DEMO_RECOVERY_HEADING}
         </p>
-      </div>
-      <div className={styles.phoneTimeline}>
-        {PHONE_STAGES.map((stage, index) => {
-          const current = index === 0;
-          return (
-            <div
-              key={stage.period}
-              className={
-                current
-                  ? `${styles.phoneStage} ${styles.phoneStageCurrent}`
-                  : `${styles.phoneStage} ${styles.phoneStageUpcoming}`
-              }
-            >
-              <p className={styles.phonePeriod}>{stage.period}</p>
-              <p className={styles.phoneStageTitle}>{stage.title}</p>
-              {current && "summary" in stage ? (
-                <p className={styles.phoneStageSummary}>{stage.summary}</p>
-              ) : null}
-            </div>
-          );
-        })}
+        <div className={styles.phoneTimeline}>
+          {MARKETING_DEMO_TIMELINE.map((stage) => {
+            const current = stage.status === "current";
+            return (
+              <div
+                key={stage.period}
+                className={
+                  current
+                    ? `${styles.phoneStage} ${styles.phoneStageCurrent}`
+                    : `${styles.phoneStage} ${styles.phoneStageUpcoming}`
+                }
+                data-status={stage.status}
+              >
+                <span className={styles.phoneStageRail} aria-hidden="true" />
+                <div className={styles.phoneStageBody}>
+                  <p className={styles.phonePeriod}>{stage.period}</p>
+                  <p className={styles.phoneStageTitle}>{stage.title}</p>
+                  {current ? (
+                    <p className={styles.phoneStageStatus}>Current</p>
+                  ) : null}
+                  {current && "summary" in stage ? (
+                    <p className={styles.phoneStageSummary}>{stage.summary}</p>
+                  ) : null}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
       <div className={styles.phoneHelp}>
-        <p className={styles.phoneHelpLabel}>Need help?</p>
-        <p className={styles.phoneHelpAction}>Call Riverside Dental →</p>
+        <p className={styles.phoneHelpLabel}>Questions about your recovery?</p>
+        <p className={styles.phoneHelpAction}>{MARKETING_DEMO_CALL_LABEL}</p>
       </div>
     </>
   );

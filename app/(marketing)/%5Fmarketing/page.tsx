@@ -7,6 +7,7 @@ import {
   MarketingRevealItem,
   MarketingRevealPreview,
 } from "@/app/(marketing)/components/marketing-experience";
+import { MarketingNumberedSteps } from "@/app/(marketing)/components/marketing-numbered-steps";
 import { MarketingPatientPreview } from "@/app/(marketing)/components/marketing-patient-preview";
 import { MarketingPillars } from "@/app/(marketing)/components/marketing-pillars";
 import { MarketingProcess } from "@/app/(marketing)/components/marketing-process";
@@ -18,6 +19,7 @@ import { JsonLd } from "@/app/(marketing)/components/json-ld";
 import { MarketingShell } from "@/app/(marketing)/components/marketing-shell";
 import { MarketingWave } from "@/app/(marketing)/components/marketing-wave";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
+import { MARKETING_DEMO_PATIENT_THEME_CSS } from "@/lib/marketing/demo-patient-preview";
 import { marketingPublicLinks } from "@/lib/marketing/public-links";
 import { editorialRevealDelay } from "@/lib/marketing/reveal-timing";
 import {
@@ -36,18 +38,9 @@ const MarketingReveal = {
 };
 
 const FRICTION = [
-  {
-    index: "01",
-    copy: "Verbal advice is easy to forget once the appointment ends.",
-  },
-  {
-    index: "02",
-    copy: "Paper is easy to lose, and PDFs are awkward to reopen on a phone.",
-  },
-  {
-    index: "03",
-    copy: "Generic handouts weaken the clinic's own identity.",
-  },
+  "Verbal advice is easy to forget once the appointment ends.",
+  "Paper is easy to lose, and PDFs are awkward to reopen on a phone.",
+  "Generic handouts weaken the clinic's own identity.",
 ] as const;
 
 const BRAND_CARDS = [
@@ -82,6 +75,7 @@ export default async function MarketingHomePage() {
   return (
     <MarketingShell currentPath="/" staffHref={staffHref}>
       <JsonLd data={jsonLd} />
+      <style dangerouslySetInnerHTML={{ __html: MARKETING_DEMO_PATIENT_THEME_CSS }} />
       <main>
         <section
           className={`${styles.hero} ${styles.marketingBase}`}
@@ -152,21 +146,7 @@ export default async function MarketingHomePage() {
                       leave with clarity.
                     </h2>
                   </MarketingReveal.Item>
-                  <ol className={styles.frictionList}>
-                    {FRICTION.map((item, index) => (
-                      <MarketingReveal.Card
-                        key={item.index}
-                        as="li"
-                        index={index}
-                        className={styles.frictionItem}
-                      >
-                        <span className={styles.frictionIndex}>
-                          {item.index}
-                        </span>
-                        <p>{item.copy}</p>
-                      </MarketingReveal.Card>
-                    ))}
-                  </ol>
+                  <MarketingNumberedSteps items={FRICTION} />
                 </div>
               </MarketingReveal.Group>
             </div>

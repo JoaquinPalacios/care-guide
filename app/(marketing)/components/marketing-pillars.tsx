@@ -164,12 +164,11 @@ function PillarVisual({ kind }: { kind: (typeof PILLARS)[number]["key"] }) {
         <span className={styles.guideCheck} />
         Tooth Extraction
       </span>
-      <span className={styles.guideRow}>
-        <span className={styles.guideCheck} />
-        Dental Implant
+      <span className={`${styles.guideRow} ${styles.guideRowQuiet}`}>
+        More templates at onboarding
       </span>
       <span className={`${styles.guideRow} ${styles.guideRowQuiet}`}>
-        Root Canal
+        Custom clinic guides
       </span>
     </div>
   );

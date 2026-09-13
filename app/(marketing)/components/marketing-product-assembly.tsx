@@ -1,6 +1,13 @@
 "use client";
 
 import { MarketingRevealItem } from "@/app/(marketing)/components/marketing-reveal";
+import { AFTERCARE_THEME_SCOPE } from "@/lib/branding/aftercare-theme";
+import {
+  MARKETING_DEMO_CLINIC_NAME,
+  MARKETING_DEMO_GUIDE_TITLE,
+  MARKETING_DEMO_INSTRUCTIONS_LABEL,
+  MARKETING_DEMO_THEME_APPEARANCE,
+} from "@/lib/marketing/demo-patient-preview";
 import { delayedRevealItemVariants } from "@/lib/marketing/reveal-variants";
 
 import styles from "../marketing.module.css";
@@ -68,15 +75,18 @@ export function MarketingProductAssembly() {
         variants={delayedRevealItemVariants}
         className={styles.productResultSlot}
       >
-        <div className={styles.productResult}>
+        <div
+          className={`${styles.productResult} ${AFTERCARE_THEME_SCOPE}`}
+          data-patient-theme={MARKETING_DEMO_THEME_APPEARANCE}
+        >
           <p className={styles.productResultClinic} translate="no">
-            Riverside Dental
+            {MARKETING_DEMO_CLINIC_NAME}
           </p>
           <p className={styles.productResultTerm}>
-            Post-treatment instructions
+            {MARKETING_DEMO_INSTRUCTIONS_LABEL}
           </p>
           <p className={styles.productResultGuide}>
-            Tooth Extraction
+            {MARKETING_DEMO_GUIDE_TITLE}
             <span className={styles.productResultArrow}>→</span>
           </p>
         </div>
