@@ -1,28 +1,135 @@
-export const CLINIC_ASSET_STORAGE_BUCKET = "clinic-branding";
+import "server-only";
+
+export const CLINIC_ASSET_CACHE_CONTROL = "public, max-age=31536000, immutable";
 
 export type ClinicAssetStorageStatus =
-  | { available: true; driver: "supabase"; bucket: string }
+  | { available: true; driver: "r2"; bucket: string }
   | { available: true; driver: "memory"; bucket: string }
   | { available: false; reason: "unconfigured" };
+
+export interface R2ClinicAssetConfig {
+  accountId: string;
+  bucket: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+  endpoint: string;
+  publicOrigin: string;
+}
 
 function readEnv(name: string): string | null {
   const value = process.env[name]?.trim();
   return value ? value : null;
 }
 
-export function clinicAssetStorageStatus(): ClinicAssetStorageStatus {
-  const driver = readEnv("CLINIC_ASSET_STORAGE_DRIVER");
-  const url = readEnv("NEXT_PUBLIC_SUPABASE_URL") ?? readEnv("SUPABASE_URL");
-  const serviceRoleKey = readEnv("SUPABASE_SERVICE_ROLE_KEY");
-  const bucket =
-    readEnv("CLINIC_ASSET_STORAGE_BUCKET") ?? CLINIC_ASSET_STORAGE_BUCKET;
-
-  if (driver === "memory") {
-    return { available: true, driver: "memory", bucket };
+export function clinicAssetPublicOrigin(): string | null {
+  const raw = readEnv("CLINIC_ASSET_PUBLIC_ORIGIN");
+  if (!raw) {
+    return null;
   }
 
-  if (driver === "supabase" && url && serviceRoleKey && bucket) {
-    return { available: true, driver: "supabase", bucket };
+  try {
+    const url = new URL(raw);
+    if (url.username || url.password) {
+      return null;
+    }
+    if (url.pathname !== "/" && url.pathname !== "") {
+      return null;
+    }
+    if (url.search || url.hash) {
+      return null;
+    }
+    if (url.protocol === "https:") {
+      return url.origin;
+    }
+    if (
+      url.protocol === "http:" &&
+      (url.hostname === "localhost" || url.hostname === "127.0.0.1")
+    ) {
+      return url.origin;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function r2S3Endpoint(accountId: string): string | null {
+  const override = readEnv("R2_S3_ENDPOINT");
+  if (override) {
+    try {
+      const url = new URL(override);
+      if (url.protocol !== "https:") {
+        return null;
+      }
+      if (url.username || url.password) {
+        return null;
+      }
+      return url.origin;
+    } catch {
+      return null;
+    }
+  }
+
+  if (!/^[A-Za-z0-9_-]{1,64}$/.test(accountId)) {
+    return null;
+  }
+
+  return `https://${accountId}.r2.cloudflarestorage.com`;
+}
+
+export function r2ClinicAssetConfig(): R2ClinicAssetConfig | null {
+  if (readEnv("CLINIC_ASSET_STORAGE_DRIVER") !== "r2") {
+    return null;
+  }
+
+  const accountId = readEnv("R2_ACCOUNT_ID");
+  const bucket = readEnv("R2_BUCKET");
+  const accessKeyId = readEnv("R2_ACCESS_KEY_ID");
+  const secretAccessKey = readEnv("R2_SECRET_ACCESS_KEY");
+  const publicOrigin = clinicAssetPublicOrigin();
+
+  if (
+    !accountId ||
+    !bucket ||
+    !accessKeyId ||
+    !secretAccessKey ||
+    !publicOrigin
+  ) {
+    return null;
+  }
+
+  if (!/^[A-Za-z0-9_-]{1,64}$/.test(accountId)) {
+    return null;
+  }
+  if (!/^[A-Za-z0-9._-]{1,64}$/.test(bucket)) {
+    return null;
+  }
+
+  const endpoint = r2S3Endpoint(accountId);
+  if (!endpoint) {
+    return null;
+  }
+
+  return {
+    accountId,
+    bucket,
+    accessKeyId,
+    secretAccessKey,
+    endpoint,
+    publicOrigin,
+  };
+}
+
+export function clinicAssetStorageStatus(): ClinicAssetStorageStatus {
+  const driver = readEnv("CLINIC_ASSET_STORAGE_DRIVER");
+
+  if (driver === "memory") {
+    return { available: true, driver: "memory", bucket: "memory" };
+  }
+
+  const r2 = r2ClinicAssetConfig();
+  if (driver === "r2" && r2) {
+    return { available: true, driver: "r2", bucket: r2.bucket };
   }
 
   return { available: false, reason: "unconfigured" };
@@ -30,21 +137,4 @@ export function clinicAssetStorageStatus(): ClinicAssetStorageStatus {
 
 export function isClinicAssetStorageConfigured(): boolean {
   return clinicAssetStorageStatus().available;
-}
-
-export function supabaseClinicAssetConfig(): {
-  url: string;
-  serviceRoleKey: string;
-  bucket: string;
-} | null {
-  const status = clinicAssetStorageStatus();
-  if (!status.available || status.driver !== "supabase") {
-    return null;
-  }
-
-  return {
-    url: (process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL)!,
-    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    bucket: status.bucket,
-  };
 }

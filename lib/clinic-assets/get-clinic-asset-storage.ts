@@ -1,9 +1,12 @@
+import "server-only";
+
 import type { ClinicAssetStorage } from "@/lib/clinic-assets/clinic-asset-storage";
 import { clinicAssetStorageStatus } from "@/lib/clinic-assets/config";
 import { createMemoryClinicAssetStorage } from "@/lib/clinic-assets/memory-clinic-asset-storage";
-import { createSupabaseClinicAssetStorage } from "@/lib/clinic-assets/supabase-clinic-asset-storage";
+import { createR2ClinicAssetStorage } from "@/lib/clinic-assets/r2-clinic-asset-storage";
 
 let memoryStorage: ClinicAssetStorage | null = null;
+let r2Storage: ClinicAssetStorage | null = null;
 
 export function getClinicAssetStorage(): ClinicAssetStorage | null {
   const status = clinicAssetStorageStatus();
@@ -11,8 +14,11 @@ export function getClinicAssetStorage(): ClinicAssetStorage | null {
     return null;
   }
 
-  if (status.driver === "supabase") {
-    return createSupabaseClinicAssetStorage();
+  if (status.driver === "r2") {
+    if (!r2Storage) {
+      r2Storage = createR2ClinicAssetStorage();
+    }
+    return r2Storage;
   }
 
   if (!memoryStorage) {
@@ -21,7 +27,8 @@ export function getClinicAssetStorage(): ClinicAssetStorage | null {
   return memoryStorage;
 }
 
-/** Test-only: drop the memoized memory driver. */
+/** Test-only: drop memoized drivers. */
 export function resetClinicAssetStorageCache(): void {
   memoryStorage = null;
+  r2Storage = null;
 }

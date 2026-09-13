@@ -182,6 +182,10 @@ const PUBLIC_LOGO_PATH =
 const STORAGE_KEY =
   /^clinics\/([A-Za-z0-9._-]+)\/branding\/([A-Za-z0-9._-]+\.(?:png|jpe?g|webp|svg))$/;
 
+export function isClinicLogoStorageKey(value: string): boolean {
+  return STORAGE_KEY.test(value);
+}
+
 export function clinicLogoPublicPath(storageKey: string): string | null {
   const match = STORAGE_KEY.exec(storageKey);
   if (!match) {
@@ -201,6 +205,28 @@ export function storageKeyFromClinicLogoPath(
     return null;
   }
   return `clinics/${match[1]}/branding/${match[2]}`;
+}
+
+export function clinicLogoStorageKeyFromStoredValue(
+  value: string | null | undefined
+): string | null {
+  if (!value) {
+    return null;
+  }
+  const trimmed = value.trim();
+  if (isClinicLogoStorageKey(trimmed)) {
+    return trimmed;
+  }
+  return storageKeyFromClinicLogoPath(trimmed);
+}
+
+export function isOwnedClinicBrandingKey(
+  clinicId: string,
+  storageKey: string | null | undefined
+): storageKey is string {
+  return Boolean(
+    storageKey && storageKey.startsWith(`clinics/${clinicId}/branding/`)
+  );
 }
 
 export function mimeTypeForClinicLogoExtension(

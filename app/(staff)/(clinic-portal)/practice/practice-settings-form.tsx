@@ -40,11 +40,13 @@ function scrollToSection(id: string) {
 
 export function PracticeSettingsForm({
   values,
+  logoSrc,
   canEdit,
   patientSiteHref,
   storageAvailable,
 }: {
   values: PracticeSettingsInput;
+  logoSrc: string | null;
   canEdit: boolean;
   patientSiteHref: string | null;
   storageAvailable: boolean;
@@ -204,11 +206,12 @@ export function PracticeSettingsForm({
           <PracticeLogoField
             displayName={form.displayName}
             logoUrl={form.logoUrl}
+            logoSrc={logoSrc}
             canEdit={canEdit}
             storageAvailable={storageAvailable}
-            onLogoUrlChange={(logoUrl) => {
+            onLogoChange={(nextLogo) => {
               setForm((current) => {
-                const next = { ...current, logoUrl };
+                const next = { ...current, logoUrl: nextLogo.logoUrl };
                 setConfirmed(snapshot(next));
                 return next;
               });

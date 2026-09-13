@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { PracticeSettingsForm } from "@/app/(staff)/(clinic-portal)/practice/practice-settings-form";
 import { requireClinicAdmin } from "@/lib/auth/require-clinic-admin";
 import { isClinicAssetStorageConfigured } from "@/lib/clinic-assets/config";
+import { resolveClinicLogoSrc } from "@/lib/clinic-assets/public-url";
 import { getClinicPortalOverview } from "@/lib/clinic-portal/get-clinic-portal";
 import { prisma } from "@/lib/prisma";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
@@ -45,6 +46,7 @@ export default async function PracticePage() {
         canEdit={clinicMembership.role === ClinicMembershipRole.ADMIN}
         patientSiteHref={overview.patientSiteHref}
         storageAvailable={isClinicAssetStorageConfigured()}
+        logoSrc={resolveClinicLogoSrc(profile?.logoUrl ?? null)}
         values={{
           displayName: profile?.displayName || overview.displayName,
           logoUrl: profile?.logoUrl ?? null,

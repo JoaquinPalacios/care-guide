@@ -40,6 +40,7 @@ export default defineConfig({
     env: {
       ...process.env,
       DATABASE_URL: e2eUrl,
+      CLINIC_ASSET_STORAGE_DRIVER: "memory",
       MARKETING_CONTACT_TO_EMAIL:
         process.env.MARKETING_CONTACT_TO_EMAIL ?? "hello@example.test",
       MARKETING_CONTACT_FROM_EMAIL:

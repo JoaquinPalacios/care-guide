@@ -5,7 +5,7 @@ import {
   removeClinicLogo,
   uploadClinicLogo,
 } from "@/lib/clinic-assets/mutate-clinic-logo";
-import { ClinicAssetStorageUnavailableError } from "@/lib/clinic-assets/supabase-clinic-asset-storage";
+import { ClinicAssetStorageUnavailableError } from "@/lib/clinic-assets/errors";
 import { isClinicPortalError } from "@/lib/clinic-portal/errors";
 import { practiceSettingsSchema } from "@/lib/clinic-portal/practice-settings-schema";
 import { updatePracticeSettings } from "@/lib/clinic-portal/update-practice-settings";
@@ -19,6 +19,7 @@ export interface PracticeActionState {
 export interface ClinicLogoActionState {
   error?: string;
   logoUrl?: string | null;
+  logoSrc?: string | null;
   ok?: boolean;
 }
 
@@ -109,7 +110,11 @@ export async function uploadClinicLogoAction(
       mimeType: file.type,
       fileName: file.name,
     });
-    return { ok: true, logoUrl: uploaded.logoUrl };
+    return {
+      ok: true,
+      logoUrl: uploaded.logoUrl,
+      logoSrc: uploaded.logoSrc,
+    };
   } catch (error) {
     return { error: logoError(error) };
   }
@@ -126,7 +131,7 @@ export async function removeClinicLogoAction(
       actorClinicId: clinicMembership.clinic.id,
       targetClinicId: clinicMembership.clinic.id,
     });
-    return { ok: true, logoUrl: null };
+    return { ok: true, logoUrl: null, logoSrc: null };
   } catch (error) {
     return { error: logoError(error) };
   }
