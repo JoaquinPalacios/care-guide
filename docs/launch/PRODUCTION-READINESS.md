@@ -18,7 +18,7 @@ Do not provision Vercel, Neon, Cloudflare, R2, domains, or email from this docum
 | Clinic portal                          | READY                                  | Overview / Guides / Practice, draft-preview-publish-unpublish-delete.                              |
 | Operator                               | READY                                  | All Clinics + SEO & Discovery. No Templates library UI.                                            |
 | Guide lifecycle                        | READY                                  | Draft / published / unpublished; public pin protected.                                             |
-| Canonical dental templates             | REQUIRED BEFORE PRODUCTION             | Seeded library is **Tooth Extraction** only. Marketing copy still mentions aspirational templates. |
+| Canonical dental templates             | REQUIRED BEFORE PRODUCTION             | Seeded library is **Tooth Extraction** only. Marketing no longer advertises unbuilt templates as available. |
 | Clinical governance / review ownership | REQUIRED BEFORE PRODUCTION             | Policy exists; no signed clinical review of production copy.                                       |
 | QR / share                             | RECOMMENDED BEFORE FIRST PAYING CLINIC | Durable URLs exist. Copy-URL UI, QR generation, and QR download/print are **not** implemented.     |
 | Check-ins / RecoveryPlan               | POST-LAUNCH                            | Explicitly out of this phase.                                                                      |
@@ -32,7 +32,7 @@ Do not provision Vercel, Neon, Cloudflare, R2, domains, or email from this docum
 | Sitemap / robots   | READY                                  | Marketing only; staff/operator/tenant noindex preserved.                                         |
 | llms.txt           | READY                                  | `/llms.txt`. `llms-full.txt` skipped (corpus too small).                                         |
 | Agentic readiness  | READY                                  | Architecture audit in [AGENTIC-READINESS.md](AGENTIC-READINESS.md). No numeric Is Agentic score. |
-| Privacy / Terms    | REQUIRED BEFORE PRODUCTION             | [LEGAL-REQUIREMENTS.md](LEGAL-REQUIREMENTS.md).                                                  |
+| Privacy / Terms    | REQUIRED BEFORE PRODUCTION             | Substantial drafts published at `/privacy` and `/terms`. **Legal review still required.** Not approved. |
 | About              | READY                                  | Factual public page.                                                                             |
 | Dedicated OG image | RECOMMENDED BEFORE FIRST PAYING CLINIC | Missing 1200×630 asset.                                                                          |
 
@@ -88,8 +88,8 @@ Do not provision Vercel, Neon, Cloudflare, R2, domains, or email from this docum
 
 | Item                       | Status                     | Notes               |
 | -------------------------- | -------------------------- | ------------------- |
-| Privacy                    | REQUIRED BEFORE PRODUCTION | Blocked.            |
-| Terms                      | REQUIRED BEFORE PRODUCTION | Blocked.            |
+| Privacy                    | REQUIRED BEFORE PRODUCTION | Substantial draft implemented — LEGAL REVIEW STILL REQUIRED. **Not approved.** |
+| Terms                      | REQUIRED BEFORE PRODUCTION | Substantial draft implemented — LEGAL REVIEW STILL REQUIRED. **Not approved.** |
 | Medical/content disclaimer | REQUIRED BEFORE PRODUCTION | Part of legal pack. |
 
 ## Operations
@@ -156,7 +156,7 @@ Cloudflare as authoritative DNS plus `_acme-challenge` delegation to Vercel must
 | MUST BEFORE PRODUCTION     | Wildcard TLS staging proof (`_acme-challenge` → Vercel)          | Yes                   | Prove on a test domain                                |
 | MUST BEFORE PRODUCTION     | Neon Sydney + backups + migrate deploy                           | Yes                   | Provision; never from this branch automatically       |
 | MUST BEFORE PRODUCTION     | R2 (or equivalent) clinic-logo bucket                            | Yes                   | Follow ADR 0019                                       |
-| MUST BEFORE PRODUCTION     | Privacy + Terms approved copy                                    | Yes                   | Counsel; then implement pages                         |
+| MUST BEFORE PRODUCTION     | Privacy + Terms counsel approval of published drafts             | Yes                   | Legal review; do not mark approved until counsel signs |
 | MUST BEFORE PRODUCTION     | Public mailbox + SPF/DKIM/DMARC + delivery                       | Yes                   | Brand-domain inbox; Resend or SMTP                    |
 | MUST BEFORE PRODUCTION     | Turnstile on login/contact                                       | Yes                   | Cloudflare widget                                     |
 | MUST BEFORE PRODUCTION     | Error monitoring + secrets review                                | Yes                   | Sentry or equivalent                                  |

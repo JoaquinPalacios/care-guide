@@ -15,11 +15,15 @@ describe("llms.txt", () => {
     expect(body).toContain("https://example.test/pricing");
     expect(body).toContain("https://example.test/contact");
     expect(body).toContain("https://example.test/about");
+    expect(body).toContain("https://example.test/privacy");
+    expect(body).toContain("https://example.test/terms");
     expect(body).not.toContain("/operator");
     expect(body).not.toContain("/login");
     expect(body).not.toContain("/dashboard");
     expect(body).not.toContain("certified");
     expect(shouldPublishLlmsFull(4)).toBe(false);
+    expect(shouldPublishLlmsFull(6)).toBe(false);
+    expect(shouldPublishLlmsFull(8)).toBe(true);
   });
 });
 
@@ -33,6 +37,8 @@ describe("marketing sitemap builder", () => {
       "http://localhost/pricing",
       "http://localhost/contact",
       "http://localhost/about",
+      "http://localhost/privacy",
+      "http://localhost/terms",
     ]);
     expect(entries.every((entry) => entry.lastModified === undefined)).toBe(
       true

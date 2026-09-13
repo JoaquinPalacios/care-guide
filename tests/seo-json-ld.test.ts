@@ -77,6 +77,15 @@ describe("marketing JSON-LD", () => {
       "https://example.test"
     );
 
+    const privacy = buildMarketingJsonLdGraph(
+      resolveMarketingSeo({ path: "/privacy", origin: "https://example.test" }),
+      "https://example.test"
+    );
+    const terms = buildMarketingJsonLdGraph(
+      resolveMarketingSeo({ path: "/terms", origin: "https://example.test" }),
+      "https://example.test"
+    );
+
     expect(
       contact["@graph"].some((node) => node["@type"] === "ContactPage")
     ).toBe(true);
@@ -85,6 +94,14 @@ describe("marketing JSON-LD", () => {
     );
     expect(jsonLdContainsOffer(pricing)).toBe(false);
     expect(JSON.stringify(pricing)).not.toContain("priceCurrency");
+    expect(privacy["@graph"].some((node) => node["@type"] === "WebPage")).toBe(
+      true
+    );
+    expect(terms["@graph"].some((node) => node["@type"] === "WebPage")).toBe(
+      true
+    );
+    expect(JSON.stringify(privacy)).not.toContain("HIPAA");
+    expect(JSON.stringify(terms)).not.toContain("MedicalWebPage");
   });
 
   it("serializes JSON-LD without raw HTML injection", () => {

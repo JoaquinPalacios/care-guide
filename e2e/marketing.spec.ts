@@ -202,7 +202,7 @@ test.describe("marketing homepage", () => {
         "/marketing/iphone-frame.webp"
       );
       await expect(
-        hero.locator('[class*="deviceStage"]').getByText("Your recovery")
+        hero.locator('[class*="deviceStage"]').getByText("Recovery overview")
       ).toBeVisible();
       await expect(
         hero.locator('[class*="deviceStage"]').getByText("Tooth Extraction")
@@ -211,7 +211,7 @@ test.describe("marketing homepage", () => {
         hero
           .locator('[class*="deviceStage"]')
           .getByText("Step-by-step guidance after treatment.")
-      ).toBeVisible();
+      ).toHaveCount(0);
       await expect(
         hero
           .locator('[class*="deviceStage"]')
@@ -222,14 +222,19 @@ test.describe("marketing homepage", () => {
       ).toBeVisible();
       await expect(
         hero.locator('[class*="deviceStage"]').getByText("Need help?")
+      ).toHaveCount(0);
+      await expect(
+        hero
+          .locator('[class*="deviceStage"]')
+          .getByText("Questions about your recovery?")
       ).toBeVisible();
       await expect(
         hero
           .locator('[class*="deviceStage"]')
-          .getByText("Call Riverside Dental →")
+          .getByText("Call Riverside Dental Demo")
       ).toBeVisible();
       await expect(
-        page.getByRole("link", { name: "Call Riverside Dental →" })
+        page.getByRole("link", { name: "Call Riverside Dental Demo" })
       ).toHaveCount(0);
       await expect(
         hero.locator('[class*="deviceStage"]').getByText(/book/i)
@@ -728,6 +733,12 @@ test.describe("marketing homepage", () => {
       ).toHaveCount(0);
       await expect(
         footerNav.getByRole("link", { name: "How it works" })
+      ).toHaveCount(0);
+      await expect(
+        footerNav.getByRole("link", { name: "Clinic preview" })
+      ).toHaveCount(0);
+      await expect(
+        footerNav.getByRole("link", { name: "Privacy" })
       ).toBeVisible();
 
       const wordmark = page.getByRole("banner").getByRole("link", {

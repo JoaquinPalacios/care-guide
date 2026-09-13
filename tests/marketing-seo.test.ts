@@ -61,6 +61,8 @@ describe("marketing crawl files", () => {
       "http://localhost/pricing",
       "http://localhost/contact",
       "http://localhost/about",
+      "http://localhost/privacy",
+      "http://localhost/terms",
     ]);
     expect(urls.join(" ")).not.toContain("/_marketing");
     expect(urls.join(" ")).not.toContain("/_sites");
@@ -71,7 +73,15 @@ describe("marketing crawl files", () => {
     delete process.env.CARE_GUIDE_METADATA_BASE;
     const document = robots();
     expect(document.rules).toMatchObject({
-      allow: ["/", "/pricing", "/contact", "/about", "/llms.txt"],
+      allow: [
+        "/",
+        "/pricing",
+        "/contact",
+        "/about",
+        "/privacy",
+        "/terms",
+        "/llms.txt",
+      ],
       disallow: expect.arrayContaining([
         "/_marketing",
         "/_sites",

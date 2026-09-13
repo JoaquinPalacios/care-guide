@@ -25,10 +25,10 @@ Do not implement features solely to game a score. Recommended API/MCP/GraphQL ch
 | Sitemap                                   | PASS             | Marketing only, real canonical URLs.                                                                                                  |
 | robots.txt                                | PASS             | Allows public marketing; disallows internal prefixes. Metadata noindex remains the authority for private pages.                       |
 | llms.txt                                  | PASS             | `/llms.txt` generated from product identity and public routes.                                                                        |
-| llms-full.txt                             | GAP              | Skipped. Four public pages are too small to justify a second full-text dump.                                                          |
+| llms-full.txt                             | GAP              | Skipped. Six public pages are still below the threshold for a second full-text dump.                                                  |
 | Clear site/product purpose                | PASS             | Homepage, About, and llms.txt state what River Aftercare is.                                                                          |
 | “When to use” agent guidance              | PASS             | `/llms.txt` includes a when-to-use section.                                                                                           |
-| Trust / contact pages                     | GAP              | About and Contact exist. Privacy and Terms are unpublished pending approved legal copy.                                               |
+| Trust / contact pages                     | PASS             | About, Contact, Privacy, and Terms exist. Privacy/Terms remain drafts; legal approval is still a launch gate.                         |
 | Authenticated surfaces                    | PASS             | Staff/operator/preview are noindex and behind auth.                                                                                   |
 | Public API / GraphQL / MCP / Agent Skills | N/A              | Not a product capability. Do not add for scoring.                                                                                     |
 | robots/CDN blocking legitimate agents     | POST-DEPLOY TEST | Turnstile, Cloudflare bot fight, and future CDN rules must not block ordinary retrieval of public HTML, sitemap, robots, or llms.txt. |

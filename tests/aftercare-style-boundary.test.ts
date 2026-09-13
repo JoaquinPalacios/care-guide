@@ -248,7 +248,10 @@ describe("aftercare style boundary", () => {
     expect(styles).toContain("processVisual");
     expect(styles).toContain("pillarGrid");
     expect(styles).toContain("pillarCard");
-    expect(styles).toContain("frictionList");
+    expect(styles).not.toContain("frictionList");
+    expect(styles).not.toContain("storyList");
+    expect(styles).toContain("numberedSteps");
+    expect(styles).toContain("numberedStepRule");
     expect(styles).toContain("productCanvas");
     expect(styles).toContain("productVisual");
     expect(styles).toContain("grid-template-areas");
@@ -280,9 +283,11 @@ describe("aftercare style boundary", () => {
     expect(preview).toContain('fetchPriority="low"');
     expect(preview).not.toContain("<button");
     expect(preview).not.toContain("<a ");
-    expect(preview).toContain("Your recovery");
-    expect(preview).toContain("Need help?");
-    expect(preview).toContain("Call Riverside Dental");
+    expect(preview).toContain("Recovery overview");
+    expect(preview).not.toContain("Your recovery");
+    expect(preview).toContain("Questions about your recovery?");
+    expect(preview).toContain("Call Riverside Dental Demo");
+    expect(preview).toContain("data-patient-theme");
     expect(preview).not.toContain("Book an appointment");
   });
 

@@ -145,11 +145,24 @@ test.describe("marketing conversion routes", () => {
 
     await expect(footerNav.getByRole("link", { name: "About" })).toBeVisible();
     await expect(
+      footerNav.getByRole("link", { name: "Pricing" })
+    ).toBeVisible();
+    await expect(
       footerNav.getByRole("link", { name: "Contact" })
     ).toBeVisible();
     await expect(
+      footerNav.getByRole("link", { name: "Privacy" })
+    ).toBeVisible();
+    await expect(footerNav.getByRole("link", { name: "Terms" })).toBeVisible();
+    await expect(
       footerNav.getByRole("link", { name: "Staff sign in" })
     ).toBeVisible();
+    await expect(
+      footerNav.getByRole("link", { name: "How it works" })
+    ).toHaveCount(0);
+    await expect(
+      footerNav.getByRole("link", { name: "Clinic preview" })
+    ).toHaveCount(0);
     await expect(
       footerNav.getByRole("link", { name: "Early access" })
     ).toHaveCount(0);
@@ -347,7 +360,14 @@ test.describe("marketing conversion routes", () => {
         colorScheme,
         reducedMotion: "reduce",
       });
-      for (const pathname of ["/", "/pricing", "/contact", "/about"] as const) {
+      for (const pathname of [
+        "/",
+        "/pricing",
+        "/contact",
+        "/about",
+        "/privacy",
+        "/terms",
+      ] as const) {
         await page.goto(marketingUrl(pathname), { waitUntil: "load" });
         await showMarketingScheme(page, colorScheme);
         await page.evaluate(() => {
@@ -360,7 +380,13 @@ test.describe("marketing conversion routes", () => {
       }
 
       await page.setViewportSize({ width: 390, height: 844 });
-      for (const pathname of ["/pricing", "/contact", "/about"] as const) {
+      for (const pathname of [
+        "/pricing",
+        "/contact",
+        "/about",
+        "/privacy",
+        "/terms",
+      ] as const) {
         await page.goto(marketingUrl(pathname), { waitUntil: "load" });
         await showMarketingScheme(page, colorScheme);
         await page.evaluate(() => {

@@ -72,7 +72,7 @@ describe("proxy", () => {
     );
   });
 
-  it("rewrites marketing pricing, contact, and about to /_marketing/...", () => {
+  it("rewrites marketing pricing, contact, about, privacy, and terms to /_marketing/...", () => {
     const pricing = proxy(requestFor("http://localhost:3000/pricing"));
     expect(pricing.status).toBe(200);
     expect(rewrittenUrl(pricing)?.pathname).toBe("/_marketing/pricing");
@@ -84,6 +84,14 @@ describe("proxy", () => {
     const about = proxy(requestFor("http://localhost:3000/about"));
     expect(about.status).toBe(200);
     expect(rewrittenUrl(about)?.pathname).toBe("/_marketing/about");
+
+    const privacy = proxy(requestFor("http://localhost:3000/privacy"));
+    expect(privacy.status).toBe(200);
+    expect(rewrittenUrl(privacy)?.pathname).toBe("/_marketing/privacy");
+
+    const terms = proxy(requestFor("http://localhost:3000/terms"));
+    expect(terms.status).toBe(200);
+    expect(rewrittenUrl(terms)?.pathname).toBe("/_marketing/terms");
   });
 
   it("lets sitemap, robots, and llms.txt pass through on the marketing host", () => {

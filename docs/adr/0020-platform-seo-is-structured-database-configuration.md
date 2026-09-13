@@ -22,7 +22,7 @@ A raw `seo.json` file or an operator JSON-LD textarea would turn the control pla
 
 - Operator SEO & Discovery is a real platform-OPERATOR feature.
 - Public pages keep working without a seeded row.
-- Adding `/privacy` or `/terms` later is an additive known-path change after legal copy exists.
+- `/privacy` and `/terms` are known marketing paths. SEO metadata is editable in the structured operator form. Body copy is code-owned legal draft, not a CMS. Legal approval remains a launch gate.
 - Clinic guide SEO remains attached to clinic/guide resources, not this singleton CMS.
 
 ## Notes for later implementation

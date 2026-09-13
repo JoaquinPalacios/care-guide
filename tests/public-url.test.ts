@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { labeledPublicUrl } from "@/lib/tenancy/public-url";
+import { apexPublicUrl, labeledPublicUrl } from "@/lib/tenancy/public-url";
 
 describe("labeledPublicUrl", () => {
   it("builds a demo tenant URL from the local marketing host", () => {
@@ -59,5 +59,29 @@ describe("labeledPublicUrl", () => {
         label: "foo.bar",
       })
     ).toBeNull();
+  });
+
+  it("builds the marketing apex from staff and marketing hosts", () => {
+    expect(
+      apexPublicUrl({
+        requestHost: "app.localhost:3000",
+        rootDomain: "localhost",
+        protocol: "http",
+      })
+    ).toBe("http://localhost:3000/");
+    expect(
+      apexPublicUrl({
+        requestHost: "localhost:3000",
+        rootDomain: "localhost",
+        protocol: "http",
+      })
+    ).toBe("http://localhost:3000/");
+    expect(
+      apexPublicUrl({
+        requestHost: "app.example.com",
+        rootDomain: "example.com",
+        protocol: "https",
+      })
+    ).toBe("https://example.com/");
   });
 });

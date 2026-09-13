@@ -50,7 +50,14 @@ describe("marketing pricing page", () => {
     expect(html).toContain("Connected recovery plans");
     expect(html).toContain("Assisted onboarding is available");
     expect(html).toContain("Start with a reviewed template");
-    expect(html).toContain("storyIndex");
+    expect(html).toContain("Tooth Extraction");
+    expect(html).toContain("numberedStepIndex");
+    expect(html).toContain("numberedStepRule");
+    expect(html).not.toContain("Wisdom Teeth");
+    expect(html).not.toContain("Dental Implant");
+    expect(html).not.toContain("Periodontal Deep Cleaning");
+    expect(html).not.toContain("Root Canal");
+    expect(html).not.toContain("storyIndex");
     expect(html).not.toContain("frictionIndex");
     expect(html).not.toContain("A$249");
     expect(html).not.toContain("A$499");

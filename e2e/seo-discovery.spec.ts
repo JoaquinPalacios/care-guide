@@ -142,6 +142,8 @@ test.describe("Phase 2B SEO and discovery", () => {
     expect(llmsBody).toContain("# River Aftercare");
     expect(llmsBody).toContain("/pricing");
     expect(llmsBody).toContain("/about");
+    expect(llmsBody).toContain("/privacy");
+    expect(llmsBody).toContain("/terms");
     expect(llmsBody).not.toContain("/operator");
     expect(llmsBody).not.toContain("/login");
 
@@ -150,6 +152,8 @@ test.describe("Phase 2B SEO and discovery", () => {
     });
     const sitemapBody = (await sitemap?.text()) ?? "";
     expect(sitemapBody).toContain("/about");
+    expect(sitemapBody).toContain("/privacy");
+    expect(sitemapBody).toContain("/terms");
     expect(sitemapBody).not.toContain("demodental");
     expect(sitemapBody).not.toContain("/operator");
   });

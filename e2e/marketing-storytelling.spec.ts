@@ -624,8 +624,10 @@ test.describe("Phase 1F.11 story clarity", () => {
       section.getByText("riverside.[your-domain]/extraction")
     ).toBeVisible();
     await expect(section.getByText("Call the practice →")).toBeVisible();
-    await expect(section.getByText("Dental Implant")).toBeVisible();
-    await expect(section.getByText("Root Canal")).toBeVisible();
+    await expect(section.getByText("More templates at onboarding")).toBeVisible();
+    await expect(section.getByText("Custom clinic guides")).toBeVisible();
+    await expect(section.getByText("Dental Implant")).toHaveCount(0);
+    await expect(section.getByText("Root Canal")).toHaveCount(0);
     await expect(
       section.getByRole("link", { name: "Tooth Extraction" })
     ).toHaveCount(0);
@@ -1240,7 +1242,7 @@ test.describe("Phase 1F.11 story clarity", () => {
 
     const footerLink = page
       .getByRole("navigation", { name: "Footer" })
-      .getByRole("link", { name: "Clinic preview" });
+      .getByRole("link", { name: "About" });
     await footerLink.scrollIntoViewIfNeeded();
     const footerAfter = await footerLink.evaluate((element) => {
       const after = getComputedStyle(element, "::after");

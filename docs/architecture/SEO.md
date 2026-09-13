@@ -6,7 +6,7 @@ Phase 2B production-quality discovery layer. This remains a **structured clinica
 
 | Surface                                           | Host                            | Index  | Follow | Sitemap | Notes                                                                   |
 | ------------------------------------------------- | ------------------------------- | ------ | ------ | ------- | ----------------------------------------------------------------------- |
-| Marketing `/`, `/pricing`, `/contact`, `/about`   | apex / `localhost`              | yes    | yes    | yes     | Title, description, canonical, Open Graph, Twitter, generated JSON-LD   |
+| Marketing `/`, `/pricing`, `/contact`, `/about`, `/privacy`, `/terms` | apex / `localhost` | yes | yes | yes | Title, description, canonical, Open Graph, Twitter, generated JSON-LD. Privacy/Terms are drafts, still indexable. |
 | `/llms.txt`                                       | apex                            | n/a    | n/a    | no      | Agent-oriented public summary generated from identity + public routes   |
 | Staff portal `/dashboard`, `/guides`, `/practice` | `app.<root>`                    | no     | no     | no      | Authenticated clinic chrome                                             |
 | Operator `/operator/*`                            | `app.<root>`                    | no     | no     | no      | Includes SEO & Discovery                                                |
@@ -14,7 +14,6 @@ Phase 2B production-quality discovery layer. This remains a **structured clinica
 | Parked chairside `/display`, `/sessions`          | `app.<root>`                    | no     | no     | no      | Existing anti-index posture                                             |
 | Tenant home and published guides                  | `<clinic>.<root>`               | **no** | yes    | **no**  | Shareable aftercare documents; clinic-first metadata; not SEO inventory |
 | Internal rewrites `/_marketing`, `/_sites`        | n/a                             | no     | no     | no      | Blocked from the public Host                                            |
-| `/privacy`, `/terms`                              | not published                   | —      | —      | no      | Launch blockers until approved legal copy exists                        |
 
 Page-level Next.js `robots` metadata is the real noindex control. `robots.txt` is a crawl hint, not a substitute.
 

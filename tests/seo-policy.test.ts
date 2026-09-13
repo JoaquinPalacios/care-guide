@@ -12,6 +12,8 @@ import {
   HOME_METADATA,
   marketingPageMetadata,
   PRICING_METADATA,
+  PRIVACY_METADATA,
+  TERMS_METADATA,
 } from "@/lib/marketing/metadata";
 import { marketingSiteOrigin } from "@/lib/marketing/site";
 import { sanitizeMetadataText } from "@/lib/seo/metadata-text";
@@ -37,6 +39,12 @@ describe("launch SEO policy", () => {
     const contact = marketingPageMetadata(CONTACT_METADATA, {
       pathname: "/contact",
     });
+    const privacy = marketingPageMetadata(PRIVACY_METADATA, {
+      pathname: "/privacy",
+    });
+    const terms = marketingPageMetadata(TERMS_METADATA, {
+      pathname: "/terms",
+    });
 
     expect(home.robots).toEqual(INDEXABLE_ROBOTS);
     expect(home.alternates?.canonical).toBe(`${marketingSiteOrigin()}/`);
@@ -50,6 +58,14 @@ describe("launch SEO policy", () => {
       `${marketingSiteOrigin()}/contact`
     );
     expect(JSON.stringify(contact.twitter)).toContain('"card":"summary"');
+    expect(privacy.robots).toEqual(INDEXABLE_ROBOTS);
+    expect(privacy.alternates?.canonical).toBe(
+      `${marketingSiteOrigin()}/privacy`
+    );
+    expect(terms.robots).toEqual(INDEXABLE_ROBOTS);
+    expect(terms.alternates?.canonical).toBe(`${marketingSiteOrigin()}/terms`);
+    expect(privacy.openGraph?.title).toContain("Privacy");
+    expect(terms.openGraph?.title).toContain("Terms");
   });
 
   it("marks staff, operator, and authenticated preview as private", () => {
@@ -116,6 +132,8 @@ describe("launch SEO policy", () => {
         "http://localhost/pricing",
         "http://localhost/contact",
         "http://localhost/about",
+        "http://localhost/privacy",
+        "http://localhost/terms",
       ]);
       expect(urls.join(" ")).not.toContain("/dashboard");
       expect(urls.join(" ")).not.toContain("/guides");

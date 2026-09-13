@@ -13,7 +13,7 @@ import {
   measureHorizontalOverflow,
   relativeLuminance,
 } from "./helpers/layout";
-import { DEMO_TENANT_SLUG, staffUrl, tenantUrl } from "./helpers/origins";
+import { DEMO_TENANT_SLUG, marketingUrl, staffUrl, tenantUrl } from "./helpers/origins";
 import {
   signInAsLocalAdmin,
   signInAsLocalOperator,
@@ -206,6 +206,9 @@ test.describe("clinic portal", () => {
     page,
   }) => {
     await page.goto(staffUrl("/login"), { waitUntil: "load" });
+    await expect(
+      page.getByRole("link", { name: "Back to River Aftercare" })
+    ).toHaveAttribute("href", marketingUrl("/"));
     const password = page.locator("#password");
     await password.fill("LocalOnly123!");
     await expect(password).toHaveAttribute("type", "password");
