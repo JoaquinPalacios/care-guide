@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  startTransition,
-  useActionState,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import {
@@ -42,10 +36,8 @@ export function PracticeLogoField({
     uploadClinicLogoAction,
     empty
   );
-  const [removeState, removeAction, removing] = useActionState(
-    removeClinicLogoAction,
-    empty
-  );
+  const [removing, setRemoving] = useState(false);
+  const [removeError, setRemoveError] = useState<string | undefined>();
 
   useEffect(() => {
     setMounted(true);
@@ -68,14 +60,25 @@ export function PracticeLogoField({
     }
   }, [uploadState, onLogoChange]);
 
-  useEffect(() => {
-    if (removeState.ok) {
-      setLogoSrc(null);
-      onLogoChange({ logoUrl: null, logoSrc: null });
+  async function removeLogo(): Promise<void> {
+    setRemoving(true);
+    setRemoveError(undefined);
+    try {
+      const data = new FormData();
+      data.set("intent", "remove-logo");
+      const result = await removeClinicLogoAction(empty, data);
+      if (result.ok) {
+        setLogoSrc(null);
+        onLogoChange({ logoUrl: null, logoSrc: null });
+        return;
+      }
+      setRemoveError(result.error ?? "Could not update the clinic logo.");
+    } finally {
+      setRemoving(false);
     }
-  }, [removeState, onLogoChange]);
+  }
 
-  const error = uploadState.error ?? removeState.error;
+  const error = uploadState.error ?? removeError;
   const previewSrc = logoSrc;
 
   return (
@@ -129,11 +132,7 @@ export function PracticeLogoField({
               disabled={uploading || removing}
               className="staffBtn staffBtnQuiet"
               onClick={() => {
-                startTransition(() => {
-                  const data = new FormData();
-                  data.set("intent", "remove-logo");
-                  removeAction(data);
-                });
+                void removeLogo();
               }}
             >
               {removing ? "Removing…" : "Remove"}
@@ -155,7 +154,7 @@ export function PracticeLogoField({
         </p>
       ) : null}
 
-      {uploadState.ok && !error ? (
+      {uploadState.ok && !error && previewSrc ? (
         <p className="text-sm text-staff-muted" role="status">
           Uploaded
         </p>
