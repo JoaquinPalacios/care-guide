@@ -871,16 +871,16 @@ Date: 2026-09-12
 
 Portal composition and operational polish. No Check-ins, RecoveryPlan, billing, analytics, NestJS, or production logo upload.
 
-| Area           | Behaviour                                                                                                                                                                                             |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Editor         | Slim sticky toolbar: title, Draft pill, Saved/Unsaved/Saving…, Cancel / Save draft / Publish. Right rail is the live patient timeline preview. Mobile keeps the bottom bar and a collapsible preview. |
-| Practice       | Horizontal overflow removed via `min-width: 0` / `minmax(0, …)` on fields, selects, colour row, and the 3-column address grid. Form max-width ~42rem.                                                 |
-| Dialogs        | Native `<dialog>` with application surface, header/body/footer, portal tokens, light/dark.                                                                                                            |
-| Sign out       | Full sidebar utility row: entire row click/hover/focus, ≥44px, not a red destructive control.                                                                                                         |
-| Logo           | **BLOCKED** by external storage provisioning. `ClinicAssetStorage` + Supabase adapter exist; Practice shows preview + unavailable copy; no file input; no filesystem upload. See CLINIC-ASSETS.md.    |
-| Operator       | PLATFORM / All Clinics. Real summary: total / configured / published guides / needs attention. Clickable clinic rows via a real link. Nav remains Clinics only. Templates is next, not built.         |
-| Architecture   | Next.js App Router remains the launch backend. Extraction triggers documented in APPLICATION.md.                                                                                                      |
-| Seats (policy) | Essential 2, Practice 5, Group custom named users. No shared clinic login. Team/Users management is later.                                                                                            |
+| Area           | Behaviour                                                                                                                                                                                                        |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Editor         | Slim sticky toolbar: title, Draft pill, Saved/Unsaved/Saving…, Cancel / Save draft / Publish. Right rail is the live patient timeline preview. Mobile keeps the bottom bar and a collapsible preview.            |
+| Practice       | Horizontal overflow removed via `min-width: 0` / `minmax(0, …)` on fields, selects, colour row, and the 3-column address grid. Form max-width ~42rem.                                                            |
+| Dialogs        | Native `<dialog>` with application surface, header/body/footer, portal tokens, light/dark.                                                                                                                       |
+| Sign out       | Full sidebar utility row: entire row click/hover/focus, ≥44px, not a red destructive control.                                                                                                                    |
+| Logo           | Application upload path is implemented (ADMIN, R2/memory). Production still needs Joaquín to provision Cloudflare R2 — see R2 clinic asset storage below and [R2-PROVISIONING.md](../launch/R2-PROVISIONING.md). |
+| Operator       | PLATFORM / All Clinics. Real summary: total / configured / published guides / needs attention. Clickable clinic rows via a real link. Nav remains Clinics only. Templates is next, not built.                    |
+| Architecture   | Next.js App Router remains the launch backend. Extraction triggers documented in APPLICATION.md.                                                                                                                 |
+| Seats (policy) | Essential 2, Practice 5, Group custom named users. No shared clinic login. Team/Users management is later.                                                                                                       |
 
 ---
 
