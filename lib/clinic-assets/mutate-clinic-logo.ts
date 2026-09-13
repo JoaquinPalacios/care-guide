@@ -218,4 +218,9 @@ export async function removeClinicLogo(input: {
       });
     }
   }
+
+  logClinicAsset("remove_succeeded", {
+    clinicId: input.targetClinicId,
+    ...(previousKey ? { storageKey: previousKey } : {}),
+  });
 }

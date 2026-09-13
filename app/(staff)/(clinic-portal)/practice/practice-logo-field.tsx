@@ -1,6 +1,12 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import {
+  startTransition,
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 
 import {
@@ -119,10 +125,16 @@ export function PracticeLogoField({
           </button>
           {logoUrl ? (
             <button
-              form="clinic-logo-remove"
-              type="submit"
+              type="button"
               disabled={uploading || removing}
               className="staffBtn staffBtnQuiet"
+              onClick={() => {
+                startTransition(() => {
+                  const data = new FormData();
+                  data.set("intent", "remove-logo");
+                  removeAction(data);
+                });
+              }}
             >
               {removing ? "Removing…" : "Remove"}
             </button>
@@ -157,10 +169,7 @@ export function PracticeLogoField({
 
       {mounted && storageAvailable && canEdit
         ? createPortal(
-            <>
-              <form id="clinic-logo-upload" action={uploadAction} />
-              <form id="clinic-logo-remove" action={removeAction} />
-            </>,
+            <form id="clinic-logo-upload" action={uploadAction} />,
             document.body
           )
         : null}

@@ -37,9 +37,7 @@ test.describe("clinic logo upload", () => {
     await e2ePrisma.$disconnect();
   });
 
-  test("ADMIN can upload, replace, and remove a logo; STAFF cannot", async ({
-    page,
-  }) => {
+  test("ADMIN can upload, replace, and remove a logo", async ({ page }) => {
     mkdirSync(ARTIFACT_DIR, { recursive: true });
     mkdirSync("test-results/artifacts", { recursive: true });
 
@@ -122,6 +120,9 @@ test.describe("clinic logo upload", () => {
 
     await page.getByRole("button", { name: "Remove" }).click();
     await expect(page.getByText("No logo configured.")).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Upload logo" })
+    ).toBeVisible();
     await page.screenshot({
       path: `${ARTIFACT_DIR}/practice-removed.png`,
       fullPage: true,
@@ -139,7 +140,9 @@ test.describe("clinic logo upload", () => {
       fullPage: true,
     });
   });
+});
 
+test.describe("clinic logo STAFF restriction", () => {
   test("STAFF cannot open Practice to upload a logo", async ({ page }) => {
     await signInAsLocalStaff(page);
     const response = await page.goto(staffUrl("/practice"), {
