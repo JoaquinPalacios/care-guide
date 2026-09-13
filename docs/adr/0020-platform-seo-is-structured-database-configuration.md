@@ -1,0 +1,31 @@
+# ADR 0020 — Platform SEO is structured database configuration
+
+- **Status:** Accepted
+- **Date:** 2026-09-13
+- **PRD:** [../product/PRD.md](../product/PRD.md) §10 (publishing / public pages)
+
+## Context
+
+River Aftercare is a structured clinical aftercare publishing platform. Phase 2A.5 already defined marketing indexability and tenant noindex. Phase 2B needs operator-editable marketing metadata and generated JSON-LD.
+
+A raw `seo.json` file or an operator JSON-LD textarea would turn the control plane into a mini-CMS and create injection and self-destructive canonical risks.
+
+## Decision
+
+- Persist platform identity and per-route marketing metadata in Prisma (`PlatformSeoSettings`, `MarketingPageSeo`).
+- Generate JSON-LD from those fields. Never accept raw JSON, HTML, or scripts from operators.
+- Derive canonical URLs from the production origin + route. Do not make canonicals operator-editable.
+- Keep River Aftercare product constants as fallbacks when the settings row is absent.
+- Limit editable routes to known public marketing paths. Do not introduce a generic page-builder model.
+
+## Consequences
+
+- Operator SEO & Discovery is a real platform-OPERATOR feature.
+- Public pages keep working without a seeded row.
+- Adding `/privacy` or `/terms` later is an additive known-path change after legal copy exists.
+- Clinic guide SEO remains attached to clinic/guide resources, not this singleton CMS.
+
+## Notes for later implementation
+
+- A dedicated 1200×630 OG image is still required; do not stretch brand marks.
+- Do not add Offer price markup while published prices are provisional.

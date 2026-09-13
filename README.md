@@ -44,8 +44,9 @@ That chairside workflow is **parked / future optional**. Do not delete it. Do no
 Examples of **intended** product behaviour that do **not** exist in code yet:
 
 - QR codes for durable aftercare URLs
-- Care Guide operator aftercare admin
 - basic anonymous aftercare analytics
+- approved Privacy / Terms pages
+- production Vercel / Neon / Cloudflare provisioning
 
 Phase 1A did add the aftercare **domain model** (canonical template + pinned revision + practice override/addition) and demo seed. That is not the public product.
 
@@ -71,6 +72,7 @@ Public marketing:
 - [http://localhost:3000](http://localhost:3000)
 - [http://localhost:3000/pricing](http://localhost:3000/pricing)
 - [http://localhost:3000/contact](http://localhost:3000/contact)
+- [http://localhost:3000/about](http://localhost:3000/about)
 
 Tenant hostname simulation (`*.localhost`, no `/etc/hosts` changes):
 

@@ -137,7 +137,7 @@ Upload is **blocked** until production object storage is provisioned. Practice s
 
 The operator console is the River Aftercare operational control plane. Page identity is **PLATFORM / All Clinics**. Local seed identity may show **Demo Operator** as the account name; that is not a demo product.
 
-Current primary destination: **Clinics**. Do not add dead navigation. Canonical **Templates** management is the next operator-console capability and is not implemented here.
+Current destinations: **Clinics** and **SEO & Discovery**. Do not add dead navigation. Canonical **Templates** management is the next operator-console capability and is not implemented here.
 
 All Clinics may show real derived counts: total clinics, configured clinics, published guides, needs attention. No invented analytics.
 

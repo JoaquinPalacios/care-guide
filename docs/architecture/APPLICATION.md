@@ -25,6 +25,7 @@ Business rules should not live only inside React components. Current server modu
 | Practice configuration  | `lib/clinic-portal/update-practice-settings.ts`                       |
 | Authorization           | `lib/auth/require-*.ts`, `lib/clinic-assets/authorize-clinic-logo.ts` |
 | Operator clinic queries | `lib/operator/list-operator-clinics.ts`                               |
+| Platform SEO            | `lib/seo/*`                                                           |
 | Logo storage boundary   | `lib/clinic-assets/*`                                                 |
 
 Route handlers and Server Actions should generally: authorize → validate → call the module → map the result.
@@ -38,5 +39,6 @@ Evaluate a separate API service (NestJS or otherwise) only when one of these is 
 - substantial third-party integrations that need their own contract
 - substantial async workloads that do not fit Server Actions
 - independent backend scaling or a dedicated backend team
+- external agents publishing or reading structured guides (MCP / public agent APIs)
 
-Until then, keep extracting **modules**, not processes.
+Until then, keep extracting **modules**, not processes. Do not add MCP, GraphQL, or a public API solely to look agentic.

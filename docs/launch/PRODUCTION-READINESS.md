@@ -1,0 +1,169 @@
+# Production-readiness gate — River Aftercare
+
+Living launch checklist based on **current repository truth** (Phase 2B). Classifications:
+
+- **READY** — implemented locally and documented
+- **REQUIRED BEFORE PRODUCTION** — must be true before a public production hostname serves clinics or patients
+- **RECOMMENDED BEFORE FIRST PAYING CLINIC** — can wait for a design partner on staging, not for paid production use
+- **POST-LAUNCH** — roadmap after first clinics
+
+Do not provision Vercel, Neon, Cloudflare, R2, domains, or email from this document.
+
+## Product
+
+| Item                                   | Status                                 | Notes                                                                                              |
+| -------------------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Brand assets (logo, isologo, favicon)  | READY                                  | Final approved pack on main. Dedicated 1200×630 OG image still required.                           |
+| Patient UX                             | READY                                  | Tenant home + published guides, CSS Modules, no patient Tailwind.                                  |
+| Clinic portal                          | READY                                  | Overview / Guides / Practice, draft-preview-publish-unpublish-delete.                              |
+| Operator                               | READY                                  | All Clinics + SEO & Discovery. No Templates library UI.                                            |
+| Guide lifecycle                        | READY                                  | Draft / published / unpublished; public pin protected.                                             |
+| Canonical dental templates             | REQUIRED BEFORE PRODUCTION             | Seeded library is **Tooth Extraction** only. Marketing copy still mentions aspirational templates. |
+| Clinical governance / review ownership | REQUIRED BEFORE PRODUCTION             | Policy exists; no signed clinical review of production copy.                                       |
+| QR / share                             | RECOMMENDED BEFORE FIRST PAYING CLINIC | Durable URLs exist. Copy-URL UI, QR generation, and QR download/print are **not** implemented.     |
+| Check-ins / RecoveryPlan               | POST-LAUNCH                            | Explicitly out of this phase.                                                                      |
+
+## Discovery
+
+| Item               | Status                                 | Notes                                                                                            |
+| ------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Marketing SEO      | READY                                  | DB-backed settings with code fallbacks.                                                          |
+| JSON-LD            | READY                                  | Organization / WebSite / SoftwareApplication without Offer; ContactPage; AboutPage.              |
+| Sitemap / robots   | READY                                  | Marketing only; staff/operator/tenant noindex preserved.                                         |
+| llms.txt           | READY                                  | `/llms.txt`. `llms-full.txt` skipped (corpus too small).                                         |
+| Agentic readiness  | READY                                  | Architecture audit in [AGENTIC-READINESS.md](AGENTIC-READINESS.md). No numeric Is Agentic score. |
+| Privacy / Terms    | REQUIRED BEFORE PRODUCTION             | [LEGAL-REQUIREMENTS.md](LEGAL-REQUIREMENTS.md).                                                  |
+| About              | READY                                  | Factual public page.                                                                             |
+| Dedicated OG image | RECOMMENDED BEFORE FIRST PAYING CLINIC | Missing 1200×630 asset.                                                                          |
+
+## Infra
+
+| Item                         | Status                     | Notes                                                                                                                                                                                  |
+| ---------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Final domain                 | REQUIRED BEFORE PRODUCTION | Not selected.                                                                                                                                                                          |
+| Vercel (Next.js)             | REQUIRED BEFORE PRODUCTION | Desired host. Not provisioned in this phase.                                                                                                                                           |
+| Neon Sydney PostgreSQL       | REQUIRED BEFORE PRODUCTION | Desired region. Not provisioned.                                                                                                                                                       |
+| Cloudflare authoritative DNS | REQUIRED BEFORE PRODUCTION | Candidate. Not provisioned.                                                                                                                                                            |
+| R2 object storage            | REQUIRED BEFORE PRODUCTION | Clinic logo upload waits on a bucket ([ADR 0019](../adr/0019-clinic-logo-upload-requires-object-storage.md)).                                                                          |
+| Wildcard TLS staging proof   | REQUIRED BEFORE PRODUCTION | **Launch gate.** Cloudflare authoritative DNS + `_acme-challenge` delegation to Vercel must be proven on a **staging/test domain** before production domain cutover. This is not done. |
+| Production migrations        | REQUIRED BEFORE PRODUCTION | Additive `PlatformSeoSettings` / `MarketingPageSeo` migration exists locally.                                                                                                          |
+
+## Email
+
+| Item                        | Status                     | Notes                                                                                                       |
+| --------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Public mailbox              | REQUIRED BEFORE PRODUCTION | Recommend `hello@<brand-domain>`. Not created.                                                              |
+| Resend (or production SMTP) | REQUIRED BEFORE PRODUCTION | Contact currently uses nodemailer/SMTP env. Resend is the desired transactional direction, not implemented. |
+| SPF / DKIM / DMARC          | REQUIRED BEFORE PRODUCTION | Cannot exist until the domain and mail vendor exist.                                                        |
+| Inbound routing             | REQUIRED BEFORE PRODUCTION | Enquiry destination inbox.                                                                                  |
+
+## Security
+
+| Item                   | Status                                 | Notes                                                                                                                                                                                 |
+| ---------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Turnstile              | REQUIRED BEFORE PRODUCTION             | High priority; not implemented.                                                                                                                                                       |
+| Login rate limit       | REQUIRED BEFORE PRODUCTION             | Not a production-hardened limiter.                                                                                                                                                    |
+| Contact rate limit     | REQUIRED BEFORE PRODUCTION             | Baseline exists in marketing contact; confirm before public launch.                                                                                                                   |
+| Security headers / CSP | RECOMMENDED BEFORE FIRST PAYING CLINIC | Review at deploy.                                                                                                                                                                     |
+| Secrets review         | REQUIRED BEFORE PRODUCTION             | No production secrets in repo.                                                                                                                                                        |
+| Auth.js v5 beta        | REQUIRED BEFORE PRODUCTION             | Documented exception. Decision: treat as an **acceptable documented exception for first launch** unless a separate auth migration is approved. Do not silently switch to Better Auth. |
+
+## Data
+
+| Item           | Status                                 | Notes                                                                                                     |
+| -------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Backups        | REQUIRED BEFORE PRODUCTION             | Neon PITR/backups must be enabled in the chosen region.                                                   |
+| Restore drill  | RECOMMENDED BEFORE FIRST PAYING CLINIC | Prove restore once production DB exists.                                                                  |
+| DB region      | REQUIRED BEFORE PRODUCTION             | Desired: Neon Sydney.                                                                                     |
+| No patient PII | READY                                  | Aftercare MVP still has no patient identity ([ADR 0007](../adr/0007-no-patient-pii-required-for-mvp.md)). |
+
+## Content
+
+| Item                      | Status                     | Notes                                                                                            |
+| ------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------ |
+| Reviewed dental templates | REQUIRED BEFORE PRODUCTION | Only Tooth Extraction is seeded. Wisdom Teeth / Implant / Root Canal are **not** in the library. |
+| Clinical review ownership | REQUIRED BEFORE PRODUCTION | Named reviewer/process missing.                                                                  |
+
+## Legal
+
+| Item                       | Status                     | Notes               |
+| -------------------------- | -------------------------- | ------------------- |
+| Privacy                    | REQUIRED BEFORE PRODUCTION | Blocked.            |
+| Terms                      | REQUIRED BEFORE PRODUCTION | Blocked.            |
+| Medical/content disclaimer | REQUIRED BEFORE PRODUCTION | Part of legal pack. |
+
+## Operations
+
+| Item             | Status                                 | Notes                                               |
+| ---------------- | -------------------------------------- | --------------------------------------------------- |
+| Error monitoring | REQUIRED BEFORE PRODUCTION             | Not configured.                                     |
+| Logs             | REQUIRED BEFORE PRODUCTION             | Platform logs after Vercel exists.                  |
+| Uptime           | RECOMMENDED BEFORE FIRST PAYING CLINIC |                                                     |
+| Deploy rollback  | REQUIRED BEFORE PRODUCTION             | Vercel rollback once deployed.                      |
+| Backup restore   | RECOMMENDED BEFORE FIRST PAYING CLINIC |                                                     |
+| Support path     | REQUIRED BEFORE PRODUCTION             | Public contact exists; production mailbox does not. |
+
+## Commercial
+
+| Item                     | Status                                 | Notes                                                                     |
+| ------------------------ | -------------------------------------- | ------------------------------------------------------------------------- |
+| Final pricing            | REQUIRED BEFORE PRODUCTION             | Essential A$79 / Practice A$149 remain **provisional**. No Offer JSON-LD. |
+| Manual invoice vs Stripe | RECOMMENDED BEFORE FIRST PAYING CLINIC | Billing not implemented. Design partners can be invoiced manually.        |
+| Seat policy              | POST-LAUNCH                            |                                                                           |
+
+## QA
+
+| Item                               | Status                                 | Notes                                                                   |
+| ---------------------------------- | -------------------------------------- | ----------------------------------------------------------------------- |
+| Playwright + axe (local)           | READY                                  | Includes marketing, tenant, portal, operator SEO.                       |
+| iPhone / Android / Safari / Chrome | RECOMMENDED BEFORE FIRST PAYING CLINIC | Local Playwright is not a device lab.                                   |
+| Tenant hostname                    | READY                                  | Local `*.localhost` simulation. Production wildcard TLS still unproven. |
+| Print / PDF                        | READY                                  | Dedicated print route exists for published guides.                      |
+| Performance budgets                | READY                                  | Patient CSS/JS contract unchanged; no new marketing client SEO library. |
+
+## Analytics
+
+| Item                  | Status      | Notes                                                                       |
+| --------------------- | ----------- | --------------------------------------------------------------------------- |
+| Anonymous guide views | POST-LAUNCH | Useful, not a first-design-partner blocker. Must not introduce patient PII. |
+
+## Auth decision (Phase 2B — no migration)
+
+`next-auth@5.0.0-beta.32` remains a documented AGENTS.md exception because npm `latest` is Auth.js v4.
+
+**Classification: A — acceptable documented exception for first launch.**
+
+Investigate Better Auth only as a separate, approved project. Do not migrate in this phase.
+
+## R2 / Vercel DNS gate
+
+**Staging wildcard TLS proof remains required: YES.**
+
+Desired production direction (document only):
+
+- Vercel → Next.js
+- Neon Sydney → PostgreSQL
+- Cloudflare → authoritative DNS candidate, R2, Turnstile
+- Resend → transactional email
+
+Cloudflare as authoritative DNS plus `_acme-challenge` delegation to Vercel must be proven on a staging/test domain before production domain cutover.
+
+## Concise remaining gate
+
+| Priority                   | Remaining item                                                   | Blocker?              | Next action                                           |
+| -------------------------- | ---------------------------------------------------------------- | --------------------- | ----------------------------------------------------- |
+| MUST BEFORE PRODUCTION     | Final domain + Cloudflare DNS + Vercel project                   | Yes                   | Choose domain; configure staging first                |
+| MUST BEFORE PRODUCTION     | Wildcard TLS staging proof (`_acme-challenge` → Vercel)          | Yes                   | Prove on a test domain                                |
+| MUST BEFORE PRODUCTION     | Neon Sydney + backups + migrate deploy                           | Yes                   | Provision; never from this branch automatically       |
+| MUST BEFORE PRODUCTION     | R2 (or equivalent) clinic-logo bucket                            | Yes                   | Follow ADR 0019                                       |
+| MUST BEFORE PRODUCTION     | Privacy + Terms approved copy                                    | Yes                   | Counsel; then implement pages                         |
+| MUST BEFORE PRODUCTION     | Public mailbox + SPF/DKIM/DMARC + delivery                       | Yes                   | Brand-domain inbox; Resend or SMTP                    |
+| MUST BEFORE PRODUCTION     | Turnstile on login/contact                                       | Yes                   | Cloudflare widget                                     |
+| MUST BEFORE PRODUCTION     | Error monitoring + secrets review                                | Yes                   | Sentry or equivalent                                  |
+| MUST BEFORE PRODUCTION     | Auth.js v5 beta accepted in writing                              | Yes                   | Keep exception or separate auth project               |
+| MUST BEFORE PRODUCTION     | Dedicated OG image optional for go-live                          | No                    | 1200×630 asset                                        |
+| BEFORE FIRST PAYING CLINIC | Reviewed multi-template dental library                           | Yes for paid          | Clinical review of Extraction + additional procedures |
+| BEFORE FIRST PAYING CLINIC | QR + copy URL                                                    | No for design partner | Implement share kit                                   |
+| BEFORE FIRST PAYING CLINIC | Final commercial pricing / Stripe                                | Yes for paid          | Replace provisional A$79 / A$149                      |
+| BEFORE FIRST PAYING CLINIC | Device QA (iPhone/Android/Safari)                                | Recommended           | Real devices                                          |
+| POST-LAUNCH                | Analytics, Check-ins, RecoveryPlan, editorial `/guides`, MCP/API | No                    | Roadmap                                               |

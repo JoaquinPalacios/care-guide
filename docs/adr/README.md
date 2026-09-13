@@ -46,6 +46,8 @@ Do not create an ADR for a reversible UI detail. Create one when a later impleme
 | [0017](0017-clinic-owned-practice-revisions-pin-public-documents.md)         | Clinic-owned practice revisions pin the public document      | Accepted |
 | [0018](0018-recovery-timeline-stores-optional-day-ranges.md)                 | Recovery timeline stores optional structured day ranges      | Accepted |
 | [0019](0019-clinic-logo-upload-requires-object-storage.md)                   | Clinic logo upload waits for production object storage       | Accepted |
+| [0020](0020-platform-seo-is-structured-database-configuration.md)            | Platform SEO is structured database configuration            | Accepted |
+| [0021](0021-clinic-patient-guides-stay-noindex-by-default.md)                | Clinic patient guides stay noindex by default                | Accepted |
 
 Related product contract: [../product/PRD.md](../product/PRD.md).
 Performance contract: [../architecture/PERFORMANCE.md](../architecture/PERFORMANCE.md).

@@ -61,9 +61,9 @@ Current roles remain Clinic ADMIN and Clinic STAFF only.
 
 ### Operator Templates
 
-The operator console currently exposes **Clinics** only. Canonical template management is the next operator-console capability. Do not add a dead Templates navigation item before that work exists.
+The operator console currently exposes **Clinics** and **SEO & Discovery**. Canonical template management is the next operator-console capability. Do not add a dead Templates navigation item before that work exists.
 
-SEO/search metadata should later live on Guide Template defaults, optional clinic Guide overrides, and Practice identity — not a miscellaneous Operator SEO tab. Do not add an empty SEO screen.
+Platform marketing SEO is structured database configuration ([ADR 0020](../adr/0020-platform-seo-is-structured-database-configuration.md)). Clinic-guide search metadata should later live on Guide Template defaults, optional clinic Guide overrides, and Practice identity — not a second generic CMS. Tenant pages stay noindex by default ([ADR 0021](../adr/0021-clinic-patient-guides-stay-noindex-by-default.md)).
 
 ### Future per-guide search visibility
 

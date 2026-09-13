@@ -1,84 +1,123 @@
-# Launch SEO and indexing — River Aftercare
+# Launch SEO, discovery, and structured data — River Aftercare
 
-Pre-launch search policy for Phase 2A.5. This is not a content-acquisition programme.
+Phase 2B production-quality discovery layer. This remains a **structured clinical aftercare publishing platform**, not a generic CMS.
 
 ## Surfaces
 
-| Surface                                           | Host                            | Index  | Follow | Sitemap | Notes                                                      |
-| ------------------------------------------------- | ------------------------------- | ------ | ------ | ------- | ---------------------------------------------------------- |
-| Marketing `/`, `/pricing`, `/contact`             | apex / `localhost`              | yes    | yes    | yes     | Title, description, canonical, Open Graph, Twitter summary |
-| Staff portal `/dashboard`, `/guides`, `/practice` | `app.<root>`                    | no     | no     | no      | Authenticated clinic chrome                                |
-| Operator `/operator/*`                            | `app.<root>`                    | no     | no     | no      | Platform control plane                                     |
-| Authenticated draft preview                       | `app.<root>/guides/:id/preview` | no     | no     | no      | Never a public canonical                                   |
-| Parked chairside `/display`, `/sessions`          | `app.<root>`                    | no     | no     | no      | Existing anti-index posture                                |
-| Tenant home and published guides                  | `<clinic>.<root>`               | **no** | yes    | **no**  | Shareable aftercare documents; not SEO inventory           |
-| Internal rewrites `/_marketing`, `/_sites`        | n/a                             | no     | no     | no      | Blocked from the public Host                               |
+| Surface                                           | Host                            | Index  | Follow | Sitemap | Notes                                                                   |
+| ------------------------------------------------- | ------------------------------- | ------ | ------ | ------- | ----------------------------------------------------------------------- |
+| Marketing `/`, `/pricing`, `/contact`, `/about`   | apex / `localhost`              | yes    | yes    | yes     | Title, description, canonical, Open Graph, Twitter, generated JSON-LD   |
+| `/llms.txt`                                       | apex                            | n/a    | n/a    | no      | Agent-oriented public summary generated from identity + public routes   |
+| Staff portal `/dashboard`, `/guides`, `/practice` | `app.<root>`                    | no     | no     | no      | Authenticated clinic chrome                                             |
+| Operator `/operator/*`                            | `app.<root>`                    | no     | no     | no      | Includes SEO & Discovery                                                |
+| Authenticated draft preview                       | `app.<root>/guides/:id/preview` | no     | no     | no      | Never a public canonical                                                |
+| Parked chairside `/display`, `/sessions`          | `app.<root>`                    | no     | no     | no      | Existing anti-index posture                                             |
+| Tenant home and published guides                  | `<clinic>.<root>`               | **no** | yes    | **no**  | Shareable aftercare documents; clinic-first metadata; not SEO inventory |
+| Internal rewrites `/_marketing`, `/_sites`        | n/a                             | no     | no     | no      | Blocked from the public Host                                            |
+| `/privacy`, `/terms`                              | not published                   | —      | —      | no      | Launch blockers until approved legal copy exists                        |
 
-`robots.txt` allows the three marketing paths and disallows authenticated/internal prefixes. Page-level Next.js `robots` metadata is the real noindex control. Do not rely on `robots.txt` alone.
+Page-level Next.js `robots` metadata is the real noindex control. `robots.txt` is a crawl hint, not a substitute.
 
-## Tenant metadata
+`robots.txt` allows public marketing paths and `/llms.txt`. It disallows authenticated/internal prefixes so those URLs are not advertised as crawl targets. Tenant patient pages are not disallowed (they live on clinic hosts at `/` and `/<slug>`), and they still emit `noindex, follow`.
 
-Resolved from published clinic/guide content, then HTML-stripped:
+## Canonical URL policy
 
-- Title: `{Guide title} {instruction noun} | {Practice}`
-  Example (AFTERCARE terminology): `Tooth Extraction Aftercare | Riverside Dental`
-  Demo clinic uses POST_TREATMENT: `Tooth Extraction Post-treatment | Riverside Dental Demo`
-- Description: `{instruction label} for {guide title} from {Practice}.`
-  Example: `Aftercare instructions for tooth extraction from Riverside Dental.`
-- Canonical: actual tenant hostname + public slug. Never `/_sites/...`.
-- Open Graph / Twitter: same title/description/canonical for messaging apps.
-
-Do not invent medical claims. Draft and unpublished guides 404 on the tenant host and must not emit a public canonical.
-
-Print routes reuse the **guide** canonical (not `/print`) and stay noindex.
-
-## Future search visibility
-
-Launch default is **private from search**. Do not add a Prisma field until a clinic can actually opt in.
-
-Likely later contract:
+Canonical URLs are **derived**, not operator-editable:
 
 ```
-searchVisibility: PRIVATE_FROM_SEARCH | INDEXABLE
+production origin + route
 ```
 
-Default: `PRIVATE_FROM_SEARCH`. A clinic admin may opt a **published** guide into indexing. Operator may set platform defaults/policies. Until then, tenant `noindex` stays in metadata.
+Operators edit content metadata (title, description, social overrides). They do not edit routing truth. This prevents accidental SEO self-destruction.
 
-## Where SEO fields belong
+## Data model
 
-Do **not** add a standalone Operator “SEO” tab.
+Structured Prisma configuration, not a `seo.json` CMS and not raw JSON-LD:
 
-Content architecture:
+- `PlatformSeoSettings` — singleton identity (`siteName`, descriptions, public contact email, default OG path, factual `sameAs` URLs)
+- `MarketingPageSeo` — per known marketing path
+
+Code defaults from River Aftercare product constants keep public pages working when the settings row does not exist. Do not seed fake social profiles.
+
+Fallback hierarchy for social tags:
 
 ```
-Platform canonical Guide Template
-  → default title/description/social
-Clinic enabled Guide
-  → optional clinic overrides
-Practice-level defaults
-  → clinic identity used in titles
-Published patient page
+page OG override
+  → page SEO title/description
+    → platform default
 ```
 
-SEO/search metadata should attach to those resources when CMS work lands.
+Missing optional values omit the tag. They do not render empty `og:image` or malformed meta.
 
-## Operator as content/control plane
+## Operator: SEO & Discovery
 
-Operator is evolving into the platform CMS: Clinics now; Templates / content management later. SEO controls stay contextual inside those resources. Do not ship empty Templates or SEO navigation.
+Route: `/operator/seo`. Platform **OPERATOR** only. Clinic ADMIN / STAFF receive `notFound()`. Authorization is enforced in the layout **and** the server action.
 
-## Structured data
+Operators cannot paste HTML, scripts, `javascript:` / `data:` URLs, or raw JSON-LD. JSON-LD is generated from structured settings and shown read-only.
 
-Marketing already emits `SoftwareApplication` without ratings, offers, or certifications.
+## Open Graph image
 
-Do **not** add `MedicalWebPage`, `MedicalProcedure`, doctor identity, clinical review, or ratings schema. Current product data does not support accreditation or named clinicians. `Organization` / clinic identity may be appropriate later when Practice fields are treated as a public business profile.
+Ideal share card: **1200 × 630**. The approved logo/isologo is **not** a social card. Until a dedicated asset exists:
+
+**DEDICATED RIVER AFTERCARE OG IMAGE STILL REQUIRED**
+
+Do not stretch a square mark into 1200 × 630. No image generation in this phase.
+
+Organization JSON-LD `logo` uses the public isologo at a stable absolute URL (`/brand/river-aftercare-isologo.svg`), never localhost.
+
+## JSON-LD
+
+Server-rendered, serialized with `<` escaped. Homepage graph:
+
+- `Organization` `@id: <origin>/#organization`
+- `WebSite` `@id: <origin>/#website` → `publisher` `#organization`
+- `SoftwareApplication` `@id: <origin>/#application` — **no Offer**, no ratings
+- `WebPage`
+
+Pricing uses `WebPage` + the same SoftwareApplication identity **without** `Offer`, because Essential A$79 / Practice A$149 remain **provisional**.
+
+Contact uses `ContactPage`. About uses `AboutPage`.
+
+Do not emit `MedicalWebPage`, `reviewedBy`, `lastReviewed`, `medicalAudience`, `aggregateRating`, fake addresses, founding dates, or invented `sameAs` profiles.
+
+## Tenant / patient policy
+
+Launch default is **private from search** (`PRIVATE_FROM_SEARCH`). Patient pages still need excellent:
+
+- title
+- description
+- canonical (tenant hostname, never `/_sites`)
+- Open Graph
+- clinic identity
+
+because patients share links.
+
+Future `searchVisibility: PRIVATE_FROM_SEARCH | INDEXABLE` must not be added to Prisma until a clinic can opt a **published** guide in from a reviewed UI, after content and governance bars are met.
+
+## Future organic content
+
+Keep these separate. Do not collapse them:
+
+| Surface                   | Example                                      | Role                                                           |
+| ------------------------- | -------------------------------------------- | -------------------------------------------------------------- |
+| White-label patient guide | `riversidedental.<domain>/extraction`        | Patient utility, noindex by default                            |
+| River Aftercare editorial | `<domain>/guides/tooth-extraction-aftercare` | Potential indexable, clinically governed, acquisition-oriented |
+
+The editorial library is **not** built in Phase 2B. Architecture must not prevent it.
 
 ## Implementation map
 
 | Concern                | Location                                                                                 |
 | ---------------------- | ---------------------------------------------------------------------------------------- |
-| Marketing metadata     | `lib/marketing/metadata.ts`, `app/(marketing)/layout.tsx`                                |
+| Platform SEO load/save | `lib/seo/load-platform-seo.ts`, `lib/seo/save-platform-seo.ts`                           |
+| Resolution / fallbacks | `lib/seo/resolve-marketing-seo.ts`, `lib/seo/defaults.ts`                                |
+| JSON-LD                | `lib/seo/json-ld.ts`, `lib/seo/serialize-json-ld.ts`                                     |
+| Validation             | `lib/seo/validation.ts`                                                                  |
+| llms.txt               | `lib/seo/llms-txt.ts`, `app/llms.txt/route.ts`                                           |
+| Sitemap / robots       | `lib/seo/sitemap.ts`, `app/sitemap.ts`, `app/robots.ts`                                  |
+| Operator UI            | `app/(staff)/(operator)/operator/seo/`                                                   |
+| Marketing metadata     | `lib/seo/marketing-page.ts`, `lib/marketing/metadata.ts`                                 |
 | Tenant metadata        | `lib/aftercare/tenant-metadata.ts`                                                       |
 | Robots constants       | `lib/seo/robots-policy.ts`                                                               |
 | HTML stripping         | `lib/seo/metadata-text.ts`                                                               |
-| `robots.txt` / sitemap | `app/robots.ts`, `app/sitemap.ts`                                                        |
 | Icon                   | `public/favicons/*` plus Next.js `app/favicon.ico`, `app/icon.png`, `app/apple-icon.png` |
