@@ -24,7 +24,10 @@ import {
 import { marketingSiteOrigin } from "@/lib/marketing/site";
 import { INDEXABLE_ROBOTS } from "@/lib/seo/robots-policy";
 
-const marketingCss = readFileSync("app/(marketing)/marketing.module.css", "utf8");
+const marketingCss = readFileSync(
+  "app/(marketing)/marketing.module.css",
+  "utf8"
+);
 const numberedSteps = readFileSync(
   "app/(marketing)/components/marketing-numbered-steps.tsx",
   "utf8"
@@ -60,8 +63,12 @@ describe("marketing + trust polish", () => {
     expect(numberedSteps).toContain("numberedStepIndex");
     expect(numberedSteps).toContain("numberedStepRule");
     expect(numberedSteps).toContain('aria-hidden="true"');
-    expect(marketingCss).toContain("grid-template-columns: 2.25rem 1px minmax(0, 1fr)");
-    expect(marketingCss).toContain("padding-top: calc((1.08rem * 1.55 - 0.8rem * 1.55) / 2)");
+    expect(marketingCss).toContain(
+      "grid-template-columns: 2.25rem 1px minmax(0, 1fr)"
+    );
+    expect(marketingCss).toContain(
+      "padding-top: calc((1.08rem * 1.55 - 0.8rem * 1.55) / 2)"
+    );
     expect(marketingCss).not.toContain(".frictionList");
     expect(marketingCss).not.toContain(".storyList");
 
@@ -137,17 +144,21 @@ describe("marketing + trust polish", () => {
 
     expect(privacyHtml).toContain("Privacy Policy");
     expect(privacyHtml).toContain("DRAFT FOR LEGAL REVIEW");
-    expect(privacyHtml).toContain("[Legal entity name — to be confirmed before launch]");
+    expect(privacyHtml).toContain(
+      "[Legal entity name — to be confirmed before launch]"
+    );
     expect(privacyHtml).not.toContain("HIPAA compliant");
     expect(privacyHtml).not.toContain("We store all information with Neon");
     expect(privacyHtml).toContain('data-mk-page-hero="legal"');
     expect(privacyHtml).toContain("<time");
-    expect(privacyHtml).toContain("datetime");
+    expect(privacyHtml).toContain('dateTime="2026-09-13"');
 
     expect(termsHtml).toContain("Terms &amp; Conditions");
     expect(termsHtml).toContain("not automatically clinically certified");
     expect(termsHtml).toContain("[Governing State or Territory of Australia");
-    expect(termsHtml).not.toContain("guaranteed uptime");
+    expect(termsHtml).toContain(
+      "This draft does not claim clinical accreditation, guaranteed uptime"
+    );
     expect(termsHtml).toContain('data-mk-page-hero="legal"');
 
     const privacyMeta = marketingPageMetadata(PRIVACY_METADATA, {

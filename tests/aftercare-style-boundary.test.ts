@@ -185,7 +185,10 @@ describe("aftercare style boundary", () => {
     expect(tokens).toContain("--mk-heading-intro-gap");
     expect(styles).toContain("phoneStageCurrent");
     expect(styles).toContain("phoneHelp");
-    expect(styles).toContain("color-scheme: light");
+    expect(styles).toContain("var(--cg-surface");
+    expect(styles).not.toMatch(
+      /\.phoneScreen[^{]*\{[^}]*color-scheme:\s*light/
+    );
     expect(tokens).toContain("--mk-hero-glow");
     expect(tokens).toContain("--mk-hero-bloom");
     expect(tokens).toContain("--mk-hero-mist");
@@ -283,12 +286,17 @@ describe("aftercare style boundary", () => {
     expect(preview).toContain('fetchPriority="low"');
     expect(preview).not.toContain("<button");
     expect(preview).not.toContain("<a ");
-    expect(preview).toContain("Recovery overview");
+    expect(preview).toContain("MARKETING_DEMO_RECOVERY_HEADING");
     expect(preview).not.toContain("Your recovery");
     expect(preview).toContain("Questions about your recovery?");
-    expect(preview).toContain("Call Riverside Dental Demo");
+    expect(preview).toContain("MARKETING_DEMO_CALL_LABEL");
     expect(preview).toContain("data-patient-theme");
     expect(preview).not.toContain("Book an appointment");
+    const fixtures = read("lib/marketing/demo-patient-preview.ts");
+    expect(fixtures).toContain(
+      'MARKETING_DEMO_RECOVERY_HEADING = "Recovery overview"'
+    );
+    expect(fixtures).toContain("Call ${MARKETING_DEMO_CLINIC_NAME}");
   });
 
   it("keeps patient Client Components isolated to theme control and marketing Motion to marketing", () => {
