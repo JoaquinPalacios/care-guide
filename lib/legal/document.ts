@@ -22,18 +22,22 @@ export interface LegalDocument {
   eyebrow: string;
   title: string;
   intro: string;
+  draftBanner: string;
   status: typeof LEGAL_DOCUMENT_STATUS;
   lastUpdatedIso: string;
   lastUpdatedLabel: string;
   sections: readonly LegalSection[];
 }
 
-export const LEGAL_DRAFT_BANNER = `DRAFT FOR LEGAL REVIEW. This page is published so clinics and reviewers can read the intended launch terms. It is not approved legal advice, and it does not complete the production launch gate.`;
+export const TERMS_DRAFT_BANNER = `DRAFT FOR LEGAL REVIEW. These terms are being prepared for ${PRODUCT_NAME}'s production launch and have not yet received final legal approval.`;
+
+export const PRIVACY_DRAFT_BANNER = `DRAFT FOR LEGAL REVIEW. This policy reflects the current ${PRODUCT_NAME} product and intended launch operations but has not yet received final legal approval.`;
 
 export function legalDocumentMeta(input: {
   slug: LegalDocument["slug"];
   title: string;
   intro: string;
+  draftBanner: string;
   sections: readonly LegalSection[];
 }): LegalDocument {
   return {
@@ -41,6 +45,7 @@ export function legalDocumentMeta(input: {
     eyebrow: "Legal",
     title: input.title,
     intro: input.intro,
+    draftBanner: input.draftBanner,
     status: LEGAL_DOCUMENT_STATUS,
     lastUpdatedIso: LEGAL_LAST_UPDATED_ISO,
     lastUpdatedLabel: formatLegalLastUpdated(),

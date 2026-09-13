@@ -1,5 +1,5 @@
 import { MarketingPageHero } from "@/app/(marketing)/components/marketing-page-hero";
-import { LEGAL_DRAFT_BANNER, type LegalDocument } from "@/lib/legal/document";
+import type { LegalDocument } from "@/lib/legal/document";
 
 import styles from "../marketing.module.css";
 
@@ -18,10 +18,13 @@ export function MarketingLegalDocument({
         intro={document.intro}
       />
       <div className={styles.marketingSoft} data-mk-chapter="soft">
-        <article className={styles.legalArticle} aria-labelledby={`${document.slug.slice(1)}-hero`}>
+        <article
+          className={styles.legalArticle}
+          aria-labelledby={`${document.slug.slice(1)}-hero`}
+        >
           <div className={styles.inner}>
             <p className={styles.legalBanner} role="note">
-              {LEGAL_DRAFT_BANNER}
+              {document.draftBanner}
             </p>
             <p className={styles.legalUpdated}>
               Last updated{" "}
@@ -65,7 +68,10 @@ export function MarketingLegalDocument({
                   }
 
                   return (
-                    <p key={`${section.id}-p-${index}`} className={styles.legalCopy}>
+                    <p
+                      key={`${section.id}-p-${index}`}
+                      className={styles.legalCopy}
+                    >
                       {block.text}
                     </p>
                   );

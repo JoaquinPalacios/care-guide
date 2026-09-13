@@ -1,22 +1,26 @@
 /**
- * Launch legal document status. Copy is a substantial draft, not counsel-approved.
- * Do not treat these pages as a completed launch gate.
+ * Launch legal document status. Copy is a substantial production-facing draft,
+ * not counsel-approved. Do not treat these pages as a completed launch gate.
  */
 export const LEGAL_DOCUMENT_STATUS = "DRAFT_FOR_LEGAL_REVIEW";
 
-export const LEGAL_LAST_UPDATED_ISO = "2026-09-13";
+export const LEGAL_LAST_UPDATED_ISO = "2026-09-14";
+
+export const LEGAL_ABN = "32 671 297 130";
+
+export const LEGAL_PUBLIC_LOCATION =
+  "Tweed Heads South, New South Wales, Australia";
+
+export const LEGAL_GOVERNING_LAW = "New South Wales, Australia";
 
 export const LEGAL_PLACEHOLDERS = {
-  legalEntityName:
-    "[Legal entity name — to be confirmed before launch]",
-  abnAcn: "[ABN/ACN — to be confirmed before launch]",
-  registeredAddress:
-    "[Registered office address — to be confirmed before launch]",
-  governingLaw:
-    "[Governing State or Territory of Australia — to be confirmed before launch]",
-  legalContactEmail:
-    "[Legal contact email — to be confirmed before launch]",
+  legalEntityName: "[FULL LEGAL NAME]",
+  privacyEmail: "[PRIVACY EMAIL]",
 } as const;
+
+export function legalOperatorIdentity(productName: string): string {
+  return `${LEGAL_PLACEHOLDERS.legalEntityName}, an Australian sole trader trading as ${productName}, ABN ${LEGAL_ABN}, based in ${LEGAL_PUBLIC_LOCATION}`;
+}
 
 export function formatLegalLastUpdated(
   isoDate: string = LEGAL_LAST_UPDATED_ISO

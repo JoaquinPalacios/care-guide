@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-13 (Marketing + trust polish)
+Last updated: 2026-09-14 (Public legal copy rewrite)
 
 ---
 
@@ -985,7 +985,7 @@ Local phase on `feature/phase-2b-seo-discovery-launch`. Starts from current main
 | Operator         | `/operator/seo` — SEO & Discovery. Platform OPERATOR only. Nav: Clinics, SEO & Discovery.                                                                                                                                                                                                                                                                                                              |
 | SEO data         | `PlatformSeoSettings` + `MarketingPageSeo`. Code fallbacks if the row is absent. Canonical URLs derived, not editable. No `seo.json`, no raw JSON-LD editing.                                                                                                                                                                                                                                          |
 | JSON-LD          | Server-generated Organization / WebSite / SoftwareApplication (no Offer — pricing remains provisional) / ContactPage / AboutPage.                                                                                                                                                                                                                                                                      |
-| Public pages     | `/about`, `/privacy`, and `/terms` published. Privacy/Terms are **substantial drafts — legal review still required, not approved.** |
+| Public pages     | `/about`, `/privacy`, and `/terms` published. Privacy/Terms are **substantial drafts — legal review still required, not approved.**                                                                                                                                                                                                                                                                    |
 | Discovery        | `/llms.txt` generated from identity + public routes. `llms-full.txt` skipped (corpus too small). Sitemap includes `/about`. Tenant guides remain noindex and off the sitemap.                                                                                                                                                                                                                          |
 | OG image         | Dedicated 1200×630 asset still required. Logo is not used as a social card.                                                                                                                                                                                                                                                                                                                            |
 | Docs             | [../architecture/SEO.md](../architecture/SEO.md), [../launch/PRODUCTION-READINESS.md](../launch/PRODUCTION-READINESS.md), [../launch/AGENTIC-READINESS.md](../launch/AGENTIC-READINESS.md), [ADR 0020](../adr/0020-platform-seo-is-structured-database-configuration.md), [ADR 0021](../adr/0021-clinic-patient-guides-stay-noindex-by-default.md). Visuals: [artifacts/phase-2b](artifacts/phase-2b). |
@@ -1001,16 +1001,34 @@ Date: 2026-09-13
 
 Visual consistency and trust-page completion on current main (Phase 2B). No pricing, infra, lifecycle, PII, or UI-library changes.
 
-| Area | Behaviour |
-| ---- | --------- |
-| Numbered lists | One `[01] [rule] [copy]` pattern (`MarketingNumberedSteps`) for the homepage problem list and pricing onboarding. |
-| Onboarding copy | Tooth Extraction is the current canonical template. Other procedures are planned/onboarding, not advertised as available. |
-| Phone + Patient View | Lightweight marketing replicas using shared `--cg-*` tokens and `data-patient-theme="portal"` so Light/Dark follow marketing appearance. Riverside Dental Demo brand stays teal, not River cobalt. |
-| Coming after launch | Existing card system; bullets use first-line offset, not `align-items: center`. |
-| Contact | Submit uses `MarketingPrimaryButton` (canonical `.button.primary`). |
-| Login | `← Back to River Aftercare` via `apexPublicUrl` / `marketingPublicLinks().homeHref`. |
-| Legal | `/privacy` and `/terms` drafts. Placeholders for entity/ABN/address/governing law/email. **Not approved.** |
-| Footer | Product (About, Pricing, Contact), Legal (Privacy, Terms), Account (Staff sign in). Homepage anchors removed. |
-| SEO | Privacy/Terms are `index,follow`, in sitemap and `llms.txt`. Operator SEO form includes the known paths. |
+| Area                 | Behaviour                                                                                                                                                                                                                                                                              |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Numbered lists       | One `[01] [rule] [copy]` pattern (`MarketingNumberedSteps`) for the homepage problem list and pricing onboarding.                                                                                                                                                                      |
+| Onboarding copy      | Tooth Extraction is the current canonical template. Other procedures are planned/onboarding, not advertised as available.                                                                                                                                                              |
+| Phone + Patient View | Lightweight marketing replicas using shared `--cg-*` tokens and `data-patient-theme="portal"` so Light/Dark follow marketing appearance. Riverside Dental Demo brand stays teal, not River cobalt.                                                                                     |
+| Coming after launch  | Existing card system; bullets use first-line offset, not `align-items: center`.                                                                                                                                                                                                        |
+| Contact              | Submit uses `MarketingPrimaryButton` (canonical `.button.primary`).                                                                                                                                                                                                                    |
+| Login                | `← Back to River Aftercare` via `apexPublicUrl` / `marketingPublicLinks().homeHref`.                                                                                                                                                                                                   |
+| Legal                | `/privacy` and `/terms` are production-facing drafts. Operator is a sole trader trading as River Aftercare, ABN 32 671 297 130, Tweed Heads South NSW. Remaining placeholders: `[FULL LEGAL NAME]`, `[PRIVACY EMAIL]`. Invoice/AUD commercial terms encoded. **Not legally approved.** |
+| Footer               | Product (About, Pricing, Contact), Legal (Privacy, Terms), Account (Staff sign in). Homepage anchors removed.                                                                                                                                                                          |
+| SEO                  | Privacy/Terms are `index,follow`, in sitemap and `llms.txt`. Operator SEO form includes the known paths.                                                                                                                                                                               |
+
+---
+
+## Public legal copy rewrite (2026-09-14)
+
+Production-facing Privacy Policy and Terms & Conditions. Still **DRAFT FOR LEGAL REVIEW**.
+
+| Fact                   | Public copy                                                                       |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| Operator               | Sole trader trading as River Aftercare, ABN 32 671 297 130, Tweed Heads South NSW |
+| Remaining placeholders | `[FULL LEGAL NAME]`, `[PRIVACY EMAIL]`                                            |
+| Billing                | AUD, monthly in advance, 14-day invoices, bank transfer initially, month-to-month |
+| Law                    | NSW, non-exclusive jurisdiction                                                   |
+| Patient data           | Current product is not designed for identifiable patient health records           |
+| Export                 | Customer may request a reasonable export — no self-service export in the app yet  |
+| Backups                | Intended 90-day rotation; not an implemented production control                   |
+
+Do not remove the draft banners until counsel review and the remaining launch blockers are resolved. Do not invent GST status, subprocessors, or a privacy email.
 
 ---
