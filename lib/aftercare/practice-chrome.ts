@@ -4,11 +4,8 @@ import {
   parseInstructionTerminology,
   type InstructionTerminology,
 } from "@/lib/aftercare/instruction-terminology";
-import {
-  toSafeHttpHref,
-  toSafeLogoSrc,
-  toTelHref,
-} from "@/lib/aftercare/safe-href";
+import { toSafeHttpHref, toTelHref } from "@/lib/aftercare/safe-href";
+import { resolveClinicLogoSrc } from "@/lib/clinic-assets/public-url";
 import {
   parseThemeMode,
   type ClinicThemeMode,
@@ -60,7 +57,7 @@ export function resolvePracticeChrome(input: {
 
   return {
     displayName: profile?.displayName?.trim() || input.name,
-    logoSrc: toSafeLogoSrc(profile?.logoUrl ?? null),
+    logoSrc: resolveClinicLogoSrc(profile?.logoUrl ?? null),
     phoneDisplay,
     phoneHref: toTelHref(phoneDisplay),
     addressText: formatPracticeAddress(profile),

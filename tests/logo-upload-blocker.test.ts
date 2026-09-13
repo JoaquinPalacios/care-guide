@@ -3,9 +3,10 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { toSafeLogoSrc } from "@/lib/aftercare/safe-href";
+import { resolveClinicLogoSrc } from "@/lib/clinic-assets/public-url";
 
 describe("logo upload infrastructure", () => {
-  it("keeps the current same-origin logo path contract", () => {
+  it("keeps demo paths and rejects remote logo URLs", () => {
     expect(toSafeLogoSrc("/demo/riverside-mark.svg")).toBe(
       "/demo/riverside-mark.svg"
     );
@@ -17,9 +18,12 @@ describe("logo upload infrastructure", () => {
     expect(toSafeLogoSrc("/clinic-branding/clinic_demo_rivers/logo.svg")).toBe(
       "/clinic-branding/clinic_demo_rivers/logo.svg"
     );
+    expect(
+      resolveClinicLogoSrc("clinics/clinic_demo_rivers/branding/logo.webp")
+    ).toBe("/clinic-branding/clinic_demo_rivers/logo.webp");
   });
 
-  it("does not ship a filesystem upload or inline SVG injection", () => {
+  it("does not ship a filesystem upload, inline SVG injection, or client AWS SDK", () => {
     const field = readFileSync(
       "app/(staff)/(clinic-portal)/practice/practice-logo-field.tsx",
       "utf8"
@@ -29,7 +33,7 @@ describe("logo upload infrastructure", () => {
       "utf8"
     );
     const adapter = readFileSync(
-      "lib/clinic-assets/supabase-clinic-asset-storage.ts",
+      "lib/clinic-assets/r2-clinic-asset-storage.ts",
       "utf8"
     );
     const sanitizer = readFileSync(
@@ -41,11 +45,16 @@ describe("logo upload infrastructure", () => {
 
     expect(field).toContain('type="file"');
     expect(fieldText).toContain("clinic object storage is not configured");
+    expect(field).toContain("Uploading…");
+    expect(field).toContain("Uploaded");
     expect(field).not.toContain("public/uploads");
     expect(field).not.toContain("coming before launch");
+    expect(field).not.toContain("@aws-sdk/client-s3");
     expect(header).toContain("<img");
     expect(header).not.toContain("dangerouslySetInnerHTML");
-    expect(adapter).toContain("createClient");
+    expect(header).not.toContain("@aws-sdk/client-s3");
+    expect(adapter).toContain("server-only");
+    expect(adapter).toContain("@aws-sdk/client-s3");
     expect(adapter).not.toContain("fs.writeFile");
     expect(sanitizer).toContain("server-only");
     expect(sanitizer).toContain("dompurify");

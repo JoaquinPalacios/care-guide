@@ -49,6 +49,13 @@ describe("practice settings schema", () => {
     expect(
       practiceSettingsSchema.safeParse({
         ...valid,
+        logoUrl:
+          "clinics/clinic_a/branding/11111111-1111-4111-8111-111111111111.png",
+      }).success
+    ).toBe(true);
+    expect(
+      practiceSettingsSchema.safeParse({
+        ...valid,
         logoUrl: "https://evil.test/logo.png",
       }).success
     ).toBe(false);

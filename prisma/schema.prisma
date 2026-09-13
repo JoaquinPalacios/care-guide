@@ -359,6 +359,7 @@ model ProcedureSessionStageTransition {
 model ClinicProfile {
   clinicId                 String                       @id
   displayName              String
+  /// Stored logo reference: a same-origin demo/static path or a provider-independent object key (`clinics/<clinicId>/branding/<uuid>.<ext>`). Never a Cloudflare, Supabase, or other provider URL. Resolve at read time with `resolveClinicLogoSrc`.
   logoUrl                  String?
   primaryColor             String?
   accentColor              String?

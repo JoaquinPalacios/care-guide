@@ -2,7 +2,7 @@ import type {
   ClinicAssetStorage,
   ClinicLogoReadResult,
 } from "@/lib/clinic-assets/clinic-asset-storage";
-import { clinicLogoPublicPath } from "@/lib/clinic-assets/clinic-logo";
+import { clinicAssetPublicUrl } from "@/lib/clinic-assets/public-url";
 
 const store = new Map<string, ClinicLogoReadResult>();
 
@@ -10,12 +10,16 @@ export function resetMemoryClinicAssetStorage(): void {
   store.clear();
 }
 
+export function memoryClinicAssetKeys(): string[] {
+  return [...store.keys()];
+}
+
 export function createMemoryClinicAssetStorage(): ClinicAssetStorage {
   return {
     async uploadLogo(input) {
-      const publicPath = clinicLogoPublicPath(input.storageKey);
+      const publicPath = clinicAssetPublicUrl(input.storageKey);
       if (!publicPath) {
-        throw new Error("Could not derive a same-origin logo path.");
+        throw new Error("Could not derive a clinic logo URL.");
       }
       store.set(input.storageKey, {
         bytes: input.bytes.slice(),
@@ -44,9 +48,9 @@ export function createMemoryClinicAssetStorage(): ClinicAssetStorage {
     },
 
     getPublicLogoUrl(input) {
-      const publicPath = clinicLogoPublicPath(input.storageKey);
+      const publicPath = clinicAssetPublicUrl(input.storageKey);
       if (!publicPath) {
-        throw new Error("Could not derive a same-origin logo path.");
+        throw new Error("Could not derive a clinic logo URL.");
       }
       return publicPath;
     },

@@ -1,5 +1,5 @@
 import { ClinicMembershipRole } from "@prisma/client";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { authorizeClinicLogoMutation } from "@/lib/clinic-assets/authorize-clinic-logo";
 import {
@@ -71,7 +71,7 @@ describe("clinic logo validation", () => {
     });
   });
 
-  it("builds generated clinic-owned keys and same-origin public paths", () => {
+  it("builds generated clinic-owned keys and provider-independent public URLs", () => {
     const key = clinicLogoObjectKey({
       clinicId: "clinic_demo_rivers",
       objectId: "logo_abc123",
@@ -126,10 +126,62 @@ describe("clinic logo authorization", () => {
 });
 
 describe("clinic asset storage configuration", () => {
+  const previous = {
+    driver: process.env.CLINIC_ASSET_STORAGE_DRIVER,
+    account: process.env.R2_ACCOUNT_ID,
+    bucket: process.env.R2_BUCKET,
+    access: process.env.R2_ACCESS_KEY_ID,
+    secret: process.env.R2_SECRET_ACCESS_KEY,
+    origin: process.env.CLINIC_ASSET_PUBLIC_ORIGIN,
+  };
+
+  afterEach(() => {
+    for (const [key, value] of Object.entries({
+      CLINIC_ASSET_STORAGE_DRIVER: previous.driver,
+      R2_ACCOUNT_ID: previous.account,
+      R2_BUCKET: previous.bucket,
+      R2_ACCESS_KEY_ID: previous.access,
+      R2_SECRET_ACCESS_KEY: previous.secret,
+      CLINIC_ASSET_PUBLIC_ORIGIN: previous.origin,
+    })) {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
+  });
+
   it("is unconfigured without a provisioned driver and credentials", () => {
+    delete process.env.CLINIC_ASSET_STORAGE_DRIVER;
+    delete process.env.R2_ACCOUNT_ID;
+    delete process.env.R2_BUCKET;
+    delete process.env.R2_ACCESS_KEY_ID;
+    delete process.env.R2_SECRET_ACCESS_KEY;
+    delete process.env.CLINIC_ASSET_PUBLIC_ORIGIN;
     expect(clinicAssetStorageStatus()).toEqual({
       available: false,
       reason: "unconfigured",
+    });
+  });
+
+  it("requires R2 credentials and a public origin before becoming available", () => {
+    process.env.CLINIC_ASSET_STORAGE_DRIVER = "r2";
+    process.env.R2_ACCOUNT_ID = "accountidaccountidaccountidacct";
+    process.env.R2_BUCKET = "clinic-branding-assets";
+    process.env.R2_ACCESS_KEY_ID = "id";
+    process.env.R2_SECRET_ACCESS_KEY = "secret";
+    delete process.env.CLINIC_ASSET_PUBLIC_ORIGIN;
+    expect(clinicAssetStorageStatus()).toEqual({
+      available: false,
+      reason: "unconfigured",
+    });
+
+    process.env.CLINIC_ASSET_PUBLIC_ORIGIN = "https://assets.example.test";
+    expect(clinicAssetStorageStatus()).toEqual({
+      available: true,
+      driver: "r2",
+      bucket: "clinic-branding-assets",
     });
   });
 });

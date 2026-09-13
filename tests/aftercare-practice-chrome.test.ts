@@ -45,6 +45,22 @@ describe("resolvePracticeChrome", () => {
     );
   });
 
+  it("resolves stored clinic object keys onto the same-origin branding route in tests", () => {
+    const chrome = resolvePracticeChrome({
+      slug: "demodental",
+      name: "Rivers Care Demo Clinic",
+      profile: {
+        ...PROFILE,
+        logoUrl:
+          "clinics/clinic_demo_rivers/branding/11111111-1111-4111-8111-111111111111.webp",
+      },
+    });
+
+    expect(chrome.logoSrc).toBe(
+      "/clinic-branding/clinic_demo_rivers/11111111-1111-4111-8111-111111111111.webp"
+    );
+  });
+
   it("omits optional fields when they are missing or unsafe", () => {
     const chrome = resolvePracticeChrome({
       slug: "otherclinic",

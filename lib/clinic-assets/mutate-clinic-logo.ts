@@ -6,13 +6,28 @@ import { authorizeClinicLogoMutation } from "@/lib/clinic-assets/authorize-clini
 import { getClinicAssetStorage } from "@/lib/clinic-assets/get-clinic-asset-storage";
 import {
   clinicLogoObjectKey,
-  storageKeyFromClinicLogoPath,
+  clinicLogoStorageKeyFromStoredValue,
+  isOwnedClinicBrandingKey,
   validateClinicLogo,
 } from "@/lib/clinic-assets/clinic-logo";
+import {
+  ClinicAssetStorageUnavailableError,
+  clinicAssetErrorClass,
+} from "@/lib/clinic-assets/errors";
 import { sanitizeClinicLogoSvg } from "@/lib/clinic-assets/sanitize-clinic-logo-svg";
-import { ClinicAssetStorageUnavailableError } from "@/lib/clinic-assets/supabase-clinic-asset-storage";
 import { ClinicPortalError } from "@/lib/clinic-portal/errors";
 import { prisma } from "@/lib/prisma";
+
+function logClinicAsset(
+  event: string,
+  details: {
+    clinicId?: string;
+    storageKey?: string;
+    class?: string;
+  }
+): void {
+  console.warn("[clinic-assets]", event, details);
+}
 
 export async function uploadClinicLogo(input: {
   actorRole: "ADMIN" | "STAFF";
@@ -21,7 +36,7 @@ export async function uploadClinicLogo(input: {
   bytes: Uint8Array;
   mimeType: string;
   fileName?: string;
-}): Promise<{ logoUrl: string }> {
+}): Promise<{ logoUrl: string; logoSrc: string }> {
   const authorized = authorizeClinicLogoMutation({
     role: input.actorRole,
     actorClinicId: input.actorClinicId,
@@ -61,19 +76,6 @@ export async function uploadClinicLogo(input: {
     mimeType = sanitized.mimeType;
   }
 
-  const storageKey = clinicLogoObjectKey({
-    clinicId: input.targetClinicId,
-    objectId: randomUUID(),
-    extension: validated.extension,
-  });
-
-  const uploaded = await storage.uploadLogo({
-    clinicId: input.targetClinicId,
-    storageKey,
-    bytes,
-    mimeType,
-  });
-
   const previous = await prisma.clinicProfile.findUnique({
     where: { clinicId: input.targetClinicId },
     select: { logoUrl: true, displayName: true },
@@ -82,28 +84,86 @@ export async function uploadClinicLogo(input: {
     throw new ClinicPortalError("Practice profile is missing.", "not_found");
   }
 
-  await prisma.clinicProfile.update({
-    where: { clinicId: input.targetClinicId },
-    data: { logoUrl: uploaded.publicPath },
+  const storageKey = clinicLogoObjectKey({
+    clinicId: input.targetClinicId,
+    objectId: randomUUID(),
+    extension: validated.extension,
   });
 
-  const previousKey = storageKeyFromClinicLogoPath(previous?.logoUrl);
+  let uploaded;
+  try {
+    uploaded = await storage.uploadLogo({
+      clinicId: input.targetClinicId,
+      storageKey,
+      bytes,
+      mimeType,
+    });
+  } catch (error) {
+    logClinicAsset("upload_failed", {
+      clinicId: input.targetClinicId,
+      storageKey,
+      class: clinicAssetErrorClass(error),
+    });
+    throw new ClinicPortalError("Could not store the clinic logo.", "invalid");
+  }
+
+  try {
+    await prisma.clinicProfile.update({
+      where: { clinicId: input.targetClinicId },
+      data: { logoUrl: uploaded.storageKey },
+    });
+  } catch (error) {
+    logClinicAsset("db_update_failed_after_upload", {
+      clinicId: input.targetClinicId,
+      storageKey: uploaded.storageKey,
+      class: clinicAssetErrorClass(error),
+    });
+    try {
+      await storage.deleteLogo({
+        clinicId: input.targetClinicId,
+        storageKey: uploaded.storageKey,
+      });
+    } catch (cleanupError) {
+      logClinicAsset("orphan_cleanup_failed", {
+        clinicId: input.targetClinicId,
+        storageKey: uploaded.storageKey,
+        class: clinicAssetErrorClass(cleanupError),
+      });
+    }
+    throw new ClinicPortalError("Could not update the clinic logo.", "invalid");
+  }
+
+  const previousKey = clinicLogoStorageKeyFromStoredValue(previous.logoUrl);
   if (
-    previousKey &&
-    previousKey !== uploaded.storageKey &&
-    previousKey.startsWith(`clinics/${input.targetClinicId}/branding/`)
+    isOwnedClinicBrandingKey(input.targetClinicId, previousKey) &&
+    previousKey !== uploaded.storageKey
   ) {
     try {
       await storage.deleteLogo({
         clinicId: input.targetClinicId,
         storageKey: previousKey,
       });
-    } catch {
-      // Replacement succeeded; leftover objects can be cleaned later.
+    } catch (error) {
+      logClinicAsset("previous_object_delete_failed", {
+        clinicId: input.targetClinicId,
+        storageKey: previousKey,
+        class: clinicAssetErrorClass(error),
+      });
     }
   }
 
-  return { logoUrl: uploaded.publicPath };
+  logClinicAsset("upload_succeeded", {
+    clinicId: input.targetClinicId,
+    storageKey: uploaded.storageKey,
+  });
+
+  return {
+    logoUrl: uploaded.storageKey,
+    logoSrc: storage.getPublicLogoUrl({
+      clinicId: input.targetClinicId,
+      storageKey: uploaded.storageKey,
+    }),
+  };
 }
 
 export async function removeClinicLogo(input: {
@@ -143,18 +203,19 @@ export async function removeClinicLogo(input: {
     data: { logoUrl: null },
   });
 
-  const previousKey = storageKeyFromClinicLogoPath(previous?.logoUrl);
-  if (
-    previousKey &&
-    previousKey.startsWith(`clinics/${input.targetClinicId}/branding/`)
-  ) {
+  const previousKey = clinicLogoStorageKeyFromStoredValue(previous.logoUrl);
+  if (isOwnedClinicBrandingKey(input.targetClinicId, previousKey)) {
     try {
       await storage.deleteLogo({
         clinicId: input.targetClinicId,
         storageKey: previousKey,
       });
-    } catch {
-      // Profile no longer references the object.
+    } catch (error) {
+      logClinicAsset("previous_object_delete_failed", {
+        clinicId: input.targetClinicId,
+        storageKey: previousKey,
+        class: clinicAssetErrorClass(error),
+      });
     }
   }
 }
