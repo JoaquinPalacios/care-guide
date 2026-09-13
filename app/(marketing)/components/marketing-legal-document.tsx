@@ -1,5 +1,5 @@
 import { MarketingPageHero } from "@/app/(marketing)/components/marketing-page-hero";
-import { LEGAL_DRAFT_BANNER, type LegalDocument } from "@/lib/legal/document";
+import type { LegalDocument } from "@/lib/legal/document";
 
 import styles from "../marketing.module.css";
 
@@ -24,7 +24,7 @@ export function MarketingLegalDocument({
         >
           <div className={styles.inner}>
             <p className={styles.legalBanner} role="note">
-              {LEGAL_DRAFT_BANNER}
+              {document.draftBanner}
             </p>
             <p className={styles.legalUpdated}>
               Last updated{" "}
