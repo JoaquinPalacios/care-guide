@@ -1,6 +1,13 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useActionState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { ColorField } from "@/app/(staff)/components/color-field";
 import { ConfirmDialog } from "@/app/(staff)/components/confirm-dialog";
@@ -66,6 +73,18 @@ export function PracticeSettingsForm({
   const dirty = serialized !== confirmed;
   const saveStatus = formSaveStatus({ dirty, pending });
   const { open, keepEditing, discard } = useUnsavedChangesGuard(dirty);
+
+  const onLogoChange = useCallback(
+    (nextLogo: { logoUrl: string | null; logoSrc: string | null }) => {
+      setCurrentLogoSrc(nextLogo.logoSrc);
+      setForm((current) => {
+        const next = { ...current, logoUrl: nextLogo.logoUrl };
+        setConfirmed(snapshot(next));
+        return next;
+      });
+    },
+    []
+  );
 
   useEffect(() => {
     if (state.saved) {
@@ -210,14 +229,7 @@ export function PracticeSettingsForm({
             logoSrc={currentLogoSrc}
             canEdit={canEdit}
             storageAvailable={storageAvailable}
-            onLogoChange={(nextLogo) => {
-              setCurrentLogoSrc(nextLogo.logoSrc);
-              setForm((current) => {
-                const next = { ...current, logoUrl: nextLogo.logoUrl };
-                setConfirmed(snapshot(next));
-                return next;
-              });
-            }}
+            onLogoChange={onLogoChange}
           />
         </section>
 

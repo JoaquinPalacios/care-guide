@@ -30,6 +30,7 @@ export function PracticeLogoField({
   }) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const appliedUploadKey = useRef<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [logoSrc, setLogoSrc] = useState(initialLogoSrc);
   const [uploadState, uploadAction, uploading] = useActionState(
@@ -48,15 +49,21 @@ export function PracticeLogoField({
   }, [initialLogoSrc]);
 
   useEffect(() => {
-    if (uploadState.ok && uploadState.logoUrl) {
-      setLogoSrc(uploadState.logoSrc ?? null);
-      onLogoChange({
-        logoUrl: uploadState.logoUrl,
-        logoSrc: uploadState.logoSrc ?? null,
-      });
-      if (fileRef.current) {
-        fileRef.current.value = "";
-      }
+    if (
+      !uploadState.ok ||
+      !uploadState.logoUrl ||
+      appliedUploadKey.current === uploadState.logoUrl
+    ) {
+      return;
+    }
+    appliedUploadKey.current = uploadState.logoUrl;
+    setLogoSrc(uploadState.logoSrc ?? null);
+    onLogoChange({
+      logoUrl: uploadState.logoUrl,
+      logoSrc: uploadState.logoSrc ?? null,
+    });
+    if (fileRef.current) {
+      fileRef.current.value = "";
     }
   }, [uploadState, onLogoChange]);
 
