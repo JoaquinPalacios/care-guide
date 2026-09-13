@@ -4,6 +4,7 @@ import { expectNoSeriousAxeViolations } from "./helpers/axe";
 import { expectOneH1 } from "./helpers/assertions";
 import { expectNoHorizontalOverflow } from "./helpers/layout";
 import { marketingUrl, staffUrl } from "./helpers/origins";
+import { readPrimaryCtaStyles } from "./helpers/primary-cta-styles";
 
 const VIEWPORTS = [
   { width: 1440, height: 900, label: "1440" },
@@ -95,48 +96,40 @@ test.describe("marketing + trust polish", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(marketingUrl("/"), { waitUntil: "load" });
     await showMarketingScheme(page, "light");
-    const canonical = await page
+    const canonical = page
       .getByRole("link", { name: "View the clinic demo" })
-      .first()
-      .evaluate((element) => {
-        const styles = getComputedStyle(element);
-        return {
-          height: Math.round(element.getBoundingClientRect().height),
-          radius: styles.borderRadius,
-          background: styles.backgroundColor,
-          weight: styles.fontWeight,
-        };
-      });
+      .first();
+    await expect(canonical).toBeVisible();
+    await page.mouse.move(0, 0);
+    const restCanonical = await readPrimaryCtaStyles(canonical);
+    await canonical.hover();
+    const hoverCanonical = await readPrimaryCtaStyles(canonical);
+    await canonical.focus();
+    const focusCanonical = await readPrimaryCtaStyles(canonical);
+    await canonical.screenshot({
+      path: "test-results/artifacts/trust-homepage-primary-cta.png",
+    });
 
     await page.goto(marketingUrl("/contact"), { waitUntil: "load" });
     await showMarketingScheme(page, "light");
     const submit = page.getByRole("button", { name: "Send enquiry" });
     await expect(submit).toBeVisible();
-    const rest = await submit.evaluate((element) => {
-      const styles = getComputedStyle(element);
-      return {
-        height: Math.round(element.getBoundingClientRect().height),
-        radius: styles.borderRadius,
-        background: styles.backgroundColor,
-        weight: styles.fontWeight,
-        className: element.className,
-      };
-    });
-    expect(rest.className).toMatch(/button/);
-    expect(rest.className).toMatch(/primary/);
-    expect(rest.height).toBe(canonical.height);
-    expect(rest.radius).toBe(canonical.radius);
-    expect(rest.background).toBe(canonical.background);
-    expect(rest.weight).toBe(canonical.weight);
+    await page.mouse.move(0, 0);
+    const rest = await readPrimaryCtaStyles(submit);
+    expect(await submit.getAttribute("class")).toMatch(/button/);
+    expect(await submit.getAttribute("class")).toMatch(/primary/);
+    expect(rest).toEqual(restCanonical);
 
     await submit.screenshot({
       path: "test-results/artifacts/trust-contact-submit-normal.png",
     });
     await submit.hover();
+    expect(await readPrimaryCtaStyles(submit)).toEqual(hoverCanonical);
     await submit.screenshot({
       path: "test-results/artifacts/trust-contact-submit-hover.png",
     });
     await submit.focus();
+    expect(await readPrimaryCtaStyles(submit)).toEqual(focusCanonical);
     await submit.screenshot({
       path: "test-results/artifacts/trust-contact-submit-focus.png",
     });
@@ -223,6 +216,99 @@ test.describe("marketing + trust polish", () => {
     }
   });
 
+  test("about, legal, and public nav follow the inner-page spacing contract", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(marketingUrl("/contact"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+    const contactPad = await page
+      .locator('[data-mk-chapter="soft"] > :first-child')
+      .evaluate((element) =>
+        Number.parseFloat(getComputedStyle(element).paddingTop)
+      );
+
+    await page.goto(marketingUrl("/about"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+    await expectOneH1(
+      page,
+      "River Aftercare is branded aftercare for practices."
+    );
+    const aboutPad = await page
+      .locator('[data-mk-chapter="soft"] > :first-child')
+      .evaluate((element) =>
+        Number.parseFloat(getComputedStyle(element).paddingTop)
+      );
+    expect(aboutPad).toBe(contactPad);
+    const relatedGap = await page
+      .locator('[aria-labelledby="about-not"]')
+      .evaluate((element) =>
+        Number.parseFloat(getComputedStyle(element).marginTop)
+      );
+    expect(relatedGap).toBeGreaterThanOrEqual(32);
+    expect(relatedGap).toBeLessThanOrEqual(40);
+    await page.screenshot({
+      path: "test-results/artifacts/public-about-1440.png",
+      fullPage: true,
+    });
+    await page.getByRole("navigation", { name: "Marketing" }).screenshot({
+      path: "test-results/artifacts/public-header-1440.png",
+    });
+    await page.locator("footer").scrollIntoViewIfNeeded();
+    await page.locator("footer").screenshot({
+      path: "test-results/artifacts/public-footer-1440.png",
+    });
+    await expectNoSeriousAxeViolations(page);
+    await showMarketingScheme(page, "dark");
+    await expectNoSeriousAxeViolations(page);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await showMarketingScheme(page, "light");
+    await page.screenshot({
+      path: "test-results/artifacts/public-about-390.png",
+      fullPage: true,
+    });
+    await page.getByRole("button", { name: "Site menu" }).click();
+    await page.getByRole("navigation", { name: "Marketing" }).screenshot({
+      path: "test-results/artifacts/public-header-390.png",
+    });
+    await page.keyboard.press("Escape");
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    for (const pathname of ["/privacy", "/terms"] as const) {
+      await page.goto(marketingUrl(pathname), { waitUntil: "load" });
+      await showMarketingScheme(page, "light");
+      const legalPad = await page
+        .locator('[data-mk-chapter="soft"] > :first-child')
+        .evaluate((element) =>
+          Number.parseFloat(getComputedStyle(element).paddingTop)
+        );
+      expect(legalPad).toBe(contactPad);
+      const measure = await page
+        .locator('[class*="legalCopy"]')
+        .first()
+        .evaluate((element) =>
+          Number.parseFloat(getComputedStyle(element).maxWidth)
+        );
+      expect(measure).toBe(42 * 16);
+      await page
+        .locator('[data-mk-page-hero="legal"]')
+        .evaluate((element) => element.scrollIntoView());
+      await page.locator('[class*="legalBanner"]').screenshot({
+        path: `test-results/artifacts/public-${pathname.slice(1)}-hero-notice-1440.png`,
+      });
+      await expectNoSeriousAxeViolations(page);
+      await showMarketingScheme(page, "dark");
+      await expectNoSeriousAxeViolations(page);
+    }
+
+    await page.goto(marketingUrl("/contact"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+    await expectNoSeriousAxeViolations(page);
+    await showMarketingScheme(page, "dark");
+    await expectNoSeriousAxeViolations(page);
+  });
+
   test("marketing trust surfaces do not overflow across launch viewports", async ({
     page,
   }) => {
@@ -233,6 +319,7 @@ test.describe("marketing + trust polish", () => {
       });
       for (const pathname of [
         "/",
+        "/about",
         "/pricing",
         "/contact",
         "/privacy",
