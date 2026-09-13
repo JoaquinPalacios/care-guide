@@ -13,7 +13,12 @@ import {
   measureHorizontalOverflow,
   relativeLuminance,
 } from "./helpers/layout";
-import { DEMO_TENANT_SLUG, marketingUrl, staffUrl, tenantUrl } from "./helpers/origins";
+import {
+  DEMO_TENANT_SLUG,
+  marketingUrl,
+  staffUrl,
+  tenantUrl,
+} from "./helpers/origins";
 import {
   signInAsLocalAdmin,
   signInAsLocalOperator,
@@ -53,9 +58,11 @@ test.describe("clinic portal", () => {
     await expect(
       page.getByText("Manage your clinic's patient aftercare.")
     ).toBeVisible();
-    await expect(page.getByText("Published guides")).toBeVisible();
-    await expect(page.getByText("Draft guides")).toBeVisible();
-    await expect(page.getByText("Clinic setup")).toBeVisible();
+    await expect(
+      page.getByText("Published guides", { exact: true })
+    ).toBeVisible();
+    await expect(page.getByText("Draft guides", { exact: true })).toBeVisible();
+    await expect(page.getByText("Clinic setup", { exact: true })).toBeVisible();
     const configured = page
       .locator(".staffStatusPill", { hasText: "Configured" })
       .first();
@@ -148,7 +155,12 @@ test.describe("clinic portal", () => {
     await expect(
       page.getByText("Tooth Extraction", { exact: true })
     ).toBeVisible();
-    await expect(page.getByText("/extraction")).toBeVisible();
+    await expect(
+      page
+        .locator("ul.divide-y > li")
+        .filter({ hasText: "Tooth Extraction" })
+        .locator("p.mt-1")
+    ).toContainText("/extraction");
     await expect(
       page.getByText("Published", { exact: true }).first()
     ).toBeVisible();
@@ -167,7 +179,10 @@ test.describe("clinic portal", () => {
       page.getByRole("link", { name: "Preview" }).first()
     ).toBeVisible();
     await expect(
-      page.getByRole("link", { name: /View patient guide/ })
+      page
+        .locator("ul.divide-y > li")
+        .filter({ hasText: "Tooth Extraction" })
+        .getByRole("link", { name: /View patient guide/ })
     ).toHaveAttribute("href", tenantUrl(DEMO_TENANT_SLUG, "/extraction"));
     await expect(page.getByText("Harbor Family Dental")).toHaveCount(0);
 

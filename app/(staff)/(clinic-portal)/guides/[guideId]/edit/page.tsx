@@ -49,17 +49,16 @@ export default async function GuideEditPage({ params }: GuideEditPageProps) {
       requestHeaders.get("x-forwarded-proto") ??
       (host.includes("localhost") ? "http" : "https");
     const theme = resolveAftercareTheme(clinic?.profile);
+    const clinicSlug = overview?.slug;
     const patientUrlExample =
-      overview?.patientSiteHref ??
-      (host
+      (clinicSlug
         ? clinicPatientSiteUrl({
             requestHost: host,
-            clinicSlug: overview?.slug ?? clinicMembership.clinic.name,
+            clinicSlug,
             protocol,
             pathname: `/${guide.publicSlug}`,
           })
-        : null) ??
-      `/${guide.publicSlug}`;
+        : null) ?? `/${guide.publicSlug}`;
 
     return (
       <>

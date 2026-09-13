@@ -5,65 +5,66 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-13 (Marketing + trust polish)
+Last updated: 2026-09-14 (Public UI + published-guide QR share)
 
 ---
 
 ## Product direction vs current implementation
 
-|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** through **1F.16 / reveal timing** + **Phase 1G interactive patient demo** + **Phase 1G.1 launch-scope cleanup** + **marketing completion** (`/`, `/pricing`, `/contact`, `/about` on the root host) + **marketing conversion polish** + **marketing final polish** + **UX polish + clinic portal foundation** + **Phase 2A clinic self-service foundation** + **Phase 2A.4** + **Phase 2A.5** (portal shell, launch SEO indexing policy, unpublish, Geist, River Aftercare brand pack) + **Phase 2B** (operator SEO & Discovery, structured SEO settings, JSON-LD, llms.txt, production-readiness audit). Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. Check-in is post-launch only — see [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md). Logo **application** upload is implemented; production still needs a provisioned object-storage bucket. A Cloudflare Turnstile challenge is HIGH PRIORITY before or immediately after launch and is **not implemented**. |
-| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Product direction**          | B2B aftercare SaaS: branded tenant hostnames, canonical guide library, practice enablement/overrides, durable URLs + QR, mobile-first anonymous patient pages, operator admin, basic anonymous analytics                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Current implementation**     | Staff auth + parked chairside sessions + Phase 1A–1C aftercare + **Phase 1E browser/performance acceptance** + **Phase 1F public marketing face** through **1F.16 / reveal timing** + **Phase 1G interactive patient demo** + **Phase 1G.1 launch-scope cleanup** + **marketing completion** (`/`, `/pricing`, `/contact`, `/about` on the root host) + **marketing conversion polish** + **marketing final polish** + **UX polish + clinic portal foundation** + **Phase 2A clinic self-service foundation** + **Phase 2A.4** + **Phase 2A.5** (portal shell, launch SEO indexing policy, unpublish, Geist, River Aftercare brand pack) + **Phase 2B** (operator SEO & Discovery, structured SEO settings, JSON-LD, llms.txt, production-readiness audit) + **public UI + published-guide QR share**. Motion is approved for marketing presentation only. Patient clinical content remains motion-light and document-first. Check-in is post-launch only — see [POST-LAUNCH-ROADMAP.md](POST-LAUNCH-ROADMAP.md). Logo **application** upload is implemented; production still needs a provisioned object-storage bucket. A Cloudflare Turnstile challenge is HIGH PRIORITY before or immediately after launch and is **not implemented**. |
+| **Aftercare MVP implemented?** | **No** — Phase 1 technical vertical slice is implemented and hardened. Commercial MVP is after Phase 3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
-Do not claim QR codes, anonymous analytics, approved Privacy/Terms, or production infra exist until they are built. Public `/privacy` and `/terms` drafts exist and still require legal review. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented. Operator now has All Clinics plus SEO & Discovery; it still does not have a template CMS. Phase 1E added Playwright + axe browser acceptance; it did not add product features.
+Published-guide QR sharing is implemented for clinic staff (durable public URL, SVG/PNG). Do not claim anonymous analytics, approved Privacy/Terms, or production infra exist until they are built. Public `/privacy` and `/terms` drafts exist and still require legal review. Hostname routing (Phase 1B) and branded patient pages (Phase 1C) are implemented. Operator now has All Clinics plus SEO & Discovery; it still does not have a template CMS. Phase 1E added Playwright + axe browser acceptance; it did not add product features.
 
 ---
 
 ## Phase status
 
-| Phase                     | Status                                                          |
-| ------------------------- | --------------------------------------------------------------- |
-| 1A                        | COMPLETE / APPROVED                                             |
-| 1B                        | COMPLETE / APPROVED                                             |
-| 1B.5                      | COMPLETE / APPROVED                                             |
-| 1C                        | COMPLETE / APPROVED                                             |
-| 1D                        | ABSORBED INTO PHASE 1C / NO SEPARATE IMPLEMENTATION             |
-| 1E                        | COMPLETE — TECHNICALLY READY FOR LOCAL JOAQUÍN ACCEPTANCE       |
-| 1F                        | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                       |
-| 1F.1                      | COMPLETE — PREMIUM PRODUCT EXPERIENCE READY FOR REVIEW          |
-| 1F.2                      | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                       |
-| 1F.3                      | COMPLETE — VISUAL SIMPLIFICATION READY FOR JOAQUÍN REVIEW       |
-| 1F.4                      | COMPLETE — MARKETING MOTION READY FOR JOAQUÍN REVIEW            |
-| 1F.5                      | COMPLETE — HERO COMPOSITION READY FOR JOAQUÍN REVIEW            |
-| 1F.6                      | COMPLETE — PREMIUM MOBILE HERO READY FOR JOAQUÍN REVIEW         |
-| 1F.7                      | COMPLETE — HERO INTERACTION POLISH READY FOR JOAQUÍN REVIEW     |
-| 1F.8                      | COMPLETE — PREMIUM HERO ATMOSPHERE READY FOR JOAQUÍN REVIEW     |
-| 1F.9                      | COMPLETE — RESPONSIVE PRODUCT PREVIEW READY FOR JOAQUÍN REVIEW  |
-| 1F.10                     | COMPLETE — PREMIUM STORYTELLING READY FOR JOAQUÍN REVIEW        |
-| 1F.11                     | COMPLETE — STORY CLARITY READY FOR JOAQUÍN REVIEW               |
-| 1F.12                     | COMPLETE — DESIGN COHERENCE READY FOR JOAQUÍN REVIEW            |
-| 1F.13                     | COMPLETE — CLOSING COMPOSITION READY FOR JOAQUÍN REVIEW         |
-| 1F.14                     | COMPLETE — FINAL MARKETING REFINEMENT READY FOR JOAQUÍN REVIEW  |
-| 1F.15                     | COMPLETE — MOBILE STORYTELLING READY FOR JOAQUÍN REVIEW         |
-| 1F.16                     | COMPLETE — MOTION CHOREOGRAPHY READY FOR JOAQUÍN REVIEW         |
-| 1F.10vt                   | COMPLETE — VIEWPORT REVEAL TIMING READY FOR JOAQUÍN REVIEW      |
-| 1G                        | COMPLETE — INTERACTIVE RECOVERY DEMO READY FOR JOAQUÍN REVIEW   |
-| 1G.1                      | COMPLETE — LAUNCH-SCOPE CLEANUP                                 |
-| Marketing completion      | COMPLETE — PRICING + CONTACT READY FOR JOAQUÍN REVIEW           |
-| Marketing polish          | COMPLETE — CONVERSION POLISH READY FOR JOAQUÍN REVIEW           |
-| Marketing final polish    | COMPLETE — READY FOR JOAQUÍN REVIEW                             |
-| UX polish + clinic portal | COMPLETE — READY FOR JOAQUÍN REVIEW                             |
-| 2A                        | LOCAL — CLINIC SELF-SERVICE FOUNDATION                          |
-| 2A.1                      | LOCAL — CLINIC PORTAL UX READY FOR JOAQUÍN REVIEW               |
-| 2A.2                      | LOCAL — PORTAL WORKFLOW POLISH READY FOR JOAQUÍN REVIEW         |
-| 2A.3                      | LOCAL — EDITOR / PRACTICE / OPERATOR POLISH                     |
-| 2A.4                      | LOCAL — OVERFLOW / PREVIEW / GUIDE ACTIONS / LOGO READINESS     |
-| 2A.5                      | LOCAL — VISUAL SYSTEM CORRECTIONS READY FOR JOAQUÍN REVIEW      |
-| 2B                        | LOCAL — SEO / DISCOVERY / LAUNCH AUDIT READY FOR JOAQUÍN REVIEW |
-| Marketing + trust polish  | LOCAL — LISTS, PREVIEWS, LEGAL DRAFTS READY FOR JOAQUÍN REVIEW  |
-| 2+ remainder              | Not started                                                     |
+| Phase                     | Status                                                           |
+| ------------------------- | ---------------------------------------------------------------- |
+| 1A                        | COMPLETE / APPROVED                                              |
+| 1B                        | COMPLETE / APPROVED                                              |
+| 1B.5                      | COMPLETE / APPROVED                                              |
+| 1C                        | COMPLETE / APPROVED                                              |
+| 1D                        | ABSORBED INTO PHASE 1C / NO SEPARATE IMPLEMENTATION              |
+| 1E                        | COMPLETE — TECHNICALLY READY FOR LOCAL JOAQUÍN ACCEPTANCE        |
+| 1F                        | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                        |
+| 1F.1                      | COMPLETE — PREMIUM PRODUCT EXPERIENCE READY FOR REVIEW           |
+| 1F.2                      | COMPLETE — READY FOR LOCAL JOAQUÍN REVIEW                        |
+| 1F.3                      | COMPLETE — VISUAL SIMPLIFICATION READY FOR JOAQUÍN REVIEW        |
+| 1F.4                      | COMPLETE — MARKETING MOTION READY FOR JOAQUÍN REVIEW             |
+| 1F.5                      | COMPLETE — HERO COMPOSITION READY FOR JOAQUÍN REVIEW             |
+| 1F.6                      | COMPLETE — PREMIUM MOBILE HERO READY FOR JOAQUÍN REVIEW          |
+| 1F.7                      | COMPLETE — HERO INTERACTION POLISH READY FOR JOAQUÍN REVIEW      |
+| 1F.8                      | COMPLETE — PREMIUM HERO ATMOSPHERE READY FOR JOAQUÍN REVIEW      |
+| 1F.9                      | COMPLETE — RESPONSIVE PRODUCT PREVIEW READY FOR JOAQUÍN REVIEW   |
+| 1F.10                     | COMPLETE — PREMIUM STORYTELLING READY FOR JOAQUÍN REVIEW         |
+| 1F.11                     | COMPLETE — STORY CLARITY READY FOR JOAQUÍN REVIEW                |
+| 1F.12                     | COMPLETE — DESIGN COHERENCE READY FOR JOAQUÍN REVIEW             |
+| 1F.13                     | COMPLETE — CLOSING COMPOSITION READY FOR JOAQUÍN REVIEW          |
+| 1F.14                     | COMPLETE — FINAL MARKETING REFINEMENT READY FOR JOAQUÍN REVIEW   |
+| 1F.15                     | COMPLETE — MOBILE STORYTELLING READY FOR JOAQUÍN REVIEW          |
+| 1F.16                     | COMPLETE — MOTION CHOREOGRAPHY READY FOR JOAQUÍN REVIEW          |
+| 1F.10vt                   | COMPLETE — VIEWPORT REVEAL TIMING READY FOR JOAQUÍN REVIEW       |
+| 1G                        | COMPLETE — INTERACTIVE RECOVERY DEMO READY FOR JOAQUÍN REVIEW    |
+| 1G.1                      | COMPLETE — LAUNCH-SCOPE CLEANUP                                  |
+| Marketing completion      | COMPLETE — PRICING + CONTACT READY FOR JOAQUÍN REVIEW            |
+| Marketing polish          | COMPLETE — CONVERSION POLISH READY FOR JOAQUÍN REVIEW            |
+| Marketing final polish    | COMPLETE — READY FOR JOAQUÍN REVIEW                              |
+| UX polish + clinic portal | COMPLETE — READY FOR JOAQUÍN REVIEW                              |
+| 2A                        | LOCAL — CLINIC SELF-SERVICE FOUNDATION                           |
+| 2A.1                      | LOCAL — CLINIC PORTAL UX READY FOR JOAQUÍN REVIEW                |
+| 2A.2                      | LOCAL — PORTAL WORKFLOW POLISH READY FOR JOAQUÍN REVIEW          |
+| 2A.3                      | LOCAL — EDITOR / PRACTICE / OPERATOR POLISH                      |
+| 2A.4                      | LOCAL — OVERFLOW / PREVIEW / GUIDE ACTIONS / LOGO READINESS      |
+| 2A.5                      | LOCAL — VISUAL SYSTEM CORRECTIONS READY FOR JOAQUÍN REVIEW       |
+| 2B                        | LOCAL — SEO / DISCOVERY / LAUNCH AUDIT READY FOR JOAQUÍN REVIEW  |
+| Marketing + trust polish  | LOCAL — LISTS, PREVIEWS, LEGAL DRAFTS READY FOR JOAQUÍN REVIEW   |
+| Public UI + share polish  | LOCAL — NAV, SPACING, CONTACT CTA, PUBLISHED QR READY FOR REVIEW |
+| 2+ remainder              | Not started                                                      |
 
 Phase 1D is not a missing slice. Phase 1C already shipped canonical composition, practice overrides, practice additions, semantic section rendering, warning/emergency rendering, and the real patient guide UI. A separate 1D implementation would have been artificial. Historical phase numbers are not renumbered.
 
@@ -985,12 +986,12 @@ Local phase on `feature/phase-2b-seo-discovery-launch`. Starts from current main
 | Operator         | `/operator/seo` — SEO & Discovery. Platform OPERATOR only. Nav: Clinics, SEO & Discovery.                                                                                                                                                                                                                                                                                                              |
 | SEO data         | `PlatformSeoSettings` + `MarketingPageSeo`. Code fallbacks if the row is absent. Canonical URLs derived, not editable. No `seo.json`, no raw JSON-LD editing.                                                                                                                                                                                                                                          |
 | JSON-LD          | Server-generated Organization / WebSite / SoftwareApplication (no Offer — pricing remains provisional) / ContactPage / AboutPage.                                                                                                                                                                                                                                                                      |
-| Public pages     | `/about`, `/privacy`, and `/terms` published. Privacy/Terms are **substantial drafts — legal review still required, not approved.** |
+| Public pages     | `/about`, `/privacy`, and `/terms` published. Privacy/Terms are **substantial drafts — legal review still required, not approved.**                                                                                                                                                                                                                                                                    |
 | Discovery        | `/llms.txt` generated from identity + public routes. `llms-full.txt` skipped (corpus too small). Sitemap includes `/about`. Tenant guides remain noindex and off the sitemap.                                                                                                                                                                                                                          |
 | OG image         | Dedicated 1200×630 asset still required. Logo is not used as a social card.                                                                                                                                                                                                                                                                                                                            |
 | Docs             | [../architecture/SEO.md](../architecture/SEO.md), [../launch/PRODUCTION-READINESS.md](../launch/PRODUCTION-READINESS.md), [../launch/AGENTIC-READINESS.md](../launch/AGENTIC-READINESS.md), [ADR 0020](../adr/0020-platform-seo-is-structured-database-configuration.md), [ADR 0021](../adr/0021-clinic-patient-guides-stay-noindex-by-default.md). Visuals: [artifacts/phase-2b](artifacts/phase-2b). |
 | Templates        | Canonical aftercare seed is still **Tooth Extraction** only.                                                                                                                                                                                                                                                                                                                                           |
-| QR               | Not implemented.                                                                                                                                                                                                                                                                                                                                                                                       |
+| QR               | Clinic staff Share for published/enabled guides (durable public URL, SVG/PNG). Patient pages do not show a QR. See public UI + share polish.                                                                                                                                                                                                                                                           |
 | Auth             | `next-auth` v5 beta unchanged; documented as an acceptable first-launch exception pending a separate decision.                                                                                                                                                                                                                                                                                         |
 
 ---
@@ -1001,16 +1002,32 @@ Date: 2026-09-13
 
 Visual consistency and trust-page completion on current main (Phase 2B). No pricing, infra, lifecycle, PII, or UI-library changes.
 
-| Area | Behaviour |
-| ---- | --------- |
-| Numbered lists | One `[01] [rule] [copy]` pattern (`MarketingNumberedSteps`) for the homepage problem list and pricing onboarding. |
-| Onboarding copy | Tooth Extraction is the current canonical template. Other procedures are planned/onboarding, not advertised as available. |
+| Area                 | Behaviour                                                                                                                                                                                          |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Numbered lists       | One `[01] [rule] [copy]` pattern (`MarketingNumberedSteps`) for the homepage problem list and pricing onboarding.                                                                                  |
+| Onboarding copy      | Tooth Extraction is the current canonical template. Other procedures are planned/onboarding, not advertised as available.                                                                          |
 | Phone + Patient View | Lightweight marketing replicas using shared `--cg-*` tokens and `data-patient-theme="portal"` so Light/Dark follow marketing appearance. Riverside Dental Demo brand stays teal, not River cobalt. |
-| Coming after launch | Existing card system; bullets use first-line offset, not `align-items: center`. |
-| Contact | Submit uses `MarketingPrimaryButton` (canonical `.button.primary`). |
-| Login | `← Back to River Aftercare` via `apexPublicUrl` / `marketingPublicLinks().homeHref`. |
-| Legal | `/privacy` and `/terms` drafts. Placeholders for entity/ABN/address/governing law/email. **Not approved.** |
-| Footer | Product (About, Pricing, Contact), Legal (Privacy, Terms), Account (Staff sign in). Homepage anchors removed. |
-| SEO | Privacy/Terms are `index,follow`, in sitemap and `llms.txt`. Operator SEO form includes the known paths. |
+| Coming after launch  | Existing card system; bullets use first-line offset, not `align-items: center`.                                                                                                                    |
+| Contact              | Submit uses `MarketingPrimaryButton` (canonical `.button.primary`).                                                                                                                                |
+| Login                | `← Back to River Aftercare` via `apexPublicUrl` / `marketingPublicLinks().homeHref`.                                                                                                               |
+| Legal                | `/privacy` and `/terms` drafts. Placeholders for entity/ABN/address/governing law/email. **Not approved.**                                                                                         |
+| Footer               | Product (About, Pricing, Contact), Legal (Privacy, Terms), Account (Sign in). Homepage anchors removed.                                                                                            |
+| SEO                  | Privacy/Terms are `index,follow`, in sitemap and `llms.txt`. Operator SEO form includes the known paths.                                                                                           |
+
+---
+
+## Public UI + published-guide QR share (implemented)
+
+Date: 2026-09-14
+
+Local polish on `feature/public-ui-share-polish`. Preserves Phase 2B SEO/trust work. No pricing, infra, legal-approval, or patient PII changes.
+
+| Area        | Behaviour                                                                                                                                                                                                                                                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Contact CTA | `.button` resets native `<button>` UA chrome (`appearance: none`, `border: 0`). Rest/hover/focus computed styles match homepage `View the clinic demo`.                                                                                                                                                                         |
+| Primary nav | Desktop and mobile: About, Pricing, Contact, Sign in. Privacy/Terms stay footer-only. Login heading remains **Staff sign in**.                                                                                                                                                                                                  |
+| About       | One first `.band` with two related `headingBlock`s; second uses `.headingFollow`. Copy stays web-first / clinic-branded / dental-first / not CRM, monitoring, or messaging.                                                                                                                                                     |
+| Legal       | Privacy and Terms share Contact’s `.band` top padding after the hero/wave. Body measure remains `max-width: 42rem`. Draft review banner unchanged.                                                                                                                                                                              |
+| QR          | Derived from the canonical public guide URL (`clinicPatientSiteUrl` + `publicSlug`). Server `qrcode` SVG/PNG, ECC H, dark-on-light, quiet zone 4. Share on published+enabled guides only (ADMIN and STAFF). Draft/unpublished have no Share. Same URL after republish; unpublish is 404. No patient-page QR. No QR image table. |
 
 ---

@@ -18,6 +18,7 @@ import {
 } from "@/app/(staff)/(clinic-portal)/guides/actions";
 import { EditorLivePreview } from "@/app/(staff)/(clinic-portal)/guides/editor-live-preview";
 import { GuideLifecycleActions } from "@/app/(staff)/(clinic-portal)/guides/guide-lifecycle-actions";
+import { GuideShareMenu } from "@/app/(staff)/(clinic-portal)/guides/guide-share-menu";
 import {
   TimelineAccordion,
   type EditorSection,
@@ -28,6 +29,7 @@ import { PortalBreadcrumb } from "@/app/(staff)/components/portal-breadcrumb";
 import { SaveStatus } from "@/app/(staff)/components/save-status";
 import { useUnsavedChangesGuard } from "@/app/(staff)/components/use-unsaved-changes-guard";
 import { ExternalLinkIcon } from "@/app/(staff)/components/icons";
+import { guideQrDownloadPath } from "@/lib/clinic-portal/guide-qr";
 import { formSaveStatus } from "@/lib/clinic-portal/form-save-status";
 import {
   clinicGuideCanUnpublish,
@@ -236,7 +238,11 @@ export function GuideEditor({
     : "Custom guide";
   const statusPills = clinicGuideStatusPills(guide.lifecycle);
   const slugLocked = !canEdit || guide.isPublished;
-  const showPublicLink = guide.isPublished && guide.isEnabled;
+  const publicUrl = patientUrlExample.startsWith("http")
+    ? patientUrlExample
+    : null;
+  const showPublicLink =
+    guide.isPublished && guide.isEnabled && Boolean(publicUrl);
 
   const actions = (
     <div className="staffEditorActions">
@@ -324,17 +330,24 @@ export function GuideEditor({
           ]}
         />
         <div className="flex flex-wrap items-center gap-2">
-          {showPublicLink ? (
-            <a
-              href={patientUrlExample}
-              target="_blank"
-              rel="noreferrer"
-              className="staffBtn staffBtnQuiet"
-            >
-              View patient guide
-              <span className="sr-only"> (opens in a new tab)</span>
-              <ExternalLinkIcon className="ml-1" />
-            </a>
+          {showPublicLink && publicUrl ? (
+            <>
+              <a
+                href={publicUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="staffBtn staffBtnQuiet"
+              >
+                View patient guide
+                <span className="sr-only"> (opens in a new tab)</span>
+                <ExternalLinkIcon className="ml-1" />
+              </a>
+              <GuideShareMenu
+                publicUrl={publicUrl}
+                svgHref={guideQrDownloadPath(guide.id, "svg")}
+                pngHref={guideQrDownloadPath(guide.id, "png")}
+              />
+            </>
           ) : null}
           <Link
             href={`/guides/${guide.id}/preview`}

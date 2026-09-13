@@ -3,7 +3,9 @@
 import Link from "next/link";
 
 import { GuideLifecycleActions } from "@/app/(staff)/(clinic-portal)/guides/guide-lifecycle-actions";
+import { GuideShareMenu } from "@/app/(staff)/(clinic-portal)/guides/guide-share-menu";
 import { ExternalLinkIcon } from "@/app/(staff)/components/icons";
+import { guideQrDownloadPath } from "@/lib/clinic-portal/guide-qr";
 import type {
   ClinicGuideLifecycleStatus,
   GuideDestructiveAction,
@@ -43,16 +45,23 @@ export function GuideRowActions({
         Preview
       </Link>
       {isPublishedPublic && previewHref ? (
-        <a
-          href={previewHref}
-          target="_blank"
-          rel="noreferrer"
-          className="staffBtn staffBtnQuiet"
-        >
-          View patient guide
-          <span className="sr-only"> (opens in a new tab)</span>
-          <ExternalLinkIcon className="ml-1" />
-        </a>
+        <>
+          <a
+            href={previewHref}
+            target="_blank"
+            rel="noreferrer"
+            className="staffBtn staffBtnQuiet"
+          >
+            View patient guide
+            <span className="sr-only"> (opens in a new tab)</span>
+            <ExternalLinkIcon className="ml-1" />
+          </a>
+          <GuideShareMenu
+            publicUrl={previewHref}
+            svgHref={guideQrDownloadPath(guideId, "svg")}
+            pngHref={guideQrDownloadPath(guideId, "png")}
+          />
+        </>
       ) : null}
       {canManage ? (
         <GuideLifecycleActions

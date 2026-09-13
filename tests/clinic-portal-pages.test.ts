@@ -122,4 +122,15 @@ describe("clinic portal pages", () => {
     expect(preview).toContain("StaffPreviewShell");
     expect(preview).not.toContain("Wisdom Teeth");
   });
+
+  it("resolves published-guide share links from the public slug, not the clinic home", () => {
+    const edit = readFileSync(
+      "app/(staff)/(clinic-portal)/guides/[guideId]/edit/page.tsx",
+      "utf8"
+    );
+
+    expect(edit).toContain("clinicPatientSiteUrl");
+    expect(edit).toContain("`/${guide.publicSlug}`");
+    expect(edit).not.toContain("overview.patientSiteHref");
+  });
 });
