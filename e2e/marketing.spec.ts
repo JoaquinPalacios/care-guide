@@ -309,9 +309,23 @@ test.describe("marketing homepage", () => {
       const phoneCanvas = await hero
         .locator('[class*="phoneScreen"]')
         .evaluate((element) => getComputedStyle(element).backgroundColor);
-      expect(phoneCanvas, `${shot.scheme} phone canvas`).toMatch(
-        /rgb\(\s*255,\s*255,\s*255/
-      );
+      const phoneLuminance = relativeLuminance(phoneCanvas);
+      if (shot.scheme === "light") {
+        expect(phoneCanvas, `${shot.scheme} phone canvas`).toMatch(
+          /rgb\(\s*255,\s*255,\s*255/
+        );
+        expect(
+          phoneLuminance,
+          `${shot.scheme} phone luminance`
+        ).toBeGreaterThan(0.9);
+      } else {
+        expect(phoneCanvas, `${shot.scheme} phone canvas`).not.toMatch(
+          /rgb\(\s*255,\s*255,\s*255/
+        );
+        expect(phoneLuminance, `${shot.scheme} phone luminance`).toBeLessThan(
+          0.15
+        );
+      }
 
       await page.screenshot({
         path: `test-results/artifacts/phase-1f9-hero-${shot.width}-${shot.scheme}.png`,

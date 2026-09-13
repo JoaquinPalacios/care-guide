@@ -40,7 +40,9 @@ test.describe("marketing + trust polish", () => {
     expect(privacy?.status()).toBe(200);
     expect(page.url()).not.toContain("/_marketing");
     await expectOneH1(page, "Privacy Policy");
-    await expect(page.getByRole("note")).toContainText("DRAFT FOR LEGAL REVIEW");
+    await expect(page.getByRole("note")).toContainText(
+      "DRAFT FOR LEGAL REVIEW"
+    );
     expect(
       await page.locator('meta[name="robots"]').getAttribute("content")
     ).not.toMatch(/noindex/i);
@@ -52,13 +54,16 @@ test.describe("marketing + trust polish", () => {
       "content",
       /Privacy/
     );
+    await expectNoSeriousAxeViolations(page);
 
     const terms = await page.goto(marketingUrl("/terms"), {
       waitUntil: "load",
     });
     expect(terms?.status()).toBe(200);
     await expectOneH1(page, "Terms & Conditions");
-    await expect(page.getByRole("note")).toContainText("DRAFT FOR LEGAL REVIEW");
+    await expect(page.getByRole("note")).toContainText(
+      "DRAFT FOR LEGAL REVIEW"
+    );
     expect(
       await page.locator('meta[name="robots"]').getAttribute("content")
     ).not.toMatch(/noindex/i);
@@ -66,6 +71,7 @@ test.describe("marketing + trust polish", () => {
       "href",
       /\/terms\/?$/
     );
+    await expectNoSeriousAxeViolations(page);
   });
 
   test("login back link returns to the marketing apex", async ({ page }) => {
@@ -146,10 +152,15 @@ test.describe("marketing + trust polish", () => {
     await page.locator('[aria-labelledby="problem-heading"]').screenshot({
       path: "test-results/artifacts/trust-numbered-problem-1440.png",
     });
+    const phoneScreen = page.locator('[class*="phoneScreen"]').first();
+    const lightPhone = await phoneScreen.evaluate(
+      (element) => getComputedStyle(element).backgroundColor
+    );
+    expect(lightPhone).toMatch(/rgb\(\s*255,\s*255,\s*255/);
     await page.locator('[class*="deviceStage"]').screenshot({
       path: "test-results/artifacts/trust-phone-1440-light.png",
     });
-    await page.locator('[data-mk-patient-preview]').screenshot({
+    await page.locator("[data-mk-patient-preview]").screenshot({
       path: "test-results/artifacts/trust-patient-view-1440-light.png",
     });
     await page.locator("footer").screenshot({
@@ -157,10 +168,14 @@ test.describe("marketing + trust polish", () => {
     });
 
     await showMarketingScheme(page, "dark");
+    const darkPhone = await phoneScreen.evaluate(
+      (element) => getComputedStyle(element).backgroundColor
+    );
+    expect(darkPhone).not.toMatch(/rgb\(\s*255,\s*255,\s*255/);
     await page.locator('[class*="deviceStage"]').screenshot({
       path: "test-results/artifacts/trust-phone-1440-dark.png",
     });
-    await page.locator('[data-mk-patient-preview]').screenshot({
+    await page.locator("[data-mk-patient-preview]").screenshot({
       path: "test-results/artifacts/trust-patient-view-1440-dark.png",
     });
 
@@ -216,7 +231,13 @@ test.describe("marketing + trust polish", () => {
         width: viewport.width,
         height: viewport.height,
       });
-      for (const pathname of ["/", "/pricing", "/contact", "/privacy", "/terms"] as const) {
+      for (const pathname of [
+        "/",
+        "/pricing",
+        "/contact",
+        "/privacy",
+        "/terms",
+      ] as const) {
         await page.goto(marketingUrl(pathname), { waitUntil: "load" });
         await showMarketingScheme(page, "light");
         await expectNoHorizontalOverflow(page);
