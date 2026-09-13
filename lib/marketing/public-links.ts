@@ -40,7 +40,7 @@ export async function marketingPublicLinks(): Promise<MarketingPublicLinks> {
 }
 
 export function homepageAnchor(
-  path: "/" | "/pricing" | "/contact",
+  path: "/" | "/pricing" | "/contact" | "/about",
   hash: string
 ): string {
   return path === "/" ? `#${hash}` : `/#${hash}`;

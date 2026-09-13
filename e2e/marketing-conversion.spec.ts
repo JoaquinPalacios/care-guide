@@ -143,9 +143,7 @@ test.describe("marketing conversion routes", () => {
     ).toBeVisible();
     await expect(page.getByRole("button", { name: /site menu/i })).toBeHidden();
 
-    await expect(
-      footerNav.getByRole("link", { name: "Pricing" })
-    ).toBeVisible();
+    await expect(footerNav.getByRole("link", { name: "About" })).toBeVisible();
     await expect(
       footerNav.getByRole("link", { name: "Contact" })
     ).toBeVisible();
@@ -349,7 +347,7 @@ test.describe("marketing conversion routes", () => {
         colorScheme,
         reducedMotion: "reduce",
       });
-      for (const pathname of ["/", "/pricing", "/contact"] as const) {
+      for (const pathname of ["/", "/pricing", "/contact", "/about"] as const) {
         await page.goto(marketingUrl(pathname), { waitUntil: "load" });
         await showMarketingScheme(page, colorScheme);
         await page.evaluate(() => {
@@ -362,7 +360,7 @@ test.describe("marketing conversion routes", () => {
       }
 
       await page.setViewportSize({ width: 390, height: 844 });
-      for (const pathname of ["/pricing", "/contact"] as const) {
+      for (const pathname of ["/pricing", "/contact", "/about"] as const) {
         await page.goto(marketingUrl(pathname), { waitUntil: "load" });
         await showMarketingScheme(page, colorScheme);
         await page.evaluate(() => {

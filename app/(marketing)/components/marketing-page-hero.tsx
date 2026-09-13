@@ -7,7 +7,7 @@ import { editorialRevealDelay } from "@/lib/marketing/reveal-timing";
 
 import styles from "../marketing.module.css";
 
-export type MarketingPageHeroVariant = "pricing" | "contact";
+export type MarketingPageHeroVariant = "pricing" | "contact" | "about";
 
 export function MarketingPageHero({
   variant,

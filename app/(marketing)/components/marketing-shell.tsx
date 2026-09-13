@@ -11,7 +11,7 @@ import { homepageAnchor } from "@/lib/marketing/public-links";
 
 import styles from "../marketing.module.css";
 
-export type MarketingPath = "/" | "/pricing" | "/contact";
+export type MarketingPath = "/" | "/pricing" | "/contact" | "/about";
 
 export function MarketingShell({
   currentPath,
@@ -96,6 +96,9 @@ export function MarketingShell({
               </Link>
               <Link className={styles.textLink} href={previewHref}>
                 Clinic preview
+              </Link>
+              <Link className={styles.textLink} href="/about">
+                About
               </Link>
               <Link className={styles.textLink} href="/pricing">
                 Pricing
