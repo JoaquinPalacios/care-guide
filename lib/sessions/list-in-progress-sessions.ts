@@ -1,8 +1,9 @@
 import "server-only";
 
+import type { PrismaClient } from "@prisma/client";
 import { ProcedureSessionStatus } from "@prisma/client";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface InProgressSessionListItem {
   id: string;
@@ -19,7 +20,7 @@ const IN_PROGRESS_STATUSES: ProcedureSessionStatus[] = [
   ProcedureSessionStatus.ACTIVE,
 ];
 
-type PrismaLike = Pick<typeof prisma, "procedureSession">;
+type PrismaLike = Pick<PrismaClient, "procedureSession">;
 
 /**
  * List all DRAFT or ACTIVE sessions for a clinic, ordered most recent first,
@@ -29,7 +30,7 @@ type PrismaLike = Pick<typeof prisma, "procedureSession">;
  */
 export async function listInProgressSessions(
   clinicId: string,
-  client: PrismaLike = prisma
+  client: PrismaLike = getPrisma()
 ): Promise<InProgressSessionListItem[]> {
   const rows = await client.procedureSession.findMany({
     where: { clinicId, status: { in: IN_PROGRESS_STATUSES } },

@@ -13,7 +13,7 @@ import {
   type ClinicGuideLifecycleStatus,
   type GuideDestructiveAction,
 } from "@/lib/clinic-portal/guide-status";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface ClinicPortalGuide {
   id: string;
@@ -35,7 +35,7 @@ export interface ClinicPortalGuide {
 export async function listClinicPortalGuides(
   clinicId: string
 ): Promise<ClinicPortalGuide[]> {
-  const clinic = await prisma.clinic.findUnique({
+  const clinic = await getPrisma().clinic.findUnique({
     where: { id: clinicId },
     select: { id: true, slug: true },
   });
@@ -44,7 +44,7 @@ export async function listClinicPortalGuides(
     return [];
   }
 
-  const guides = await prisma.practiceGuide.findMany({
+  const guides = await getPrisma().practiceGuide.findMany({
     where: { clinicId: clinic.id },
     orderBy: [{ sortOrder: "asc" }, { publicSlug: "asc" }],
     select: {

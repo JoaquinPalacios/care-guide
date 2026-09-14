@@ -24,14 +24,14 @@ vi.mock("@/lib/auth/session", () => ({
 }));
 
 vi.mock("@/lib/prisma", () => ({
-  prisma: {
+  getPrisma: () => ({
     user: {
       findUnique: findUniqueMock,
     },
     clinicMembership: {
       findMany: findManyMock,
     },
-  },
+  }),
 }));
 
 vi.mock("@/lib/auth/session-cookie", () => ({

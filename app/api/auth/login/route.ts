@@ -7,7 +7,7 @@ import {
   authSessionCookieOptions,
 } from "@/lib/auth/session-cookie";
 import { createDatabaseSession, postLoginPath } from "@/lib/auth/session";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await getPrisma().user.findUnique({
     where: { email },
     select: {
       id: true,
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const memberships = await prisma.clinicMembership.findMany({
+  const memberships = await getPrisma().clinicMembership.findMany({
     where: { userId: user.id },
     select: {
       clinicId: true,

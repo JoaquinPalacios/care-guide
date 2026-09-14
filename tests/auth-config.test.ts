@@ -21,7 +21,7 @@ vi.mock("@auth/prisma-adapter", () => ({
 }));
 
 vi.mock("@/lib/prisma", () => ({
-  prisma: {},
+  getPrisma: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/session-cookie", () => ({

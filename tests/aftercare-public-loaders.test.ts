@@ -8,7 +8,7 @@ const prismaMock = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/prisma", () => ({
-  prisma: prismaMock,
+  getPrisma: () => prismaMock,
 }));
 
 import { getClinicBySlug } from "@/lib/aftercare/get-clinic-by-slug";

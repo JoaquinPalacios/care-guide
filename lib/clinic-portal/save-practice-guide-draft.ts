@@ -12,7 +12,7 @@ import {
 } from "@/lib/aftercare/timeline-range";
 import { ClinicPortalError } from "@/lib/clinic-portal/errors";
 import type { SaveGuideDraftInput } from "@/lib/clinic-portal/guide-schemas";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 function provenanceForSection(input: {
   previous: PracticeSectionProvenance | undefined;
@@ -41,7 +41,7 @@ export async function savePracticeGuideDraft(input: {
   actorUserId: string;
   values: SaveGuideDraftInput;
 }): Promise<{ id: string }> {
-  const guide = await prisma.practiceGuide.findFirst({
+  const guide = await getPrisma().practiceGuide.findFirst({
     where: {
       id: input.values.guideId,
       clinicId: input.clinicId,
@@ -71,7 +71,7 @@ export async function savePracticeGuideDraft(input: {
     );
   }
 
-  const slugTaken = await prisma.practiceGuide.findFirst({
+  const slugTaken = await getPrisma().practiceGuide.findFirst({
     where: {
       clinicId: input.clinicId,
       publicSlug: input.values.publicSlug,
@@ -108,7 +108,7 @@ export async function savePracticeGuideDraft(input: {
     (draft?.sections ?? []).map((section) => [section.key, section])
   );
 
-  return prisma.$transaction(async (tx) => {
+  return getPrisma().$transaction(async (tx) => {
     if (!draft) {
       draft = await tx.practiceGuideRevision.create({
         data: {

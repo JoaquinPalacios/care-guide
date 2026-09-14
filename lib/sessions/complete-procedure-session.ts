@@ -1,8 +1,9 @@
 import "server-only";
 
+import type { PrismaClient } from "@prisma/client";
 import { ProcedureSessionStatus } from "@prisma/client";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import {
   getSessionEventPublisher,
   type SessionEventPublisher,
@@ -15,15 +16,14 @@ export interface CompleteProcedureSessionInput {
 }
 
 export type CompleteProcedureSessionResult =
-  | { kind: "completed" }
-  | { kind: "already-completed" };
+  { kind: "completed" } | { kind: "already-completed" };
 
 const COMPLETABLE_STATUSES: ProcedureSessionStatus[] = [
   ProcedureSessionStatus.DRAFT,
   ProcedureSessionStatus.ACTIVE,
 ];
 
-type PrismaLike = Pick<typeof prisma, "procedureSession">;
+type PrismaLike = Pick<PrismaClient, "procedureSession">;
 
 export interface CompleteProcedureSessionDeps {
   publisher?: SessionEventPublisher;
@@ -43,7 +43,7 @@ export interface CompleteProcedureSessionDeps {
  */
 export async function completeProcedureSession(
   input: CompleteProcedureSessionInput,
-  client: PrismaLike = prisma,
+  client: PrismaLike = getPrisma(),
   deps: CompleteProcedureSessionDeps = {}
 ): Promise<CompleteProcedureSessionResult> {
   const publisher = deps.publisher ?? getSessionEventPublisher();

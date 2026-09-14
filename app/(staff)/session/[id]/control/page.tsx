@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { CompleteSessionButton } from "@/app/(staff)/session/[id]/control/complete-session-button";
 import { StageControls } from "@/app/(staff)/session/[id]/control/stage-controls";
 import { requireStaffSession } from "@/lib/auth/require-staff-session";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Session control",
@@ -23,7 +23,7 @@ export default async function SessionControlPage({ params }: ControlPageProps) {
   const { clinicMembership } = await requireStaffSession();
   const clinic = clinicMembership!.clinic;
 
-  const session = await prisma.procedureSession.findFirst({
+  const session = await getPrisma().procedureSession.findFirst({
     where: { id, clinicId: clinic.id },
     select: {
       id: true,
@@ -37,7 +37,7 @@ export default async function SessionControlPage({ params }: ControlPageProps) {
     notFound();
   }
 
-  const stages = await prisma.procedureStageTemplate.findMany({
+  const stages = await getPrisma().procedureStageTemplate.findMany({
     where: { procedureTemplateId: session.procedureTemplateId },
     orderBy: { stageOrder: "asc" },
     select: { id: true, title: true, stageOrder: true },

@@ -13,7 +13,7 @@ import {
   type ClinicGuideLifecycleStatus,
 } from "@/lib/clinic-portal/guide-status";
 import type { ComposedGuideSection } from "@/lib/aftercare/types";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface PracticeGuideEditorRecord {
   id: string;
@@ -37,7 +37,7 @@ export interface PracticeGuideEditorRecord {
 }
 
 async function snapshotLegacyComposition(guideId: string) {
-  const guide = await prisma.practiceGuide.findUnique({
+  const guide = await getPrisma().practiceGuide.findUnique({
     where: { id: guideId },
     include: {
       pinnedRevision: {
@@ -84,7 +84,7 @@ async function snapshotLegacyComposition(guideId: string) {
   });
   const sections = practiceRevisionSectionsFromComposed(composed.sections);
 
-  await prisma.$transaction(async (tx) => {
+  await getPrisma().$transaction(async (tx) => {
     const existing = await tx.practiceGuideRevision.findMany({
       where: { practiceGuideId: guide.id },
       select: { version: true },
@@ -122,7 +122,7 @@ export async function loadPracticeGuideEditor(input: {
   clinicId: string;
   guideId: string;
 }): Promise<PracticeGuideEditorRecord> {
-  let guide = await prisma.practiceGuide.findFirst({
+  let guide = await getPrisma().practiceGuide.findFirst({
     where: {
       id: input.guideId,
       clinicId: input.clinicId,
@@ -145,7 +145,7 @@ export async function loadPracticeGuideEditor(input: {
 
   if (guide.contentRevisions.length === 0) {
     await snapshotLegacyComposition(guide.id);
-    guide = await prisma.practiceGuide.findFirst({
+    guide = await getPrisma().practiceGuide.findFirst({
       where: { id: guide.id, clinicId: input.clinicId },
       include: {
         guideTemplate: {

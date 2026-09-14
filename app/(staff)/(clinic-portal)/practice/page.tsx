@@ -7,7 +7,7 @@ import { requireClinicAdmin } from "@/lib/auth/require-clinic-admin";
 import { isClinicAssetStorageConfigured } from "@/lib/clinic-assets/config";
 import { resolveClinicLogoSrc } from "@/lib/clinic-assets/public-url";
 import { getClinicPortalOverview } from "@/lib/clinic-portal/get-clinic-portal";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default async function PracticePage() {
   const { clinicMembership } = await requireClinicAdmin();
   const [overview, profile] = await Promise.all([
     getClinicPortalOverview(clinicMembership.clinic.id),
-    prisma.clinicProfile.findUnique({
+    getPrisma().clinicProfile.findUnique({
       where: { clinicId: clinicMembership.clinic.id },
     }),
   ]);

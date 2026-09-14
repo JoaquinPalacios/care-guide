@@ -14,7 +14,7 @@ import {
   serializeAftercareThemeCss,
 } from "@/lib/branding/aftercare-theme";
 import { PRODUCT_NAME } from "@/lib/branding/product-name";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 interface GuideEditPageProps {
   params: Promise<{ guideId: string }>;
@@ -35,7 +35,7 @@ export default async function GuideEditPage({ params }: GuideEditPageProps) {
         clinicId: clinicMembership.clinic.id,
         guideId,
       }),
-      prisma.clinic.findUnique({
+      getPrisma().clinic.findUnique({
         where: { id: clinicMembership.clinic.id },
         select: { profile: true },
       }),

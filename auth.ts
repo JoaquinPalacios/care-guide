@@ -1,7 +1,8 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import type { PrismaClient } from "@prisma/client";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import {
   AUTH_SESSION_COOKIE_NAME,
   authSessionCookieOptions,
@@ -15,8 +16,25 @@ if (!authSecret) {
   );
 }
 
+function createPrismaAuthAdapter() {
+  return PrismaAdapter({
+    get user() {
+      return getPrisma().user;
+    },
+    get account() {
+      return getPrisma().account;
+    },
+    get session() {
+      return getPrisma().session;
+    },
+    get verificationToken() {
+      return getPrisma().verificationToken;
+    },
+  } as unknown as PrismaClient);
+}
+
 export const { auth, handlers, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: createPrismaAuthAdapter(),
   trustHost: true,
   secret: authSecret,
   session: {

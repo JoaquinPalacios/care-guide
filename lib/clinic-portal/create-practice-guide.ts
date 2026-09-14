@@ -15,7 +15,7 @@ import type {
   CreateCustomGuideInput,
   CreateTemplateGuideInput,
 } from "@/lib/clinic-portal/guide-schemas";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 async function nextUnusedSlug(
   clinicId: string,
@@ -25,7 +25,7 @@ async function nextUnusedSlug(
     throw new ClinicPortalError("Enter a valid public slug.", "invalid");
   }
 
-  const existing = await prisma.practiceGuide.findMany({
+  const existing = await getPrisma().practiceGuide.findMany({
     where: { clinicId },
     select: { publicSlug: true },
   });
@@ -48,7 +48,7 @@ async function nextUnusedSlug(
 }
 
 async function nextSortOrder(clinicId: string): Promise<number> {
-  const last = await prisma.practiceGuide.findFirst({
+  const last = await getPrisma().practiceGuide.findFirst({
     where: { clinicId },
     orderBy: { sortOrder: "desc" },
     select: { sortOrder: true },
@@ -67,7 +67,7 @@ export async function createCustomPracticeGuide(input: {
   );
   const sortOrder = await nextSortOrder(input.clinicId);
 
-  return prisma.$transaction(async (tx) => {
+  return getPrisma().$transaction(async (tx) => {
     const guide = await tx.practiceGuide.create({
       data: {
         clinicId: input.clinicId,
@@ -108,7 +108,7 @@ export async function createPracticeGuideFromTemplate(input: {
   actorUserId: string;
   values: CreateTemplateGuideInput;
 }): Promise<{ id: string }> {
-  const template = await prisma.guideTemplate.findFirst({
+  const template = await getPrisma().guideTemplate.findFirst({
     where: {
       id: input.values.templateId,
       isActive: true,
@@ -137,7 +137,7 @@ export async function createPracticeGuideFromTemplate(input: {
     throw new ClinicPortalError("That template is not available.", "not_found");
   }
 
-  const existing = await prisma.practiceGuide.findFirst({
+  const existing = await getPrisma().practiceGuide.findFirst({
     where: {
       clinicId: input.clinicId,
       guideTemplateId: template.id,
@@ -170,7 +170,7 @@ export async function createPracticeGuideFromTemplate(input: {
   });
   const draftSections = practiceRevisionSectionsFromComposed(composed.sections);
 
-  return prisma.$transaction(async (tx) => {
+  return getPrisma().$transaction(async (tx) => {
     const guide = await tx.practiceGuide.create({
       data: {
         clinicId: input.clinicId,

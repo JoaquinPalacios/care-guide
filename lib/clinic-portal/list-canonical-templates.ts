@@ -1,6 +1,6 @@
 import { GuideRevisionStatus } from "@prisma/client";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface CanonicalGuideTemplateOption {
   id: string;
@@ -14,7 +14,7 @@ export async function listCanonicalGuideTemplates(
   clinicId: string
 ): Promise<CanonicalGuideTemplateOption[]> {
   const [templates, enabled] = await Promise.all([
-    prisma.guideTemplate.findMany({
+    getPrisma().guideTemplate.findMany({
       where: {
         isActive: true,
         revisions: {
@@ -29,7 +29,7 @@ export async function listCanonicalGuideTemplates(
         specialty: true,
       },
     }),
-    prisma.practiceGuide.findMany({
+    getPrisma().practiceGuide.findMany({
       where: {
         clinicId,
         guideTemplateId: { not: null },

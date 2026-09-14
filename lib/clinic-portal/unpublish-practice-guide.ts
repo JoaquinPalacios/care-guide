@@ -1,14 +1,14 @@
 import { GuideRevisionStatus, PracticeGuideStatus } from "@prisma/client";
 
 import { ClinicPortalError } from "@/lib/clinic-portal/errors";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function unpublishPracticeGuide(input: {
   clinicId: string;
   actorUserId: string;
   guideId: string;
 }): Promise<{ id: string }> {
-  const guide = await prisma.practiceGuide.findFirst({
+  const guide = await getPrisma().practiceGuide.findFirst({
     where: {
       id: input.guideId,
       clinicId: input.clinicId,
@@ -48,7 +48,7 @@ export async function unpublishPracticeGuide(input: {
     );
   }
 
-  await prisma.practiceGuide.update({
+  await getPrisma().practiceGuide.update({
     where: { id: guide.id },
     data: {
       status: PracticeGuideStatus.UNPUBLISHED,

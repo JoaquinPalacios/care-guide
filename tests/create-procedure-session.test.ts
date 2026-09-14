@@ -36,7 +36,7 @@ const prismaMock = vi.hoisted(() => {
 const generateDisplayTokenMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/prisma", () => ({
-  prisma: prismaMock.client,
+  getPrisma: () => prismaMock.client,
 }));
 
 vi.mock("@/lib/sessions/display-token", () => ({

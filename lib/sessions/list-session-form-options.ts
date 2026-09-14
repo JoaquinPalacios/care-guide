@@ -1,6 +1,6 @@
 import "server-only";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface SessionFormRoomOption {
   id: string;
@@ -40,17 +40,17 @@ export async function listSessionFormOptions(
   clinicId: string
 ): Promise<SessionFormOptions> {
   const [rooms, doctors, procedureTemplates] = await Promise.all([
-    prisma.room.findMany({
+    getPrisma().room.findMany({
       where: { clinicId, isActive: true },
       orderBy: [{ name: "asc" }, { createdAt: "asc" }],
       select: { id: true, name: true },
     }),
-    prisma.doctor.findMany({
+    getPrisma().doctor.findMany({
       where: { clinicId, isActive: true },
       orderBy: [{ name: "asc" }, { createdAt: "asc" }],
       select: { id: true, name: true },
     }),
-    prisma.procedureTemplate.findMany({
+    getPrisma().procedureTemplate.findMany({
       where: { clinicId, isActive: true },
       orderBy: [{ name: "asc" }, { createdAt: "asc" }],
       select: {

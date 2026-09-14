@@ -1,7 +1,7 @@
 import { PracticeGuideStatus } from "@prisma/client";
 
 import { clinicSetupChecks } from "@/lib/clinic-portal/setup-status";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface OperatorClinicDetail {
   id: string;
@@ -47,7 +47,7 @@ export interface OperatorClinicDetail {
 export async function getOperatorClinic(
   clinicId: string
 ): Promise<OperatorClinicDetail | null> {
-  const clinic = await prisma.clinic.findUnique({
+  const clinic = await getPrisma().clinic.findUnique({
     where: { id: clinicId },
     select: {
       id: true,

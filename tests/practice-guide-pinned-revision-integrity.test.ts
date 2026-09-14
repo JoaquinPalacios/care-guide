@@ -3,7 +3,9 @@ import "dotenv/config";
 import { Prisma } from "@prisma/client";
 import { afterAll, describe, expect, it } from "vitest";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
+
+const prisma = getPrisma();
 
 const PREFIX = "test_p1a_";
 const CLINIC_ID = `${PREFIX}clinic`;

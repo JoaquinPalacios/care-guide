@@ -1,6 +1,6 @@
 import "server-only";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface ClinicProcedureTemplateStage {
   stageOrder: number;
@@ -30,7 +30,7 @@ export interface ClinicProcedureTemplateListItem {
 export async function listActiveClinicProcedureTemplates(
   clinicId: string
 ): Promise<ClinicProcedureTemplateListItem[]> {
-  return prisma.procedureTemplate.findMany({
+  return getPrisma().procedureTemplate.findMany({
     where: {
       clinicId,
       isActive: true,

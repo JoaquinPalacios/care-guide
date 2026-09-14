@@ -7,7 +7,7 @@ import {
 import { PUBLIC_PRACTICE_GUIDE_WHERE } from "@/lib/aftercare/public-practice-guide-predicates";
 import { isValidCareGuideSlug } from "@/lib/aftercare/slug";
 import type { PublishedPracticeGuideSummary } from "@/lib/aftercare/types";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface ListedPublishedPracticeGuides {
   clinic: {
@@ -32,7 +32,7 @@ export async function listPublishedPracticeGuides(
     return null;
   }
 
-  const guides = await prisma.practiceGuide.findMany({
+  const guides = await getPrisma().practiceGuide.findMany({
     where: {
       clinicId: clinic.id,
       ...PUBLIC_PRACTICE_GUIDE_WHERE,

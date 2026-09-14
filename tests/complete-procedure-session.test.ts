@@ -13,7 +13,7 @@ const prismaMock = vi.hoisted(() => {
 });
 
 vi.mock("@/lib/prisma", () => ({
-  prisma: prismaMock.client,
+  getPrisma: () => prismaMock.client,
 }));
 
 vi.mock("@prisma/client", () => ({

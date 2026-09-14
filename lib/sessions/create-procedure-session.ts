@@ -1,12 +1,13 @@
 import "server-only";
 
+import type { PrismaClient } from "@prisma/client";
 import {
   PatientDisplayMode,
   Prisma,
   ProcedureSessionStatus,
 } from "@prisma/client";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { generateDisplayToken } from "@/lib/sessions/display-token";
 import {
   InvalidDoctorError,
@@ -39,7 +40,7 @@ const ROOM_OCCUPIED_STATUSES: ProcedureSessionStatus[] = [
   ProcedureSessionStatus.ACTIVE,
 ];
 
-type PrismaLike = Pick<typeof prisma, "$transaction">;
+type PrismaLike = Pick<PrismaClient, "$transaction">;
 
 /**
  * Atomically create a `ProcedureSession` in `DRAFT` with its
@@ -55,7 +56,7 @@ type PrismaLike = Pick<typeof prisma, "$transaction">;
  */
 export async function createProcedureSession(
   input: CreateProcedureSessionInput,
-  client: PrismaLike = prisma
+  client: PrismaLike = getPrisma()
 ): Promise<CreateProcedureSessionResult> {
   const displayToken = generateDisplayToken();
 

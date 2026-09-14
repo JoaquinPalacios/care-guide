@@ -3,7 +3,7 @@ import { z } from "zod";
 import { careGuideSlugSchema } from "@/lib/aftercare/slug";
 import { ClinicPortalError } from "@/lib/clinic-portal/errors";
 import { isReservedTenantSlug } from "@/lib/tenancy/reserved-slugs";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export const createOperatorClinicSchema = z.object({
   name: z.string().trim().min(1, "Enter the practice name.").max(80),
@@ -19,7 +19,7 @@ export type CreateOperatorClinicInput = z.infer<
 export async function createOperatorClinic(
   values: CreateOperatorClinicInput
 ): Promise<{ id: string }> {
-  const taken = await prisma.clinic.findUnique({
+  const taken = await getPrisma().clinic.findUnique({
     where: { slug: values.slug },
     select: { id: true },
   });
@@ -30,7 +30,7 @@ export async function createOperatorClinic(
     );
   }
 
-  const clinic = await prisma.clinic.create({
+  const clinic = await getPrisma().clinic.create({
     data: {
       name: values.name,
       slug: values.slug,

@@ -9,7 +9,7 @@ import {
   clinicSetupChecks,
   type ClinicSetupCheck,
 } from "@/lib/clinic-portal/setup-status";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface ClinicPortalOverview {
   clinicId: string;
@@ -24,7 +24,7 @@ export interface ClinicPortalOverview {
 
 export const getClinicPortalOverview = cache(
   async (clinicId: string): Promise<ClinicPortalOverview | null> => {
-    const clinic = await prisma.clinic.findUnique({
+    const clinic = await getPrisma().clinic.findUnique({
       where: { id: clinicId },
       select: {
         id: true,

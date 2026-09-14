@@ -16,7 +16,7 @@ import {
 } from "@/lib/clinic-assets/errors";
 import { sanitizeClinicLogoSvg } from "@/lib/clinic-assets/sanitize-clinic-logo-svg";
 import { ClinicPortalError } from "@/lib/clinic-portal/errors";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 function logClinicAsset(
   event: string,
@@ -76,7 +76,7 @@ export async function uploadClinicLogo(input: {
     mimeType = sanitized.mimeType;
   }
 
-  const previous = await prisma.clinicProfile.findUnique({
+  const previous = await getPrisma().clinicProfile.findUnique({
     where: { clinicId: input.targetClinicId },
     select: { logoUrl: true, displayName: true },
   });
@@ -108,7 +108,7 @@ export async function uploadClinicLogo(input: {
   }
 
   try {
-    await prisma.clinicProfile.update({
+    await getPrisma().clinicProfile.update({
       where: { clinicId: input.targetClinicId },
       data: { logoUrl: uploaded.storageKey },
     });
@@ -190,7 +190,7 @@ export async function removeClinicLogo(input: {
     );
   }
 
-  const previous = await prisma.clinicProfile.findUnique({
+  const previous = await getPrisma().clinicProfile.findUnique({
     where: { clinicId: input.targetClinicId },
     select: { logoUrl: true },
   });
@@ -198,7 +198,7 @@ export async function removeClinicLogo(input: {
     throw new ClinicPortalError("Practice profile is missing.", "not_found");
   }
 
-  await prisma.clinicProfile.update({
+  await getPrisma().clinicProfile.update({
     where: { clinicId: input.targetClinicId },
     data: { logoUrl: null },
   });

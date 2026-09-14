@@ -2,7 +2,7 @@ import "server-only";
 
 import { clinicPatientSiteUrl } from "@/lib/clinic-portal/patient-site-url";
 import { PUBLIC_PRACTICE_GUIDE_WHERE } from "@/lib/aftercare/public-practice-guide-predicates";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface PublishedGuideShareTarget {
   publicUrl: string;
@@ -16,7 +16,7 @@ export async function loadPublishedGuideShareTarget(input: {
   requestHost: string;
   protocol?: string;
 }): Promise<PublishedGuideShareTarget | null> {
-  const guide = await prisma.practiceGuide.findFirst({
+  const guide = await getPrisma().practiceGuide.findFirst({
     where: {
       id: input.guideId,
       clinicId: input.clinicId,

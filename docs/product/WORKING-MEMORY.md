@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-14 (Public UI + published-guide QR share; public legal copy rewrite; Cloudflare R2 clinic asset storage)
+Last updated: 2026-09-14 (Lazy Prisma init so Vercel `next build` can collect routes without DATABASE_URL)
 
 ---
 
@@ -1066,3 +1066,18 @@ Application support for production clinic logos on **Cloudflare R2**. No Cloudfl
 | Public URL   | `CLINIC_ASSET_PUBLIC_ORIGIN` + key. Tests/memory use `/clinic-branding/<clinicId>/<file>`.                                                                             |
 | Tests        | Memory driver. Playwright e2e uses memory. No live Cloudflare.                                                                                                         |
 | Provisioning | [R2-PROVISIONING.md](../launch/R2-PROVISIONING.md) for Joaquín. Worker not required.                                                                                   |
+
+---
+
+## Vercel Prisma initialization (implemented)
+
+Date: 2026-09-14
+
+Second Vercel build blocker after `prisma generate` on main (`0fa1986`). `next build` imports route modules during **Collecting page data**. Eager `lib/prisma.ts` threw `DATABASE_URL is required to initialize Prisma` while inspecting `/api/auth/login` (also `/api/auth/logout`, `/api/auth/me`).
+
+| Area       | Behaviour                                                                                                                                                                                                                |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Contract   | Importing `@/lib/prisma` does not read `DATABASE_URL`, create `PrismaPg`, or construct `PrismaClient`. `getPrisma()` does that on first real DB use and still throws the same configuration error if the URL is missing. |
+| Auth.js    | `PrismaAdapter` receives getters so NextAuth config at module load does not call `getPrisma()`. Auth still fail-fasts on missing `AUTH_SECRET`.                                                                          |
+| Call sites | Server modules use `getPrisma()` inside request/server functions (or default params evaluated at call time). No client components import Prisma. Tests that hit a real DB call `getPrisma()` after `dotenv`.             |
+| Build      | A clean worktree with `DATABASE_URL` unset must get past Collecting page data. Do not add a fake URL or provision Neon for this. Marketing SEO loaders already catch DB failures during sitemap/metadata.                |

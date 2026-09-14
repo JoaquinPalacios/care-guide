@@ -1,6 +1,6 @@
 import { cache } from "react";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import {
   DEFAULT_MARKETING_PAGE_SEO,
   DEFAULT_PLATFORM_SEO,
@@ -70,7 +70,7 @@ function toPage(row: {
 export const loadPlatformSeoIdentity = cache(
   async (): Promise<PlatformSeoIdentity> => {
     try {
-      const row = await prisma.platformSeoSettings.findUnique({
+      const row = await getPrisma().platformSeoSettings.findUnique({
         where: { id: PLATFORM_SEO_ID },
       });
       return toIdentity(row);
@@ -88,7 +88,7 @@ export const loadMarketingPageSeo = cache(
       updatedAt: null,
     };
     try {
-      const row = await prisma.marketingPageSeo.findUnique({
+      const row = await getPrisma().marketingPageSeo.findUnique({
         where: { path },
       });
       return row ? (toPage(row) ?? fallback) : fallback;
@@ -101,7 +101,7 @@ export const loadMarketingPageSeo = cache(
 export const loadAllMarketingPageSeo = cache(
   async (): Promise<MarketingPageSeoInput[]> => {
     try {
-      const rows = await prisma.marketingPageSeo.findMany();
+      const rows = await getPrisma().marketingPageSeo.findMany();
       const byPath = new Map(
         rows
           .map(toPage)

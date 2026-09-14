@@ -1,7 +1,7 @@
 import { PracticeGuideStatus } from "@prisma/client";
 
 import { clinicSetupChecks } from "@/lib/clinic-portal/setup-status";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface OperatorClinicListItem {
   id: string;
@@ -15,7 +15,7 @@ export interface OperatorClinicListItem {
 }
 
 export async function listOperatorClinics(): Promise<OperatorClinicListItem[]> {
-  const clinics = await prisma.clinic.findMany({
+  const clinics = await getPrisma().clinic.findMany({
     orderBy: { name: "asc" },
     select: {
       id: true,

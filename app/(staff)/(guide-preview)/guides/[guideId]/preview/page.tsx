@@ -15,7 +15,7 @@ import { PRODUCT_NAME } from "@/lib/branding/product-name";
 import { isClinicPortalError } from "@/lib/clinic-portal/errors";
 import { loadPracticeGuideEditor } from "@/lib/clinic-portal/load-practice-guide-editor";
 import { staffPreviewBackLabel } from "@/lib/clinic-portal/preview-back-label";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { PRIVATE_ROBOTS } from "@/lib/seo/robots-policy";
 
 import styles from "@/app/(aftercare)/patient.module.css";
@@ -42,7 +42,7 @@ export default async function GuidePreviewPage({
         clinicId: clinicMembership.clinic.id,
         guideId,
       }),
-      prisma.clinic.findUnique({
+      getPrisma().clinic.findUnique({
         where: { id: clinicMembership.clinic.id },
         select: {
           slug: true,

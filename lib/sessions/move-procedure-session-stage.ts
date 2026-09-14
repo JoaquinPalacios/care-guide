@@ -1,12 +1,13 @@
 import "server-only";
 
+import type { PrismaClient } from "@prisma/client";
 import {
   Prisma,
   ProcedureSessionStageTransitionDirection,
   ProcedureSessionStatus,
 } from "@prisma/client";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import {
   getSessionEventPublisher,
   type SessionEventPublisher,
@@ -43,7 +44,7 @@ export interface MoveProcedureSessionStageDeps {
   publisher?: SessionEventPublisher;
 }
 
-type PrismaLike = Pick<typeof prisma, "$transaction">;
+type PrismaLike = Pick<PrismaClient, "$transaction">;
 
 /**
  * Move a `ProcedureSession`'s current stage forward or backward by one
@@ -70,7 +71,7 @@ type PrismaLike = Pick<typeof prisma, "$transaction">;
  */
 export async function moveProcedureSessionStage(
   input: MoveProcedureSessionStageInput,
-  client: PrismaLike = prisma,
+  client: PrismaLike = getPrisma(),
   deps: MoveProcedureSessionStageDeps = {}
 ): Promise<MoveProcedureSessionStageResult> {
   const publisher = deps.publisher ?? getSessionEventPublisher();

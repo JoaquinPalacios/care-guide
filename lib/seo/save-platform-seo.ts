@@ -1,13 +1,13 @@
 import type { Prisma } from "@prisma/client";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { PLATFORM_SEO_ID, type MarketingPageSeoInput } from "@/lib/seo/types";
 import type { ValidatedPlatformSeoInput } from "@/lib/seo/validation";
 
 export async function savePlatformSeoSettings(
   input: ValidatedPlatformSeoInput
 ): Promise<void> {
-  await prisma.$transaction(async (tx) => {
+  await getPrisma().$transaction(async (tx) => {
     await tx.platformSeoSettings.upsert({
       where: { id: PLATFORM_SEO_ID },
       create: {

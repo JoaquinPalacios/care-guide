@@ -11,7 +11,7 @@ import { composedSectionsFromPracticeRevision } from "@/lib/aftercare/practice-r
 import { PUBLIC_PRACTICE_GUIDE_WHERE } from "@/lib/aftercare/public-practice-guide-predicates";
 import { isValidCareGuideSlug } from "@/lib/aftercare/slug";
 import type { ComposedGuideSection } from "@/lib/aftercare/types";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface PublishedPracticeGuideDocument {
   clinic: {
@@ -133,7 +133,7 @@ export async function getPublishedPracticeGuide(input: {
     return null;
   }
 
-  const practiceGuide = await prisma.practiceGuide.findFirst({
+  const practiceGuide = await getPrisma().practiceGuide.findFirst({
     where: {
       publicSlug: input.publicSlug,
       clinic: { slug: input.clinicSlug },

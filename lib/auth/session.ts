@@ -7,7 +7,7 @@ import { cache } from "react";
 
 import { auth } from "@/auth";
 import { AUTH_SESSION_MAX_AGE_SECONDS } from "@/lib/auth/session-cookie";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export interface AuthenticatedUser {
   id: string;
@@ -67,7 +67,7 @@ export function postLoginPath(input: {
 export async function createDatabaseSession(
   userId: string
 ): Promise<DatabaseSessionRecord> {
-  return prisma.session.create({
+  return getPrisma().session.create({
     data: {
       sessionToken: randomUUID(),
       userId,
@@ -81,7 +81,7 @@ export async function createDatabaseSession(
 }
 
 export async function deleteDatabaseSession(sessionToken: string) {
-  await prisma.session.deleteMany({
+  await getPrisma().session.deleteMany({
     where: { sessionToken },
   });
 }
@@ -95,7 +95,7 @@ export const getCurrentUser = cache(
       return null;
     }
 
-    return prisma.user.findUnique({
+    return getPrisma().user.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -115,7 +115,7 @@ export const getCurrentClinicMembership = cache(
       return null;
     }
 
-    const memberships = await prisma.clinicMembership.findMany({
+    const memberships = await getPrisma().clinicMembership.findMany({
       where: { userId: user.id },
       select: {
         id: true,

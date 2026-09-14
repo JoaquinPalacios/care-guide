@@ -12,9 +12,9 @@ const { profile } = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/prisma", () => ({
-  prisma: {
+  getPrisma: () => ({
     clinicProfile: profile,
-  },
+  }),
 }));
 
 import {

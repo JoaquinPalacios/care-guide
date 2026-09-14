@@ -44,7 +44,7 @@ const getSessionEventPublisherMock = vi.hoisted(() =>
 );
 
 vi.mock("@/lib/prisma", () => ({
-  prisma: prismaMock.client,
+  getPrisma: () => prismaMock.client,
 }));
 
 vi.mock("@/lib/realtime/publisher", () => ({

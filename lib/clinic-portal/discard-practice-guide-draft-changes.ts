@@ -2,14 +2,14 @@ import { GuideRevisionStatus, PracticeGuideStatus } from "@prisma/client";
 
 import { WORKING_DRAFT_VERSION } from "@/lib/aftercare/practice-revision-document";
 import { ClinicPortalError } from "@/lib/clinic-portal/errors";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function discardPracticeGuideDraftChanges(input: {
   clinicId: string;
   actorUserId: string;
   guideId: string;
 }): Promise<{ id: string }> {
-  const guide = await prisma.practiceGuide.findFirst({
+  const guide = await getPrisma().practiceGuide.findFirst({
     where: {
       id: input.guideId,
       clinicId: input.clinicId,
@@ -54,7 +54,7 @@ export async function discardPracticeGuideDraftChanges(input: {
 
   const restoreAt = published.publishedAt ?? published.updatedAt;
 
-  await prisma.$transaction(async (tx) => {
+  await getPrisma().$transaction(async (tx) => {
     await tx.practiceGuideRevisionSection.deleteMany({
       where: { revisionId: draft.id },
     });

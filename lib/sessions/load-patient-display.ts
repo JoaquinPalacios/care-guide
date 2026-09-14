@@ -1,8 +1,9 @@
 import "server-only";
 
+import type { PrismaClient } from "@prisma/client";
 import { PatientDisplayMode, ProcedureSessionStatus } from "@prisma/client";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 /**
  * Result of a patient-display load. The route renders the same generic
@@ -39,7 +40,7 @@ export type LoadPatientDisplayResult =
       } | null;
     };
 
-type PrismaLike = Pick<typeof prisma, "procedureSession">;
+type PrismaLike = Pick<PrismaClient, "procedureSession">;
 
 const UNAVAILABLE: LoadPatientDisplayResult = { kind: "unavailable" };
 
@@ -56,7 +57,7 @@ const UNAVAILABLE: LoadPatientDisplayResult = { kind: "unavailable" };
  */
 export async function loadPatientDisplay(
   displayToken: string,
-  client: PrismaLike = prisma
+  client: PrismaLike = getPrisma()
 ): Promise<LoadPatientDisplayResult> {
   if (typeof displayToken !== "string" || displayToken.length === 0) {
     return UNAVAILABLE;

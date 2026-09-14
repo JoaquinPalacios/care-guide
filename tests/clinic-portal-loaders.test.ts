@@ -7,7 +7,7 @@ const prismaMock = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/prisma", () => ({
-  prisma: prismaMock,
+  getPrisma: () => prismaMock,
 }));
 
 vi.mock("next/headers", () => ({

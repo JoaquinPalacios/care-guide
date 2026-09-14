@@ -16,8 +16,10 @@ import { unpublishPracticeGuide } from "@/lib/clinic-portal/unpublish-practice-g
 import { updatePracticeSettings } from "@/lib/clinic-portal/update-practice-settings";
 import { listCanonicalGuideTemplates } from "@/lib/clinic-portal/list-canonical-templates";
 import { ClinicPortalError } from "@/lib/clinic-portal/errors";
-import { prisma } from "@/lib/prisma";
 import { getClinicBySlug } from "@/lib/aftercare/get-clinic-by-slug";
+import { getPrisma } from "@/lib/prisma";
+
+const prisma = getPrisma();
 
 const PREFIX = "test_p2a_";
 const CLINIC_A_ID = `${PREFIX}clinic_a`;

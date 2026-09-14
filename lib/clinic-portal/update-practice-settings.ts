@@ -1,12 +1,12 @@
 import { ClinicPortalError } from "@/lib/clinic-portal/errors";
 import type { PracticeSettingsInput } from "@/lib/clinic-portal/practice-settings-schema";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function updatePracticeSettings(input: {
   clinicId: string;
   values: PracticeSettingsInput;
 }): Promise<void> {
-  const clinic = await prisma.clinic.findUnique({
+  const clinic = await getPrisma().clinic.findUnique({
     where: { id: input.clinicId },
     select: { id: true },
   });
@@ -15,7 +15,7 @@ export async function updatePracticeSettings(input: {
     throw new ClinicPortalError("Practice not found.", "not_found");
   }
 
-  await prisma.clinicProfile.upsert({
+  await getPrisma().clinicProfile.upsert({
     where: { clinicId: input.clinicId },
     update: input.values,
     create: {

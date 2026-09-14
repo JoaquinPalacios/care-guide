@@ -1,6 +1,6 @@
 import "server-only";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { isValidCareGuideSlug } from "@/lib/aftercare/slug";
 
 export interface ClinicBySlugRecord {
@@ -70,7 +70,7 @@ export async function getClinicBySlug(
     return null;
   }
 
-  return prisma.clinic.findUnique({
+  return getPrisma().clinic.findUnique({
     where: { slug },
     select: clinicBySlugSelect,
   });
