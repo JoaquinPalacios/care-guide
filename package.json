@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "eslint && tsc -b &&next build",
+    "build": "pnpm db:generate && eslint && tsc -b && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
