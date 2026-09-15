@@ -191,10 +191,16 @@ test.describe("marketing homepage", () => {
         expect(canvas, `${shot.scheme} hero canvas`).toBeLessThan(0.15);
       }
 
-      await expect(hero.locator('[class*="deviceStage"]')).toHaveAttribute(
+      await expect(hero.locator('[class*="deviceProof"]')).toHaveAttribute(
         "aria-hidden",
         "true"
       );
+      await expect(hero.locator('[class*="deviceStage"]')).not.toHaveAttribute(
+        "aria-hidden",
+        "true"
+      );
+      await expect(hero.getByText("Patient aftercare view")).toBeVisible();
+      await expect(hero.getByText("No app to install")).toBeVisible();
       await expect(hero.locator('[class*="desktopPreview"]')).toHaveCount(0);
       await expect(hero.locator('[class*="phoneBezel"]')).toHaveCount(0);
       await expect(hero.locator('[class*="phoneFrame"]')).toHaveAttribute(

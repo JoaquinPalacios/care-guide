@@ -39,12 +39,22 @@ const IPHONE_FRAME = {
  */
 export function MarketingProductPreview() {
   return (
-    <div className={styles.deviceStage} aria-hidden="true">
-      <PhoneShell>
-        <PhoneScreen>
-          <ProductPreviewScreen />
-        </PhoneScreen>
-      </PhoneShell>
+    <div className={styles.deviceStage}>
+      <div className={styles.deviceProof} aria-hidden="true">
+        <PhoneShell>
+          <PhoneScreen>
+            <ProductPreviewScreen />
+          </PhoneScreen>
+        </PhoneShell>
+      </div>
+      <div className={styles.deviceNote}>
+        <p className={styles.deviceNoteKicker}>Patient aftercare view</p>
+        <ul className={styles.deviceNotePoints}>
+          <li>No login</li>
+          <li>No app to install</li>
+          <li>Practice one tap away</li>
+        </ul>
+      </div>
     </div>
   );
 }

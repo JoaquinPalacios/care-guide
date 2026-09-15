@@ -27,6 +27,7 @@ describe("marketing mobile navigation", () => {
     expect(html).toContain("Theme");
     expect(html).toContain("System");
     expect(html).toContain("navMenuRow");
+    expect(html).toContain("navMenuMeta");
     expect(html).not.toContain("How it works");
     expect(html).not.toContain("Clinic preview");
   });
@@ -39,10 +40,26 @@ describe("marketing mobile navigation", () => {
     expect(styles).toContain("width: 100%");
     expect(styles).toContain("@media (hover: hover) and (pointer: fine)");
     expect(styles).toContain(".navMenuRow:focus-visible");
+    expect(styles).not.toMatch(/\.navMenuRow:focus,/);
+    expect(styles).not.toMatch(/\.navMenuRow:focus\s*\{/);
     expect(styles).toContain(".navMenuRow:active");
     expect(styles).toContain(".navStaff");
     expect(styles).toContain(".navTheme");
     expect(styles).toContain("display: none");
+    expect(styles).toContain(".navMenuMeta");
     expect(styles).not.toContain(".navMenuLink");
+  });
+
+  it("parks pointer focus on the panel and only autofocuses About for keyboard open", () => {
+    const source = readFileSync(
+      "app/(marketing)/components/marketing-nav-menu.tsx",
+      "utf8"
+    );
+
+    expect(source).toContain("tabIndex={-1}");
+    expect(source).toContain("openIntentRef");
+    expect(source).toContain("pointerdown");
+    expect(source).toContain("menu.focus({ preventScroll: true })");
+    expect(source).toContain("first.focus({ preventScroll: true })");
   });
 });

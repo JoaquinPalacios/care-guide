@@ -24,27 +24,54 @@ export function MarketingNavMenu({
   const menuId = `mk-nav-${reactId}`;
   const menuRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const openIntentRef = useRef<"pointer" | "keyboard">("pointer");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const menu = menuRef.current;
-    if (!menu) {
+    const trigger = triggerRef.current;
+    if (!menu || !trigger) {
       return;
     }
+
+    const markPointer = () => {
+      openIntentRef.current = "pointer";
+    };
+    const markKeyboard = (event: KeyboardEvent) => {
+      if (event.key === "Enter" || event.key === " ") {
+        openIntentRef.current = "keyboard";
+      }
+    };
 
     const sync = () => {
       const nextOpen = menu.matches(":popover-open");
       setOpen(nextOpen);
-      if (nextOpen) {
+      if (!nextOpen) {
+        return;
+      }
+
+      // Keyboard open: move to the first link so Tab/Enter continue in-menu.
+      // Pointer/touch open: park focus on the panel so About is not pre-selected.
+      // Visible rings stay on :focus-visible only.
+      if (openIntentRef.current === "keyboard") {
         const first = menu.querySelector("a");
         if (first instanceof HTMLElement) {
-          first.focus();
+          first.focus({ preventScroll: true });
         }
+        return;
       }
+
+      menu.focus({ preventScroll: true });
     };
 
+    trigger.addEventListener("pointerdown", markPointer);
+    trigger.addEventListener("keydown", markKeyboard);
     menu.addEventListener("toggle", sync);
-    return () => menu.removeEventListener("toggle", sync);
+    return () => {
+      trigger.removeEventListener("pointerdown", markPointer);
+      trigger.removeEventListener("keydown", markKeyboard);
+      menu.removeEventListener("toggle", sync);
+    };
   }, []);
 
   useEffect(() => {
@@ -86,6 +113,7 @@ export function MarketingNavMenu({
         ref={menuRef}
         id={menuId}
         popover="auto"
+        tabIndex={-1}
         className={styles.navMenuPanel}
       >
         <ul className={styles.navMenuList}>
@@ -100,15 +128,13 @@ export function MarketingNavMenu({
               </Link>
             </li>
           ))}
-          <li>
-            <a className={styles.navMenuRow} href={staffHref}>
-              Sign in
-            </a>
-          </li>
-          <li>
-            <MarketingNavTheme />
-          </li>
         </ul>
+        <div className={styles.navMenuMeta}>
+          <a className={styles.navMenuRow} href={staffHref}>
+            Sign in
+          </a>
+          <MarketingNavTheme />
+        </div>
       </div>
     </div>
   );

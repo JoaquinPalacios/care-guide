@@ -232,6 +232,51 @@ test.describe("marketing conversion routes", () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test("mobile menu does not pre-select About on pointer open", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(marketingUrl("/"), { waitUntil: "load" });
+    await showMarketingScheme(page, "light");
+
+    const menu = page.getByRole("button", { name: "Site menu" });
+    const headerNav = page.getByRole("navigation", { name: "Marketing" });
+    const about = headerNav.getByRole("link", { name: "About" });
+
+    await menu.click();
+    await expect(menu).toHaveAttribute("aria-expanded", "true");
+    await expect(about).toBeVisible();
+    await expect(about).not.toBeFocused();
+    const pointerOutline = await about.evaluate(
+      (element) => getComputedStyle(element).outlineStyle
+    );
+    expect(pointerOutline).toBe("none");
+    await page.screenshot({
+      path: "test-results/artifacts/marketing-mobile-nav-pointer-390-light.png",
+    });
+
+    await page.keyboard.press("Tab");
+    await expect(about).toBeFocused();
+    const keyboardOutline = await about.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).outlineWidth)
+    );
+    expect(keyboardOutline).toBeGreaterThanOrEqual(2);
+
+    await page.keyboard.press("Escape");
+    await expect(menu).toHaveAttribute("aria-expanded", "false");
+    await menu.focus();
+    await page.keyboard.press("Enter");
+    await expect(menu).toHaveAttribute("aria-expanded", "true");
+    await expect(about).toBeFocused();
+    const enterOutline = await about.evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).outlineWidth)
+    );
+    expect(enterOutline).toBeGreaterThanOrEqual(2);
+    await page.screenshot({
+      path: "test-results/artifacts/marketing-mobile-nav-keyboard-390-light.png",
+    });
+  });
+
   test("homepage conversion CTAs resolve", async ({ page }) => {
     await page.goto(marketingUrl("/"), { waitUntil: "load" });
     await expect(

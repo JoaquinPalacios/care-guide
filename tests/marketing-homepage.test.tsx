@@ -151,6 +151,11 @@ describe("marketing homepage", () => {
     expect(html).toContain("heroLower");
     expect(html).toContain("heroFrame");
     expect(html).toContain("deviceStage");
+    expect(html).toContain("deviceProof");
+    expect(html).toContain("deviceNote");
+    expect(html).toContain("Patient aftercare view");
+    expect(html).toContain("No app to install");
+    expect(html).toContain("Practice one tap away");
     expect(html).toContain("phoneShell");
     expect(html).toContain("phoneScreen");
     expect(html).toContain("phoneFrame");
@@ -187,7 +192,8 @@ describe("marketing homepage", () => {
     expect(html).toContain("First few hours");
     expect(html).toContain("Days 2–3");
     expect(html).toContain("Days 4–7");
-    expect(html).toMatch(/deviceStage[^>]*aria-hidden="true"/);
+    expect(html).toMatch(/deviceProof[^>]*aria-hidden="true"/);
+    expect(html).not.toMatch(/deviceStage[^>]*aria-hidden="true"/);
     expect(html).toContain('focusable="false"');
     expect(html).toContain("linearGradient");
     expect(html).toContain("feGaussianBlur");

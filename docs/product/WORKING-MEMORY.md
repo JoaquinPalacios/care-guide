@@ -5,7 +5,7 @@ This file helps later implementation sessions. It is **not** the product contrac
 Authoritative requirements: [PRD.md](PRD.md)  
 Decisions: [../adr/README.md](../adr/README.md)
 
-Last updated: 2026-09-14 (Lazy Prisma init so Vercel `next build` can collect routes without DATABASE_URL)
+Last updated: 2026-09-15 (Marketing mobile UI polish: phone mockup composition + mobile nav focus/styling)
 
 ---
 
@@ -1081,3 +1081,18 @@ Second Vercel build blocker after `prisma generate` on main (`0fa1986`). `next b
 | Auth.js    | `PrismaAdapter` receives getters so NextAuth config at module load does not call `getPrisma()`. Auth still fail-fasts on missing `AUTH_SECRET`.                                                                          |
 | Call sites | Server modules use `getPrisma()` inside request/server functions (or default params evaluated at call time). No client components import Prisma. Tests that hit a real DB call `getPrisma()` after `dotenv`.             |
 | Build      | A clean worktree with `DATABASE_URL` unset must get past Collecting page data. Do not add a fake URL or provision Neon for this. Marketing SEO loaders already catch DB failures during sitemap/metadata.                |
+
+---
+
+## Marketing mobile UI polish (2026-09-15)
+
+Public marketing only. No Neon, auth, tenancy, proxy, or R2 changes.
+
+| Area               | Behaviour                                                                                                                                                                                                                                                                                       |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Phone mockup       | Empty space was the stacked hero `min-height`, small `72vw` / `15.75rem` phone, and `deviceStage` padding. Mobile/tablet now hug content (`min-height: 0` below `64rem`), phone is larger (`84vw` / tablet `46vw`), bloom stays on the hardware wrapper.                                        |
+| Supporting note    | Compact native cluster under the phone: kicker **Patient aftercare view** plus No login / No app to install / Practice one tap away. Phone remains `aria-hidden`; the note is readable. No extra JS.                                                                                            |
+| Mobile nav focus   | About looked pre-selected because open always `focus()`ed the first link and `.navMenuRow:focus` drew an outline. Pointer/touch now focuses the panel (`tabIndex={-1}`); keyboard Enter/Space still focuses the first link. Rings are `:focus-visible` only. Escape still restores the trigger. |
+| Mobile nav styling | Slightly larger sheet, route list separated from Sign in + Theme, current/selected inset brand bar, CSS hamburger-to-X. Same destinations.                                                                                                                                                      |
+
+Hero-attributed client JS added: **0**. Nav still uses the existing Client Component.
