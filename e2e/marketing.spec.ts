@@ -199,8 +199,10 @@ test.describe("marketing homepage", () => {
         "aria-hidden",
         "true"
       );
-      await expect(hero.getByText("Patient aftercare view")).toBeVisible();
-      await expect(hero.getByText("No app to install")).toBeVisible();
+      if (shot.width < 1024) {
+        await expect(hero.getByText("Patient aftercare view")).toBeVisible();
+        await expect(hero.getByText("No app to install")).toBeVisible();
+      }
       await expect(hero.locator('[class*="desktopPreview"]')).toHaveCount(0);
       await expect(hero.locator('[class*="phoneBezel"]')).toHaveCount(0);
       await expect(hero.locator('[class*="phoneFrame"]')).toHaveAttribute(

@@ -274,22 +274,6 @@ html[data-theme-mode="dark"] .wordmarkName {
   width: 100%;
   background: currentColor;
   border-radius: 999px;
-  transform-origin: center;
-  transition:
-    transform var(--interaction-duration) var(--interaction-easing),
-    opacity var(--interaction-duration) var(--interaction-easing);
-}
-
-.navMenuTrigger[aria-expanded="true"] .navMenuGlyph span:nth-child(1) {
-  transform: translateY(calc(0.22rem + 1.5px)) rotate(45deg);
-}
-
-.navMenuTrigger[aria-expanded="true"] .navMenuGlyph span:nth-child(2) {
-  opacity: 0;
-}
-
-.navMenuTrigger[aria-expanded="true"] .navMenuGlyph span:nth-child(3) {
-  transform: translateY(calc(-0.22rem - 1.5px)) rotate(-45deg);
 }
 
 .navMenuPanel {
@@ -2660,16 +2644,20 @@ html[data-theme-mode="dark"] .wordmarkName {
 
   .deviceStage {
     align-self: center;
+    padding: 0 0 1.25rem;
+  }
+
+  .deviceProof {
     padding: 0;
   }
 
   .deviceNote {
-    max-width: 18.5rem;
+    display: none;
   }
 
   .phoneShell {
-    width: 14.35rem;
-    transform: translateY(-0.85rem) rotate(-1.15deg);
+    width: 13.85rem;
+    transform: translateY(-1.5rem) rotate(-1.15deg);
   }
 
   .phoneScreen {
@@ -2847,7 +2835,7 @@ html[data-theme-mode="dark"] .wordmarkName {
   }
 
   .phoneShell {
-    width: 15rem;
+    width: 14.6rem;
   }
 }
 
@@ -2874,8 +2862,7 @@ html[data-theme-mode="dark"] .wordmarkName {
   .textLink,
   .textLink::after,
   .navMenuRow,
-  .navMenuTrigger,
-  .navMenuGlyph span {
+  .navMenuTrigger {
     transition: none;
   }
 }

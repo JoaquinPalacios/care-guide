@@ -622,7 +622,8 @@ test.describe("marketing conversion routes", () => {
     );
     expect(hoverBg).not.toBe("rgba(0, 0, 0, 0)");
 
-    await pricing.focus();
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
     await expect(pricing).toBeFocused();
     const outline = await pricing.evaluate(
       (element) => getComputedStyle(element).outlineStyle
